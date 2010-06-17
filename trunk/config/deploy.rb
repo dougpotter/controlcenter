@@ -51,7 +51,7 @@ set :scm, :subversion
 set :deploy_via, :remote_cache
 
 # URL of your source repository.
-set :repository, "https://xgraph@dev.xgraph.net/svn/xgraph/xgcc/trunk"
+set :repository, "https://xgraph@dev.xgraph.net/svn/xgraph/controlcenter/trunk"
 #set :branch, (ENV['BRANCH']||"master")
 
 #if we use submodules
