@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require File.expand_path('../../../config/boot',  __FILE__)
+require File.expand_path('../../../config/environment',  __FILE__)
+
+# Important: development version of ruote is required (as of Jun 10, 2010)
+# since it contains bugfixes and features we rely on.
+
+require 'yaml'
+require 'ostruct'
+require 'xgw/bootstrap'
+require 'xgw/globals'
+require 'xgw/settings'
+
+def debug
+  require 'ruby-debug'
+  debugger
+end
+
+$config = Xgw::Settings.load('workflows/clearspring')
+
+def config
+  $config
+end
+
+Xgw::Bootstrap.init_host
+jobs = []
+%w(view-us view-int search-hashed-us search-hashed-int share-us share-int).each do |data_source|
+  jobs << Xgw::Globals.host.launch(:clearspring_hourly_discovery,
+    :date => '20100523',
+    :data_source => data_source,
+    :data_source_path => config.clearspring_root_url,
+    :download_root_dir => config.download_root_dir,
+    :gzip_root_dir => config.temp_root_dir,
+    :http_username => config.clearspring_http_username,
+    :http_password => config.clearspring_http_password,
+    :s3_bucket => config.s3_bucket,
+    :clearspring_pid => config.clearspring_pid,
+    :wait => true
+  )
+end
+jobs.each do |job|
+  job.wait
+end
+Xgw::Globals.host.print_last_error

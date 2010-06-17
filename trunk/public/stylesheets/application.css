@@ -1,0 +1,195 @@
+/* CSS Styles for XGraph */
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	margin-top: 0px;
+	background-color:#E6E6E6;
+}
+
+p {
+	color: #333333;
+	font-size: 12px;
+	margin-top: 14px;
+}
+
+
+#wrapper {
+	width: 960px;
+	margin: 0px auto 10px auto;
+	background-color: #FFFFFF;
+}
+
+
+#header {
+	height: 68px;
+	width: 960px;
+	background-color:#FFFFFF;
+}
+
+.logo {
+	float: left;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-left: 75px;
+}
+
+ul.nav {
+	float: left;
+	margin-top: 28px;
+	margin-left: 20px;
+}
+
+.nav li {
+	color: #1E3B6E;
+	font-weight: bold;
+	font-size: 14px;
+	float: left;
+	margin-left: 30px;
+}
+
+.nav li, .nav li a {
+	color: #1E3B6E;
+	font-weight: bold;
+	font-size: 14px;
+	text-decoration: none;
+}
+
+.nav li a:hover {
+	color: #32BBED;
+	font-weight: bold;
+	font-size: 14px;
+	text-decoration: none;
+}
+
+.nav li.current a {
+	color: #32BBED;
+	font-weight: bold;
+	font-size: 14px;
+	text-decoration: none;
+	background-image:url(/images/triangle.png);
+	background-repeat: no-repeat;
+	background-position: 50% 30px;
+	padding-bottom: 60px;
+}
+
+li#sub-menu {
+	margin-left: 20px;
+	margin-top: 1px;
+}
+
+li#sub-menu a {
+	color: #32BBED;
+	font-weight: bold;
+	font-size: 11px;
+	line-height: 14px;
+	float: left;
+	text-decoration: none;
+}
+
+li#sub-menu a:hover {
+	text-decoration: underline;
+}
+
+/*li#sub-menu a:hover {
+	color: #1E3B6E;
+}*/
+
+#main {
+	height: 10px;
+	width: 960px;
+	background:url(/images/bg-home.png);
+	background-position: top left;
+	background-repeat: none;
+}
+
+#content {
+	background-color:#F2F2F2;
+	width: 940px;
+	height: 100%;
+	margin-bottom: 0px;
+	padding: 10px;
+}
+
+#footer {
+	width: 960px;
+	height: 26px;
+	background-color: #9D9FA2;
+	margin-top: -15px;
+}
+
+#footer p {
+	text-align: center;
+	font-size: 10px;
+	line-height: 26px;
+	color: #FFFFFF;
+}
+
+#footer p a {
+	text-align: center;
+	font-size: 10px;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+#footer p a:hover {
+	text-align: center;
+	font-size: 10px;
+	color: #32BBED;
+	text-decoration: underline;
+}
+
+#beacon_report_graph_container {
+  float: left;
+  margin-bottom: 100px;
+}
+
+#beacon_report_graph {
+  width: 550px;
+  border: 1px solid #75439A;
+  padding: 5px;
+  margin-bottom: 5px;
+  min-height: 300px;
+}
+
+#graph_selector_panel {
+  float: left;
+  padding: 5px;
+}
+
+.param_selector_row {
+  margin-top: 5px;
+  width: 350px;
+}
+
+label {
+  font-size: 12px;
+}
+
+.param_selector_row input {
+  width: 90px;
+}
+
+.param_selector_row a {
+  font-size: 10px;
+  font-family: monospace;
+  text-decoration: none;
+  color: #75439A;
+}
+.param_selector_row a:visited { color: #75439A; }
+.param_selector_row a:hover { color: #75439A; }
+.param_selector_row a:active { color: #75439A; }
+
+.bilevel_input {
+  float: left;
+  padding: 0px 5px 5px 0px;
+}
+
+#graph_selector_submit_wrapper {
+  padding-top: 15px;
+  float: right;
+}
+
+#beacon_report_graph_links a {
+  font-size: 10px;
+  font-family: monospace;
+}

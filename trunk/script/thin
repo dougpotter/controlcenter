@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+gem 'rack', '1.1.0'
+
+#load `which thin`.chomp
+load(ENV["PATH"].split(":").detect { 
+  |dir| File.exist?(File.join(dir, "thin"))
+} + "/thin")

@@ -1,0 +1,13 @@
+<div id="beacon_report_graph">
+  <%= @graph %>
+</div>
+<div id="beacon_report_graph_links">
+  <%= link_to "[Permalink]", @permalink, :popup => true if @permalink %>&nbsp;
+  <%= link_to "[Download as CSV]", url_for(params.merge({
+    :controller => "beacon_report_graphs",
+    :action => "show",
+    :id => params[:id],
+    :format => "csv",
+    :only_path => true
+  })) %>
+</div>
