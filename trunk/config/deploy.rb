@@ -177,8 +177,11 @@ namespace :show do
 end
 
 namespace :deploy do
-  after "deploy", "deploy:notify" if host == "control.xgraph.net" && rails_env == "production"
-  after "deploy:fast", "deploy:notify" if host == "control.xgraph.net" && rails_env == "production"
+  after :deploy do
+    if host == "control.xgraph.net" && rails_env == "production"
+      notify
+    end
+  end
 
   desc "Send email notification of deployment"
   task :notify do
