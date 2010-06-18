@@ -220,4 +220,10 @@ namespace :deploy do
           ]
         )
   end
+  
+  desc "Remove repository cache (use when switching branches or reorganizing repository)"
+  task :remove_repository_cache do
+    cache_path = fetch(:repository_cache, 'cached-copy')
+    run "rm -rf #{shared_path}/#{cache_path}"
+  end
 end
