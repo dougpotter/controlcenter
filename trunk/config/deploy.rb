@@ -8,10 +8,10 @@ require 'vendor/plugins/capistrano_mailer/lib/capistrano_mailer'
 # =============================================================================
 # The name of your application. Used for directory and file names associated with the application.
 set :application, ENV["XGCC_APPLICATION"] || "control.xgraph.net"
-set :host, application
+set(:host) { application }
 
 # Primary domain name of your application. Used as a default for all server roles.
-set :domain, application
+set(:domain) { application }
 
 # Login user for ssh.
 set :user, "www"
@@ -22,7 +22,7 @@ set :rails_env, "production"
 set :rake, "rake"
 
 # Target directory for the application on the web and app servers.
-set :deploy_to, "/var/www/apps/#{ENV["XGCC_DEPLOY_DIR"] || application}"
+set(:deploy_to) { "/var/www/apps/#{ENV["XGCC_DEPLOY_DIR"] || application}" }
 set :keep_releases, 5
 set :shared_children, %w{config log pids tmp system}
 
@@ -40,9 +40,9 @@ set :shared_children, %w{config log pids tmp system}
 # :primary => true.
 
 # Modify these values to execute tasks on a different server.
-role :web, domain
-role :app, domain, :migration_czar => true
-role :db,  domain, :primary => true
+role(:web) { domain }
+role(:app, :migration_czar => true) { domain }
+role(:db, :primary => true) { domain }
 
 # =============================================================================
 # SCM OPTIONS
@@ -65,6 +65,14 @@ set :repository, "https://xgraph@dev.xgraph.net/svn/xgraph/controlcenter/trunk"
 # =============================================================================
 #ssh_options[:keys] = %w(/path/to/my/key /path/to/another/key)
 ssh_options[:port] = 22
+
+# =============================================================================
+# DEPLOYMENT TARGETS
+# =============================================================================
+
+task :qa do
+  set :application, 'control.qa.xgraph.net'
+end
 
 # =============================================================================
 # APPWALL CONFIGURATION
