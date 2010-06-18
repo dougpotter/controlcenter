@@ -104,7 +104,7 @@ namespace :db do
   end
 
   desc "Seed database"
-  task :seed, :roles=> :app, :only => {:migration_czar => true }  do
+  task :seed, :roles => :app, :only => {:migration_czar => true}  do
     run "cd #{current_release}; " + 
       "rake RAILS_ENV=#{rails_env} db:seed_fu > /dev/null"
   end
@@ -132,7 +132,7 @@ namespace :deploy do
   end
 
   desc "Install gems required by application as defined with config.gem"
-  task :check_gems, :roles=> :app do
+  task :check_gems, :roles => :app do
     run "cd #{current_release}; #{rake} RAILS_ENV=#{rails_env} gems:install"
   end
 
@@ -141,7 +141,7 @@ namespace :deploy do
   end
 
   # Monkey patch for deploy migrate to run only on migration czar, cut some flexibility
-  task :migrate, :roles => :app, :only => {:migration_czar => true } do
+  task :migrate, :roles => :app, :only => {:migration_czar => true} do
     run "cd #{current_release}; #{rake} RAILS_ENV=#{rails_env} db:migrate"
   end
 
