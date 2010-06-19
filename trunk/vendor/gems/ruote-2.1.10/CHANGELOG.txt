@@ -2,6 +2,11 @@
 = ruote - CHANGELOG.txt
 
 
+== ruote - 2.1.11    not yet released
+
+- workitem.error now includes error's backtrace (contributed by Rich Meyers)
+
+
 == ruote - 2.1.10    released 2010/06/15
 
 - storage#copy_to(other_storage) implemented
@@ -30,7 +35,7 @@
 - Workitem#error and Workitem#timed_out shortcuts
 - participant :on_error => 'x' broken. Fixed. Thanks Oleg.
 - Engine#workitem(fei) for advanced users
-- LocalParticpant : added a reject(workitem) method
+- LocalParticipant : added a reject(workitem) method
 - participant exp : dispatched = true set right after dispatch
 
 
