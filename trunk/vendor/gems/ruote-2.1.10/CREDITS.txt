@@ -1,0 +1,71 @@
+
+CREDITS
+=======
+
+Ruote (OpenWFEru) is an open source Ruby workflow (and sometimes BPM) engine.
+
+
+The main project team
+---------------------
+
+John Mettraux - http://jmettraux.wordpress.com
+Kenneth Kalmer - http://www.opensourcery.co.za
+Torsten Schoenebaum - http://github.com/tosch
+
+
+Contributors
+------------
+
+Oleg Pudeyev - http://github.com/p
+Brett Anthoine - http://github.com/anb
+Matt Nichols - http://github.com/mattnichols
+Nicholas Faiz - http://github.com/biv
+Chris Beer - http://github.com/cbeer
+Enrico Bianco - http://github.com/enricob
+Andrew Timberlake - timeout 'at'
+Raphael Simon - error handling mechanism design and QA
+Maarten Oelering - bug reports and test cases
+Nick Petrella - socket listener issues and Python interactivity, dollar patch
+Sakaguchi Masa - japanese website and articles in Japanese magazines
+Patrice Cappelaere - lots of feedback and ideas
+Tomaso Tosolini - database persisted engine implementation and patches
+Alain Hoang (configuration managaer)
+Matt Zukowski (senior developer)
+Jamandru Reynolds (http://geometron.net)
+Frederic Piccand
+Richard Jennings
+
+
+Feedback
+--------
+
+Oleg (foenixx) - many suggestions and bug reports
+Avishai Shalom - discussion and ideas about participant/worker locality
+Gonzalo Suarez - many help
+Francisco Kiko - many help
+David Goldhirsch - EM participant block
+dlamotte - set :val => nil
+jpr5 + asm
+Daniel Neighman "hassox" - :on_timeout => "error"
+Jason Allen - multi-instance considerations
+Petia Wohed - workflow patterns implementation evaluation
+Ralph DeGuelle - sleep silent death report
+Leo Venegas - various bug reports
+Corin Moss - sync launch and ruote-rest balancing
+Scott Sproule - missing read() method in rufus-verbs fopen()
+Aye Thu - missing 'atom-tools' dependency
+Machiel Groeneveld - missing 'rufus-mnemo' dependency
+Harshal Hayat - :on_field => :executions idea
+Ralf KaoticEntity - concurrence mix feedback
+Graeme Lockley - every jobs {re/un}scheduling
+JimJin - various feedback and bug reports
+Andreas Baumann - bug reports and test cases
+Fu Zhang - csv tables 'accumulate' and 'range' ideas
+Lee Fyock - suggested the Scheduler 'tag' feature.
+Art Schumer - cron scheduler bug
+ara.t.howard on the ruby talk ml pointed out a weakness in scheduler.
+Tomek "Tomash" Stachewicz - scheduler feedback
+Jon "Compensator" - first report of the "yamlextras" issue
+
+(see the mailing list at : http://groups.google.com/group/openwferu-users )
+

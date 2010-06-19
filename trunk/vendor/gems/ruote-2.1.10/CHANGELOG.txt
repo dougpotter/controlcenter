@@ -1,0 +1,120 @@
+
+= ruote - CHANGELOG.txt
+
+
+== ruote - 2.1.10    released 2010/06/15
+
+- storage#copy_to(other_storage) implemented
+- #launch moved from Engine to ReceiverMixin
+- participants without initialize(opts) are now allowed
+- engine.wait_for(:inactive)
+- engine.wait_for(*interests) unlocked
+- engine.wait_for(:empty)
+- fixed issue with participant 'x' and :on_error. Thanks Oleg.
+- receiver : reply and reply_to_engine : from aliases to wrappers
+- Ruote::StorageParticipant more flexibility for method args
+- Ruote::FlowExpressionId .extract_h and .extract
+- dropped fs_history (storage_history is better)
+- parser to_xml _if 'x == b' --> <if test="x == b">
+- workitem.sid shortcut for workitem.fei.to_storage_id
+- workitem.wfid shorcut for workitem.fei.wfid
+- new error_handler service
+- Receiver.new(x), x can be worker, engine, context or storage
+- Participant#on_reply(workitem) manipulating workitems when they come back
+- set '${v:customers.0.name}' => 'x' now OK, was limited to fields. Thanks Oleg
+- LocalParticipant#put(fei, hash) #get(fei, key) for stashing info
+- LocalParticipant#re_dispatch(wi, opts)
+- bug in HashStorage, apply over apply didn't raise a persist error. Fixed.
+- keeping track of workitem fields as they were right before a participant error
+- Workitem.error holds the error when on_error. Thanks Oleg.
+- Workitem#error and Workitem#timed_out shortcuts
+- participant :on_error => 'x' broken. Fixed. Thanks Oleg.
+- Engine#workitem(fei) for advanced users
+- LocalParticpant : added a reject(workitem) method
+- participant exp : dispatched = true set right after dispatch
+
+
+== ruote - 2.1.9    released 2010/03/22
+
+- made participant.cancel occur asynchronously (as should be)
+- lookup_variable : making sure not to break when the parent exp is gone
+- workitem.fields['__dispatch_time__'] is now set
+
+
+== ruote - 2.1.8    released 2010/03/15
+
+- participant#schedule_timeout workaround for issue with JRuby 1.4.0 (1.8.7)
+- implemented Ruote::CompositeStorage
+- leveraging rufus-cloche 0.1.16 and the 'cloche_nolock' option (FsStorage)
+- SmtpParticipant and ruote/part/template.rb reorganization
+- StorageParticipant when returned by engine#register was unusable. Fixed.
+- string keys for SmtpParticipant. Thanks Gonzalo
+- fixed every('10m') bug. Thanks Gonzalo Suarez
+- Ruote::FlowExpressionId.from_id(s) more permissive
+- concurrence (and concurrent-iterator) :merge_type => :stack
+
+
+== ruote - 2.1.7    released 2010/02/15
+
+- now works on WinXP, Ruby 1.8.7
+- reformed msgs ids and adapted Ruote::StorageHistory
+- engine.register_participant(x, Ruote::StorageParticipant) now returning
+  a instance of the participant, for easy query
+- StorageParticipant, added #query(criteria), thanks Torsten and Brett
+- Ruote::Workitem #lookup('deep.field') and #set_field('deep.field') are back
+- Ruote::Workitem added == and hash (list.uniq friendly), thanks Brett
+- Engine#configure(key, value), thanks Torsten
+- Ruote.to_tree (lightweight version of Ruote.process_definition)
+- ParticipantList#names, thanks Kenneth
+
+
+== ruote - 2.1.6    released 2010/02/08
+
+- welcoming ruote-dm (datamapper persistency)
+- Engine#re_apply(fei, opts) where opts in [ :tree, :fields, :merge_in_fields ]
+- fixed issue about StorageParticipant#update, thanks Torsten
+
+
+== ruote - 2.1.5    released 2010/01/28
+
+- fixed StorageParticipant a to b flow, fix by Torsten
+- fixed StorageParticipant#cancel
+- dollar : made sure of ${fei} and ${wfid}
+- implemented ProcessStatus#to_dot
+- if a participant implementation cancel method returns false,
+  reply_to_parent will not get called
+- changes about errors without [stored] expressions, they now appear in process
+  statuses
+- EngineParticipant implemented
+- 'ruby_eval_allowed' instead of :ruby_eval_allowed
+- ${v:customer.address.1} deep trick now ok (as it was ok for fields)
+- added d() to the $ notation : echo "${r: d('f:toto') }"
+- Engine#kill_process(wfid) can cure errored participant expressions
+- made sure ${r:wi} and ${r:workitem} is and instance of Ruote::Workitem
+- implemented StorageParticipant#by_field
+
+
+== ruote - 2.1.4    released 2010/01/11
+
+- implemented StorageHistory
+- using yyyy-mm-dd instead of yyyy/mm/dd for Ruote.time_to_utc_s(t)
+- implemented Storage#purge_type!(t)
+- Engine#add_service now returning just bound service
+
+
+== ruote - 2.1.3    released 2010/01/04
+
+- fixed issue with Rufus.is_cron_string (thanks Torsten)
+- fixed issue with FlowExpression#cancel (Kenneth)
+
+
+== ruote - 2.1.2    released 2010/01/03
+
+- fixed issue when initializing engine without worker. Thanks Matt Nichols.
+
+
+== ruote - 2.1.1    released 2009/12/31
+
+== OpenWFEru - 0.9.2       released 2007/01/26
+== openwfe-ruby - 1.7.0    released 2006/05/08
+
