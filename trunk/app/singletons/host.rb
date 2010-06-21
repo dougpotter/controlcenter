@@ -2,7 +2,6 @@ require 'rubygems'
 require 'singleton'
 require 'delegate'
 require 'ruote'
-require 'xgw/shared_storage'
 
 class Director
   attr_reader :engine
@@ -16,7 +15,7 @@ class Director
   end
   
   def print_last_error
-    error = @storage.ruote_storage.get_many('errors')[-1]
+    error = @engine.storage.get_many('errors')[-1]
     if error
       puts error['message']
       puts error['trace']
@@ -25,16 +24,14 @@ class Director
 end
 
 class Client < Director
-  def initialize
-    @storage = Xgw::SharedStorage.new
-    @engine = Ruote::Engine.new(@storage.ruote_storage)
+  def initialize(storage)
+    @engine = Ruote::Engine.new(storage)
   end
 end
 
 class Host < Director
-  def initialize
-    @storage = Xgw::SharedStorage.new
-    @worker = Ruote::Worker.new(@storage.ruote_storage)
+  def initialize(storage)
+    @worker = Ruote::Worker.new(storage)
     @engine = Ruote::Engine.new(@worker)
   end
   

@@ -5,6 +5,7 @@ module RuoteGlobals
   mattr_accessor :workflows
   mattr_accessor :engine
   mattr_accessor :job_registry
+  mattr_accessor :storage
   
   mattr_accessor :participants
   self.participants = {}

@@ -5,13 +5,25 @@ module Xgw
       end
       
       def init_host
-        RuoteGlobals.host = Host.new
+        init_storage
+        RuoteGlobals.host = Host.new(RuoteGlobals.storage)
         RuoteGlobals.engine = RuoteGlobals.host.engine
-        RuoteGlobals.storage = RuoteGlobals.host.engine.storage
         clear_errors
         init_workflows
         register_participants
         init_job_registry
+      end
+      
+      def init_storage
+        if RuoteConfiguration.use_persistent_storage
+          require 'ruote/storage/fs_storage'
+          storage = Ruote::FsStorage.new('work/xgw')
+        else
+          require 'ruote/storage/hash_storage'
+          storage = Ruote::HashStorage.new
+        end
+        
+        RuoteGlobals.storage = storage
       end
       
       private
