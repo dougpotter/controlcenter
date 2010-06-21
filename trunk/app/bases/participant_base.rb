@@ -175,7 +175,7 @@ class ParticipantBase
         params.reply if options[:sync]
       end
       
-      participants = Xgw::Globals.participants
+      participants = RuoteGlobals.participants
       participant_instance = ParticipantBuilder.build_participant(self, name)
       participants[participant_name] = participant_instance
     end

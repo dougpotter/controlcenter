@@ -19,7 +19,7 @@ class ClearspringParticipant < ParticipantBase
     jids = params.input[:file_urls].map do |remote_url|
       remote_relative_path = figure_relative_path(params.input[:data_source_path], remote_url)
       local_path = File.join(params.input[:download_root_dir], remote_relative_path)
-      job = Xgw::Globals.host.launch(:clearspring_file_download,
+      job = RuoteGlobals.host.launch(:clearspring_file_download,
         params.input.merge(:remote_url => remote_url, :local_path => local_path))
       job.rjid
     end
@@ -31,7 +31,7 @@ class ClearspringParticipant < ParticipantBase
     local_relative_path =~ /^(.*?)(\.log\.gz)?$/
     name, ext = $1, $2
     filename_format = "#{name.sub('%', '%%')}.%03d#{ext}"
-    job = Xgw::Globals.host.launch(:clearspring_file_split,
+    job = RuoteGlobals.host.launch(:clearspring_file_split,
       params.input.merge(
         :source_path => params.input[:local_path],
         :dest_dir => params.input[:gzip_root_dir],
@@ -42,7 +42,7 @@ class ClearspringParticipant < ParticipantBase
   
   consume(:launch_uploads, :input => %w(local_paths), :sync => true) do
     jids = params.input[:local_paths].map do |path|
-      job = Xgw::Globals.host.launch(:clearspring_file_upload,
+      job = RuoteGlobals.host.launch(:clearspring_file_upload,
         params.input.merge(:source_path => path))
       job.rjid
     end

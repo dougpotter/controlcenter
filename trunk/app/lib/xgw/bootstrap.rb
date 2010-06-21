@@ -1,5 +1,3 @@
-require 'xgw/globals'
-
 module Xgw
   class Bootstrap
     class << self
@@ -7,9 +5,9 @@ module Xgw
       end
       
       def init_host
-        Globals.host = Host.new
-        Globals.engine = Globals.host.engine
-        Globals.storage = Globals.host.engine.storage
+        RuoteGlobals.host = Host.new
+        RuoteGlobals.engine = RuoteGlobals.host.engine
+        RuoteGlobals.storage = RuoteGlobals.host.engine.storage
         clear_errors
         init_workflows
         register_participants
@@ -19,23 +17,23 @@ module Xgw
       private
       
       def clear_errors
-        Globals.storage.purge_type!('errors')
+        RuoteGlobals.storage.purge_type!('errors')
       end
       
       def init_workflows
-        Globals.workflows = ::ClearspringWorkflows.new
-        Globals.workflows.define_workflows
+        RuoteGlobals.workflows = ::ClearspringWorkflows.new
+        RuoteGlobals.workflows.define_workflows
       end
       
       def register_participants
-        engine = Globals.engine
-        Globals.participants.each do |name, instance|
+        engine = RuoteGlobals.engine
+        RuoteGlobals.participants.each do |name, instance|
           engine.register_participant(name, instance)
         end
       end
       
       def init_job_registry
-        Globals.job_registry = JobRegistry.new
+        RuoteGlobals.job_registry = JobRegistry.new
       end
     end
   end

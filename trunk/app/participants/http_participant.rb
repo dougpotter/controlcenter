@@ -1,5 +1,3 @@
-require_dependency 'xgw/globals'
-
 class HttpParticipant < ParticipantBase
   consume(:fetch_directory_listing,
     :input => %w(remote_url),

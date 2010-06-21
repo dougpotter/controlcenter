@@ -1,5 +1,4 @@
 require 'ruote/storage/fs_storage'
-require 'xgw/globals'
 
 module Xgw
   class SharedStorage

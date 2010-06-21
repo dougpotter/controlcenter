@@ -8,8 +8,8 @@ class Director
   attr_reader :engine
   
   def launch(name, input)
-    job = Xgw::Globals.job_registry.create_job(name, input)
-    pdef = Xgw::Globals.workflows.get(name)
+    job = RuoteGlobals.job_registry.create_job(name, input)
+    pdef = RuoteGlobals.workflows.get(name)
     rjid = @engine.launch(pdef, :input => input)
     job.set_launched(rjid)
     job

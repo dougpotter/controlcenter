@@ -9,7 +9,6 @@ require File.expand_path('../../../config/environment',  __FILE__)
 require 'yaml'
 require 'ostruct'
 require 'xgw/bootstrap'
-require 'xgw/globals'
 
 def debug
   require 'ruby-debug'
@@ -25,7 +24,7 @@ end
 Xgw::Bootstrap.init_host
 jobs = []
 %w(view-us view-int search-hashed-us search-hashed-int share-us share-int).each do |data_source|
-  jobs << Xgw::Globals.host.launch(:clearspring_hourly_discovery,
+  jobs << RuoteGlobals.host.launch(:clearspring_hourly_discovery,
     :date => '20100523',
     :data_source => data_source,
     :data_source_path => config.clearspring_root_url,
@@ -41,4 +40,4 @@ end
 jobs.each do |job|
   job.wait
 end
-Xgw::Globals.host.print_last_error
+RuoteGlobals.host.print_last_error
