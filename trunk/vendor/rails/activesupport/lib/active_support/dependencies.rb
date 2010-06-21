@@ -101,7 +101,12 @@ module ActiveSupport #:nodoc:
             # Make sure that the name we are missing is the one that caused the error
             parent_qualified_name = Dependencies.qualified_name_for parent, const_name
             raise unless e.missing_name? parent_qualified_name
-            qualified_name = Dependencies.qualified_name_for self, const_name
+            begin
+              qualified_name = Dependencies.qualified_name_for self, const_name
+            rescue ArgumentError
+              # from to_constant_name
+              qualified_name = "#{self}::#{const_name}"
+            end
             raise NameError.new("uninitialized constant #{qualified_name}").copy_blame!(e)
           end
         end
