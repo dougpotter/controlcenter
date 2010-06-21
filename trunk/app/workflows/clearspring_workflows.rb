@@ -7,7 +7,7 @@ WaitingGlueParticipant
 ClearspringParticipant
 ClearspringGlueParticipant
 
-class ClearspringWorkflows < Xgw::WorkflowDictionary
+class ClearspringWorkflows < WorkflowDictionary
   def define_workflows
     define_workflow :clearspring_hourly_discovery do
       participant 'Clearspring:build_data_source_url'
