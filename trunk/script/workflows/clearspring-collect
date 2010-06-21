@@ -10,14 +10,13 @@ require 'yaml'
 require 'ostruct'
 require 'xgw/bootstrap'
 require 'xgw/globals'
-require 'xgw/settings'
 
 def debug
   require 'ruby-debug'
   debugger
 end
 
-$config = Xgw::Settings.load('workflows/clearspring')
+$config = WorkflowParameters.load('workflows/clearspring')
 
 def config
   $config
