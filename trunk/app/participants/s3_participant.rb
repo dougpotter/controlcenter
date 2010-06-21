@@ -1,4 +1,4 @@
-class S3Participant < Xgw::ParticipantBase
+class S3Participant < ParticipantBase
   # note that passing keys/passwords in command line or environment is insecure.
   # s3sync can read ~/.s3conf/s3config.yml where credentials should be stored.
   consume(:upload_file,

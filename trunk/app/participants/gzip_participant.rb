@@ -1,4 +1,4 @@
-class GzipParticipant < Xgw::ParticipantBase
+class GzipParticipant < ParticipantBase
   consume(:split_file, :input => %w(source_path dest_dir dest_filename_format), :sync => true) do
     recompressor = GzipRecompressor.new
     dest_files = recompressor.transform(

@@ -1,4 +1,4 @@
-class ClearspringParticipant < Xgw::ParticipantBase
+class ClearspringParticipant < ParticipantBase
   consume :build_data_source_url, :input => %w(data_source data_source_path), :sync => true do
     data_source_path = params.input[:data_source_path]
     data_source = params.input[:data_source]

@@ -1,6 +1,4 @@
 require 'xgw/globals'
-require 'xgw/host'
-require 'xgw/job_registry'
 
 module Xgw
   class Bootstrap

@@ -1,6 +1,6 @@
 require 'nokogiri'
 
-class PageParsingParticipant < Xgw::ParticipantBase
+class PageParsingParticipant < ParticipantBase
   consume(:parse_apache_httpd_file_list,
     :input => %w(page_text),
     :sync => true

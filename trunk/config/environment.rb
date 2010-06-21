@@ -13,9 +13,11 @@ Rails::Initializer.run do |config|
 
   # Add additional load paths for your own custom dirs
   config.load_paths += %W(
+    #{RAILS_ROOT}/app/bases
     #{RAILS_ROOT}/app/facades
     #{RAILS_ROOT}/app/lib
     #{RAILS_ROOT}/app/participants
+    #{RAILS_ROOT}/app/singletons
     #{RAILS_ROOT}/app/workflows
   )
 

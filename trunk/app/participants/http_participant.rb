@@ -1,6 +1,6 @@
 require_dependency 'xgw/globals'
 
-class HttpParticipant < Xgw::ParticipantBase
+class HttpParticipant < ParticipantBase
   consume(:fetch_directory_listing,
     :input => %w(remote_url),
     :optional_input => %w(http_username http_password),

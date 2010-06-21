@@ -1,4 +1,4 @@
-class ClearspringGlueParticipant < Xgw::ParticipantBase
+class ClearspringGlueParticipant < ParticipantBase
   consume :fetch_data_source_url_directory_listing, :sync => true, :require_output_value => true do
     params.input[:remote_url] = params.output.value
   end

@@ -1,5 +1,3 @@
-require 'xgw/workflow_dictionary'
-
 HttpParticipant
 PageParsingParticipant
 GzipParticipant
