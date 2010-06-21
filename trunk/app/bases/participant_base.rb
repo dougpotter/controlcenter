@@ -12,7 +12,7 @@ class InputFields
     if hash.nil?
       @hash = {}
     else
-      @hash = Xgw::Utils.to_string_hash(hash)
+      @hash = hash.stringify_keys
     end
   end
   
@@ -35,7 +35,7 @@ class InputFields
   end
   
   def merge(other_hash)
-    @hash.to_hash.dup.update(Xgw::Utils.to_string_hash(other_hash))
+    @hash.to_hash.dup.update(other_hash.stringify_keys)
   end
 end
 
