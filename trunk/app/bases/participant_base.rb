@@ -1,5 +1,3 @@
-require 'xgw/utils'
-
 class MissingInput < StandardError
 end
 
@@ -47,7 +45,11 @@ end
 
 class Output
   def initialize(hash=nil)
-    hash = Xgw::Utils.to_options_hash(hash || {})
+    if hash
+      hash = hash.to_options
+    else
+      hash = {}
+    end
     @fields, @value = hash[:fields], hash[:value]
   end
   

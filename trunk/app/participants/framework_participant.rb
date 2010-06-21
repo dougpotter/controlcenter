@@ -1,5 +1,4 @@
 require_dependency 'xgw/globals'
-require_dependency 'xgw/utils'
 
 class FrameworkParticipant < ParticipantBase
   consume(:record_job_launch, :sync => true) do
