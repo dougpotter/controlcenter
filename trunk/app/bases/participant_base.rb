@@ -140,7 +140,12 @@ class ParticipantBase
       
       define_method("consume_#{name}") do
         allowed_keys = (options[:input] || []) + (options[:optional_input] || []).map { |key| key.to_s }
-        input = InputFields.new(allowed_keys, Xgw::Utils.to_indifferent_hash(workitem.fields['input'] || {}))
+        if input = workitem.fields['input']
+          input = input.with_indifferent_access
+        else
+          input = HashWithIndifferentAccess.new
+        end
+        input = InputFields.new(allowed_keys, input)
         local = LocalFields.new
         output = Output.new(workitem.fields['output'])
         
