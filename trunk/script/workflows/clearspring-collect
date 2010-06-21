@@ -8,7 +8,6 @@ require File.expand_path('../../../config/environment',  __FILE__)
 
 require 'yaml'
 require 'ostruct'
-require 'xgw/bootstrap'
 
 def debug
   require 'ruby-debug'
@@ -21,7 +20,7 @@ def config
   $config
 end
 
-Xgw::Bootstrap.init_host
+RuoteBootstrap.init_host
 jobs = []
 %w(view-us view-int search-hashed-us search-hashed-int share-us share-int).each do |data_source|
   jobs << RuoteGlobals.host.launch(:clearspring_hourly_discovery,
