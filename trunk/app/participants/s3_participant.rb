@@ -7,7 +7,7 @@ class S3Participant < ParticipantBase
   ) do
     local_path = params.input[:local_path]
     remote_path = "#{params.input[:s3_bucket]}:#{params.input[:s3_path]}"
-    if Xgw::Globals.host_settings.verbose_s3
+    if RuoteConfiguration.verbose_s3
       debug_print("S3put: #{local_path} -> #{remote_path}")
     end
     Subprocess.spawn_check('s3cmd', 'put', remote_path, local_path)

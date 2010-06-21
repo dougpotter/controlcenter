@@ -6,7 +6,7 @@ module Xgw
     attr_reader :ruote_storage
     
     def initialize
-      if Globals.host_settings.use_persistent_storage
+      if RuoteConfiguration.use_persistent_storage
         @ruote_storage = Ruote::FsStorage.new('work/xgw')
       else
         @ruote_storage = Ruote::HashStorage.new

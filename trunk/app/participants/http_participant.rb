@@ -30,7 +30,7 @@ class HttpParticipant < ParticipantBase
   
   def http_client(url, options)
     default_options = {}
-    if Xgw::Globals.host_settings.verbose_http
+    if RuoteConfiguration.verbose_http
       default_options[:debug] = true
     end
     options = default_options.update(options)

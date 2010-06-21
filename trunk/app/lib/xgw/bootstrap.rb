@@ -7,7 +7,6 @@ module Xgw
       end
       
       def init_host
-        load_host_settings
         Globals.host = Host.new
         Globals.engine = Globals.host.engine
         Globals.storage = Globals.host.engine.storage
@@ -18,10 +17,6 @@ module Xgw
       end
       
       private
-      
-      def load_host_settings
-        Globals.host_settings = Settings.load('ruote_host')
-      end
       
       def clear_errors
         Globals.storage.purge_type!('errors')

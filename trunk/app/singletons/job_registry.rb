@@ -24,21 +24,21 @@ class Job
   def set_launched(rjid)
     @rjid = rjid
     @status = :launched
-    if Xgw::Globals.host_settings.verbose_job_launch
+    if RuoteConfiguration.verbose_job_launch
       debug_print "Launched workflow #{@name} -> job #{rjid}"
     end
   end
   
   def set_running
     @status = :running
-    if Xgw::Globals.host_settings.verbose_job_state
+    if RuoteConfiguration.verbose_job_state
       debug_print "Job #{@rjid} for workflow #{@name} is now running"
     end
   end
   
   def success
     @status = :success
-    if Xgw::Globals.host_settings.verbose_job_state
+    if RuoteConfiguration.verbose_job_state
       debug_print "Job #{@rjid} for workflow #{@name} is finished"
     end
   end
@@ -46,7 +46,7 @@ class Job
   def failure(exception)
     @status = :failure
     @exception = exception
-    if Xgw::Globals.host_settings.verbose_job_state
+    if RuoteConfiguration.verbose_job_state
       debug_print "Job #{@rjid} for workflow #{@name} has failed:"
       debug_print "#{exception.class}: #{exception.message}"
       # backtrace is not available in earlier ruote versions
@@ -59,7 +59,7 @@ class Job
   end
   
   def wait
-    if Xgw::Globals.host_settings.verbose_job_wait
+    if RuoteConfiguration.verbose_job_wait
       debug_print "Waiting for job #{@rjid} for workflow #{@name}"
     end
     while true do
