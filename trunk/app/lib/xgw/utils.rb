@@ -17,17 +17,5 @@ module Xgw
       new_hash
     end
     module_function :to_string_hash
-    
-    def constantize(name)
-      parts = name.split('::')
-      object = Object
-      for part in parts
-        object = object.const_get(part)
-      end
-      object
-    rescue NameError
-      raise NameError, "Constant is not defined: #{name}"
-    end
-    module_function :constantize
   end
 end

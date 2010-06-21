@@ -18,7 +18,7 @@ class FrameworkParticipant < ParticipantBase
     if error_class_name.blank?
       raise ArgumentError, "Error class name is blank - version of ruote used is too old?"
     end
-    exception = Xgw::Utils.constantize(error_class_name).new(error_message)
+    exception = error_class_name.constantize.new(error_message)
     exception.set_backtrace(error_backtrace)
     job.failure(exception)
   end
