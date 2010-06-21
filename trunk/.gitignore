@@ -1,2 +1,3 @@
 config/database.yml
+config/workflows/*.yml
 log/*.log
