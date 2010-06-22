@@ -44,7 +44,13 @@ class RuoteBootstrap
     end
     
     def init_job_registry
-      RuoteGlobals.job_registry = JobRegistry.new
+      RuoteGlobals.job_registry = job_registry = JobRegistry.new
+      
+      # for future consideration:
+      #  - the call could be placed elsewhere?
+      #  - bring worker a few levels up?
+      notification_handler = JobRegistryErrorNotificationHandler.new(job_registry)
+      RuoteGlobals.host.engine.context.worker.subscribe('error_intercepted', notification_handler)
     end
   end
 end

@@ -77,6 +77,8 @@ class Job
   end
 end
 
+# Note: job registry must be threadsafe since muliple threads may be creating
+# or looking up jobs concurrently.
 class JobRegistry
   def initialize
     @jobs = []
@@ -107,5 +109,44 @@ class JobRegistry
   def wait_for_rjid(rjid)
     job = job_for_rjid!(rjid)
     job.wait
+  end
+end
+
+class JobRegistryErrorNotificationHandler
+  def initialize(job_registry)
+    @job_registry = job_registry
+  end
+  
+  # Note: this method must be threadsafe since ruote may call it from multiple
+  # threads concurrently.
+  def notify(msg)
+    action = msg['action']
+    unless action == 'error_intercepted'
+      raise ArgumentError, "Action must be error_intercepted: #{action}"
+    end
+    
+    rjid = msg['wfid']
+    job = @job_registry.job_for_rjid(rjid)
+    if job
+      # Hopefully this path does not raise exceptions.
+      # What should we do if an exception is raised?
+      
+      # check ruote version
+      unless msg['error_class'] && msg['error_message'] && msg['error_backtrace']
+        # too old
+        $stderr.puts("Your version of ruote is too old: it does not supply useful exception information to error_intercepted subscribers (while handling error_intercepted for job #{rjid})")
+        return
+      end
+      
+      # reconstruct original exception
+      exception = msg['error_class'].constantize.new(msg['error_message'])
+      exception.set_backtrace(msg['error_backtrace'])
+      job.failure(exception)
+    else
+      # Job was not found for ruote's job id.
+      # This may happen if job storage is less persistent than ruote storage.
+      # Ignore the error, ruote will print it with -d option and/or put the job
+      # into error state.
+    end
   end
 end
