@@ -23,6 +23,7 @@
 #++
 
 require 'ruote/subprocess'
+require 'ruote/exp/flowexpression'
 
 
 module Ruote::Exp

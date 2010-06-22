@@ -54,6 +54,7 @@ module Ruote
     # If a worker instance is given as the first argument and the second
     # argument is true, engine will start the worker and will be able to both
     # manage and run workflows.
+    #
     def initialize (worker_or_storage, run=true)
 
       @context = worker_or_storage.context
@@ -182,7 +183,8 @@ module Ruote
 
     # Returns an array of current errors (hashes)
     #
-    def errors( wfid = nil )
+    def errors (wfid=nil)
+
       wfid.nil? ?
         @context.storage.get_many('errors') :
         @context.storage.get_many('errors', /!#{wfid}$/)
@@ -196,7 +198,7 @@ module Ruote
       @context.shutdown
     end
 
-    # This method expects there is a logger with a wait_for method in the
+    # This method expects there to be a logger with a wait_for method in the
     # context, else it will raise an exception.
     #
     # This method is only useful for test/quickstart/examples environments.
@@ -231,6 +233,14 @@ module Ruote
       ) unless logger.respond_to?(:wait_for)
 
       logger.wait_for(items)
+    end
+
+    # Joins the worker thread. If this engine has no nested worker, calling
+    # this method will simply return immediately.
+    #
+    def join
+
+      worker.join if worker
     end
 
     # Loads and parses the process definition at the given path.

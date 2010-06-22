@@ -22,6 +22,8 @@
 # Made in Japan.
 #++
 
+require 'ruote/exp/flowexpression'
+
 
 module Ruote::Exp
 
@@ -97,13 +99,10 @@ module Ruote::Exp
   # by using the :frequency (or :freq) attribute.
   #
   #   sequence do
-  #
   #     participant 'logistic_unit'
-  #
   #     _when '${v:/delivery_ok}', :frequency => '2d'
   #       # block until delivery is OK (another branch of the process probably)
   #       # check every two days
-  #
   #     participant 'accounting_unit'
   #   end
   #

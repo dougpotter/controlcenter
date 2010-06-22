@@ -64,6 +64,9 @@ module Ruote
       @sleep_time = 0.000
     end
 
+    # Runs the worker in the current thread. See #run_in_thread for running
+    # in a dedicated thread.
+    #
     def run
 
       while(@running) do
@@ -71,6 +74,8 @@ module Ruote
       end
     end
 
+    # Triggers the run method of the worker in a dedicated thread.
+    #
     def run_in_thread
 
       Thread.abort_on_exception = true
@@ -79,6 +84,14 @@ module Ruote
       @running = true
 
       @run_thread = Thread.new { run }
+    end
+
+    # Joins the run thread of this worker (if there is no such thread, this
+    # method will return immediately, without any effect).
+    #
+    def join
+
+      @run_thread.join if @run_thread
     end
 
     def subscribe (actions, subscriber)
@@ -101,10 +114,9 @@ module Ruote
     # Returns true if the engine system is inactive, ie if all the process
     # instances are terminated or are stuck in an error.
     #
-    # NOTE : for now, if a branch of a process is in errors while another is
-    # still running, this methods will still consider the process instance
-    # as inactive (and it will return true if all the processes are considered
-    # inactive).
+    # NOTE : for now, if a branch of a process is in error while another is
+    # still running, this method will consider the process instance inactive
+    # (and it will return true if all the processes are considered inactive).
     #
     def inactive?
 
