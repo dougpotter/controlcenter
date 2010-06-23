@@ -1,21 +1,17 @@
-#!/opt/ruby-enterprise/bin/ruby
+class GzipSplitter
 
+  attr_accessor :input_file, :header_pattern, :read_buffer_size,
+    :output_path, :debug, :verify
 
-class Gzsplit
-
-attr_accessor :input_file, :header_pattern, :read_buffer_size,
-  :output_path, :debug, :verify
-
-# Required initialization parameters
-# input_file
-#
-# Optional parameters to override defaults
-# header_pattern
-# read_buffer_size
-# output_path
-# debug -- print debugging messages to $stderr, can be very verbose!
-# verify -- executes gzip -l and prints compression ratio, or error message
-
+  # Required initialization parameters
+  # input_file
+  #
+  # Optional parameters to override defaults
+  # header_pattern
+  # read_buffer_size
+  # output_path
+  # debug -- print debugging messages to $stderr, can be very verbose!
+  # verify -- executes gzip -l and prints compression ratio, or error message
   def initialize(input_file, params)
 
     # Defaults, see notes at end of file
@@ -210,4 +206,3 @@ end
 #header_pattern = '1f8b8'
 #header_pattern = "\037\213\b"
 #
-
