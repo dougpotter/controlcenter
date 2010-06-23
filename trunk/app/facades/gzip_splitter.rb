@@ -100,7 +100,6 @@ class GzipSplitter
     ensure
       infile.close
       if @debug then debug_print("Closed #{input_path}") end
-      p output_path
       if output_file
         close_output_file(output_file, output_path)
       end
