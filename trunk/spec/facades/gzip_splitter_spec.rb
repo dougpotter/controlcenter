@@ -7,11 +7,15 @@ require "spec"
 require "gzip_splitter"
 
 describe GzipSplitter do
+  before(:each) do
+    @gzip_splitter = GzipSplitter.new
+  end
+  
   it "should have a default value for @header_pattern" do
-    GzipSplitter.new(:verify => "true").header_pattern.should == "\037\213\b\000\000"
+    @gzip_splitter.header_pattern.should == "\037\213\b\000\000"
   end
 
   it "should have a default value for @read_buffer_size" do
-    GzipSplitter.new(:verify => "true").read_buffer_size.should == 4096
+    @gzip_splitter.read_buffer_size.should == 4096
   end
 end
