@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+# Run me with:
+#
+# spec spec/facades/gzip_splitter_spec.rb
+#
+# from rails root. Won't work from other directories (correctly)
+# since we don't depend on environment to figure out rails root.
+
 $: << 'app/facades'
 
 require "rubygems"
