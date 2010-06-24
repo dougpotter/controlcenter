@@ -1,0 +1,14 @@
+# Each of verbose_* options prints debug output to standard error
+# Print HTTP urls fetched
+verbose_http: true
+# Print job state when jobs start, finish and fail
+verbose_job_state: true
+# Print job information when jobs are launched
+verbose_job_launch: true
+# Print job information when waiting for jobs
+verbose_job_wait: true
+# Print files uploaded to S3
+verbose_s3: true
+# Use persistent storage.
+# Non-persistent storage is useful when errors spill into following interactive runs
+use_persistent_storage: true
