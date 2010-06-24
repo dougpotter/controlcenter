@@ -42,7 +42,12 @@ class FrameworkParticipant < ParticipantBase
     if error_class_name.blank?
       raise ArgumentError, "Error class name is blank - version of ruote used is too old?"
     end
-    exception = error_class_name.constantize.new(error_message)
+    begin
+      exception = error_class_name.constantize.new(error_message)
+    rescue ArgumentError
+      # some exception classes require more than one argument
+      exception = StandardError.new("#{error_class_name}: #{error_message}")
+    end
     exception.set_backtrace(error_backtrace)
     job.failure(exception)
   end
