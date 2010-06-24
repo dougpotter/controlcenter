@@ -1,5 +1,27 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: script/workflows/clearspring-collect [options]"
+  
+  opts.on('-s', '--source SOURCE', 'Extract from specified SOURCE only (search-hashed-int/search-hashed-us/share-int/share-us/view-int/view-us, default is to extract all sources)') do |source|
+    options[:source] = source
+  end
+end.parse!
+
+all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
+if source = options[:source]
+  if all_sources.include?(source)
+    selected_sources = [source]
+  else
+    raise OptionParser::ParseError, "Invalid source value: #{source}"
+  end
+else
+  selected_sources = all_sources
+end
+
 require File.expand_path('../../../config/boot',  __FILE__)
 require File.expand_path('../../../config/environment',  __FILE__)
 
@@ -22,7 +44,7 @@ end
 
 RuoteBootstrap.init_host
 jobs = []
-%w(view-us view-int search-hashed-us search-hashed-int share-us share-int).each do |data_source|
+selected_sources.each do |data_source|
   jobs << RuoteGlobals.host.launch(:clearspring_hourly_discovery,
     :date => '20100523',
     :data_source => data_source,
