@@ -1,7 +1,9 @@
 class GzipParticipant < ParticipantBase
   consume(:split_file, :input => %w(source_path dest_dir dest_filename_format), :sync => true) do
-    recompressor = GzipRecompressor.new
-    dest_files = recompressor.transform(
+    # use recompressor or splitter
+    #transformer = GzipRecompressor.new
+    transformer = GzipSplitter.new
+    dest_files = transformer.transform(
       params.input[:source_path],
       params.input[:dest_dir],
       params.input[:dest_filename_format]
