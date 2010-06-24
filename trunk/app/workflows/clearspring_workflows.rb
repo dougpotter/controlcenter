@@ -16,6 +16,7 @@ class ClearspringWorkflows < WorkflowDictionary
       participant 'ClearspringGlue:parse_directory_listing'
       participant 'PageParsing:parse_nginx_httpd_file_list'
       participant 'ClearspringGlue:absolutize_file_urls'
+      participant 'Clearspring:filter_file_urls_by_date'
       participant 'Clearspring:mkdir_download_dirname'
       participant 'Clearspring:launch_file_url_downloads'
       _if :test => "${input.wait} == true" do

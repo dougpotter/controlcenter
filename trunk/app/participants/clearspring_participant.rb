@@ -6,6 +6,15 @@ class ClearspringParticipant < ParticipantBase
     params.output.value = url
   end
   
+  consume(:filter_file_urls_by_date, :input => %w(file_urls data_source date), :sync => true) do
+    data_source = params.input[:data_source]
+    date = params.input[:date]
+    prefix = "#{data_source}.#{date}"
+    params.input[:file_urls].reject! do |file_url|
+      File.basename(file_url)[0...prefix.length] != prefix
+    end
+  end
+  
   consume :build_file_download_url, :sync => true do
     # launch file url downloads already builds urls,
     # nothing to do here
