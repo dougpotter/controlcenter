@@ -28,7 +28,9 @@ Rails::Initializer.run do |config|
   # config.gem "aws-s3", :lib => "aws/s3"
   
   config.gem "fastercsv"
-  config.gem "ruote"
+  config.gem "ruote", :lib => false
+  # http fetches in workflows use curb
+  config.gem "curb", :lib => false
 
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
