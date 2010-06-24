@@ -9,6 +9,9 @@ parser = OptionParser.new do |opts|
   opts.on('-s', '--source SOURCE', 'Extract from specified SOURCE only (search-hashed-int/search-hashed-us/share-int/share-us/view-int/view-us, default is to extract all sources)') do |source|
     options[:source] = source
   end
+  opts.on('-d', '--date DATE', 'Extract for specified DATE (by default today)') do |date|
+    options[:date] = date
+  end
 end.parse!
 
 all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
@@ -20,6 +23,14 @@ if source = options[:source]
   end
 else
   selected_sources = all_sources
+end
+
+if date = options[:date]
+  unless date =~ /\A\d{8}\Z/
+    raise OptionParser::ParseError, "Invalid date value: #{date}"
+  end
+else
+  date = Time.now.strftime('%Y%m%d')
 end
 
 require File.expand_path('../../../config/boot',  __FILE__)
@@ -46,7 +57,7 @@ RuoteBootstrap.init_host
 jobs = []
 selected_sources.each do |data_source|
   jobs << RuoteGlobals.host.launch(:clearspring_hourly_discovery,
-    :date => '20100523',
+    :date => date,
     :data_source => data_source,
     :data_source_path => config.clearspring_root_url,
     :download_root_dir => config.download_root_dir,
