@@ -22,21 +22,27 @@ class ClearspringParticipant < ParticipantBase
   
   consume(:launch_file_url_downloads,
     :input => %w(file_urls download_root_dir data_source_path),
-    :optional_input => %w(http_username http_password),
+    :optional_input => %w(http_username http_password max_launched_children),
     :sync => true
   ) do
     jids = []
-    params.input[:file_urls].each do |remote_url|
+    params.input[:file_urls].each_with_index do |remote_url, index|
       remote_relative_path = figure_relative_path(params.input[:data_source_path], remote_url)
       local_path = File.join(params.input[:download_root_dir], remote_relative_path)
       job = RuoteGlobals.host.launch(:clearspring_file_download,
         params.input.merge(:remote_url => remote_url, :local_path => local_path))
       jids << job.rjid
+      if params.input[:max_launched_children] && index >= params.input[:max_launched_children] - 1
+        break
+      end
     end
     params.output.value = jids
   end
   
-  consume(:launch_split, :input => %w(local_path gzip_root_dir download_root_dir), :sync => true) do
+  consume(:launch_split,
+    :input => %w(local_path gzip_root_dir download_root_dir),
+    :sync => true
+  ) do
     local_relative_path = figure_relative_path(params.input[:download_root_dir], params.input[:local_path])
     local_relative_path =~ /^(.*?)(\.log\.gz)?$/
     name, ext = $1, $2
@@ -50,12 +56,19 @@ class ClearspringParticipant < ParticipantBase
     params.output.value = job.rjid
   end
   
-  consume(:launch_uploads, :input => %w(local_paths), :sync => true) do
+  consume(:launch_uploads,
+    :input => %w(local_paths),
+    :optional_input => %w(max_launched_children),
+    :sync => true
+  ) do
     jids = []
-    params.input[:local_paths].each do |path|
+    params.input[:local_paths].each_with_index do |path, index|
       job = RuoteGlobals.host.launch(:clearspring_file_upload,
         params.input.merge(:source_path => path))
       jids << job.rjid
+      if params.input[:max_launched_children] && index >= params.input[:max_launched_children] - 1
+        break
+      end
     end
     params.output.value = jids
   end

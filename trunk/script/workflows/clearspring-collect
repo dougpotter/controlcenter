@@ -15,6 +15,9 @@ parser = OptionParser.new do |opts|
   opts.on('-p', '--profile', 'Profile script') do
     options[:profile] = true
   end
+  opts.on('-Q', '--quick', 'Limit launched children to 1 per step') do
+    options[:quick] = true
+  end
 end.parse!
 
 all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
@@ -72,6 +75,7 @@ def run(params)
       :http_password => config.clearspring_http_password,
       :s3_bucket => config.s3_bucket,
       :clearspring_pid => config.clearspring_pid,
+      :max_launched_children => params[:max_launched_children],
       :wait => true
     )
   end
@@ -95,6 +99,9 @@ end
 RuoteBootstrap.init_host
 
 params = {:selected_sources => selected_sources, :date => date}
+if options[:quick]
+  params[:max_launched_children] = 1
+end
 if options[:profile]
   start_profiling
   
