@@ -25,12 +25,13 @@ class ClearspringParticipant < ParticipantBase
     :optional_input => %w(http_username http_password),
     :sync => true
   ) do
-    jids = params.input[:file_urls].map do |remote_url|
+    jids = []
+    params.input[:file_urls].each do |remote_url|
       remote_relative_path = figure_relative_path(params.input[:data_source_path], remote_url)
       local_path = File.join(params.input[:download_root_dir], remote_relative_path)
       job = RuoteGlobals.host.launch(:clearspring_file_download,
         params.input.merge(:remote_url => remote_url, :local_path => local_path))
-      job.rjid
+      jids << job.rjid
     end
     params.output.value = jids
   end
@@ -50,10 +51,11 @@ class ClearspringParticipant < ParticipantBase
   end
   
   consume(:launch_uploads, :input => %w(local_paths), :sync => true) do
-    jids = params.input[:local_paths].map do |path|
+    jids = []
+    params.input[:local_paths].each do |path|
       job = RuoteGlobals.host.launch(:clearspring_file_upload,
         params.input.merge(:source_path => path))
-      job.rjid
+      jids << job.rjid
     end
     params.output.value = jids
   end
