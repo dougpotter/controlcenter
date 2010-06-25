@@ -12,6 +12,9 @@ parser = OptionParser.new do |opts|
   opts.on('-d', '--date DATE', 'Extract for specified DATE (by default today)') do |date|
     options[:date] = date
   end
+  opts.on('-p', '--profile', 'Profile script') do
+    options[:profile] = true
+  end
 end.parse!
 
 all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
@@ -41,6 +44,9 @@ require File.expand_path('../../../config/environment',  __FILE__)
 
 require 'yaml'
 require 'ostruct'
+if options[:profile]
+  require 'ruby-prof'
+end
 
 def debug
   require 'ruby-debug'
@@ -53,23 +59,56 @@ def config
   $config
 end
 
+def run(params)
+  jobs = []
+  params[:selected_sources].each do |data_source|
+    jobs << RuoteGlobals.host.launch(:clearspring_hourly_discovery,
+      :date => params[:date],
+      :data_source => data_source,
+      :data_source_path => config.clearspring_root_url,
+      :download_root_dir => config.download_root_dir,
+      :gzip_root_dir => config.temp_root_dir,
+      :http_username => config.clearspring_http_username,
+      :http_password => config.clearspring_http_password,
+      :s3_bucket => config.s3_bucket,
+      :clearspring_pid => config.clearspring_pid,
+      :wait => true
+    )
+  end
+  jobs.each do |job|
+    job.wait
+  end
+end
+
+def start_profiling
+  RubyProf.measure_mode  = RubyProf::PROCESS_TIME 
+  RubyProf.start
+end
+
+def stop_profiling
+  result = RubyProf.stop
+  puts 'Saving graph html view'
+  printer = RubyProf::GraphHtmlPrinter.new(result)
+  printer.print(File.open('profile-output.html', 'w'), :min_percent => 1)
+end
+
 RuoteBootstrap.init_host
-jobs = []
-selected_sources.each do |data_source|
-  jobs << RuoteGlobals.host.launch(:clearspring_hourly_discovery,
-    :date => date,
-    :data_source => data_source,
-    :data_source_path => config.clearspring_root_url,
-    :download_root_dir => config.download_root_dir,
-    :gzip_root_dir => config.temp_root_dir,
-    :http_username => config.clearspring_http_username,
-    :http_password => config.clearspring_http_password,
-    :s3_bucket => config.s3_bucket,
-    :clearspring_pid => config.clearspring_pid,
-    :wait => true
-  )
+
+params = {:selected_sources => selected_sources, :date => date}
+if options[:profile]
+  start_profiling
+  
+  begin
+    run(params)
+  ensure
+    begin
+      stop_profiling
+    rescue Exception => e
+      puts e
+    end
+  end
+else
+  run(params)
 end
-jobs.each do |job|
-  job.wait
-end
+
 RuoteGlobals.host.print_last_error
