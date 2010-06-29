@@ -1,10 +1,41 @@
+# Ruote does not have explicit parameter passing to participants
+# or returning values from them. Instead variables are put into
+# workitem.fields hash where they may be read or written at will.
+#
+# This free for all approach is prone to errors, both spelling
+# and logic. InputFields and OutputFields classes here enforce
+# separation between inputs and outputs to participants.
+# Participants must enumerate all inputs they want to use;
+# accessing an undeclared input is an error. Participants place
+# output into appropriately designated output field.
+#
+# Unfortunately this separation requires creation of glue
+# participants whose sole job is to copy variables from output
+# fields into input fields; the benefit however is that all other
+# participants are more generic and hopefully easier to develop
+# and understand.
+
+# Raised when a participant is invoked and not all of fields
+# declared in :input option are present in workitem['input'].
 class MissingInput < StandardError
 end
 
+# Raised when a participant attempts to access an input field
+# that was not declared in :input or :optional_input option.
 class KeyNotAllowed < StandardError
 end
 
+# Wrapper for input parameters.
+#
+# Enforces the policy requiring participants to declare which
+# input parameters they accept - constructor takes a hash
+# of parameters together with a list of keys which will be
+# retrievable.
+#
+# InputFields supports indifferent access to parameters.
 class InputFields
+  # Creates an instance of InputFields that would allow
+  # accessing keys listed in allowed_keys of hash hash.
   def initialize(allowed_keys, hash)
     @allowed_keys = allowed_keys
     if hash.nil?
@@ -14,6 +45,9 @@ class InputFields
     end
   end
   
+  # If key is in the list of allowed keys passed to constructor,
+  # returns a value for the key; otherwise raises KeyNotAllowed
+  # exception.
   def [](key)
     key = key.to_s
     if @allowed_keys.include?(key)
@@ -28,10 +62,13 @@ class InputFields
     @hash[key] = value
   end
   
+  # Returns the data hash. Both keys and values of the hash
+  # may have been modified since InputFields construction.
   def to_hash
     @hash.to_hash
   end
   
+  # Merges other_hash into data hash of this instance.
   def merge(other_hash)
     @hash.to_hash.dup.update(other_hash.stringify_keys)
   end
@@ -43,6 +80,16 @@ end
 class OutputFields
 end
 
+# Wrapper for participants' results.
+#
+# Two types of results are supported: a single value or a hash.
+# A participant may write the results in either form, but
+# reading the results requires accessing them in the same
+# way that they were written.
+#
+# Most participants write output (once), and do not read it.
+# The usual exception is glue participants which read output
+# and write to input fields.
 class Output
   def initialize(hash=nil)
     if hash
@@ -53,14 +100,23 @@ class Output
     @fields, @value = hash[:fields], hash[:value]
   end
   
+  # Writes value as output.
+  #
+  # Value must be json-serializable.
   def value=(value)
     @fields, @value = nil, value
   end
   
+  # Writes fields as output.
+  #
+  # fields must be a hash and json-serializable.
   def fields=(fields)
     @fields, @value = fields, nil
   end
   
+  # Retrieves output value.
+  #
+  # If output was set to a hash, raises ArgumentError.
   def value
     if value?
       @value
@@ -69,6 +125,9 @@ class Output
     end
   end
   
+  # Retrieves output hash.
+  #
+  # If output was set to a value, raises ArgumentError.
   def fields
     if fields?
       @fields
@@ -77,14 +136,18 @@ class Output
     end
   end
   
+  # Returns true if output was set to a value.
   def value?
     @fields.nil?
   end
   
+  # Returns true if output was set to a hash.
   def fields?
     !@fields.nil?
   end
   
+  # Converts Output instance to a hash suitable for placement into
+  # workitem.fields.
   def to_hash
     if value?
       {:value => @value}
