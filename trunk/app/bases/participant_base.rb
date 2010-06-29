@@ -3,7 +3,7 @@
 # workitem.fields hash where they may be read or written at will.
 #
 # This free for all approach is prone to errors, both spelling
-# and logic. InputFields and OutputFields classes here enforce
+# and logic. InputFields and Output classes here enforce
 # separation between inputs and outputs to participants.
 # Participants must enumerate all inputs they want to use;
 # accessing an undeclared input is an error. Participants place
@@ -72,9 +72,6 @@ class InputFields
   def merge(other_hash)
     @hash.to_hash.dup.update(other_hash.stringify_keys)
   end
-end
-
-class OutputFields
 end
 
 # Wrapper for participants' results.
