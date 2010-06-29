@@ -74,9 +74,6 @@ class InputFields
   end
 end
 
-class LocalFields
-end
-
 class OutputFields
 end
 
@@ -158,10 +155,10 @@ class Output
 end
 
 class Parameters
-  attr_reader :workitem, :input, :locals, :output, :participant
+  attr_reader :workitem, :input, :output, :participant
   
-  def initialize(workitem, input, local, output, participant)
-    @workitem, @input, @local, @output, @participant = workitem, input, local, output, participant
+  def initialize(workitem, input, output, participant)
+    @workitem, @input, @output, @participant = workitem, input, output, participant
   end
   
   def reply
@@ -211,7 +208,6 @@ class ParticipantBase
           input = HashWithIndifferentAccess.new
         end
         input = InputFields.new(allowed_keys, input)
-        local = LocalFields.new
         output = Output.new(workitem.fields['output'])
         
         if options[:input]
@@ -229,7 +225,7 @@ class ParticipantBase
         end
         
         # todo: filter input according to options[:input]
-        @params = Parameters.new(workitem, input, local, output, self)
+        @params = Parameters.new(workitem, input, output, self)
         instance_eval(&block)
         
         workitem.fields['input'] = input.to_hash
