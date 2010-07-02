@@ -7,6 +7,18 @@ WaitingGlueParticipant
 ClearspringParticipant
 ClearspringGlueParticipant
 
+# Easy way to make these workflows fail:
+#
+# 1. Point to nonexistent download server, or point to local server
+#    which is not running.
+# 2. Point to nonexistent s3 server, or point to default server while
+#    not on network, or point to local s3 server which is not running.
+#
+# Note: ruby on freebsd does not properly handle running out of disk
+# (no exceptions are raised, writes are effectively silently ignored)
+# so running out of disk is not a good test of anything at least on
+# freebsd.
+
 class ClearspringWorkflows < WorkflowDictionary
   def define_workflows
     define_workflow :clearspring_hourly_discovery do
