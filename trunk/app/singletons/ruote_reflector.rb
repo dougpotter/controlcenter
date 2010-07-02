@@ -11,7 +11,7 @@ class RuoteReflector
   
   # Returns a list of jobs ruote currently is executing.
   # Workflows that do not correspond to known jobs are
-  # not returned; use orphan_rjids to get them.
+  # not returned; use orphaned_processes to get them.
   def jobs
     processes = RuoteGlobals.host.engine.processes
     # todo: how should we handle wfids not corresponding to known jobs?
@@ -27,14 +27,14 @@ class RuoteReflector
   
   # Returns a list of rjids ruote currently is executing that
   # do not map to any known jobs in the job registry.
-  def orphan_rjids
+  def orphaned_processes
     processes = RuoteGlobals.host.engine.processes
     job_registry = RuoteGlobals.job_registry
     rjids = []
     processes.map do |process|
       rjid = process.wfid
       job = job_registry.job_for_rjid(rjid)
-      rjids << rjid unless job
+      rjids << process unless job
     end
     rjids
   end
@@ -44,7 +44,7 @@ class RuoteReflector
     RuoteBootstrap.soft_init_client
     
     jobs = self.jobs
-    orphan_rjids = self.orphan_rjids
+    orphaned_processes = self.orphaned_processes
     
     if jobs.length > 0
       puts "There are #{jobs.length} running jobs:"
@@ -52,11 +52,18 @@ class RuoteReflector
       puts 'There are no running jobs.'
     end
     
-    if orphan_rjids.length > 0
-      puts "There are #{orphan_rjids.length} orphan rjids:"
-      orphan_rjids.sort.each do |rjid|
-        puts "  #{rjid}"
+    if orphaned_processes.length > 0
+      puts "There are #{orphaned_processes.length} orphan rjids:"
+      orphaned_processes.sort { |a, b| a.wfid <=> b.wfid }.each do |process|
+        if !(errors = process.errors).empty?
+          errors = " (Errors: #{errors.join(', ')})"
+        else
+          errors = ''
+        end
+        puts "  #{process.wfid}#{errors}"
       end
     end
   end
 end
+
+# could also get_many: schedules, msgs; expressions, errors
