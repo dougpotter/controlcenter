@@ -18,6 +18,9 @@ parser = OptionParser.new do |opts|
   opts.on('-Q', '--quick', 'Limit launched children to 1 per step') do
     options[:quick] = true
   end
+  opts.on('-D', '--debug', 'Enable debugging output') do
+    options[:debug] = true
+  end
 end.parse!
 
 all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
@@ -37,6 +40,10 @@ if date = options[:date]
   end
 else
   date = Time.now.strftime('%Y%m%d')
+end
+
+if options[:debug]
+  ARGV.replace(['-d'])
 end
 
 require File.expand_path('../../../config/boot',  __FILE__)
