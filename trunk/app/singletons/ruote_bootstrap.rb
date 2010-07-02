@@ -1,6 +1,14 @@
 class RuoteBootstrap
   class << self
     def init_client
+      init_storage
+      # dependency load
+      Host
+      RuoteGlobals.host = Client.new(RuoteGlobals.storage)
+      RuoteGlobals.engine = RuoteGlobals.host.engine
+      init_workflows
+      register_participants
+      init_job_registry
     end
     
     def init_host
@@ -49,8 +57,11 @@ class RuoteBootstrap
       # for future consideration:
       #  - the call could be placed elsewhere?
       #  - bring worker a few levels up?
-      notification_handler = JobRegistryErrorNotificationHandler.new(job_registry)
-      RuoteGlobals.host.engine.context.worker.subscribe('error_intercepted', notification_handler)
+      # note: only hosts have worker, clients do not
+      if worker = RuoteGlobals.host.engine.context.worker
+        notification_handler = JobRegistryErrorNotificationHandler.new(job_registry)
+        worker.subscribe('error_intercepted', notification_handler)
+      end
     end
   end
 end
