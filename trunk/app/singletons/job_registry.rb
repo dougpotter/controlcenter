@@ -4,21 +4,28 @@ end
 class Job
   # rjid is nil until start is called
   attr_reader :rjid
+  
   # Possible statuses:
   #
-  # :new         Job was submitted
-  # :launched    Job was handed to ruote and launched, rjid is set
-  # :running     Ruote began running job
-  # :success     Job finished successfully
-  # :failure     Job finished with an error
+  # :new                Job was submitted
+  # :launched           Job was handed to ruote and launched, rjid is set
+  # :running            Ruote began running job
+  # :success            Job finished successfully
+  # :failure            Job finished with an error
+  # :cascaded_failure   Job launched another job which failed
   attr_reader :status
+  
   # if status is :failure, exception should contain the exception that
   # caused the failure
   attr_reader :exception
   
+  # If child jobs fail, their exceptions are stored in errors.
+  attr_reader :errors
+  
   def initialize(name, params)
     @name, @params = name, params
     @status = :new
+    @errors = []
   end
   
   def set_launched(rjid)
@@ -55,6 +62,21 @@ class Job
       else
         warn "Backtrace is not available, check ruote version"
       end
+    end
+  end
+  
+  def cascaded_failure(exception, previous_errors)
+    @status = :cascaded_failure
+    errors = []
+    errors << exception if exception
+    errors += previous_errors if previous_errors
+    errors.each do |error|
+      unless @errors.include?(error)
+        @errors << error
+      end
+    end
+    if RuoteConfiguration.verbose_job_state
+      debug_print "Job #{@rjid} for workflow #{@name} has failed due to cascade"
     end
   end
   
