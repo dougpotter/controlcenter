@@ -9,6 +9,7 @@ class RuoteBootstrap
       init_workflows
       register_participants
       init_job_registry
+      @initialized = :client
     end
     
     def init_host
@@ -19,6 +20,7 @@ class RuoteBootstrap
       init_workflows
       register_participants
       init_job_registry
+      @initialized = :host
     end
     
     def init_storage
@@ -31,6 +33,12 @@ class RuoteBootstrap
       end
       
       RuoteGlobals.storage = storage
+    end
+    
+    # Initializes a client if necessary.
+    def soft_init_client
+      return if @initialized
+      init_client
     end
     
     private
