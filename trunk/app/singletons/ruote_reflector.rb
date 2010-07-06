@@ -56,7 +56,8 @@ class RuoteReflector
       puts "There are #{orphaned_processes.length} orphan rjids:"
       orphaned_processes.sort { |a, b| a.wfid <=> b.wfid }.each do |process|
         if !(errors = process.errors).empty?
-          errors = " (Errors: #{errors.join(', ')})"
+          # also have error.trace available here
+          errors = " (Errors: #{errors.map { |error| error.message }.join(', ')})"
         else
           errors = ''
         end
