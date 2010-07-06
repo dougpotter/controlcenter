@@ -1,0 +1,36 @@
+= Ruote Workflows
+
+== Configuration
+
+=== Host Settings
+
+Ruote engine settings are specified in a single application-wide
+configuration file, config/ruote_host.yml. There is a sample file,
+config/ruote_host.yml.sample, that is a good starting point.
+
+The engine settings include verbosity level of host process,
+storage configuration, etc.
+
+Host settings file is optional. If it is not present defaults are
+used. The values for defaults can be found in lib/ruote_configuration.rb.
+
+=== Workflow Settings
+
+Each workflow may have its own settings. These settings are
+specified in yaml files, one per workflow, located in config/workflows.
+
+For clearspring (script/workflows/clearspring-collect), the settings
+are specified in config/workflows/clearspring.yml. Unlike host settings,
+workflow settings are required for clearspring.
+
+== Running
+
+Each workflow has a script for launching it. For clearspring, this script
+is script/workflows/clearspring-collect. It accepts options for
+selecting date and data source; use -h argument to see all acceptable
+options.
+
+== Status
+
+Ruote host/engine status may be obtained by running the status script,
+script/workflows/status.
