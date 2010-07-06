@@ -97,6 +97,14 @@ def run(params)
     if job.status == :failure || job.status == :cascaded_failure
       ok = false
       puts "Job failed: #{job.rjid}"
+      if job.exception
+        puts "Exception: #{job.exception}"
+      end
+      if job.errors
+        for error in job.errors
+          puts "Error: #{error}"
+        end
+      end
     end
   end
   ok
