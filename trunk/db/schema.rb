@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100504150514) do
+ActiveRecord::Schema.define(:version => 20100707200106) do
 
   create_table "partner_beacon_requests", :force => true do |t|
     t.string   "host_ip"
@@ -31,5 +31,22 @@ ActiveRecord::Schema.define(:version => 20100504150514) do
   end
 
   add_index "partners", ["pid"], :name => "index_partners_on_pid", :unique => true
+
+  create_table "semaphore_allocations", :force => true do |t|
+    t.integer  "semaphore_resource_id",              :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "expires_at",                         :null => false
+    t.integer  "pid"
+    t.integer  "tid",                   :limit => 8
+    t.string   "host"
+    t.integer  "state",                              :null => false
+  end
+
+  create_table "semaphore_resources", :force => true do |t|
+    t.string  "name",     :null => false
+    t.string  "location"
+    t.integer "capacity", :null => false
+    t.integer "usage"
+  end
 
 end
