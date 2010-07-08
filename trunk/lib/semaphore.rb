@@ -23,7 +23,29 @@ module Semaphore
       end
       
       if resource.usage >= resource.capacity
-        raise ResourceBusy, "Resource busy: #{name}#{location ? " at #{location}" : ''}"
+        # try to reclaim abandoned allocations
+        allocations = Allocation.abandoned
+        unless allocations.empty?
+          Allocation.transaction do
+            Allocation.update_all(
+              ['state = ?', Allocation::RECLAIMED],
+              ['id in (?)', allocations.map { |allocation| allocation.id }]
+            )
+            Resource.recalculate_usage(resource.id)
+          end
+          
+          # reload resource to account for concurrent modification,
+          # either by arbitrator or because capacity changed
+          resource.reload
+          
+          fail = resource.usage >= resource.capacity
+        else
+          fail = true
+        end
+        
+        if fail
+          raise ResourceBusy, "Resource busy: #{name}#{location ? " at #{location}" : ''}"
+        end
       end
       
       allocation = Allocation.new(:resource => resource, :expires_at => Time.now + timeout)
@@ -46,7 +68,7 @@ module Semaphore
       allocation.state = Allocation::RELEASED
       Resource.transaction do
         allocation.save!
-        Resource.update_all('usage = (case when usage > 1 then usage - 1 else 0 end)', ['id = ?', allocation.resource.id])
+        Resource.decrement_usage(allocation.resource.id)
       end
       
       true
@@ -77,7 +99,7 @@ module Semaphore
       super(default_options.update(options))
     end
     
-    named_scope :identity do |*args|
+    named_scope :identity, lambda { |*args|
       name, location = args
       conditions = ['name = ?', name]
       if location
@@ -87,7 +109,7 @@ module Semaphore
         conditions.first << ' and location is null'
       end
       {:conditions => conditions}
-    end
+    }
     
     validates_presence_of :name
     validates_presence_of :capacity
@@ -121,6 +143,20 @@ module Semaphore
         end
       end
     end
+    
+    class << self
+      # note that this method accepts nil ids (which would be a no-op)
+      def decrement_usage(id)
+        update_all('usage = (case when usage > 1 then usage - 1 else 0 end)', ['id = ?', id])
+      end
+      
+      def recalculate_usage(id)
+        update_all(
+          ["usage = (select count(*) from #{Allocation.quoted_table_name} where semaphore_resource_id = #{Resource.quoted_table_name}.id and state=?)", Allocation::ALLOCATED],
+          ['id = ?', id]
+        )
+      end
+    end
   end
   
   class Allocation < ActiveRecord::Base
@@ -142,6 +178,23 @@ module Semaphore
       options[:tid] ||= Thread.current.object_id
       super(options)
     end
+    
+    named_scope :abandoned, lambda {
+      {:conditions => ['state = ? and expires_at < ?', ALLOCATED, Time.now]}
+    }
+    
+    def abandoned?
+      state == ALLOCATED && expires_at < Time.now
+    end
+    
+    after_destroy :adjust_resource_usage
+    
+    def adjust_resource_usage
+      if state == ALLOCATED
+        Resource.decrement_usage(semaphore_resource_id)
+      end
+    end
+    private :adjust_resource_usage
     
     validates_presence_of :resource
     validates_presence_of :created_at
