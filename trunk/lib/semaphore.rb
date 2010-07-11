@@ -1,3 +1,5 @@
+require 'singleton'
+
 module Semaphore
   class SemaphoreError < StandardError; end
   class ResourceNotFound < SemaphoreError; end
@@ -13,6 +15,8 @@ module Semaphore
   end
   
   class Arbitrator
+    include Singleton
+    
     def acquire(name, options={})
       location = options[:location]
       timeout = options[:timeout] || 1.hour
