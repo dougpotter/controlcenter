@@ -204,6 +204,7 @@ class ParticipantBase
         else
           input = HashWithIndifferentAccess.new
         end
+        input.update(workitem.fields['params'])
         input = InputFields.new(allowed_keys, input)
         output = Output.new(workitem.fields['output'])
         
