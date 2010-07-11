@@ -258,13 +258,13 @@ class ParticipantBase
     1.upto(101) do |index|
       begin
         if RuoteConfiguration.verbose_locking
-          debug_print "Trying to acquire lock #{lock_name} at #{location}"
+          debug_print "#{params.rjid}: Trying to acquire lock #{lock_name} at #{location}"
         end
         allocation = Semaphore::Arbitrator.instance.acquire(
           lock_name, :location => location, :timeout => 30.minutes
         )
         if RuoteConfiguration.verbose_locking
-          debug_print "Acquired lock #{lock_name} at #{location}"
+          debug_print "#{params.rjid}: Acquired lock #{lock_name} at #{location}"
         end
         break
       rescue Semaphore::ResourceNotFound
@@ -278,7 +278,7 @@ class ParticipantBase
         begin
           resource.save!
           if RuoteConfiguration.verbose_locking
-            debug_print "Created resource #{lock_name} at #{location}"
+            debug_print "#{params.rjid}: Created resource #{lock_name} at #{location}"
           end
         rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
           # see if it already exists
@@ -294,7 +294,7 @@ class ParticipantBase
         else
           # wait
           if RuoteConfiguration.verbose_locking
-            debug_print "Sleeping due to busy lock #{lock_name} at #{location}"
+            debug_print "#{params.rjid}: Sleeping due to busy lock #{lock_name} at #{location}"
           end
           sleep 5
         end
@@ -305,7 +305,7 @@ class ParticipantBase
       yield
     ensure
       if RuoteConfiguration.verbose_locking
-        debug_print "Releasing lock #{lock_name} at #{location}"
+        debug_print "#{params.rjid}: Releasing lock #{lock_name} at #{location}"
       end
       Semaphore::Arbitrator.instance.release(allocation)
     end
