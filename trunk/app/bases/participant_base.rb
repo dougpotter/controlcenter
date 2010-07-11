@@ -237,6 +237,83 @@ class ParticipantBase
       participants[participant_name] = participant_instance
     end
   end
+  
+  private
+  
+  def lock_conditionally(lock_name)
+    if lock_name
+      lock(lock_name) do
+        yield
+      end
+    else
+      yield
+    end
+  end
+  
+  def lock(lock_name)
+    location = Socket.gethostname
+    # todo: make configurable
+    capacity = 1
+    allocation = nil
+    1.upto(101) do |index|
+      begin
+        if RuoteConfiguration.verbose_locking
+          debug_print "Trying to acquire lock #{lock_name} at #{location}"
+        end
+        allocation = Semaphore::Arbitrator.instance.acquire(
+          lock_name, :location => location, :timeout => 30.minutes
+        )
+        if RuoteConfiguration.verbose_locking
+          debug_print "Acquired lock #{lock_name} at #{location}"
+        end
+        break
+      rescue Semaphore::ResourceNotFound
+        # we're missing the resource.
+        # since every host uses their own resource, first time
+        # we run something on a newly provisioned box the resource
+        # is expected to be missing.
+        # create it accounting for other threads racing to
+        # do the same.
+        resource = Semaphore::Resource.new(:name => lock_name, :location => location, :capacity => capacity)
+        begin
+          resource.save!
+          if RuoteConfiguration.verbose_locking
+            debug_print "Created resource #{lock_name} at #{location}"
+          end
+        rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
+          # see if it already exists
+          if Semaphore::Resource.identity(lock_name, location)
+            break
+          else
+            raise
+          end
+        end
+      rescue Semaphore::ResourceBusy
+        if index == 100
+          raise
+        else
+          # wait
+          if RuoteConfiguration.verbose_locking
+            debug_print "Sleeping due to busy lock #{lock_name} at #{location}"
+          end
+          sleep 5
+        end
+      end
+    end
+    
+    begin
+      yield
+    ensure
+      if RuoteConfiguration.verbose_locking
+        debug_print "Releasing lock #{lock_name} at #{location}"
+      end
+      Semaphore::Arbitrator.instance.release(allocation)
+    end
+  end
+  
+  def debug_print(msg)
+    $stderr.puts(msg)
+  end
 end
 
 class ParticipantProxy
