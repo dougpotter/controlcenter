@@ -52,7 +52,7 @@ module Semaphore
         end
       end
       
-      allocation = Allocation.new(:resource => resource, :expires_at => Time.now + timeout)
+      allocation = Allocation.new(:resource => resource, :expires_at => Time.zone.now + timeout)
       Resource.transaction do
         allocation.save!
         
@@ -86,7 +86,7 @@ module Semaphore
         raise AllocationStateWrong, "Allocation is in wrong state: #{allocation.state}"
       end
       
-      allocation.expires_at = Time.now + timeout
+      allocation.expires_at = Time.zone.now + timeout
       allocation.save!
       
       true
@@ -176,7 +176,7 @@ module Semaphore
       default_options = {:state => ALLOCATED}
       options = default_options.update(options)
       # more expensive operations
-      options[:created_at] ||= Time.now
+      options[:created_at] ||= Time.zone.now
       options[:host] ||= Socket.gethostname
       options[:pid] ||= $$
       options[:tid] ||= Thread.current.object_id
@@ -184,11 +184,11 @@ module Semaphore
     end
     
     named_scope :abandoned, lambda {
-      {:conditions => ['state = ? and expires_at < ?', ALLOCATED, Time.now]}
+      {:conditions => ['state = ? and expires_at < ?', ALLOCATED, Time.zone.now]}
     }
     
     def abandoned?
-      state == ALLOCATED && expires_at < Time.now
+      state == ALLOCATED && expires_at < Time.zone.now
     end
     
     after_destroy :adjust_resource_usage
