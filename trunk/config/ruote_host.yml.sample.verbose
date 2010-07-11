@@ -7,6 +7,8 @@ verbose_job_state: true
 verbose_job_launch: true
 # Print job information when waiting for jobs
 verbose_job_wait: true
+# Print locks being requested and waited for
+verbose_locking: true
 # Print files uploaded to S3
 verbose_s3: true
 # Use persistent storage.

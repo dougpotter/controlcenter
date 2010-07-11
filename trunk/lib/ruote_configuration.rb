@@ -13,6 +13,9 @@ module RuoteConfiguration
     # Print job information when waiting for jobs
     attr_accessor :verbose_job_wait
     
+    # Print locks being requested and waited for
+    attr_accessor :verbose_locking
+    
     # Print files uploaded to S3
     attr_accessor :verbose_s3
     
@@ -25,6 +28,7 @@ module RuoteConfiguration
   self.verbose_job_state = false
   self.verbose_job_launch = false
   self.verbose_job_wait = false
+  self.verbose_locking = false
   self.verbose_s3 = false
   self.use_persistent_storage = true
 end
