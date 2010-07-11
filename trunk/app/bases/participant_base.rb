@@ -237,9 +237,6 @@ class ParticipantBase
       participants[participant_name] = participant_instance
     end
   end
-  
-  def reply(params)
-  end
 end
 
 class ParticipantProxy
