@@ -104,7 +104,7 @@ module Semaphore
       conditions = ['name = ?', name]
       if location
         conditions.first << ' and location = ?'
-        conditions.last << location
+        conditions << location
       else
         conditions.first << ' and location is null'
       end
