@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  description: MyText
+  internal_external: MyText
+  seed_extraction_id: 1
+  model_id: 1
+
+two:
+  description: MyText
+  internal_external: MyText
+  seed_extraction_id: 1
+  model_id: 1

@@ -5,7 +5,7 @@ class CreatePartners < ActiveRecord::Migration
       t.column :pid, :integer
     end
     
-    add_index :partners, :pid, :unique => true
+    #add_index :partners, :pid, :unique => true
   end
 
   def self.down
