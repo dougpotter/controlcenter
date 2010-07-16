@@ -4,10 +4,11 @@ class Campaign < ActiveRecord::Base
   has_many :creatives
   belongs_to :partner
   has_and_belongs_to_many :ad_inventory_sources
-
+  
+  # custom validations defined in lib/custom_validations.rb
+  validates_presence_of :description, :campaign_code
+  validates_uniqueness_of :cid
   validates_numericality_of :partner_id, :cid
-  # defined in lib/custom_validations.rb
   validates_as_date :start_date, :end_date
-  validates_start_before_end :start_date, :end_date 
-
+  validates_temporal_consistency :start_date, :end_date 
 end

@@ -16,21 +16,41 @@ describe Campaign do
     Campaign.create!(@valid_attributes)
   end
 
-  it "should require non nill description" do
+  it "should require non nill description (validations test)" do
     lambda {
       Campaign.create!(@valid_attributes.merge({:description => nil}))
     }.should raise_error
   end
 
-  it "should require a date start_date" do
+  it "should require non nill description (db test)" do
     lambda {
-      Campaign.create!(@valid_attributes.merge({:start_date => "not a date"}))
+      c = Campaign.new(@valid_attributes.merge({:description => nil}))
+      c.save_with_validation(false)
+    }.should raise_error(ActiveRecord::StatementInvalid)
+  end
+
+  it "should require non nill campaign code (validations test)" do
+    lambda {
+      Campaign.create!(@valid_attributes.merge({:campaign_code => nil}))
     }.should raise_error
   end
 
-  it "should require a date end_date" do
+  it "should require non nill campaign code (db test)" do
     lambda {
-      Campaign.create!(@valid_attributes.merge({:end_date => "not a date"}))
+      c = Campaign.new(@valid_attributes.merge({:campaign_code => nil}))
+      c.save_with_validation(false)
+    }.should raise_error(ActiveRecord::StatementInvalid)
+  end
+
+  it "should require start_date of type date" do
+    lambda {
+      Campaign.create!(@valid_attributes.merge({:start_date => "str"}))
+    }.should raise_error
+  end
+
+  it "should require end_date of type date" do
+    lambda {
+      Campaign.create!(@valid_attributes.merge({:end_date => "str"}))
     }.should raise_error
   end
 
