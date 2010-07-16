@@ -9,11 +9,19 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100709152719) do
+ActiveRecord::Schema.define(:version => 20100716195845) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.text "name"
   end
+
+  create_table "ad_inventory_sources_campaigns", :id => false, :force => true do |t|
+    t.integer "campaign_id",            :null => false
+    t.integer "ad_inventory_source_id", :null => false
+  end
+
+  add_index "ad_inventory_sources_campaigns", ["ad_inventory_source_id"], :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
+  add_index "ad_inventory_sources_campaigns", ["campaign_id"], :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   create_table "audiences", :force => true do |t|
     t.text    "description"
@@ -22,10 +30,16 @@ ActiveRecord::Schema.define(:version => 20100709152719) do
     t.integer "model_id"
   end
 
+  add_index "audiences", ["model_id"], :name => "audiences_model_id_fk"
+  add_index "audiences", ["seed_extraction_id"], :name => "audiences_seed_extraction_id_fk"
+
   create_table "audiences_campaigns", :id => false, :force => true do |t|
     t.integer "audience_id", :null => false
     t.integer "campaign_id", :null => false
   end
+
+  add_index "audiences_campaigns", ["audience_id"], :name => "audiences_campaigns_audience_id_fk"
+  add_index "audiences_campaigns", ["campaign_id"], :name => "audiences_campaigns_campaign_id_fk"
 
   create_table "campaigns", :force => true do |t|
     t.text    "description",   :null => false
@@ -36,16 +50,20 @@ ActiveRecord::Schema.define(:version => 20100709152719) do
     t.integer "cid"
   end
 
+  add_index "campaigns", ["cid"], :name => "index_campaigns_on_cid", :unique => true
+  add_index "campaigns", ["partner_id"], :name => "campaigns_partner_id_fk"
+
   create_table "campaigns_msas", :id => false, :force => true do |t|
     t.integer "campaign_id", :null => false
     t.integer "msa_id",      :null => false
   end
 
+  add_index "campaigns_msas", ["campaign_id"], :name => "campaigns_msas_campaign_id_fk"
+  add_index "campaigns_msas", ["msa_id"], :name => "campaigns_msas_msa_id_fk"
+
   create_table "creative_sizes", :force => true do |t|
-    t.float    "height"
-    t.float    "width"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.float "height"
+    t.float "width"
   end
 
   create_table "creatives", :force => true do |t|
@@ -54,6 +72,9 @@ ActiveRecord::Schema.define(:version => 20100709152719) do
     t.integer "creative_size_id"
     t.integer "campaign_id"
   end
+
+  add_index "creatives", ["campaign_id"], :name => "creatives_campaign_id_fk"
+  add_index "creatives", ["creative_size_id"], :name => "creatives_creative_size_id_fk"
 
   create_table "custom_filters", :force => true do |t|
     t.text     "description"
@@ -67,33 +88,30 @@ ActiveRecord::Schema.define(:version => 20100709152719) do
     t.integer "line_item_id",        :null => false
   end
 
+  add_index "custom_filters_line_items", ["custom_filter_id"], :name => "custom_filters_line_items_custom_filter_id_fk"
+  add_index "custom_filters_line_items", ["line_item_id"], :name => "custom_filters_line_items_line_item_id_fk"
+
   create_table "insertion_orders", :force => true do |t|
-    t.text     "description"
-    t.integer  "campaign_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.text    "description"
+    t.integer "campaign_id"
   end
 
+  add_index "insertion_orders", ["campaign_id"], :name => "insertion_orders_campaign_id_fk"
+
   create_table "line_items", :force => true do |t|
-    t.integer  "impressions"
-    t.float    "internal_pricing"
-    t.float    "external_pricing"
-    t.integer  "insertion_order_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer "impressions"
+    t.float   "internal_pricing"
+    t.float   "external_pricing"
+    t.integer "insertion_order_id"
   end
 
   create_table "models", :force => true do |t|
-    t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string "description"
   end
 
   create_table "msas", :force => true do |t|
-    t.text     "country"
-    t.text     "region"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.text "country"
+    t.text "region"
   end
 
   create_table "partner_beacon_requests", :force => true do |t|
@@ -103,7 +121,7 @@ ActiveRecord::Schema.define(:version => 20100709152719) do
     t.integer  "status_code"
     t.string   "referer_url",      :limit => 511
     t.string   "user_agent",       :limit => 511
-    t.integer  "pid"
+    t.integer  "partner_id"
     t.string   "user_agent_class"
     t.string   "xguid"
     t.string   "xgcid"
@@ -111,16 +129,13 @@ ActiveRecord::Schema.define(:version => 20100709152719) do
   end
 
   create_table "partners", :force => true do |t|
-    t.string  "name"
-    t.integer "pid"
+    t.string "name"
   end
 
   create_table "seed_extractions", :force => true do |t|
-    t.text     "description"
-    t.text     "mapper"
-    t.text     "reducer"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.text "description"
+    t.text "mapper"
+    t.text "reducer"
   end
 
   create_table "semaphore_allocations", :force => true do |t|
@@ -139,5 +154,27 @@ ActiveRecord::Schema.define(:version => 20100709152719) do
     t.integer "capacity", :null => false
     t.integer "usage"
   end
+
+  add_foreign_key "ad_inventory_sources_campaigns", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
+  add_foreign_key "ad_inventory_sources_campaigns", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
+
+  add_foreign_key "audiences", "models", :name => "audiences_model_id_fk"
+  add_foreign_key "audiences", "seed_extractions", :name => "audiences_seed_extraction_id_fk"
+
+  add_foreign_key "audiences_campaigns", "audiences", :name => "audiences_campaigns_audience_id_fk"
+  add_foreign_key "audiences_campaigns", "campaigns", :name => "audiences_campaigns_campaign_id_fk"
+
+  add_foreign_key "campaigns", "partners", :name => "campaigns_partner_id_fk"
+
+  add_foreign_key "campaigns_msas", "campaigns", :name => "campaigns_msas_campaign_id_fk"
+  add_foreign_key "campaigns_msas", "msas", :name => "campaigns_msas_msa_id_fk"
+
+  add_foreign_key "creatives", "campaigns", :name => "creatives_campaign_id_fk"
+  add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
+
+  add_foreign_key "custom_filters_line_items", "custom_filters", :name => "custom_filters_line_items_custom_filter_id_fk"
+  add_foreign_key "custom_filters_line_items", "line_items", :name => "custom_filters_line_items_line_item_id_fk"
+
+  add_foreign_key "insertion_orders", "campaigns", :name => "insertion_orders_campaign_id_fk"
 
 end

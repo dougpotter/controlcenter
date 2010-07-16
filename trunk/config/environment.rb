@@ -53,4 +53,7 @@ Rails::Initializer.run do |config|
   
   # we get intermittent hangs in workflows without this
   config.threadsafe!
+
+  # require foreginer plugin to support foreign keys
+  config.gem "matthuhiggins-foreigner", :lib => "foreigner"
 end

@@ -2,18 +2,28 @@ require 'spec_helper'
 
 describe Campaign do
   before(:each) do
+    @partner_attr = {
+      :name => "name"
+    }
+    @partner = Partner.create!(@partner_attr)
     @valid_attributes = {
       :description => "monster campaign",
       :campaign_code => "XG8100",
       :start_date => Date.today,
       :end_date => Date.today + 1,
-      :partner_id => 1,
+      :partner_id => @partner.id,
       :cid => 1
     }
   end
 
   it "should create a new instance given valid attributes" do
     Campaign.create!(@valid_attributes)
+  end
+
+  it "should require a parent partner" do
+    lambda {
+      Campaign.create!(@valid_attributes.merge(:partner_id => @partner.id + 1))
+    }.should raise_error(ActiveRecord::StatementInvalid)
   end
 
   it "should require non nill description (validations test)" do

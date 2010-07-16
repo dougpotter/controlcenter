@@ -1,5 +1,6 @@
 require 'spec_helper'
-
+# this test fails at the moment, but this model is of low priority
+# i'll come back to it
 describe InsertionOrder do
   before(:each) do
     @valid_attributes = {
