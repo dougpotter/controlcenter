@@ -14,7 +14,7 @@ module ActiveRecord
       end
 
 
-      def validates_start_before_end(*attr_names)
+      def validates_temporal_consistency(*attr_names)
         configuration = { :message => "end date precedes start date" }
         configuration.update(attr_names.extract_options!)
 
