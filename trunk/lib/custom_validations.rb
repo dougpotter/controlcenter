@@ -14,15 +14,13 @@ module ActiveRecord
       end
 
 
-      def validates_temporal_consistency(*attr_names)
+      def validates_temporal_consistency(start_attr_name, end_attr_name, options={})
         configuration = { :message => "end date precedes start date" }
-        configuration.update(attr_names.extract_options!)
+        configuration.update(options)
 
-        raise(ArgumentError, "#{attr_names.size} for 2") unless attr_names.size == 2
-
-        validates_each(attr_names, configuration) do |record, attr_name, value|
-          if record.start_date > record.end_date && !record.errors.invalid?(:start_date) && !record.errors.invalid?(:end_date)
-            record.errors.add(attr_name, :invalid, :default => configuration[:message], :value => value)
+        validates_each(start_attr_name, configuration) do |record, attr_name, value|
+          if record.send(start_attr_name) > record.send(end_attr_name)
+            record.errors.add(start_attr_name, :invalid, :default => configuration[:message], :value => value)
           end
         end
       end
