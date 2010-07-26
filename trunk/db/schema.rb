@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100716195845) do
+ActiveRecord::Schema.define(:version => 20100722184333) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.text "name"
@@ -53,13 +53,17 @@ ActiveRecord::Schema.define(:version => 20100716195845) do
   add_index "campaigns", ["cid"], :name => "index_campaigns_on_cid", :unique => true
   add_index "campaigns", ["partner_id"], :name => "campaigns_partner_id_fk"
 
-  create_table "campaigns_msas", :id => false, :force => true do |t|
-    t.integer "campaign_id", :null => false
-    t.integer "msa_id",      :null => false
+  create_table "campaigns_geographies", :id => false, :force => true do |t|
+    t.integer "campaign_id",  :null => false
+    t.integer "geography_id", :null => false
   end
 
-  add_index "campaigns_msas", ["campaign_id"], :name => "campaigns_msas_campaign_id_fk"
-  add_index "campaigns_msas", ["msa_id"], :name => "campaigns_msas_msa_id_fk"
+  add_index "campaigns_geographies", ["campaign_id"], :name => "campaigns_geographies_campaign_id_fk"
+  add_index "campaigns_geographies", ["geography_id"], :name => "campaigns_geographies_geography_id_fk"
+
+  create_table "cities", :force => true do |t|
+    t.string "name", :null => false
+  end
 
   create_table "creative_sizes", :force => true do |t|
     t.float "height"
@@ -91,6 +95,33 @@ ActiveRecord::Schema.define(:version => 20100716195845) do
   add_index "custom_filters_line_items", ["custom_filter_id"], :name => "custom_filters_line_items_custom_filter_id_fk"
   add_index "custom_filters_line_items", ["line_item_id"], :name => "custom_filters_line_items_line_item_id_fk"
 
+  create_table "geo_components", :force => true do |t|
+    t.string  "description",  :null => false
+    t.integer "state_id",     :null => false
+    t.integer "geography_id", :null => false
+  end
+
+  add_index "geo_components", ["geography_id"], :name => "geo_components_geography_id_fk"
+  add_index "geo_components", ["state_id"], :name => "geo_components_state_id_fk"
+
+  create_table "geographies", :force => true do |t|
+    t.string "description"
+  end
+
+  create_table "geographies_cities", :force => true do |t|
+    t.integer  "city_id"
+    t.integer  "geography_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "geographies_states", :force => true do |t|
+    t.integer  "state_id"
+    t.integer  "geography_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "insertion_orders", :force => true do |t|
     t.text    "description"
     t.integer "campaign_id"
@@ -107,11 +138,6 @@ ActiveRecord::Schema.define(:version => 20100716195845) do
 
   create_table "models", :force => true do |t|
     t.string "description"
-  end
-
-  create_table "msas", :force => true do |t|
-    t.text "country"
-    t.text "region"
   end
 
   create_table "partner_beacon_requests", :force => true do |t|
@@ -155,6 +181,10 @@ ActiveRecord::Schema.define(:version => 20100716195845) do
     t.integer "usage"
   end
 
+  create_table "states", :force => true do |t|
+    t.string "abbreviation", :null => false
+  end
+
   add_foreign_key "ad_inventory_sources_campaigns", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
   add_foreign_key "ad_inventory_sources_campaigns", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
@@ -166,14 +196,17 @@ ActiveRecord::Schema.define(:version => 20100716195845) do
 
   add_foreign_key "campaigns", "partners", :name => "campaigns_partner_id_fk"
 
-  add_foreign_key "campaigns_msas", "campaigns", :name => "campaigns_msas_campaign_id_fk"
-  add_foreign_key "campaigns_msas", "msas", :name => "campaigns_msas_msa_id_fk"
+  add_foreign_key "campaigns_geographies", "campaigns", :name => "campaigns_geographies_campaign_id_fk"
+  add_foreign_key "campaigns_geographies", "geographies", :name => "campaigns_geographies_geography_id_fk"
 
   add_foreign_key "creatives", "campaigns", :name => "creatives_campaign_id_fk"
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
 
   add_foreign_key "custom_filters_line_items", "custom_filters", :name => "custom_filters_line_items_custom_filter_id_fk"
   add_foreign_key "custom_filters_line_items", "line_items", :name => "custom_filters_line_items_line_item_id_fk"
+
+  add_foreign_key "geo_components", "geographies", :name => "geo_components_geography_id_fk"
+  add_foreign_key "geo_components", "states", :name => "geo_components_state_id_fk"
 
   add_foreign_key "insertion_orders", "campaigns", :name => "insertion_orders_campaign_id_fk"
 
