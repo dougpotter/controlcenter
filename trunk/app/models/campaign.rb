@@ -9,6 +9,6 @@ class Campaign < ActiveRecord::Base
   validates_presence_of :description, :campaign_code
   validates_uniqueness_of :cid
   validates_numericality_of :partner_id, :cid
-  validates_as_date :start_date, :end_date
-  validates_temporal_consistency :start_date, :end_date 
+  validates_as_date :start_date, :end_date, {:allow_nil => true}
+  validates_as_increasing :start_date, :end_date, {:allow_nil => true}
 end

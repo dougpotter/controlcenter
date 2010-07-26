@@ -54,13 +54,13 @@ describe Campaign do
 
   it "should require start_date of type date" do
     lambda {
-      Campaign.create!(@valid_attributes.merge({:start_date => "str"}))
+      Campaign.create!(@valid_attributes.merge({:start_date => 3}))
     }.should raise_error
   end
 
   it "should require end_date of type date" do
     lambda {
-      Campaign.create!(@valid_attributes.merge({:end_date => "str"}))
+      Campaign.create!(@valid_attributes.merge({:end_date => 3}))
     }.should raise_error
   end
 
