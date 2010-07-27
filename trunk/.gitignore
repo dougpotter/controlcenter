@@ -1,4 +1,5 @@
 config/database.yml
+config/appwall.yml
 config/ruote_host.yml
 config/workflows/*.yml
 log/*.log
