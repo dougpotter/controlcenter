@@ -3,6 +3,8 @@ class CreateGeographiesStates < ActiveRecord::Migration
     create_table :geographies_states do |t|
       t.integer :state_id
       t.integer :geography_id
+
+      t.timestamps
     end
   end
 
