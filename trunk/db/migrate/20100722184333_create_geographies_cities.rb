@@ -3,8 +3,6 @@ class CreateGeographiesCities < ActiveRecord::Migration
     create_table :geographies_cities do |t|
       t.integer :city_id
       t.integer :geography_id
-
-      t.timestamps
     end
   end
 
