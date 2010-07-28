@@ -1,2 +1,3 @@
-access_key_id: 1E3GDYEOGFJPIT7XXXXXX
-secret_access_key: hgTHt68JY07JKUY08ftHYtERkjgtfERn57XXXXXX
+development:
+  access_key_id: 1E3GDYEOGFJPIT7XXXXXX
+  secret_access_key: hgTHt68JY07JKUY08ftHYtERkjgtfERn57XXXXXX
