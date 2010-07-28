@@ -87,6 +87,7 @@ def run(params)
       :s3_bucket => config.s3_bucket,
       :clearspring_pid => config.clearspring_pid,
       :max_launched_children => params[:max_launched_children],
+      #:lock => true,
       :wait => true
     )
   end

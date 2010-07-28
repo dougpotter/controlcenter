@@ -24,7 +24,12 @@ class ClearspringWorkflows < WorkflowDictionary
     define_workflow :clearspring_hourly_discovery do
       participant 'Clearspring:build_data_source_url'
       participant 'ClearspringGlue:fetch_data_source_url_directory_listing'
-      participant 'Http:fetch_directory_listing', :lock => 'clearspring-list'
+      _if :test => '${input.lock} == true' do
+        participant 'Http:fetch_directory_listing', :lock => 'clearspring-list'
+      end
+      _if :test => '${input.lock} == false' do
+        participant 'Http:fetch_directory_listing'
+      end
       participant 'ClearspringGlue:parse_directory_listing'
       participant 'PageParsing:parse_nginx_httpd_file_list'
       participant 'ClearspringGlue:absolutize_file_urls'
@@ -41,7 +46,12 @@ class ClearspringWorkflows < WorkflowDictionary
     
     define_workflow :clearspring_file_download do
       participant 'Clearspring:build_file_download_url'
-      participant 'Http:fetch_file', :lock => 'clearspring-download'
+      _if :test => '${input.lock} == true' do
+        participant 'Http:fetch_file', :lock => 'clearspring-download'
+      end
+      _if :test => '${input.lock} == false' do
+        participant 'Http:fetch_file'
+      end
       participant 'Clearspring:mkdir_split_dirname'
       participant 'Clearspring:launch_split'
       _if :test => "${input.wait} == true" do
@@ -53,7 +63,12 @@ class ClearspringWorkflows < WorkflowDictionary
     end
     
     define_workflow :clearspring_file_split do
-      participant 'Gzip:split_file', :lock => 'disk-io'
+      _if :test => '${input.lock} == true' do
+        participant 'Gzip:split_file', :lock => 'disk-io'
+      end
+      _if :test => '${input.lock} == false' do
+        participant 'Gzip:split_file'
+      end
       participant 'ClearspringGlue:prepare_split_files_for_upload'
       participant 'Clearspring:launch_uploads'
       _if :test => "${input.wait} == true" do
