@@ -17,6 +17,10 @@ class GzipSplitter
   end
 
   def transform(input_path, output_dir, output_filename_format)
+    if @debug
+      debug_print("GzipSplit: #{input_path} -> #{output_dir}:#{output_filename_format}")
+    end
+    
     infile = File.open(input_path, "rb")
     debug_print("Opened #{input_path}") if @debug
     output_file = nil
