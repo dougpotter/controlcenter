@@ -1,3 +1,3 @@
 class CreativeSize < ActiveRecord::Base
-	has_many :creatives
+  has_many :creatives
 end

@@ -6,7 +6,7 @@ class CreateCreatives < ActiveRecord::Migration
       t.integer :creative_size_id
       t.integer :campaign_id
     end
-		#add_index :creatives, [:creative_size_id, :campaign_id], :unique => true
+    #add_index :creatives, [:creative_size_id, :campaign_id], :unique => true
   end
 
   def self.down

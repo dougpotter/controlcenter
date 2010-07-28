@@ -8,7 +8,7 @@ class CreateCampaigns < ActiveRecord::Migration
       t.integer :partner_id
       t.integer :cid 
     end
-		add_index :campaigns, :cid, :unique => true
+    add_index :campaigns, :cid, :unique => true
   end
 
   def self.down

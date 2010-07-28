@@ -6,7 +6,7 @@ class CreateAudiences < ActiveRecord::Migration
       t.integer :seed_extraction_id
       t.integer :model_id
     end
-		#add_index :audiences, [:seed_extraction_id, :model_id]
+    #add_index :audiences, [:seed_extraction_id, :model_id]
   end
 
   def self.down

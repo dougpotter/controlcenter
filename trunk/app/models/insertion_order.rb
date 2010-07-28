@@ -1,5 +1,5 @@
 class InsertionOrder < ActiveRecord::Base
-	belongs_to :campaign
+  belongs_to :campaign
 
   validates_numericality_of :campaign_id
 end
