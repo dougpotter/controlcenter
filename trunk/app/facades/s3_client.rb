@@ -14,7 +14,10 @@ require 'digest/md5'
 class S3Client
   def initialize(options={})
     right_aws_options = {}
-    right_aws_options[:server] = AwsConfiguration.s3_host if AwsConfiguration.s3_host
+    if AwsConfiguration.s3_host
+      right_aws_options[:server] = AwsConfiguration.s3_host
+      right_aws_options[:no_subdomains] = true
+    end
     right_aws_options[:port] = AwsConfiguration.s3_port if AwsConfiguration.s3_port
     right_aws_options[:protocol] = AwsConfiguration.s3_protocol if AwsConfiguration.s3_protocol
     @s3 = RightAws::S3Interface.new(
