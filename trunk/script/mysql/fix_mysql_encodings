@@ -2,8 +2,8 @@
 # fix_mysql_encodings.rb: Change character set encoding and collation to UTF-8
 # for all MySQL databases/tables.
 
-require File.expand_path('../../../config/boot',  __FILE__)
-require File.expand_path('../../../config/environment',  __FILE__)
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
 
 UTF8_CHARSET = "utf8"
 UTF8_COLLATION = "utf8_general_ci"
