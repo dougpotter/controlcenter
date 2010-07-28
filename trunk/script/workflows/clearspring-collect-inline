@@ -22,6 +22,12 @@ parser = OptionParser.new do |opts|
     end
     options[:hour] = hour
   end
+  opts.on('-i', '--discover', 'Discover files only') do
+    options[:discover] = true
+  end
+  opts.on('-e', '--extract URL', 'Extract file in URL') do |url|
+    options[:extract] = url
+  end
   opts.on('-p', '--profile', 'Profile script') do
     options[:profile] = true
   end
@@ -29,6 +35,10 @@ parser = OptionParser.new do |opts|
     options[:debug] = true
   end
 end.parse!
+
+if options[:discover] && options[:extract]
+  raise OptionParser::ParseError, "--discover and --extract cannot be specified simultaneously"
+end
 
 all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
 if source = options[:source]
@@ -117,7 +127,17 @@ def run(ext_params)
       :data_source => data_source,
       :debug => ext_params[:debug],
     })
-    ClearspringExtractWorkflow.new(StrictHashWithIndifferentAccess.new(params)).run
+    workflow = ClearspringExtractWorkflow.new(StrictHashWithIndifferentAccess.new(params))
+    if ext_params[:discover]
+      files = workflow.discover
+      files.each do |file|
+        puts file
+      end
+    elsif ext_params[:extract]
+      workflow.extract(ext_params[:extract])
+    else
+      workflow.run
+    end
   end
 end
 
@@ -133,7 +153,14 @@ def stop_profiling
   printer.print(File.open('profile-output.html', 'w'), :min_percent => 1)
 end
 
-params = {:selected_sources => selected_sources, :date => date, :hour => options[:hour], :debug => options[:debug]}
+params = {
+  :selected_sources => selected_sources,
+  :date => date,
+  :hour => options[:hour],
+  :debug => options[:debug],
+  :discover => options[:discover],
+  :extract => options[:extract],
+}
 
 if options[:profile]
   start_profiling

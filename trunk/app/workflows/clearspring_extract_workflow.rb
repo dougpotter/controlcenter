@@ -15,11 +15,20 @@ class ClearspringExtractWorkflow
   def run
     files = list_files
     files.each do |file|
-      local_path = download(file)
-      split_paths = split(local_path)
-      split_paths.each do |path|
-        upload(path)
-      end
+      extract(file)
+    end
+  end
+  
+  def discover
+    list_files
+  end
+  
+  def extract(file_url)
+    validate_file_url_for_extraction!(file_url)
+    local_path = download(file_url)
+    split_paths = split(local_path)
+    split_paths.each do |path|
+      upload(path)
     end
   end
   
@@ -60,6 +69,14 @@ class ClearspringExtractWorkflow
   
   def upload(local_path)
     @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
+  end
+  
+  # -----
+  
+  def validate_file_url_for_extraction!(url)
+    unless should_download_url?(url)
+      raise ArgumentError, "Url does not match download parameters: #{url}"
+    end
   end
   
   # -----
