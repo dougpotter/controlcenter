@@ -1,3 +1,4 @@
+config/aws.yml
 config/database.yml
 config/appwall.yml
 config/ruote_host.yml
