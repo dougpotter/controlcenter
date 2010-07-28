@@ -12,7 +12,7 @@ class S3Participant < ParticipantBase
       if RuoteConfiguration.verbose_s3
         debug_print("S3put: #{local_path} -> #{remote_path}")
       end
-      Subprocess.spawn_check('s3cmd', 'put', remote_path, local_path)
+      S3Client.new.put_file(params.input[:s3_bucket], params.input[:s3_path], params.input[:local_path])
     end
   end
   
