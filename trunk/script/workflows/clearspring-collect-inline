@@ -12,6 +12,16 @@ parser = OptionParser.new do |opts|
   opts.on('-d', '--date DATE', 'Extract for specified DATE (by default today)') do |date|
     options[:date] = date
   end
+  opts.on('-h', '--hour HOUR', 'Extract for specified HOUR (by default all hours; 24-hour format: 00-23)') do |hour|
+    unless hour =~ /^\d\d?/
+      raise OptionParser::ParseError, "Invalid hour value: #{hour}"
+    end
+    hour = hour.to_i
+    if hour < 0 || hour > 23
+      raise OptionParser::ParseError, "Hour value out of range: #{hour}"
+    end
+    options[:hour] = hour
+  end
   opts.on('-p', '--profile', 'Profile script') do
     options[:profile] = true
   end
@@ -161,9 +171,16 @@ class ClearspringWorkflow < ClearspringManager
     File.join(remote_url, file)
   end
   
-  def should_download_url?(url)
+  def prefix_to_download
     prefix = "#{params[:data_source]}.#{params[:date]}"
-    File.basename(url)[0...prefix.length] == prefix
+    if params[:hour]
+      prefix += sprintf('-%02d00', params[:hour])
+    end
+    prefix
+  end
+  
+  def should_download_url?(url)
+    File.basename(url).starts_with?(prefix_to_download)
   end
   
   def build_relative_path(remote_url)
@@ -215,6 +232,7 @@ def run(ext_params)
   ext_params[:selected_sources].each do |data_source|
     params = settings.merge({
       :date => ext_params[:date],
+      :hour => ext_params[:hour],
       :data_source => data_source,
       :debug => ext_params[:debug],
     })
@@ -234,7 +252,7 @@ def stop_profiling
   printer.print(File.open('profile-output.html', 'w'), :min_percent => 1)
 end
 
-params = {:selected_sources => selected_sources, :date => date, :debug => options[:debug]}
+params = {:selected_sources => selected_sources, :date => date, :hour => options[:hour], :debug => options[:debug]}
 
 if options[:profile]
   start_profiling
