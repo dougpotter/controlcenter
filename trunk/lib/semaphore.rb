@@ -91,6 +91,68 @@ module Semaphore
       
       true
     end
+    
+    # Accepted options:
+    #
+    # :name (required)
+    # :location
+    # :capacity (required for creating resource)
+    # :timeout (should be provided)
+    # :retries (required)
+    # :sleep (required)
+    # :debug_callback
+    # :create_resource
+    def lock(options)
+      allocation = nil
+      0.upto(options[:retries]) do |index|
+        begin
+          if options[:debug_callback]
+            options[:debug_callback].call('Trying to acquire lock')
+          end
+          
+          allocation = acquire(
+            options[:name],
+            :location => options[:location],
+            :timeout => options[:timeout]
+          )
+          break
+        rescue ResourceNotFound
+          if options[:create_resource]
+            if options[:debug_callback]
+              options[:debug_callback].call('Trying to create resource')
+            end
+            
+            resource = Resource.soft_create(
+              :name => options[:name],
+              :location => options[:location],
+              :capacity => options[:capacity]
+            )
+          else
+            raise
+          end
+        rescue Semaphore::ResourceBusy
+          if index == options[:retries]
+            raise
+          else
+            if options[:debug_callback]
+              options[:debug_callback].call('Waiting for busy lock')
+            end
+            
+            sleep options[:sleep]
+          end
+        end
+      end
+      
+      begin
+        yield
+      ensure
+        if options[:debug_callback]
+          options[:debug_callback].call('Releasing lock')
+        end
+        
+        release(allocation)
+      end
+    end
   end
   
   class Resource < ActiveRecord::Base

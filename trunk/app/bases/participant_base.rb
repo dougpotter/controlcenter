@@ -254,50 +254,31 @@ class ParticipantBase
     location = Socket.gethostname
     # todo: make configurable
     capacity = 1
-    allocation = nil
-    1.upto(101) do |index|
-      begin
-        if RuoteConfiguration.verbose_locking
-          debug_print "#{params.rjid}: Trying to acquire lock #{lock_name} at #{location}"
-        end
-        allocation = Semaphore::Arbitrator.instance.acquire(
-          lock_name, :location => location, :timeout => 30.minutes
-        )
-        if RuoteConfiguration.verbose_locking
-          debug_print "#{params.rjid}: Acquired lock #{lock_name} at #{location}"
-        end
-        break
-      rescue Semaphore::ResourceNotFound
-        # we're missing the resource.
-        # since every host uses their own resource, first time
-        # we run something on a newly provisioned box the resource
-        # is expected to be missing.
-        # create it accounting for other threads racing to
-        # do the same.
-        resource = Semaphore::Resource.soft_create(:name => lock_name, :location => location, :capacity => capacity)
-        if RuoteConfiguration.verbose_locking
-          debug_print "#{params.rjid}: Created resource #{lock_name} at #{location}"
-        end
-      rescue Semaphore::ResourceBusy
-        if index == 100
-          raise
-        else
-          # wait
-          if RuoteConfiguration.verbose_locking
-            debug_print "#{params.rjid}: Sleeping due to busy lock #{lock_name} at #{location}"
-          end
-          sleep 5
-        end
+    options = {
+      :name => lock_name,
+      :location => location,
+      :capacity => capacity,
+      :timeout => 30.minutes,
+      :retries => 100,
+      :sleep => 5,
+      :create_resource => true,
+    }
+    
+    if RuoteConfiguration.verbose_locking
+      lock_description = "#{lock_name} at #{location}"
+      
+      debug_callback = lambda do |message|
+        debug_print "#{params.rjid}: #{message} #{lock_description}"
       end
+      
+      options[:debug_callback] = debug_callback
     end
     
-    begin
+    # since every host uses their own resource, first time
+    # we run something on a newly provisioned box the resource
+    # is expected to be missing.
+    Semaphore::Arbitrator.instance.lock(options) do
       yield
-    ensure
-      if RuoteConfiguration.verbose_locking
-        debug_print "#{params.rjid}: Releasing lock #{lock_name} at #{location}"
-      end
-      Semaphore::Arbitrator.instance.release(allocation)
     end
   end
   
