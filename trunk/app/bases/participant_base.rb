@@ -259,8 +259,9 @@ class ParticipantBase
       :location => location,
       :capacity => capacity,
       :timeout => 30.minutes,
-      :retries => 100,
-      :sleep => 5,
+      :wait => true,
+      :wait_retries => 100,
+      :wait_sleep => 5,
       :create_resource => true,
     }
     
