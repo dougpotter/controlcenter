@@ -160,6 +160,23 @@ module Semaphore
           ['id = ?', id]
         )
       end
+      
+      def soft_create(attrs)
+        unless attrs[:name] && attrs[:capacity]
+          raise ArgumentError, "Attributes must at least specify :name and :capacity"
+        end
+        
+        resource = new(attrs)
+        begin
+          resource.save!
+        rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
+          if resource = identity(attrs[:name], attrs[:location])
+            resource
+          else
+            raise
+          end
+        end
+      end
     end
   end
   

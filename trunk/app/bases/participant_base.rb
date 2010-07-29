@@ -274,19 +274,9 @@ class ParticipantBase
         # is expected to be missing.
         # create it accounting for other threads racing to
         # do the same.
-        resource = Semaphore::Resource.new(:name => lock_name, :location => location, :capacity => capacity)
-        begin
-          resource.save!
-          if RuoteConfiguration.verbose_locking
-            debug_print "#{params.rjid}: Created resource #{lock_name} at #{location}"
-          end
-        rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
-          # see if it already exists
-          if Semaphore::Resource.identity(lock_name, location)
-            break
-          else
-            raise
-          end
+        resource = Semaphore::Resource.soft_create(:name => lock_name, :location => location, :capacity => capacity)
+        if RuoteConfiguration.verbose_locking
+          debug_print "#{params.rjid}: Created resource #{lock_name} at #{location}"
         end
       rescue Semaphore::ResourceBusy
         if index == 100
