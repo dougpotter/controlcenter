@@ -131,7 +131,7 @@ module Semaphore
         else
           raise
         end
-      rescue Semaphore::ResourceBusy
+      rescue ResourceBusy
         if options[:wait]
           if attempt >= options[:wait_retries]
             raise
