@@ -21,6 +21,9 @@ parser = OptionParser.new do |opts|
   opts.on('-D', '--debug', 'Enable debugging output') do
     options[:debug] = true
   end
+  opts.on('-l', '--lock', 'Use locking and quit without doing anything if resources are busy') do
+    options[:lock] = true
+  end
 end.parse!
 
 all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
@@ -87,7 +90,7 @@ def run(params)
       :s3_bucket => config.s3_bucket,
       :clearspring_pid => config.clearspring_pid,
       :max_launched_children => params[:max_launched_children],
-      #:lock => true,
+      :lock => params[:lock],
       :wait => true
     )
   end
@@ -125,7 +128,7 @@ end
 
 RuoteBootstrap.init_host
 
-params = {:selected_sources => selected_sources, :date => date}
+params = {:selected_sources => selected_sources, :date => date, :lock => options[:lock]}
 if options[:quick]
   params[:max_launched_children] = 1
 end
