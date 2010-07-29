@@ -34,6 +34,9 @@ parser = OptionParser.new do |opts|
   opts.on('-D', '--debug', 'Enable debugging output') do
     options[:debug] = true
   end
+  opts.on('-l', '--lock', 'Use locking and quit without doing anything if resources are busy') do
+    options[:lock] = true
+  end
 end.parse!
 
 if options[:discover] && options[:extract]
@@ -126,6 +129,7 @@ def run(ext_params)
       :hour => ext_params[:hour],
       :data_source => data_source,
       :debug => ext_params[:debug],
+      :lock => ext_params[:lock],
     })
     workflow = ClearspringExtractWorkflow.new(StrictHashWithIndifferentAccess.new(params))
     if ext_params[:discover]
@@ -160,6 +164,7 @@ params = {
   :debug => options[:debug],
   :discover => options[:discover],
   :extract => options[:extract],
+  :lock => options[:lock],
 }
 
 if options[:profile]

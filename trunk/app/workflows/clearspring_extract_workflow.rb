@@ -24,11 +24,10 @@ class ClearspringExtractWorkflow
   end
   
   def extract(file_url)
-    validate_file_url_for_extraction!(file_url)
-    local_path = download(file_url)
-    split_paths = split(local_path)
-    split_paths.each do |path|
-      upload(path)
+    if params[:lock]
+      extract_with_locking(file_url)
+    else
+      extract_without_locking(file_url)
     end
   end
   
@@ -41,6 +40,21 @@ class ClearspringExtractWorkflow
     absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
     absolute_file_urls.reject! { |url| !should_download_url?(url) }
     absolute_file_urls
+  end
+  
+  def extract_without_locking(file_url)
+    validate_file_url_for_extraction!(file_url)
+    local_path = download(file_url)
+    split_paths = split(local_path)
+    split_paths.each do |path|
+      upload(path)
+    end
+  end
+  
+  def extract_with_locking(file_url)
+    lock(file_url) do
+      extract_without_locking(file_url)
+    end
   end
   
   def download(url)
@@ -77,6 +91,40 @@ class ClearspringExtractWorkflow
     unless should_download_url?(url)
       raise ArgumentError, "Url does not match download parameters: #{url}"
     end
+  end
+  
+  def lock(remote_url)
+    options = {
+      :name => remote_url,
+      :location => 'clearspring',
+      :capacity => 1,
+      :timeout => 30.minutes,
+      :wait => false,
+      :create_resource => true,
+    }
+    
+    if params[:debug]
+      debug_callback = lambda do |message|
+        debug_print "#{message} for #{remote_url}"
+      end
+      
+      options[:debug_callback] = debug_callback
+    end
+    
+    # ok_to_extract? needs to be in a critical section for each file,
+    # otherwise two processes may check e.g. local caches simultaneously
+    # and both decide to process the same file.
+    #
+    # yield is is the critical section because local caches are created
+    # by extraction process. if we used special marker files then
+    # extraction could be brought outside of the critical section.
+    Semaphore::Arbitrator.instance.lock(options) do
+      if ok_to_extract?(remote_url)
+        yield
+      end
+    end
+  rescue Semaphore::ResourceBusy
+    # someone else is processing the file, do nothing
   end
   
   # -----
@@ -118,6 +166,12 @@ class ClearspringExtractWorkflow
     path = "#{params[:clearspring_pid]}/v2/raw-#{params[:data_source]}/#{params[:date]}/#{filename}"
   end
   
+  # returns true if remote_url is not currently being extracted,
+  # and had not been successfully extracted in the past.
+  def ok_to_extract?(remote_url)
+    true
+  end
+  
   # -----
   
   def figure_relative_path(root, absolute_path)
@@ -130,5 +184,11 @@ class ClearspringExtractWorkflow
       relative_path = relative_path[1...relative_path.length]
     end
     relative_path
+  end
+  
+  # ------
+  
+  def debug_print(msg)
+    $stderr.puts(msg)
   end
 end
