@@ -98,48 +98,54 @@ module Semaphore
     # :location
     # :capacity (required for creating resource)
     # :timeout (should be provided)
-    # :retries (required)
-    # :sleep (required)
+    # :wait
+    # :wait_retries (required if :wait is true)
+    # :wait_sleep (required if :wait is true)
     # :debug_callback
     # :create_resource
     def lock(options)
       allocation = nil
-      0.upto(options[:retries]) do |index|
-        begin
+      attempt = 0
+      begin
+        if options[:debug_callback]
+          options[:debug_callback].call('Trying to acquire lock')
+        end
+        
+        allocation = acquire(
+          options[:name],
+          :location => options[:location],
+          :timeout => options[:timeout]
+        )
+      rescue ResourceNotFound
+        if options[:create_resource]
           if options[:debug_callback]
-            options[:debug_callback].call('Trying to acquire lock')
+            options[:debug_callback].call('Trying to create resource')
           end
           
-          allocation = acquire(
-            options[:name],
+          resource = Resource.soft_create(
+            :name => options[:name],
             :location => options[:location],
-            :timeout => options[:timeout]
+            :capacity => options[:capacity]
           )
-          break
-        rescue ResourceNotFound
-          if options[:create_resource]
-            if options[:debug_callback]
-              options[:debug_callback].call('Trying to create resource')
-            end
-            
-            resource = Resource.soft_create(
-              :name => options[:name],
-              :location => options[:location],
-              :capacity => options[:capacity]
-            )
-          else
-            raise
-          end
-        rescue Semaphore::ResourceBusy
-          if index == options[:retries]
+          retry
+        else
+          raise
+        end
+      rescue Semaphore::ResourceBusy
+        if options[:wait]
+          if attempt >= options[:wait_retries]
             raise
           else
             if options[:debug_callback]
               options[:debug_callback].call('Waiting for busy lock')
             end
             
-            sleep options[:sleep]
+            sleep options[:wait_sleep]
+            attempt += 1
+            retry
           end
+        else
+          raise
         end
       end
       
