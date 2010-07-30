@@ -49,7 +49,12 @@ class ClearspringExtractWorkflow
     split_paths.each do |path|
       upload(path)
     end
-    create_data_provider_file(file_url)
+    # See the comment in create_data_provider_file regarding mixing locked
+    # and non-locked runs. Status files are only created for once runs
+    # (which are also locked).
+    if params[:once]
+      create_data_provider_file(file_url)
+    end
   end
   
   def extract_with_locking(file_url)
@@ -203,7 +208,32 @@ class ClearspringExtractWorkflow
     unless channel
       raise ArgumentError, 'Channel not found'
     end
-    DataProviderFile.create!(:url => file_url, :data_provider_channel => channel)
+    
+    # Locked and lock-free runs should not be combined, since lock-free run may
+    # overwrite data of the locked run and leave it in an inconsistent state and
+    # the locked run would report success.
+    #
+    # Only create status files for once (which are locked) runs. This should serve
+    # as a reminder to people to use locking if they want to see the status
+    # (which in production should be just about always).
+    file = DataProviderFile.create!(:url => file_url, :data_provider_channel => channel)
+
+=begin alternative implementation
+    file = channel.data_provider_files.find_by_url(file_url)
+    if file
+      # XXX already exists, check and update status?
+    else
+      begin
+        file = DataProviderFile.create!(:url => file_url, :data_provider_channel => channel)
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
+        # see if someone else created the file concurrently
+        file = channel.data_provider_files.find_by_url(file_url)
+        unless file
+          raise
+        end
+      end
+    end
+=end
   end
   
   # -----
