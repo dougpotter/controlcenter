@@ -37,6 +37,9 @@ parser = OptionParser.new do |opts|
   opts.on('-l', '--lock', 'Use locking and quit without doing anything if resources are busy') do
     options[:lock] = true
   end
+  opts.on('-o', '--once', 'Extract each file only if it had not been previously extracted (requires and implies --lock)') do
+    options[:once] = options[:lock] = true
+  end
 end.parse!
 
 if options[:discover] && options[:extract]
@@ -130,6 +133,7 @@ def run(ext_params)
       :data_source => data_source,
       :debug => ext_params[:debug],
       :lock => ext_params[:lock],
+      :once => ext_params[:once],
     })
     workflow = ClearspringExtractWorkflow.new(StrictHashWithIndifferentAccess.new(params))
     if ext_params[:discover]
@@ -165,6 +169,7 @@ params = {
   :discover => options[:discover],
   :extract => options[:extract],
   :lock => options[:lock],
+  :once => options[:once],
 }
 
 if options[:profile]

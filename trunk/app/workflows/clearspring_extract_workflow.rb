@@ -49,6 +49,7 @@ class ClearspringExtractWorkflow
     split_paths.each do |path|
       upload(path)
     end
+    create_data_provider_file(file_url)
   end
   
   def extract_with_locking(file_url)
@@ -121,10 +122,17 @@ class ClearspringExtractWorkflow
     Semaphore::Arbitrator.instance.lock(options) do
       if ok_to_extract?(remote_url)
         yield
+      else
+        if params[:debug]
+          debug_print "File is already extracted: #{remote_url}"
+        end
       end
     end
   rescue Semaphore::ResourceBusy
     # someone else is processing the file, do nothing
+    if params[:debug]
+      debug_print "Lock is busy for #{remote_url}"
+    end
   end
   
   # -----
@@ -169,7 +177,33 @@ class ClearspringExtractWorkflow
   # returns true if remote_url is not currently being extracted,
   # and had not been successfully extracted in the past.
   def ok_to_extract?(remote_url)
-    true
+    if params[:once] and already_extracted?(remote_url)
+      false
+    else
+      true
+    end
+  end
+  
+  def already_extracted?(file_url)
+    file = DataProviderFile.find(:first, :include => {:data_provider_channel => :data_provider},
+      :conditions => [
+        'data_providers.name=? and data_provider_channels.name=? and data_provider_files.url=?',
+        'Clearspring', params[:data_source], file_url
+      ]
+    )
+    return !file.nil?
+  end
+  
+  def create_data_provider_file(file_url)
+    channel = DataProviderChannel.find(:first, :include => :data_provider,
+      :conditions => ['data_providers.name=? and data_provider_channels.name=?',
+        'Clearspring', params[:data_source]
+      ]
+    )
+    unless channel
+      raise ArgumentError, 'Channel not found'
+    end
+    DataProviderFile.create!(:url => file_url, :data_provider_channel => channel)
   end
   
   # -----
