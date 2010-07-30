@@ -64,6 +64,10 @@ class ClearspringExtractWorkflow
     end
   end
   
+  def should_download_url?(url)
+    File.basename(url).starts_with?(prefix_to_download)
+  end
+  
   private
   
   def list_files
@@ -196,10 +200,6 @@ class ClearspringExtractWorkflow
       prefix += sprintf('-%02d00', params[:hour])
     end
     prefix
-  end
-  
-  def should_download_url?(url)
-    File.basename(url).starts_with?(prefix_to_download)
   end
   
   def build_relative_path(remote_url)
