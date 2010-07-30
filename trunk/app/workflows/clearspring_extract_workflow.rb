@@ -14,6 +14,11 @@ module Workflow
   # Without --once, it is possible to extract the same file
   # an arbitrary number of times.
   class FileAlreadyExtracted < WorkflowError; end
+  
+  # Raised when user requests a specific url to be downloaded
+  # and provides date/hour/channel, and the url is actually not
+  # in the specified date/hour/channel.
+  class FileSpecMismatch < WorkflowError; end
 end
 
 class ClearspringExtractWorkflow
@@ -120,7 +125,7 @@ class ClearspringExtractWorkflow
   
   def validate_file_url_for_extraction!(url)
     unless should_download_url?(url)
-      raise ArgumentError, "Url does not match download parameters: #{url}"
+      raise Workflow::FileSpecMismatch, "Url does not match download parameters: #{url}"
     end
   end
   
