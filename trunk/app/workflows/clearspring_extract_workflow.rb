@@ -1,5 +1,21 @@
 require 'fileutils'
 
+module Workflow
+  # Base class for workflow errors
+  class WorkflowError < StandardError; end
+  
+  # Another process had begun extracting the requested file.
+  # Extraction may be actively proceeding, or the other process
+  # may have died but its lock timeout had not yet passed.
+  class FileExtractionInProgress < WorkflowError; end
+  
+  # The file had already been extracted with --once option.
+  # This exception is only raised when --once option is given.
+  # Without --once, it is possible to extract the same file
+  # an arbitrary number of times.
+  class FileAlreadyExtracted < WorkflowError; end
+end
+
 class ClearspringExtractWorkflow
   attr_reader :params
   private :params
@@ -131,6 +147,7 @@ class ClearspringExtractWorkflow
         if params[:debug]
           debug_print "File is already extracted: #{remote_url}"
         end
+        raise Workflow::FileAlreadyExtracted, "File is already extracted: #{remote_url}"
       end
     end
   rescue Semaphore::ResourceBusy
@@ -138,6 +155,9 @@ class ClearspringExtractWorkflow
     if params[:debug]
       debug_print "Lock is busy for #{remote_url}"
     end
+    # raise the exception so that driver code can exit the process
+    # with appropriate exit code
+    raise Workflow::FileExtractionInProgress, "File is being extracted: #{remote_url}"
   end
   
   # -----
