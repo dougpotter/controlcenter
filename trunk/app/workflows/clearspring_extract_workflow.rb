@@ -19,6 +19,9 @@ module Workflow
   # and provides date/hour/channel, and the url is actually not
   # in the specified date/hour/channel.
   class FileSpecMismatch < WorkflowError; end
+  
+  # Attempting to extract partially uploaded files.
+  class FileNotReady < WorkflowError; end
 end
 
 class ClearspringExtractWorkflow
@@ -155,6 +158,9 @@ class ClearspringExtractWorkflow
     # by extraction process. if we used special marker files then
     # extraction could be brought outside of the critical section.
     Semaphore::Arbitrator.instance.lock(options) do
+      unless fully_uploaded?(remote_url)
+        raise Workflow::FileNotReady, "File is not ready to be extracted: #{remote_url}"
+      end
       if ok_to_extract?(remote_url)
         yield
       else
@@ -268,6 +274,11 @@ class ClearspringExtractWorkflow
       end
     end
 =end
+  end
+  
+  # readiness heuristic - to be written
+  def fully_uploaded?(file_url)
+    true
   end
   
   # -----

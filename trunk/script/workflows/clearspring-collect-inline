@@ -157,6 +157,9 @@ rescue Workflow::FileExtractionInProgress
 rescue Workflow::FileSpecMismatch
   $stderr.puts("Error: file does not match specification given")
   7
+rescue Workflow::FileNotReady
+  $stderr.puts("Error: file is not ready to be extracted")
+  8
 end
 
 def start_profiling
