@@ -2,6 +2,20 @@ module ActiveRecord
   module Validations
     module ClassMethods
 
+      # Validates that specified attributes are of type Time.
+      #
+      # Configuration Options:
+      # :allow_nil - skip validation if attribute is nil, default is true
+
+      def validates_as_datetime(*attr_names)
+        configuration = { :message => "attribute should be of type Time" }
+        validates_each(attr_names, configuration) do |record, attr_name, value|
+          unless value.is_a?(Time)
+            record.errors.add(attr_name, :invalid, :default => configuration[:message], :value => value)
+          end
+        end
+      end
+
       # Validates that specified attributes are of type date.
       #
       # Configuration Options:
@@ -9,8 +23,6 @@ module ActiveRecord
 
       def validates_as_date(*attr_names)
         configuration = { :message => "attribute should be of type Date" }
-        configuration.update(attr_names.extract_options!)
-
         validates_each(attr_names, configuration) do |record, attr_name, value|
           unless value.is_a?(Date)
             record.errors.add(attr_name, :invalid, :default => configuration[:message], :value => value)
