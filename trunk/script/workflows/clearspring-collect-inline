@@ -6,13 +6,16 @@ options = {}
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: script/workflows/clearspring-collect [options]"
   
-  opts.on('-s', '--source SOURCE', 'Extract from specified SOURCE only (search-hashed-int/search-hashed-us/share-int/share-us/view-int/view-us, default is to extract all sources)') do |source|
+  opts.separator ''
+  opts.separator 'Data source options:'
+  
+  opts.on('-C', '--channel CHANNEL', 'Extract from specified CHANNEL only (search-hashed-int/search-hashed-us/share-int/share-us/view-int/view-us, default is to extract all channels)') do |source|
     options[:source] = source
   end
-  opts.on('-d', '--date DATE', 'Extract for specified DATE (by default today)') do |date|
+  opts.on('-D', '--date DATE', 'Extract for specified DATE (by default today)') do |date|
     options[:date] = date
   end
-  opts.on('-h', '--hour HOUR', 'Extract for specified HOUR (by default all hours; 24-hour format: 00-23)') do |hour|
+  opts.on('-H', '--hour HOUR', 'Extract for specified HOUR (by default all hours; 24-hour format: 00-23)') do |hour|
     unless hour =~ /^\d\d?/
       raise OptionParser::ParseError, "Invalid hour value: #{hour}"
     end
@@ -22,26 +25,50 @@ parser = OptionParser.new do |opts|
     end
     options[:hour] = hour
   end
-  opts.on('-i', '--discover', 'Discover files only') do
-    options[:discover] = true
+  
+  opts.separator ''
+  opts.separator 'Configuration options:'
+  
+  opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/clearspring.yml is used)') do |path|
+    options[:config_path] = path
   end
-  opts.on('-e', '--extract URL', 'Extract file in URL') do |url|
-    options[:extract] = url
-  end
-  opts.on('-p', '--profile', 'Profile script') do
-    options[:profile] = true
-  end
-  opts.on('-D', '--debug', 'Enable debugging output') do
-    options[:debug] = true
-  end
+  
+  opts.separator ''
+  opts.separator 'Behavior modifying options:'
+  
   opts.on('-l', '--lock', 'Use locking and quit without doing anything if resources are busy') do
     options[:lock] = true
   end
   opts.on('-o', '--once', 'Extract each file only if it had not been previously extracted (requires and implies --lock)') do
     options[:once] = options[:lock] = true
   end
-  opts.on('-c', '--config-file PATH', 'Specify configuration file path') do |path|
-    options[:config_path] = path
+  
+  opts.separator ''
+  opts.separator 'Action options: (by default, discover and extract discovered files)'
+  
+  opts.on('-i', '--discover', 'Discover files only') do
+    options[:discover] = true
+  end
+  opts.on('-e', '--extract URL', 'Extract file in URL') do |url|
+    options[:extract] = url
+  end
+  
+  opts.separator ''
+  opts.separator 'Debugging options:'
+  
+  opts.on('-p', '--profile', 'Profile script') do
+    options[:profile] = true
+  end
+  opts.on('-d', '--debug', 'Enable debugging output') do
+    options[:debug] = true
+  end
+  
+  opts.separator ''
+  opts.separator 'Informational options:'
+  
+  opts.on('-h', '--help', 'Display this help text') do
+    puts opts
+    exit
   end
 end.parse!
 
