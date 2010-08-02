@@ -34,3 +34,4 @@ ENV['RSPEC'] = "true"
 # Manage RubyGems
 config.gem "rspec", :lib => false, :version => ">= 1.2.0"
 config.gem "rspec-rails", :lib => false, :version => ">= 1.2.0"
+config.gem "factory_girl", :lib => false, :version => ">= 1.3.1"
