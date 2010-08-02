@@ -218,6 +218,8 @@ def stop_profiling
   printer.print(File.open('profile-output.html', 'w'), :min_percent => 1)
 end
 
+require 'force_system_timer'
+
 params = {
   :selected_sources => selected_sources,
   :date => date,
