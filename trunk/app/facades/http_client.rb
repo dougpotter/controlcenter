@@ -1,10 +1,15 @@
 require 'curb'
 
 class HttpClient
-  class HttpError < StandardError
+  class BaseError < StandardError; end
+  
+  class HttpError < BaseError
     def initialize(code, body)
       @code, @body = code, body
     end
+  end
+  
+  class Timeout < BaseError
   end
   
   # allowed options:
@@ -33,8 +38,7 @@ class HttpClient
     end
     
     @curl.url = url
-    @curl.perform
-    check_response
+    execute
     @curl.body_str
   end
   
@@ -51,13 +55,19 @@ class HttpClient
       end
       
       @curl.url = url
-      @curl.perform
-      check_response
+      execute
       @curl.on_body
     end
   end
   
   private
+  
+  def execute
+    map_exceptions do
+      @curl.perform
+    end
+    check_response
+  end
   
   def check_response
     if @curl.response_code != 200
@@ -66,6 +76,16 @@ class HttpClient
       end
       
       raise HttpError.new(@curl.response_code, @curl.body_str)
+    end
+  end
+  
+  def map_exceptions
+    begin
+      yield
+    rescue Curl::Err::TimeoutError => original_exc
+      exc = Timeout.new(original_exc.message)
+      exc.set_backtrace(original_exc.backtrace)
+      raise exc
     end
   end
   
