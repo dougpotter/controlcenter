@@ -86,7 +86,7 @@ def debug
   debugger
 end
 
-$config = WorkflowParameters.load('workflows/clearspring')
+$config = WorkflowParameters.load(WorkflowParameters.absolutize('workflows/clearspring'))
 
 def config
   $config

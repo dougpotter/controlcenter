@@ -4,8 +4,11 @@ class WorkflowParameters
   class << self
     @@dir = "#{RAILS_ROOT}/config"
     
-    def load(name)
-      path = File.join(@@dir, name + '.yml')
+    def absolutize(name)
+      File.join(@@dir, name + '.yml')
+    end
+    
+    def load(path)
       File.open(path) do |file|
         settings = YAML.load(file)
         struct = Struct.new(nil, *settings.keys)
