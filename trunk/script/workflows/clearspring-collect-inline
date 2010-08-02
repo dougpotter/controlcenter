@@ -40,6 +40,9 @@ parser = OptionParser.new do |opts|
   opts.on('-o', '--once', 'Extract each file only if it had not been previously extracted (requires and implies --lock)') do
     options[:once] = options[:lock] = true
   end
+  opts.on('-c', '--config-file PATH', 'Specify configuration file path') do |path|
+    options[:config_path] = path
+  end
 end.parse!
 
 if options[:discover] && options[:extract]
@@ -86,7 +89,7 @@ def debug
   debugger
 end
 
-$config = WorkflowParameters.load(WorkflowParameters.absolutize('workflows/clearspring'))
+$config = WorkflowParameters.load(options[:config_path] || WorkflowParameters.absolutize('workflows/clearspring'))
 
 def config
   $config
