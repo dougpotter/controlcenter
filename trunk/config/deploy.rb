@@ -94,6 +94,25 @@ namespace :appwall do
 end
 
 # =============================================================================
+# AWS CONFIGURATION
+# =============================================================================
+after "deploy:update_code", "aws:symlink"
+
+namespace :aws do
+
+  desc "Push new AWS configuration"
+  task :push do
+    put File.read(File.join(File.dirname(__FILE__), 'aws.yml')),
+      File.join(shared_path, 'config', 'aws.yml')
+  end
+  
+  desc "Make symlink for AWS yaml"
+  task :symlink do
+    run "ln -nfs #{shared_path}/config/aws.yml #{release_path}/config/aws.yml"
+  end
+end
+
+# =============================================================================
 # DATABASE TASKS
 # =============================================================================
 after "deploy:update_code", "db:symlink"
