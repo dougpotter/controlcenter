@@ -30,7 +30,7 @@ class ClearspringExtractWorkflow
   
   def initialize(params)
     @params = params
-    @http_client = HttpClient.new(
+    @http_client = HttpClient::Curb.new(
       :http_username => @params[:http_username],
       :http_password => @params[:http_password],
       :timeout => @params[:net_io_timeout],
