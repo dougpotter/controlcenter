@@ -12,7 +12,7 @@ Rails::Initializer.run do |config|
   # -- all .rb files in that directory are automatically loaded.
 
   # Add additional load paths for your own custom dirs
-  config.load_paths += %W(
+  extra_load_paths = %W(
     #{RAILS_ROOT}/app/bases
     #{RAILS_ROOT}/app/facades
     #{RAILS_ROOT}/app/lib
@@ -20,6 +20,9 @@ Rails::Initializer.run do |config|
     #{RAILS_ROOT}/app/singletons
     #{RAILS_ROOT}/app/workflows
   )
+
+  config.load_paths += extra_load_paths
+  config.eager_load_paths += extra_load_paths
 
   # Specify gems that this application depends on and have them installed with rake gems:install
   # config.gem "bj"
