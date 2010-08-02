@@ -1,6 +1,12 @@
 require 'curb'
 
 class HttpClient
+  class HttpError < StandardError
+    def initialize(code, body)
+      @code, @body = code, body
+    end
+  end
+  
   # allowed options:
   # :http_username
   # :http_password
@@ -18,6 +24,7 @@ class HttpClient
     
     @curl.url = url
     @curl.perform
+    check_response
     @curl.body_str
   end
   
@@ -35,11 +42,22 @@ class HttpClient
       
       @curl.url = url
       @curl.perform
+      check_response
       @curl.on_body
     end
   end
   
   private
+  
+  def check_response
+    if @curl.response_code != 200
+      if @debug
+        debug_print "Raising for http code #{@curl.response_code}"
+      end
+      
+      raise HttpError.new(@curl.response_code, @curl.body_str)
+    end
+  end
   
   def debug_print(msg)
     $stderr.puts(msg)
