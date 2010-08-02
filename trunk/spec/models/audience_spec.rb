@@ -1,3 +1,15 @@
+# == Schema Information
+# Schema version: 20100729211736
+#
+# Table name: audiences
+#
+#  id                 :integer(4)      not null, primary key
+#  description        :text
+#  internal_external  :text
+#  seed_extraction_id :integer(4)
+#  model_id           :integer(4)
+#
+
 require 'spec_helper'
 
 describe Audience do

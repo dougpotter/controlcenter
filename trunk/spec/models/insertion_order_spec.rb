@@ -1,3 +1,13 @@
+# == Schema Information
+# Schema version: 20100729211736
+#
+# Table name: insertion_orders
+#
+#  id          :integer(4)      not null, primary key
+#  description :text
+#  campaign_id :integer(4)
+#
+
 require 'spec_helper'
 # this test fails at the moment, but this model is of low priority
 # i'll come back to it

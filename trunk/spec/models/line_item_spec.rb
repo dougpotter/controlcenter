@@ -1,3 +1,15 @@
+# == Schema Information
+# Schema version: 20100729211736
+#
+# Table name: line_items
+#
+#  id                 :integer(4)      not null, primary key
+#  impressions        :integer(4)
+#  internal_pricing   :float
+#  external_pricing   :float
+#  insertion_order_id :integer(4)
+#
+
 require 'spec_helper'
 
 describe LineItem do

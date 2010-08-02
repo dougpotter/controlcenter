@@ -1,3 +1,12 @@
+# == Schema Information
+# Schema version: 20100729211736
+#
+# Table name: partners
+#
+#  id   :integer(4)      not null, primary key
+#  name :string(255)
+#
+
 require 'spec_helper'
 
 describe Partner do
