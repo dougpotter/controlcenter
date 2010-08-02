@@ -77,43 +77,43 @@ end
 # =============================================================================
 # APPWALL CONFIGURATION
 # =============================================================================
-after "deploy:update_code", "appwall:symlink" 
+after "deploy:update_code", "appwall:symlink"
 
 namespace :appwall do
 
-  desc "Push new appwall configuration" 
+  desc "Push new appwall configuration"
   task :push do
     put File.read(File.join(File.dirname(__FILE__), 'appwall.yml')),
       File.join(shared_path, 'config', 'appwall.yml')
   end
   
-  desc "Make symlink for appwall yaml" 
+  desc "Make symlink for appwall yaml"
   task :symlink do
-    run "ln -nfs #{shared_path}/config/appwall.yml #{release_path}/config/appwall.yml" 
+    run "ln -nfs #{shared_path}/config/appwall.yml #{release_path}/config/appwall.yml"
   end
 end
 
 # =============================================================================
 # DATABASE TASKS
 # =============================================================================
-after "deploy:update_code", "db:symlink" 
+after "deploy:update_code", "db:symlink"
 
 namespace :db do
 
-  desc "Push new database yaml" 
+  desc "Push new database yaml"
   task :push do
     put File.read(File.join(File.dirname(__FILE__), 'database.yml')),
       File.join(shared_path, 'config', 'database.yml')
   end
   
-  desc "Make symlink for database yaml" 
+  desc "Make symlink for database yaml"
   task :symlink do
-    run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml" 
+    run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
   end
 
   desc "Seed database"
   task :seed, :roles => :app, :only => {:migration_czar => true}  do
-    run "cd #{current_release}; " + 
+    run "cd #{current_release}; " +
       "rake RAILS_ENV=#{rails_env} db:seed_fu > /dev/null"
   end
 end
