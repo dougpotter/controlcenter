@@ -10,10 +10,20 @@ class HttpClient
   # allowed options:
   # :http_username
   # :http_password
+  # :timeout
+  # :connect_timeout (if :timeout is specified and :connect_timeout is not,
+  #   :timeout is used for :connect_timeout as well)
   # :debug
   def initialize(options={})
     @curl = Curl::Easy.new
     @curl.userpwd = "#{options[:http_username]}:#{options[:http_password]}"
+    if options[:timeout]
+      # note: connect_timeout can be overwritten below
+      @curl.timeout = @curl.connect_timeout = options[:timeout]
+    end
+    if options[:connect_timeout]
+      @curl.connect_timeout = options[:connect_timeout]
+    end
     @debug = options[:debug]
   end
   

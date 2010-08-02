@@ -1,5 +1,6 @@
 clearspring_http_username: 'xgraph'
 clearspring_http_password: ''
+clearspring_net_io_timeout: 60
 clearspring_root_url: 'https://dex.clearspring.com/data/xgraph/v2'
 download_root_dir: '/home/etltest/data'
 temp_root_dir: '/tmp'

@@ -148,6 +148,7 @@ $settings = {
   :gzip_root_dir => config.temp_root_dir,
   :http_username => config.clearspring_http_username,
   :http_password => config.clearspring_http_password,
+  :net_io_timeout => config.clearspring_net_io_timeout,
   :s3_bucket => config.s3_bucket,
   :clearspring_pid => config.clearspring_pid,
 }

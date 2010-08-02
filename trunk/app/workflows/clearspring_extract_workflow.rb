@@ -30,7 +30,12 @@ class ClearspringExtractWorkflow
   
   def initialize(params)
     @params = params
-    @http_client = HttpClient.new(:debug => @params[:debug], :http_username => @params[:http_username], :http_password => @params[:http_password])
+    @http_client = HttpClient.new(
+      :http_username => @params[:http_username],
+      :http_password => @params[:http_password],
+      :timeout => @params[:net_io_timeout],
+      :debug => @params[:debug]
+    )
     @parser = WebParser.new
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug])
     @s3_client = S3Client.new(:debug => @params[:debug])
