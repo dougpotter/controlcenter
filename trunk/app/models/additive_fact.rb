@@ -1,2 +1,0 @@
-class AdditiveFact < Fact
-end
