@@ -1,9 +1,19 @@
 module HttpClient
-  class BaseError < StandardError; end
+  class BaseError < StandardError
+    attr_reader :url
+    
+    def initialize(msg=nil, options={})
+      super(msg)
+      @url = options[:url]
+    end
+  end
   
   class HttpError < BaseError
-    def initialize(code, body)
-      @code, @body = code, body
+    attr_reader :code, :body
+    
+    def initialize(msg=nil, options={})
+      super(msg, options)
+      @code, @body = options[:code], options[:body]
     end
   end
   

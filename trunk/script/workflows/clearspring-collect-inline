@@ -204,6 +204,9 @@ rescue Workflow::FileSpecMismatch
 rescue Workflow::FileNotReady
   $stderr.puts("Error: file is not ready to be extracted")
   8
+rescue HttpClient::BaseError => e
+  $stderr.puts("Network error: #{e.message} @ #{e.url}")
+  9
 end
 
 def start_profiling

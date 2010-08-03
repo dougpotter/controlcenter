@@ -26,8 +26,7 @@ class HttpClient::Curb < HttpClient::Base
       debug_print "Fetch #{url}"
     end
     
-    @curl.url = url
-    execute
+    execute(url)
     @curl.body_str
   end
   
@@ -43,7 +42,6 @@ class HttpClient::Curb < HttpClient::Base
         result
       end
       
-      @curl.url = url
       execute
       @curl.on_body
     end
@@ -51,28 +49,32 @@ class HttpClient::Curb < HttpClient::Base
   
   private
   
-  def execute
-    map_exceptions do
+  def execute(url)
+    @curl.url = url
+    map_exceptions(url) do
       @curl.perform
     end
-    check_response
+    check_response(url)
   end
   
-  def check_response
+  def check_response(url)
     if @curl.response_code != 200
       if @debug
-        debug_print "Raising for http code #{@curl.response_code}"
+        debug_print "HTTP code #{@curl.response_code} for #{url}"
       end
       
-      raise HttpClient::HttpError.new(@curl.response_code, @curl.body_str)
+      raise HttpClient::HttpError.new("HTTP #{@curl.response_code}",
+        :code => @curl.response_code,
+        :body => @curl.body_str,
+        :url => url)
     end
   end
   
-  def map_exceptions
+  def map_exceptions(url)
     begin
       yield
     rescue Curl::Err::TimeoutError => original_exc
-      exc = HttpClient::NetworkTimeout.new(original_exc.message)
+      exc = HttpClient::NetworkTimeout.new(original_exc.message, :url => url)
       exc.set_backtrace(original_exc.backtrace)
       raise exc
     end
