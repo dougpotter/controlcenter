@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100729211736) do
+ActiveRecord::Schema.define(:version => 20100803143344) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.text "name"
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(:version => 20100729211736) do
     t.string "name", :null => false
   end
 
-  create_table "click_counts", :force => true do |t|
+  create_table "click_counts", :id => false, :force => true do |t|
     t.integer "campaign_id",            :null => false
     t.integer "creative_id",            :null => false
     t.integer "ad_inventory_source_id", :null => false
@@ -112,6 +112,25 @@ ActiveRecord::Schema.define(:version => 20100729211736) do
   add_index "custom_filters_line_items", ["custom_filter_id"], :name => "custom_filters_line_items_custom_filter_id_fk"
   add_index "custom_filters_line_items", ["line_item_id"], :name => "custom_filters_line_items_line_item_id_fk"
 
+  create_table "data_provider_channels", :force => true do |t|
+    t.integer "data_provider_id", :null => false
+    t.string  "name",             :null => false
+  end
+
+  add_index "data_provider_channels", ["data_provider_id"], :name => "data_provider_channels_data_provider_id_fk"
+
+  create_table "data_provider_files", :force => true do |t|
+    t.integer "data_provider_channel_id", :null => false
+    t.string  "url",                      :null => false
+    t.integer "status",                   :null => false
+  end
+
+  add_index "data_provider_files", ["data_provider_channel_id"], :name => "data_provider_files_data_provider_channel_id_fk"
+
+  create_table "data_providers", :force => true do |t|
+    t.string "name", :null => false
+  end
+
   create_table "geo_components", :force => true do |t|
     t.string  "description",  :null => false
     t.integer "state_id",     :null => false
@@ -135,7 +154,7 @@ ActiveRecord::Schema.define(:version => 20100729211736) do
     t.integer "geography_id"
   end
 
-  create_table "impression_counts", :force => true do |t|
+  create_table "impression_counts", :id => false, :force => true do |t|
     t.integer "time_window_id",         :null => false
     t.integer "campaign_id",            :null => false
     t.integer "creative_id",            :null => false
@@ -188,7 +207,7 @@ ActiveRecord::Schema.define(:version => 20100729211736) do
     t.string "name"
   end
 
-  create_table "remote_placements", :force => true do |t|
+  create_table "remote_placements", :id => false, :force => true do |t|
     t.integer "campaign_id",            :null => false
     t.integer "geography_id",           :null => false
     t.integer "audience_id",            :null => false
@@ -260,6 +279,10 @@ ActiveRecord::Schema.define(:version => 20100729211736) do
 
   add_foreign_key "custom_filters_line_items", "custom_filters", :name => "custom_filters_line_items_custom_filter_id_fk"
   add_foreign_key "custom_filters_line_items", "line_items", :name => "custom_filters_line_items_line_item_id_fk"
+
+  add_foreign_key "data_provider_channels", "data_providers", :name => "data_provider_channels_data_provider_id_fk"
+
+  add_foreign_key "data_provider_files", "data_provider_channels", :name => "data_provider_files_data_provider_channel_id_fk"
 
   add_foreign_key "geo_components", "geographies", :name => "geo_components_geography_id_fk"
   add_foreign_key "geo_components", "states", :name => "geo_components_state_id_fk"
