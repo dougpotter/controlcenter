@@ -43,15 +43,24 @@ module Ruote
     #
     attr_reader :errors
 
-    def initialize (context, expressions, errors)
+    # An array of the workitems currently in the storage participant for this
+    # process instance.
+    #
+    # Do not confuse with #workitems
+    #
+    attr_reader :stored_workitems
+
+    def initialize (context, expressions, errors, stored_workitems)
 
       @expressions = expressions.collect { |e|
         Ruote::Exp::FlowExpression.from_h(context, e) }
       @expressions.sort! { |a, b| a.fei.expid <=> b.fei.expid }
 
-      @errors = errors.collect { |e|
-        ProcessError.new(e) }
-      @errors.sort! { |a, b| a.fei.expid <=> b.fei.expid }
+      @errors = errors.sort! { |a, b| a.fei.expid <=> b.fei.expid }
+
+      @stored_workitems = stored_workitems.collect { |h|
+        Ruote::Workitem.new(h)
+      }
     end
 
     # Returns the expression at the root of the process instance.
@@ -141,14 +150,92 @@ module Ruote
       end
     end
 
+    # For a process
+    #
+    #   Ruote.process_definition :name => 'review', :revision => '0.1' do
+    #     author
+    #     reviewer
+    #   end
+    #
+    # will yield 'review'.
+    #
     def definition_name
 
       root_expression.attribute('name') || root_expression.attribute_text
     end
 
+    # For a process
+    #
+    #   Ruote.process_definition :name => 'review', :revision => '0.1' do
+    #     author
+    #     reviewer
+    #   end
+    #
+    # will yield '0.1'.
+    #
     def definition_revision
 
       root_expression.attribute('revision')
+    end
+
+    # Returns the 'position' of the process.
+    #
+    #   pdef = Ruote.process_definition do
+    #     alpha :task => 'clean car'
+    #   end
+    #   wfid = engine.launch(pdef)
+    #
+    #   sleep 0.500
+    #
+    #   engine.process(wfid) # => [["0_0", "alpha", {"task"=>"clean car"}]]
+    #
+    # A process with concurrent branches will yield multiple 'positions'.
+    #
+    # It uses #workitems underneath.
+    #
+    def position
+
+      workitems.collect { |wi|
+        r = [ wi.fei.sid, wi.participant_name ]
+        params = wi.fields['params'].dup
+        params.delete('ref')
+        r << params
+        r
+      }
+    end
+
+    # Returns a list of the workitems currently 'out' to participants
+    #
+    # For example, with an instance of
+    #
+    #   Ruote.process_definition do
+    #     concurrence do
+    #       alpha :task => 'clean car'
+    #       bravo :task => 'sell car'
+    #     end
+    #   end
+    #
+    # calling engine.process(wfid).workitems will yield two workitems
+    # (alpha and bravo).
+    #
+    # Warning : do not confuse the workitems here with the workitems held
+    # in a storage participant or equivalent.
+    #
+    def workitems
+
+      @expressions.select { |fexp|
+        fexp.is_a?(Ruote::Exp::ParticipantExpression)
+      }.collect { |fexp|
+        Ruote::Workitem.new(fexp.h.applied_workitem)
+      }
+    end
+
+    # Returns a parseable UTC datetime string which indicates when the process
+    # was last active.
+    #
+    def last_active
+
+      @expressions.collect { |fexp| fexp.h.put_at }.max
     end
 
     # Returns the process definition tree as it was when this process instance
@@ -189,6 +276,9 @@ module Ruote
       s
     end
 
+    # Returns a 'dot' representation of the process. A graph describing
+    # the tree of flow expressions that compose the process.
+    #
     def to_dot (opts={})
 
       s = [ "digraph \"process wfid #{wfid}\" {" ]
@@ -199,27 +289,24 @@ module Ruote
       s.join("\n")
     end
 
-    def to_h
-
-      h = {}
-
-      %w[
-        wfid
-        definition_name definition_revision
-        original_tree current_tree
-        variables tags
-      ].each { |m| h[m] = self.send(m) }
-
-      h['launched_time'] = launched_time.to_s
-
-      # all_variables and all_tags ?
-
-      h['root_expression'] = nil
-      h['expressions'] = @expressions.collect { |e| e.fei.to_h }
-      h['errors'] = @errors.collect { |e| e.to_h }
-
-      h
-    end
+    #--
+    #def to_h
+    #  h = {}
+    #  %w[
+    #    wfid
+    #    definition_name definition_revision
+    #    original_tree current_tree
+    #    variables tags
+    #  ].each { |m| h[m] = self.send(m) }
+    #  h['launched_time'] = launched_time
+    #  h['last_active'] = last_active
+    #  # all_variables and all_tags ?
+    #  h['root_expression'] = nil
+    #  h['expressions'] = @expressions.collect { |e| e.fei.to_h }
+    #  h['errors'] = @errors.collect { |e| e.to_h }
+    #  h
+    #end
+    #++
 
     # Returns the current version of the process definition tree. If no
     # manipulation (gardening) was performed on the tree, this method yields

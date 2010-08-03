@@ -7,7 +7,7 @@
 
 require File.join(File.dirname(__FILE__), 'base')
 
-require 'ruote/part/hash_participant'
+require 'ruote/participant'
 
 
 class FtProcessStatusTest < Test::Unit::TestCase
@@ -37,28 +37,22 @@ class FtProcessStatusTest < Test::Unit::TestCase
       {"my process"=>["0", ["define", {"name"=>"my process"}, [["participant", {"ref"=>"alpha"}, []]]]]},
       ps.variables)
 
-    # checking process_status.to_h
-
-    h = ps.to_h
-    #p h
-
-    assert_equal wfid, h['wfid']
-    assert_equal 2, h['expressions'].size
-    assert_equal 'my process', h['definition_name']
-
-    assert_equal Time, Time.parse(h['launched_time']).class
-
-    assert_equal(
-      ["define", {"name"=>"my process"}, [["participant", {"ref"=>"alpha"}, []]]],
-      h['original_tree'])
-
-    assert_equal(
-      ["define", {"name"=>"my process"}, [["participant", {"ref"=>"alpha"}, []]]],
-      h['current_tree'])
-
-    assert_equal(
-      {"my process"=>["0", ["define", {"name"=>"my process"}, [["participant", {"ref"=>"alpha"}, []]]]]},
-      h['variables'])
+    ## checking process_status.to_h
+    #h = ps.to_h
+    ##p h
+    #assert_equal wfid, h['wfid']
+    #assert_equal 2, h['expressions'].size
+    #assert_equal 'my process', h['definition_name']
+    #assert_equal Time, Time.parse(h['launched_time']).class
+    #assert_equal(
+    #  ["define", {"name"=>"my process"}, [["participant", {"ref"=>"alpha"}, []]]],
+    #  h['original_tree'])
+    #assert_equal(
+    #  ["define", {"name"=>"my process"}, [["participant", {"ref"=>"alpha"}, []]]],
+    #  h['current_tree'])
+    #assert_equal(
+    #  {"my process"=>["0", ["define", {"name"=>"my process"}, [["participant", {"ref"=>"alpha"}, []]]]]},
+    #  h['variables'])
   end
 
   def test_variables
@@ -97,12 +91,12 @@ class FtProcessStatusTest < Test::Unit::TestCase
 
     assert_equal 1, errs.size
 
-    assert_equal wfid, errs.first['fei']['wfid']
+    assert_equal wfid, errs.first.wfid
 
     err = @engine.errors( wfid )
 
     assert_equal 1, err.size
-    assert_equal wfid, err.first['fei']['wfid']
+    assert_equal wfid, err.first.wfid
   end
 
   def test_tree
@@ -495,6 +489,91 @@ digraph "process wfid wfid" {
 }
       }.strip,
       dot)
+  end
+
+  def test_process_wfids
+
+    pdef = Ruote.define { alpha }
+
+    @engine.register_participant 'alpha', Ruote::StorageParticipant
+
+    wfids = (1..7).inject([]) { |a, i| a << @engine.launch(pdef); a }.sort
+
+    sleep 0.350
+
+    assert_equal wfids, @engine.process_wfids
+  end
+
+  def test_last_active
+
+    pdef = Ruote.define do
+      alpha
+      bravo
+    end
+
+    @engine.register_participant '.+', Ruote::StorageParticipant
+
+    wfid = @engine.launch(pdef)
+
+    @engine.wait_for(:alpha)
+
+    t0 = Time.parse(@engine.process(wfid).last_active)
+
+    sp = @engine.storage_participant
+    sp.reply(sp.first)
+
+    @engine.wait_for(:bravo)
+
+    t1 = Time.parse(@engine.process(wfid).last_active)
+
+    assert t1 > t0
+  end
+
+  def test_position
+
+    pdef = Ruote.define do
+      alpha :task => 'clean car'
+    end
+
+    @engine.register_participant '.+', Ruote::StorageParticipant
+
+    wfid = @engine.launch(pdef)
+    @engine.wait_for(:alpha)
+
+    assert_equal(
+      [ [ "0_0!!#{wfid}", 'alpha', { 'task' => 'clean car' } ] ],
+      @engine.process(wfid).position)
+
+    # #position leverages #workitems
+
+    assert_equal(
+      [ 'alpha' ],
+      @engine.process(wfid).workitems.collect { |wi| wi.participant_name })
+  end
+
+  def test_ps_with_stored_workitems
+
+    @engine.register_participant '.+', Ruote::StorageParticipant
+
+    wfid = @engine.launch(Ruote.define { alpha })
+    @engine.wait_for(:alpha)
+
+    ps = @engine.process(wfid)
+
+    assert_equal 1, ps.stored_workitems.size
+    assert_equal Ruote::Workitem, ps.stored_workitems.first.class
+  end
+
+  def test_ps_without_stored_workitems
+
+    @engine.register_participant '.+', Ruote::NullParticipant
+
+    wfid = @engine.launch(Ruote.define { alpha })
+    @engine.wait_for(:alpha)
+
+    ps = @engine.process(wfid)
+
+    assert_equal 0, ps.stored_workitems.size
   end
 end
 

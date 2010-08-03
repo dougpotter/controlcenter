@@ -216,6 +216,15 @@
 [o] fei : place engine id in fei.to_storage_id (and back)
 [o] wait_for(:inactive) blocks until worker is inactive
 [o] storage0.copy_to(storage1) / migrate_to as requested by Matt Nichols
+[o] check if rufus-lru is still needed
+[o] storage migration : eats all the memory :(
+[x] remove dependency on rufus-scheduler
+[o] engine.storage_participant
+[o] engine.noisy = true shortcut
+[o] (ft_27) set "v:mypart" => [ 'MyParticipant', {} ]
+    binding a participant on the fly (just for this process)
+[o] participant timeout as an instance method
+[o] engine.process_wfids (lighter than engine.processes)
 
 [ ] exp : exp (restricted form of eval ?)
 [ ] exp : case (is it necessary ?)
@@ -360,10 +369,29 @@
 
 [ ] solve the ps#root_expression_for(fei) dilemma
 
-[ ] engine.noisy = true shortcut
-
 [ ] re_apply_stalled
     http://groups.google.com/group/openwferu-users/browse_thread/thread/ff29f26d6b5fd135
 
 [ ] engine.purge (arts style : worker.@msgs = [])
+
+[ ] http://ruote.rubyforge.org/irclogs/ruote_2010-07-07.txt
+    configuration issue
+    maybe fail with a good error message when registering service...
+
+[ ] participant 'toto', :while => '${not_good}' (really ?)
+
+[ ] engine.register_from_dir() have a way to re-evaluate the dir
+[o] OR remove engine.register_from_dir()
+[o] AND provide a better register &block
+[o] provide a mean for a participant to reject a workitem (intra plist)
+    on_reply and now filter ?
+
+[ ] rw : upgrade [register_]participant documentation
+
+[ ] StorageParticipant#by_store[_name]
+    maybe : reform the store_name system !
+
+[ ] rename 'parser' to 'reader'
+
+[ ] ParticipantEntry is a bit brittle when editing engine.participant_list
 

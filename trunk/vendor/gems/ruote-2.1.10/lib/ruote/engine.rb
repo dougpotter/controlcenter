@@ -66,32 +66,52 @@ module Ruote
         # launch the worker if there is one
     end
 
+    # Returns the storage this engine works with passed at engine
+    # initialization.
+    #
     def storage
 
       @context.storage
     end
 
+    # Returns the worker nested inside this engine (passed at initialization).
+    # Returns nil if this engine is only linked to a storage (and the worker
+    # is running somewhere else (hopefully)).
+    #
     def worker
 
       @context.worker
     end
 
+    # Given a process identifier (wfid), cancels this process.
+    #
     def cancel_process (wfid)
 
       @context.storage.put_msg('cancel_process', 'wfid' => wfid)
     end
 
+    # Given a process identifier (wfid), kills this process. Killing is
+    # equivalent to cancelling, but when killing, :on_cancel attributes
+    # are not triggered.
+    #
     def kill_process (wfid)
 
       @context.storage.put_msg('kill_process', 'wfid' => wfid)
     end
 
+    # Cancels a segment of process instance. Since expressions are nodes in
+    # processes instances, cancelling an expression, will cancel the expression
+    # and all its children (the segment of process).
+    #
     def cancel_expression (fei)
 
       fei = fei.to_h if fei.respond_to?(:to_h)
       @context.storage.put_msg('cancel', 'fei' => fei)
     end
 
+    # Like #cancel_expression, but :on_cancel attributes (of the expressions)
+    # are not triggered.
+    #
     def kill_expression (fei)
 
       fei = fei.to_h if fei.respond_to?(:to_h)
@@ -153,41 +173,69 @@ module Ruote
     def process (wfid)
 
       exps = @context.storage.get_many('expressions', /!#{wfid}$/)
-      errs = self.errors( wfid )
+      errs = self.errors(wfid)
+      swis = @context.storage.get_many('workitems', /!#{wfid}$/)
 
       return nil if exps.empty? && errs.empty?
 
-      ProcessStatus.new(@context, exps, errs)
+      ProcessStatus.new(@context, exps, errs, swis)
     end
 
     # Returns an array of ProcessStatus instances.
     #
     # WARNING : this is an expensive operation.
     #
+    # Please note, if you're interested only in processes that have errors,
+    # Engine#errors is a more efficient mean.
+    #
+    # To simply list the wfids of the currently running, Engine#process_wfids
+    # is way cheaper to call.
+    #
     def processes
 
       exps = @context.storage.get_many('expressions')
       errs = self.errors
+      swis = @context.storage.get_many('workitems')
 
       by_wfid = {}
 
       exps.each do |exp|
-        (by_wfid[exp['fei']['wfid']] ||= [ [], [] ]).first << exp
+        (by_wfid[exp['fei']['wfid']] ||= [ [], [], [] ])[0] << exp
       end
       errs.each do |err|
-        (by_wfid[err['msg']['fei']['wfid']] ||= [ [], [] ]).last << err
+        (by_wfid[err.wfid] ||= [ [], [], [] ])[1] << err
+      end
+      swis.each do |swi|
+        (by_wfid[swi['fei']['wfid']] ||= [ [], [], [] ])[2] << swi
       end
 
-      by_wfid.values.collect { |xs, rs| ProcessStatus.new(@context, xs, rs) }
+      by_wfid.values.collect { |expressions, errors, workitems|
+        ProcessStatus.new(@context, expressions, errors, workitems)
+      }
     end
 
     # Returns an array of current errors (hashes)
     #
     def errors (wfid=nil)
 
-      wfid.nil? ?
+      errs = wfid.nil? ?
         @context.storage.get_many('errors') :
         @context.storage.get_many('errors', /!#{wfid}$/)
+
+      errs.collect { |err| ProcessError.new(err) }
+    end
+
+    # Returns a [sorted] list of wfids of the process instances currently
+    # running in the engine.
+    #
+    # This operation is substantially less costly than Engine#processes (though
+    # the 'how substantially' depends on the storage chosen).
+    #
+    def process_wfids
+
+      @context.storage.ids('expressions').collect { |sfei|
+        sfei.split('!').last
+      }.uniq.sort
     end
 
     # Shuts down the engine, mostly passes the shutdown message to the other
@@ -200,6 +248,10 @@ module Ruote
 
     # This method expects there to be a logger with a wait_for method in the
     # context, else it will raise an exception.
+    #
+    # *WARNING* : wait_for() is meant for environments where there is a unique
+    # worker and that worker is nested in this engine. In a multiple worker
+    # environment wait_for doesn't see events handled by 'other' workers.
     #
     # This method is only useful for test/quickstart/examples environments.
     #
@@ -312,10 +364,26 @@ module Ruote
     #     end
     #   end
     #
-    #   engine.register_participant 'moon', MyStatelessParticipant, 'name' => 'saturn5'
+    #   engine.register_participant(
+    #     'moon', MyStatelessParticipant, 'name' => 'saturn5')
     #
     # Remember that the options (the hash that follows the class name), must be
     # serialisable via JSON.
+    #
+    #
+    # == require_path and load_path
+    #
+    # It's OK to register a participant by passing it's full classname as a
+    # String.
+    #
+    #   engine.register_participant(
+    #     'auditor', 'AuditParticipant', 'require_path' => 'part/audit.rb')
+    #   engine.register_participant(
+    #     'auto_decision', 'DecParticipant', 'load_path' => 'part/dec.rb')
+    #
+    # Note the option load_path / require_path that point to the ruby file
+    # containing the participant implementation. 'require' will load and eval
+    # the ruby code only once, 'load' each time.
     #
     def register_participant (regex, participant=nil, opts={}, &block)
 
@@ -329,6 +397,30 @@ module Ruote
       pa
     end
 
+    # A shorter version of #register_participant
+    #
+    #   engine.register 'alice', MailParticipant, :target => 'alice@example.com'
+    #
+    # or a block registering mechanism.
+    #
+    #   engine.register do
+    #     alpha 'Participants::Alpha', 'flavour' => 'vanilla'
+    #     participant 'bravo', 'Participants::Bravo', :flavour => 'peach'
+    #     catchall ParticipantCharlie, 'flavour' => 'coconut'
+    #   end
+    #
+    # Originally implemented in ruote-kit by Torsten Schoenebaum.
+    #
+    def register (*args, &block)
+
+      if args.size > 0
+        register_participant(*args, &block)
+      else
+        proxy = ParticipantRegistrationProxy.new(self)
+        block.arity < 1 ? proxy.instance_eval(&block) : block.call(proxy)
+      end
+    end
+
     # Removes/unregisters a participant from the engine.
     #
     def unregister_participant (name_or_participant)
@@ -340,6 +432,55 @@ module Ruote
       @context.storage.put_msg(
         'participant_unregistered',
         'regex' => re.to_s)
+    end
+
+    alias :unregister :unregister_participant
+
+    # Returns a list of Ruote::ParticipantEntry instances.
+    #
+    #   engine.register_participant :alpha, MyParticipant, 'message' => 'hello'
+    #
+    #   # interrogate participant list
+    #   #
+    #   list = engine.participant_list
+    #   participant = list.first
+    #   p participant.regex
+    #     # => "^alpha$"
+    #   p participant.classname
+    #     # => "MyParticipant"
+    #   p participant.options
+    #     # => {"message"=>"hello"}
+    #
+    #   # update participant list
+    #   #
+    #   participant.regex = '^alfred$'
+    #   engine.participant_list = list
+    #
+    def participant_list
+
+      @context.plist.list
+    end
+
+    # Accepts a list of Ruote::ParticipantEntry instances.
+    #
+    # See Engine#participant_list
+    #
+    def participant_list= (pl)
+
+      @context.plist.list = pl
+    end
+
+    # A convenience method for
+    #
+    #   sp = Ruote::StorageParticipant.new(engine)
+    #
+    # simply do
+    #
+    #   sp = engine.storage_participant
+    #
+    def storage_participant
+
+      @storage_participant ||= Ruote::StorageParticipant.new(self)
     end
 
     # Adds a service locally (will not get propagated to other workers).
@@ -392,6 +533,18 @@ module Ruote
 
       Ruote::Workitem.new(fexp.h.applied_workitem)
     end
+
+    # A debug helper :
+    #
+    #   engine.noisy = true
+    #
+    # will let the engine (in fact the worker) pour all the details of the
+    # executing process instances to STDOUT.
+    #
+    def noisy= (b)
+
+      @context.logger.noisy = b
+    end
   end
 
   #
@@ -415,6 +568,39 @@ module Ruote
     def []= (k, v)
 
       @storage.put_engine_variable(k, v)
+    end
+  end
+
+  #
+  # Engine#register uses this proxy when it's passed a block.
+  #
+  # Originally written by Torsten Schoenebaum for ruote-kit.
+  #
+  class ParticipantRegistrationProxy
+
+    def initialize (engine)
+
+      @engine = engine
+    end
+
+    def participant (name, klass, options={})
+
+      @engine.register_participant(name, klass, options)
+    end
+
+    def catchall (*args)
+
+      klass = args.empty? ? Ruote::StorageParticipant : args.first
+      options = args[1] || {}
+
+      participant('.+', klass, options)
+    end
+
+    # Maybe a bit audacious...
+    #
+    def method_missing (method_name, *args)
+
+      participant(method_name, *args)
     end
   end
 end

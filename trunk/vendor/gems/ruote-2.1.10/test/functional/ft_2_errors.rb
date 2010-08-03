@@ -49,7 +49,7 @@ class FtErrorsTest < Test::Unit::TestCase
 
     ps = @engine.process(wfid)
 
-    exp = ps.expressions.find { |fe| fe.class == Ruote::Exp::RawExpression }
+    exp = ps.expressions.find { |fe| fe.class == Ruote::Exp::RefExpression }
 
     assert_not_nil exp
 
@@ -115,7 +115,7 @@ class FtErrorsTest < Test::Unit::TestCase
     ps = @engine.process(wfid)
 
     err = ps.errors.first
-    assert_equal [ 'nada', {}, [] ], err.tree
+    assert_equal [ 'nada', { 'ref' => 'nada' }, [] ], err.tree
 
     err.tree = [ 'alpha', {}, [] ]
     @engine.replay_at_error(err)
@@ -339,26 +339,35 @@ class FtErrorsTest < Test::Unit::TestCase
     assert_nil @engine.process(wfid)
   end
 
-  def test_ps_to_h
+  #def test_ps_to_h
+  #  pdef = Ruote.process_definition do
+  #    error 'nada'
+  #  end
+  #  #noisy
+  #  wfid = @engine.launch(pdef)
+  #  wait_for(wfid)
+  #  ps = @engine.process(wfid)
+  #  es = ps.to_h['errors']
+  #  e = es.first
+  #  assert_equal 1, es.size
+  #  assert_equal 'reply', e['msg']['action']
+  #  assert_equal wfid, e['msg']['fei']['wfid']
+  #  assert_equal 8, e.size
+  #end
+
+  def test_error_intercepted
 
     pdef = Ruote.process_definition do
-      error 'nada'
+      nada
     end
 
-    #noisy
-
     wfid = @engine.launch(pdef)
-    wait_for(wfid)
 
-    ps = @engine.process(wfid)
+    r = @engine.wait_for(wfid)
 
-    es = ps.to_h['errors']
-    e = es.first
-
-    assert_equal 1, es.size
-    assert_equal 'reply', e['msg']['action']
-    assert_equal wfid, e['msg']['fei']['wfid']
-    assert_equal 8, e.size
+    assert_equal 'RuntimeError', r['error_class']
+    assert_equal "unknown participant or subprocess 'nada'", r['error_message']
+    assert_equal Array, r['error_backtrace'].class
   end
 end
 

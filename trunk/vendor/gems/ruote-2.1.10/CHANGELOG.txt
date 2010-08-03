@@ -4,6 +4,30 @@
 
 == ruote - 2.1.11    not yet released
 
+- engine.participant_list= more tolerant about its input
+- engine.process(wfid).stored_workitems
+- engine.process(wfid).workitems and .position
+- engine.process(wfid).last_active
+- engine.errors(wfid=nil) now returns array of ProcessError instances
+- engine.register { block } (Torsten)
+- participant.accept?(workitem)
+- 'ref' expression (pointing to participants or subprocesses)
+- engine.process_wfids (list process instance wfids)
+- set 'v:alpha' => [ 'MyParticipant', { 'flavour' => 'vanilla' }]
+  participants registered as variables (just for that process instance)
+- engine.participant_list and .participant_list=
+- engine.register_participant 'al', 'AlParticipant', :require_path => 'pa/th'
+- engine.register_participant 'al', 'AlParticipant', :load_path => 'pa/th'
+- engine.[un]register for .[un]register_participant
+- engine.noisy = true (a shortcut)
+- engine.storage_participant (a shortcut)
+- removed direct dependency on rufus-lru
+- WaitLogger : a transient @seen (Thanks Kaspar)
+- error_handler : more error catching
+- storage#copy_to(other_storage) item by item implementation
+- Engine#wait_for OK with multiple threads
+- ExpressionMap now loads all expressions in Ruote::Exp:: namespace
+- 'error_intercepted' msg now features error_class, _message and _backtrace (RM)
 - Engine#join and Worker#join
 - workitem.error now includes error's backtrace (contributed by Rich Meyers)
 

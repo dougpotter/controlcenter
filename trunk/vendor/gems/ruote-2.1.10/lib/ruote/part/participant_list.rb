@@ -31,6 +31,10 @@ module Ruote
   #
   # Tracking participants to [business] processes.
   #
+  # The methods here are mostly called via the engine (registering /
+  # unregistering participants) and via the dispatch_pool (when handing
+  # workitems to participants).
+  #
   class ParticipantList
 
     attr_reader :instantiated_participants
@@ -41,20 +45,16 @@ module Ruote
       @instantiated_participants = {}
     end
 
-    # Registers the participant.
+    # Registers a participant. Called by Engine#register_participant.
     #
-    # Called by the register_participant method of the engine.
-    #
-    def register (name, participant, options, block, list=nil)
-
-      list ||= get_list
+    def register (name, participant, options, block)
 
       options = options.inject({}) { |h, (k, v)|
         h[k.to_s] = v.is_a?(Symbol) ? v.to_s : v
         h
       }
 
-      entry = if participant.is_a?(Class)
+      entry = if participant.is_a?(Class) || participant.is_a?(String)
         [ participant.to_s, options ]
       else
         "inpa_#{name.inspect}"
@@ -64,6 +64,8 @@ module Ruote
       key = (name.is_a?(Regexp) ? name : Regexp.new("^#{name}$")).source
 
       entry = [ key, entry ]
+
+      list = get_list
 
       list['list'].delete_if { |e| e.first == key }
 
@@ -104,12 +106,13 @@ module Ruote
     # Removes a participant, given via its name or directly from this
     # participant list.
     #
-    def unregister (name_or_participant, list=nil)
-
-      list ||= get_list
+    # Called usually by Engine#unregister_participant.
+    #
+    def unregister (name_or_participant)
 
       code = nil
       entry = nil
+      list = get_list
 
       if name_or_participant.is_a?(Symbol)
         name_or_participant = name_or_participant.to_s
@@ -151,35 +154,75 @@ module Ruote
       entry.first
     end
 
-    def lookup_info (participant_name)
+    # Returns a participant instance, or nil if there is no participant
+    # for the given participant name.
+    #
+    # Mostly a combination of #lookup_info and #instantiate.
+    #
+    def lookup (participant_name, workitem, opts={})
 
-      re, pa = get_list['list'].find { |rr, pp| participant_name.match(rr) }
+      pinfo = participant_name
 
-      case pa
-        when nil then nil
-        when String then @instantiated_participants[pa]
-        else pa
+      if participant_name.is_a?(String) && participant_name[0, 5] != 'inpa_'
+        pinfo = lookup_info(participant_name, workitem)
       end
+
+      pinfo ? instantiate(pinfo, opts) : nil
     end
 
-    def lookup (participant_name, opts={})
+    # Given a participant name, returns
+    #
+    # Returns nil if there is no participant registered that covers the given
+    # participant name.
+    #
+    def lookup_info (pname, workitem)
 
-      pi = lookup_info(participant_name)
+      get_list['list'].each do |regex, pinfo|
 
-      return nil unless pi
-      return opts[:on_reply] ? nil : pi unless pi.is_a?(Array)
+        next unless pname.match(regex)
 
-      class_name, options = pi
+        pa = instantiate(pinfo, :if_respond_to? => :accept?)
+
+        return pinfo unless pa
+
+        return pinfo if pa.accept?(
+          Ruote::Workitem.new(workitem.merge('participant_name' => pname))
+        )
+      end
+
+      nil
+    end
+
+    # Returns an instance of a participant
+    #
+    def instantiate (pinfo, opts={})
+
+      irt = opts[:if_respond_to?]
+
+      pinfo = @instantiated_participants[pinfo] if pinfo.is_a?(String)
+
+      if pinfo.respond_to?(:consume)
+        return (pinfo.respond_to?(irt) ? pinfo : nil) if irt
+        return pinfo
+      end
+
+      return nil unless pinfo
+
+      pa_class_name, options = pinfo
 
       if rp = options['require_path']
         require(rp)
       end
+      if lp = options['load_path']
+        load(lp)
+      end
 
-      pa_class = Ruote.constantize(class_name)
+      pa_class = Ruote.constantize(pa_class_name)
       pa_m = pa_class.instance_methods
 
-      return nil if opts[:on_reply] && ! (
-        pa_m.include?(:on_reply) || pa_m.include?('on_reply'))
+      if irt && ! (pa_m.include?(irt.to_s) || pa_m.include?(irt.to_sym))
+        return nil
+      end
 
       pa = if pa_class.instance_method(:initialize).arity > 0
         pa_class.new(options)
@@ -195,7 +238,7 @@ module Ruote
     #
     def names
 
-      get_list['list'].map { |re, pa| re }
+      get_list['list'].collect { |re, pa| re }
     end
 
     # Shuts down the 'instantiated participants' (engine worker participants)
@@ -208,14 +251,106 @@ module Ruote
       }
     end
 
+    # Used by Engine#participant_list
+    #
+    # Returns a representation of this participant list as an array of
+    # ParticipantEntry instances.
+    #
+    def list
+
+      get_list['list'].collect { |e| ParticipantEntry.new(e) }
+    end
+
+    # Used by Engine#participant_list=
+    #
+    # Takes as input an array of ParticipantEntry instances and updates
+    # this participant list with it.
+    #
+    # See ParticipantList#list
+    #
+    def list= (pl)
+
+      list = get_list
+      list['list'] = pl.collect { |e| ParticipantEntry.read(e) }
+
+      if r = @context.storage.put(list)
+        #
+        # put failed, have to redo it
+        #
+        list= (pl)
+      end
+    end
+
     protected
 
+    # Fetches and returns the participant list in the storage.
+    #
     def get_list
 
       @context.storage.get_configuration('participant_list') ||
         { 'type' => 'configurations',
           '_id' => 'participant_list',
           'list' => [] }
+    end
+
+    #--
+    # Returns an array of all the classes in the ObjectSpace that include the
+    # Ruote::LocalParticipant module.
+    #
+    #def local_participant_classes
+    #  ObjectSpace.each_object(Class).inject([]) { |a, c|
+    #    a << c if c.include?(Ruote::LocalParticipant)
+    #    a
+    #  }
+    #end
+    #++
+  end
+
+  #
+  # A helper class, for ParticipantList#list, which returns a list (order
+  # matters) of ParticipantEntry instances.
+  #
+  # See Engine#participant_list
+  #
+  class ParticipantEntry
+
+    attr_accessor :regex, :classname, :options
+
+    def initialize (a)
+      @regex = a.first
+      if a.last.is_a?(Array)
+        @classname = a.last.first
+        @options = a.last.last
+      else
+        @classname = a.last
+        @options = nil
+      end
+    end
+
+    def to_a
+      @classname[0, 5] == 'inpa_' ?
+        [ @regex, @classname ] :
+        [ @regex, [ @classname, @options ] ]
+    end
+
+    def to_s
+      "/#{@regex}/ ==> #{@classname} #{@options.inspect}"
+    end
+
+    def self.read (elt)
+
+      if elt.is_a?(ParticipantEntry)
+        return elt.to_a
+      end
+
+      if elt.is_a?(Hash)
+        return elt['classname'][0, 5] == 'inpa_' ?
+          [ elt['regex'], elt['classname'] ] :
+          [ elt['regex'], [ elt['classname'], elt['options'] ] ]
+      end
+
+      # else elt is a Array
+      elt
     end
   end
 end

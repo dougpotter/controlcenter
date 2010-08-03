@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer", "Torsten Schoenebaum"]
-  s.date = %q{2010-06-17}
+  s.date = %q{2010-07-20}
   s.description = %q{
 ruote is an open source ruby workflow engine.
     }
@@ -61,6 +61,7 @@ ruote is an open source ruby workflow engine.
      "lib/ruote/exp/fe_noop.rb",
      "lib/ruote/exp/fe_participant.rb",
      "lib/ruote/exp/fe_redo.rb",
+     "lib/ruote/exp/fe_ref.rb",
      "lib/ruote/exp/fe_reserve.rb",
      "lib/ruote/exp/fe_restore.rb",
      "lib/ruote/exp/fe_save.rb",
@@ -73,13 +74,13 @@ ruote is an open source ruby workflow engine.
      "lib/ruote/exp/flowexpression.rb",
      "lib/ruote/exp/iterator.rb",
      "lib/ruote/exp/merge.rb",
-     "lib/ruote/exp/raw.rb",
      "lib/ruote/exp/ro_attributes.rb",
      "lib/ruote/exp/ro_persist.rb",
      "lib/ruote/exp/ro_variables.rb",
      "lib/ruote/fei.rb",
      "lib/ruote/id/mnemo_wfid_generator.rb",
      "lib/ruote/id/wfid_generator.rb",
+     "lib/ruote/log/pretty.rb",
      "lib/ruote/log/storage_history.rb",
      "lib/ruote/log/test_logger.rb",
      "lib/ruote/log/wait_logger.rb",
@@ -158,6 +159,7 @@ ruote is an open source ruby workflow engine.
      "test/functional/eft_28_when.rb",
      "test/functional/eft_29_cron.rb",
      "test/functional/eft_2_sequence.rb",
+     "test/functional/eft_30_ref.rb",
      "test/functional/eft_3_participant.rb",
      "test/functional/eft_4_set.rb",
      "test/functional/eft_5_subprocess.rb",
@@ -198,9 +200,11 @@ ruote is an open source ruby workflow engine.
      "test/functional/ft_38_participant_more.rb",
      "test/functional/ft_39_wait_for.rb",
      "test/functional/ft_3_participant_registration.rb",
-     "test/functional/ft_40_participant_on_reply.rb",
+     "test/functional/ft_40_wait_logger.rb",
      "test/functional/ft_41_participants.rb",
      "test/functional/ft_42_storage_copy.rb",
+     "test/functional/ft_43_participant_on_reply.rb",
+     "test/functional/ft_44_var_participant.rb",
      "test/functional/ft_4_cancel.rb",
      "test/functional/ft_5_on_error.rb",
      "test/functional/ft_6_on_cancel.rb",
@@ -259,10 +263,9 @@ ruote is an open source ruby workflow engine.
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<rufus-json>, [">= 0.2.2"])
+      s.add_runtime_dependency(%q<rufus-json>, [">= 0.2.4"])
       s.add_runtime_dependency(%q<rufus-cloche>, [">= 0.1.17"])
       s.add_runtime_dependency(%q<rufus-dollar>, [">= 0"])
-      s.add_runtime_dependency(%q<rufus-lru>, [">= 0"])
       s.add_runtime_dependency(%q<rufus-mnemo>, [">= 1.1.0"])
       s.add_runtime_dependency(%q<rufus-scheduler>, [">= 2.0.5"])
       s.add_runtime_dependency(%q<rufus-treechecker>, [">= 1.0.3"])
@@ -273,10 +276,9 @@ ruote is an open source ruby workflow engine.
       s.add_development_dependency(%q<mailtrap>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
     else
-      s.add_dependency(%q<rufus-json>, [">= 0.2.2"])
+      s.add_dependency(%q<rufus-json>, [">= 0.2.4"])
       s.add_dependency(%q<rufus-cloche>, [">= 0.1.17"])
       s.add_dependency(%q<rufus-dollar>, [">= 0"])
-      s.add_dependency(%q<rufus-lru>, [">= 0"])
       s.add_dependency(%q<rufus-mnemo>, [">= 1.1.0"])
       s.add_dependency(%q<rufus-scheduler>, [">= 2.0.5"])
       s.add_dependency(%q<rufus-treechecker>, [">= 1.0.3"])
@@ -288,10 +290,9 @@ ruote is an open source ruby workflow engine.
       s.add_dependency(%q<jeweler>, [">= 0"])
     end
   else
-    s.add_dependency(%q<rufus-json>, [">= 0.2.2"])
+    s.add_dependency(%q<rufus-json>, [">= 0.2.4"])
     s.add_dependency(%q<rufus-cloche>, [">= 0.1.17"])
     s.add_dependency(%q<rufus-dollar>, [">= 0"])
-    s.add_dependency(%q<rufus-lru>, [">= 0"])
     s.add_dependency(%q<rufus-mnemo>, [">= 1.1.0"])
     s.add_dependency(%q<rufus-scheduler>, [">= 2.0.5"])
     s.add_dependency(%q<rufus-treechecker>, [">= 1.0.3"])
