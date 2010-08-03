@@ -1,3 +1,14 @@
+# == Schema Information
+# Schema version: 20100803143344
+#
+# Table name: data_provider_files
+#
+#  id                       :integer(4)      not null, primary key
+#  data_provider_channel_id :integer(4)      not null
+#  url                      :string(255)     not null
+#  status                   :integer(4)      not null
+#
+
 class DataProviderFile < ActiveRecord::Base
   belongs_to :data_provider_channel
   

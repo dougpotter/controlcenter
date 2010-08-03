@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: models
 #
@@ -7,6 +7,8 @@
 #  description :string(255)
 #
 
+# Model is defined as an algorithm we use to generate and Internal
+# Audience
 class Model < ActiveRecord::Base
   has_many :audiences
 end

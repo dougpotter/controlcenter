@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: geo_components
 #
@@ -9,5 +9,7 @@
 #  geography_id :integer(4)      not null
 #
 
+# Geo Component is defined as a smaller geographic area than Geography.
+# Components comprise Geographies.
 class GeoComponent < ActiveRecord::Base
 end

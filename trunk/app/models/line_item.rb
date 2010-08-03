@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: line_items
 #
@@ -10,6 +10,8 @@
 #  insertion_order_id :integer(4)
 #
 
+# Line Item is defined as a component of an insertion order which
+# specifies quantity and pricing of advertising to be delivered
 class LineItem < ActiveRecord::Base
   belongs_to :insertion_order
   has_and_belongs_to_many :custom_filters

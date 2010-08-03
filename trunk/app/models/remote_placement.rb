@@ -1,16 +1,25 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: remote_placements
 #
-#  id                :integer(4)      not null, primary key
-#  campaign_id       :integer(4)
-#  geography_id      :integer(4)
-#  audience_id       :integer(4)
-#  time_window_id    :integer(4)
-#  remote_placements :integer(4)
+#  campaign_id            :integer(4)      not null
+#  geography_id           :integer(4)      not null
+#  audience_id            :integer(4)      not null
+#  time_window_id         :integer(4)      not null
+#  remote_placement_count :integer(4)      not null
 #
 
+# Remote Placement is defined as the act of including a targeted
+# (internally) user/human to a Remote Audience. Examples of a Remote
+# Placement include 1. sending a list of user/humans to AppNexus and
+# 2. the arrival - and pixel dropping, specifically - that occurs when 
+# a user/human who is a member of an internal Audience arrives at a
+# data-provider-affiliated property for the first time after being added
+# to that internal Audience. This model wraps a fact
+# table which records Remote Placmenets along the dimensions included
+# in the (compound) key comprised of all the columns except 
+# remote_placement_count
 class RemotePlacement < ActiveRecord::Base
   validates_presence_of :time_window_id, :campaign_id, :geography_id, :audience_id
   validates_numericality_of :remote_placement_count

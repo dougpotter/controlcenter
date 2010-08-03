@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: audiences
 #
@@ -10,6 +10,12 @@
 #  model_id           :integer(4)
 #
 
+# Audience is defined as a list of targetable individuals. It 
+# encompasses both 'internal' and 'external' audiences - the 
+# former being a group we of users we have identified as desirable
+# targets and the latter being those among and internal audience
+# who have been cookied.
+#
 class Audience < ActiveRecord::Base
   belongs_to :model
   belongs_to :seed_extraction

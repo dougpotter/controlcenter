@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: seed_extractions
 #
@@ -9,6 +9,8 @@
 #  reducer     :text
 #
 
+# Seed Extraction is defined as an algorithm by which we arrive at a
+# seed audience
 class SeedExtraction < ActiveRecord::Base
   has_many :audiences
 end

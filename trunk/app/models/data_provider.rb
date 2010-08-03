@@ -1,3 +1,12 @@
+# == Schema Information
+# Schema version: 20100803143344
+#
+# Table name: data_providers
+#
+#  id   :integer(4)      not null, primary key
+#  name :string(255)     not null
+#
+
 class DataProvider < ActiveRecord::Base
   has_many :data_provider_channels
   
