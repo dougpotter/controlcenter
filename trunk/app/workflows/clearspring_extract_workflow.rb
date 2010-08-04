@@ -1,4 +1,5 @@
 require 'fileutils'
+require_dependency 'semaphore'
 
 module Workflow
   # Base class for workflow errors
