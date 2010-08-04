@@ -42,7 +42,7 @@ class HttpClient::Curb < HttpClient::Base
         result
       end
       
-      execute
+      execute(url)
       @curl.on_body
     end
   end
