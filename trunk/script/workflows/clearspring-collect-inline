@@ -32,6 +32,9 @@ parser = OptionParser.new do |opts|
   opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/clearspring.yml is used)') do |path|
     options[:config_path] = path
   end
+  opts.on('--http-client CLIENT', 'Use specified http client CLIENT (valid values: curb (default), net_http, right_aws)') do |client|
+    options[:http_client] = client
+  end
   
   opts.separator ''
   opts.separator 'Behavior modifying options:'
@@ -164,6 +167,7 @@ def run(ext_params)
       :debug => ext_params[:debug],
       :lock => ext_params[:lock],
       :once => ext_params[:once],
+      :http_client => ext_params[:http_client],
     })
     ClearspringExtractWorkflow.new(StrictHashWithIndifferentAccess.new(params))
   end
@@ -232,6 +236,7 @@ params = {
   :extract => options[:extract],
   :lock => options[:lock],
   :once => options[:once],
+  :http_client => options[:http_client],
 }
 
 if options[:profile]
