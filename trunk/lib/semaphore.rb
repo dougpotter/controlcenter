@@ -57,7 +57,9 @@ module Semaphore
         allocation.save!
         
         # don't use attribute assignment+save to avoid accidental overwrites
-        Resource.update_all('usage = usage + 1', ['id = ?', resource.id])
+        # usage is a reserved word on mysql, and thus must be quoted
+        quoted_usage = Resource.connection.quote_column_name('usage')
+        Resource.update_all("#{quoted_usage} = #{quoted_usage} + 1", ['id = ?', resource.id])
       end
       
       allocation.id
@@ -219,7 +221,9 @@ module Semaphore
     class << self
       # note that this method accepts nil ids (which would be a no-op)
       def decrement_usage(id)
-        update_all('usage = (case when usage > 1 then usage - 1 else 0 end)', ['id = ?', id])
+        # usage is a reserved word on mysql, and thus must be quoted
+        quoted_usage = connection.quote_column_name('usage')
+        update_all("#{quoted_usage} = (case when #{quoted_usage} > 1 then #{quoted_usage} - 1 else 0 end)", ['id = ?', id])
       end
       
       def recalculate_usage(id)
