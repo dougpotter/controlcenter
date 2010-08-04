@@ -35,6 +35,9 @@ parser = OptionParser.new do |opts|
   opts.on('--http-client CLIENT', 'Use specified http client CLIENT (valid values: curb (default), net_http, right_aws)') do |client|
     options[:http_client] = client
   end
+  opts.on('--system-timer', 'Force the use of SystemTimer instead of Timeout') do
+    options[:system_timer] = true
+  end
   
   opts.separator ''
   opts.separator 'Behavior modifying options:'
@@ -225,7 +228,9 @@ def stop_profiling
   printer.print(File.open('profile-output.html', 'w'), :min_percent => 1)
 end
 
-require 'force_system_timer'
+if options[:system_timer]
+  require 'force_system_timer'
+end
 
 params = {
   :selected_sources => selected_sources,
