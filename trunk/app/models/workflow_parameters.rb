@@ -1,6 +1,9 @@
 require 'yaml'
+require 'ostruct'
 
 class WorkflowParameters
+  class SettingsMissing < StandardError; end
+  
   class << self
     @@dir = "#{RAILS_ROOT}/config"
     
@@ -11,8 +14,11 @@ class WorkflowParameters
     def load(path)
       File.open(path) do |file|
         settings = YAML.load(file)
-        struct = Struct.new(nil, *settings.keys)
-        struct.new(*settings.values)
+        settings = settings[RAILS_ENV]
+        if settings.nil?
+          raise SettingsMissing, "Missing settings for #{RAILS_ENV} environment"
+        end
+        OpenStruct.new(settings)
       end
     end
   end
