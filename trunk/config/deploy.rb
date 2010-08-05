@@ -242,7 +242,24 @@ namespace :deploy do
           ]
         )
   end
-  
+end
+
+# =============================================================================
+# SCHEDULED TASKS
+# =============================================================================
+after "deploy:symlink", "deploy:update_crontab"
+
+namespace :deploy do
+  desc "Update the crontab file"
+  task :update_crontab, :roles => :app, :only => {:migration_czar => true} do
+    run "cd #{release_path} && whenever --update-crontab #{application}"
+  end
+end
+
+# =============================================================================
+# HOUSEKEEPING
+# =============================================================================
+namespace :deploy do
   desc "Remove repository cache (use when switching branches or reorganizing repository)"
   task :remove_repository_cache do
     cache_path = fetch(:repository_cache, 'cached-copy')
