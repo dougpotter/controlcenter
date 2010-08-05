@@ -77,6 +77,10 @@ class HttpClient::Curb < HttpClient::Base
       exc = HttpClient::NetworkTimeout.new(original_exc.message, :url => url)
       exc.set_backtrace(original_exc.backtrace)
       raise exc
+    rescue IOError => original_exc
+      exc = HttpClient::NetworkError.new(original_exc.message, :url => url)
+      exc.set_backtrace(original_exc.backtrace)
+      raise exc
     end
   end
   
