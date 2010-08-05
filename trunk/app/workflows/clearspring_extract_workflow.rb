@@ -21,6 +21,7 @@ class ClearspringExtractWorkflow
     @parser = WebParser.new
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug])
     @s3_client = S3Client.new(:debug => @params[:debug])
+    @network_error_retry_options = {:retry_count => 10, :sleep_time => 10}
   end
   
   def run
@@ -59,7 +60,9 @@ class ClearspringExtractWorkflow
   
   def list_files
     url = build_data_source_url
-    page_text = @http_client.fetch(url + '/')
+    page_text = retry_network_errors(@network_error_retry_options) do
+      @http_client.fetch(url + '/')
+    end
     files = @parser.parse_any_httpd_file_list(page_text)
     absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
     absolute_file_urls.reject! { |url| !should_download_url?(url) }
@@ -91,7 +94,9 @@ class ClearspringExtractWorkflow
     remote_relative_path = build_relative_path(url)
     local_path = build_local_path(remote_relative_path)
     FileUtils.mkdir_p(File.dirname(local_path))
-    @http_client.download(url, local_path)
+    retry_network_errors(@network_error_retry_options) do
+      @http_client.download(url, local_path)
+    end
     local_path
   end
   
@@ -112,7 +117,9 @@ class ClearspringExtractWorkflow
   end
   
   def upload(local_path)
-    @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
+    retry_aws_errors(@network_error_retry_options) do
+      @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
+    end
   end
   
   # -----
@@ -169,6 +176,58 @@ class ClearspringExtractWorkflow
     # raise the exception so that driver code can exit the process
     # with appropriate exit code
     raise Workflow::FileExtractionInProgress, "File is being extracted: #{remote_url}"
+  end
+  
+  # Required options:
+  # :retry_count
+  # :sleep_time
+  # :exception_class or :exception_classes
+  # Optional options:
+  # :extra_callback
+  def retry_errors(options)
+    if options[:exception_class] && options[:exception_classes]
+      raise ArgumentError, "Cannot specify both :exception_class and :exception_classes"
+    end
+    exception_classes = options[:exception_classes] || [options[:exception_class]]
+    extra_callback = options[:extra_callback]
+    0.upto(options[:retry_count]) do |index|
+      begin
+        return yield
+      rescue Exception => e
+        unless exception_classes.detect { |klass| e.is_a?(klass) }
+          raise
+        end
+        if extra_callback
+          extra_callback.call(e)
+        end
+        if index == options[:retry_count]
+          raise
+        else
+          sleep(options[:sleep_time])
+        end
+      end
+    end
+  end
+  
+  def retry_network_errors(options)
+    default_options = {:exception_class => HttpClient::NetworkError}
+    retry_errors(default_options.update(options)) do
+      yield
+    end
+  end
+  
+  def retry_aws_errors(options)
+    callback = lambda do |exception|
+      http_code = exception.http_code.to_i
+      if http_code < 500 || http_code >= 600
+        # only retry 5xx errors
+        raise
+      end
+    end
+    default_options = {:exception_class => RightAws::AwsError, :extra_callback => callback}
+    retry_errors(default_options.update(options)) do
+      yield
+    end
   end
   
   # -----
