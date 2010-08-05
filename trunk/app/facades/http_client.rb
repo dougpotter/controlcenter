@@ -17,7 +17,10 @@ module HttpClient
     end
   end
   
-  class NetworkTimeout < BaseError
+  class NetworkError < BaseError
+  end
+  
+  class NetworkTimeout < NetworkError
   end
   
   class Base
