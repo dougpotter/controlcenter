@@ -143,6 +143,12 @@ $settings = {
   :net_io_timeout => config.clearspring_net_io_timeout,
   :s3_bucket => config.s3_bucket,
   :clearspring_pid => config.clearspring_pid,
+  # options
+  :http_client => config.http_client,
+  :system_timer => config.force_system_timer,
+  :lock => config.lock,
+  :once => config.once,
+  :debug => config.debug,
 }
 
 def settings; $settings end
@@ -159,13 +165,13 @@ def run(ext_params)
     end.flatten!
   end
   workflows = versions.map do |version_params|
-    params = settings.merge({
-      :date => ext_params[:date],
-      :debug => ext_params[:debug],
-      :lock => ext_params[:lock],
-      :once => ext_params[:once],
-      :http_client => ext_params[:http_client],
-    }).merge(version_params)
+    params = settings.dup
+    [:date, :debug, :lock, :once, :http_client].each do |key|
+      unless ext_params[key].nil?
+        params[key] = ext_params[key]
+      end
+    end
+    params.update(version_params)
     options = StrictHashWithIndifferentAccess.new(params)
     options.optional_keys(:hour)
     ClearspringExtractWorkflow.new(options)

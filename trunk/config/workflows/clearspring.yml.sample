@@ -7,6 +7,14 @@ development: &common
   temp_root_dir: '/tmp'
   s3_bucket: xgw
   clearspring_pid: 15530
+  
+  # Options:
+  #
+  # http_client: curb
+  # force_system_timer: true
+  # lock: true
+  # once: true
+  # debug: true
 
 production:
   <<: *common
