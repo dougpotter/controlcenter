@@ -9,45 +9,82 @@ class HttpClient::Curb < HttpClient::Base
   #   :timeout is used for :connect_timeout as well)
   # :debug
   def initialize(options={})
-    @curl = Curl::Easy.new
-    @curl.userpwd = "#{options[:http_username]}:#{options[:http_password]}"
-    if options[:timeout]
-      # note: connect_timeout can be overwritten below
-      @curl.timeout = @curl.connect_timeout = options[:timeout]
-    end
-    if options[:connect_timeout]
-      @curl.connect_timeout = options[:connect_timeout]
-    end
+    @options = options
+    create_curl
     @debug = options[:debug]
   end
   
   def fetch(url)
-    if @debug
-      debug_print "Fetch #{url}"
-    end
-    
-    execute(url)
-    @curl.body_str
-  end
-  
-  def download(url, local_path)
-    if @debug
-      debug_print "Download #{url} -> #{local_path}"
-    end
-    
-    File.open(local_path, 'w') do |file|
-      old_on_body = @curl.on_body do |data|
-        result = old_on_body ? old_on_body.call(data) : data.length
-        file << data if result == data.length
-        result
+    retried = false
+    begin
+      if @debug
+        debug_print "Fetch #{url}"
       end
       
       execute(url)
-      @curl.on_body
+      @curl.body_str
+    rescue Curl::Err::MultiBadEasyHandle 
+      # we get this when earlier request failed and client code retried it
+      if retried
+        raise
+      end
+      retried = true
+      
+      if @debug
+        debug_print "Retrying due to Curl::Err::MultiBadEasyHandle"
+      end
+      
+      create_curl
+      retry
+    end
+  end
+  
+  def download(url, local_path)
+    retried = false
+    begin
+      if @debug
+        debug_print "Download #{url} -> #{local_path}"
+      end
+      
+      File.open(local_path, 'w') do |file|
+        old_on_body = @curl.on_body do |data|
+          result = old_on_body ? old_on_body.call(data) : data.length
+          file << data if result == data.length
+          result
+        end
+        
+        execute(url)
+        @curl.on_body
+      end
+    rescue Curl::Err::MultiBadEasyHandle 
+      # we get this when earlier request failed and client code retried it
+      if retried
+        raise
+      end
+      retried = true
+      
+      if @debug
+        debug_print "Retrying due to Curl::Err::MultiBadEasyHandle"
+      end
+      
+      create_curl
+      retry
     end
   end
   
   private
+  
+  def create_curl
+    @curl = Curl::Easy.new
+    @curl.userpwd = "#{@options[:http_username]}:#{@options[:http_password]}"
+    if @options[:timeout]
+      # note: connect_timeout can be overwritten below
+      @curl.timeout = @curl.connect_timeout = @options[:timeout]
+    end
+    if @options[:connect_timeout]
+      @curl.connect_timeout = @options[:connect_timeout]
+    end
+  end
   
   def execute(url)
     @curl.url = url
