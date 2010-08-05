@@ -15,15 +15,19 @@ parser = OptionParser.new do |opts|
   opts.on('-D', '--date DATE', 'Extract for specified DATE (by default today)') do |date|
     options[:date] = date
   end
-  opts.on('-H', '--hour HOUR', 'Extract for specified HOUR (by default all hours; 24-hour format: 00-23)') do |hour|
-    unless hour =~ /^\d\d?/
-      raise OptionParser::ParseError, "Invalid hour value: #{hour}"
+  opts.on('-H', '--hour HOUR', 'Extract for specified HOUR (by default all hours; 24-hour format: 00-23; multiple hours can be specified separated by commas)') do |hours|
+    hours = hours.split(',').map { |hour| hour.strip }
+    hours.map! do |hour|
+      unless hour =~ /^\d\d?/
+        raise OptionParser::ParseError, "Invalid hour value: #{hour}"
+      end
+      hour = hour.to_i
+      if hour < 0 || hour > 23
+        raise OptionParser::ParseError, "Hour value out of range: #{hour}"
+      end
+      hour
     end
-    hour = hour.to_i
-    if hour < 0 || hour > 23
-      raise OptionParser::ParseError, "Hour value out of range: #{hour}"
-    end
-    options[:hour] = hour
+    options[:hours] = hours
   end
   
   opts.separator ''
@@ -144,17 +148,27 @@ $settings = {
 def settings; $settings end
 
 def run(ext_params)
-  workflows = ext_params[:selected_sources].map do |data_source|
+  versions = ext_params[:selected_sources].map do |data_source|
+    {:data_source => data_source}
+  end
+  if ext_params[:hours]
+    versions.map! do |version|
+      ext_params[:hours].map do |hour|
+        version.merge(:hour => hour)
+      end
+    end.flatten!
+  end
+  workflows = versions.map do |version_params|
     params = settings.merge({
       :date => ext_params[:date],
-      :hour => ext_params[:hour],
-      :data_source => data_source,
       :debug => ext_params[:debug],
       :lock => ext_params[:lock],
       :once => ext_params[:once],
       :http_client => ext_params[:http_client],
-    })
-    ClearspringExtractWorkflow.new(StrictHashWithIndifferentAccess.new(params))
+    }).merge(version_params)
+    options = StrictHashWithIndifferentAccess.new(params)
+    options.optional_keys(:hour)
+    ClearspringExtractWorkflow.new(options)
   end
   
   if ext_params[:extract] && workflows.length > 1
@@ -217,7 +231,7 @@ end
 params = {
   :selected_sources => selected_sources,
   :date => date,
-  :hour => options[:hour],
+  :hours => options[:hours],
   :debug => options[:debug],
   :discover => options[:discover],
   :extract => options[:extract],
