@@ -113,6 +113,36 @@ namespace :aws do
 end
 
 # =============================================================================
+# WORKFLOWS CONFIGURATION
+# =============================================================================
+after "deploy:update_code", "workflows:symlink"
+
+namespace :workflows do
+
+  namespace :push do
+    desc "Push ALL workflow configurations"
+    task :all do
+      clearspring
+    end
+    
+    desc "Push new Clearspring configuration"
+    task :clearspring do
+      put File.read(File.join(File.dirname(__FILE__), 'workflows/clearspring.yml')),
+        File.join(shared_path, 'config', 'workflows', 'clearspring.yml')
+    end
+  end
+  
+  desc "Make symlink for workflows' yamls"
+  task :symlink do
+    run <<-CMD
+      for workflow in clearspring; do
+        ln -nfs #{shared_path}/config/workflows/$workflow.yml #{release_path}/config/workflows/$workflow.yml;
+      done
+    CMD
+  end
+end
+
+# =============================================================================
 # DATABASE TASKS
 # =============================================================================
 after "deploy:update_code", "db:symlink"
