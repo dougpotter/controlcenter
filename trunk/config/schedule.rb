@@ -3,7 +3,10 @@
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
 
-every :hour do
+# Clearspring files seem to mostly materialize a couple minutes after each
+# hour mark, with some exceptions. Running extraction exactly on the hour
+# is asking for race conditions. Run extraction 15 minutes before every hour.
+every 1.hour, :at => 45 do
   rake 'workflows:clearspring:autorun'
 end
 
