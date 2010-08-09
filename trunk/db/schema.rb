@@ -9,10 +9,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100803143344) do
+ActiveRecord::Schema.define(:version => 20100809185014) do
 
   create_table "ad_inventory_sources", :force => true do |t|
-    t.text "name"
+    t.string "name"
+    t.string "ais",  :null => false
   end
 
   create_table "ad_inventory_sources_campaigns", :id => false, :force => true do |t|
@@ -24,8 +25,8 @@ ActiveRecord::Schema.define(:version => 20100803143344) do
   add_index "ad_inventory_sources_campaigns", ["campaign_id"], :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   create_table "audiences", :force => true do |t|
-    t.text    "description"
-    t.text    "internal_external"
+    t.string  "description"
+    t.string  "internal_external"
     t.integer "seed_extraction_id"
     t.integer "model_id"
   end
@@ -42,8 +43,8 @@ ActiveRecord::Schema.define(:version => 20100803143344) do
   add_index "audiences_campaigns", ["campaign_id"], :name => "audiences_campaigns_campaign_id_fk"
 
   create_table "campaigns", :force => true do |t|
-    t.text    "description",    :null => false
-    t.text    "campaign_code",  :null => false
+    t.string  "description",    :default => "", :null => false
+    t.string  "campaign_code",  :default => "", :null => false
     t.integer "partner_id"
     t.integer "cid"
     t.integer "time_window_id"
@@ -88,17 +89,18 @@ ActiveRecord::Schema.define(:version => 20100803143344) do
   end
 
   create_table "creatives", :force => true do |t|
-    t.text    "name"
-    t.text    "media_type"
+    t.string  "name"
+    t.string  "media_type"
     t.integer "creative_size_id"
     t.integer "campaign_id"
+    t.string  "crid",             :null => false
   end
 
   add_index "creatives", ["campaign_id"], :name => "creatives_campaign_id_fk"
   add_index "creatives", ["creative_size_id"], :name => "creatives_creative_size_id_fk"
 
   create_table "custom_filters", :force => true do |t|
-    t.text     "description"
+    t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -131,25 +133,17 @@ ActiveRecord::Schema.define(:version => 20100803143344) do
     t.string "name", :null => false
   end
 
-  create_table "geo_components", :force => true do |t|
-    t.string  "description",  :null => false
-    t.integer "state_id",     :null => false
-    t.integer "geography_id", :null => false
-  end
-
-  add_index "geo_components", ["geography_id"], :name => "geo_components_geography_id_fk"
-  add_index "geo_components", ["state_id"], :name => "geo_components_state_id_fk"
-
   create_table "geographies", :force => true do |t|
     t.string "description"
+    t.string "msa",         :null => false
   end
 
-  create_table "geographies_cities", :force => true do |t|
+  create_table "geographies_cities", :id => false, :force => true do |t|
     t.integer "city_id"
     t.integer "geography_id"
   end
 
-  create_table "geographies_states", :force => true do |t|
+  create_table "geographies_states", :id => false, :force => true do |t|
     t.integer "state_id"
     t.integer "geography_id"
   end
@@ -172,7 +166,7 @@ ActiveRecord::Schema.define(:version => 20100803143344) do
   add_index "impression_counts", ["time_window_id"], :name => "impression_counts_time_window_id_fk"
 
   create_table "insertion_orders", :force => true do |t|
-    t.text    "description"
+    t.string  "description"
     t.integer "campaign_id"
   end
 
@@ -201,10 +195,12 @@ ActiveRecord::Schema.define(:version => 20100803143344) do
     t.string   "xguid"
     t.string   "xgcid"
     t.string   "puid"
+    t.integer  "pid"
   end
 
   create_table "partners", :force => true do |t|
-    t.string "name"
+    t.string  "name"
+    t.integer "pid",  :null => false
   end
 
   create_table "remote_placements", :id => false, :force => true do |t|
@@ -221,9 +217,9 @@ ActiveRecord::Schema.define(:version => 20100803143344) do
   add_index "remote_placements", ["time_window_id"], :name => "remote_placements_time_window_id_fk"
 
   create_table "seed_extractions", :force => true do |t|
-    t.text "description"
-    t.text "mapper"
-    t.text "reducer"
+    t.string "description"
+    t.string "mapper"
+    t.string "reducer"
   end
 
   create_table "semaphore_allocations", :force => true do |t|
@@ -283,9 +279,6 @@ ActiveRecord::Schema.define(:version => 20100803143344) do
   add_foreign_key "data_provider_channels", "data_providers", :name => "data_provider_channels_data_provider_id_fk"
 
   add_foreign_key "data_provider_files", "data_provider_channels", :name => "data_provider_files_data_provider_channel_id_fk"
-
-  add_foreign_key "geo_components", "geographies", :name => "geo_components_geography_id_fk"
-  add_foreign_key "geo_components", "states", :name => "geo_components_state_id_fk"
 
   add_foreign_key "impression_counts", "ad_inventory_sources", :name => "impression_counts_ad_inventory_source_id_fk"
   add_foreign_key "impression_counts", "audiences", :name => "impression_counts_audience_id_fk"
