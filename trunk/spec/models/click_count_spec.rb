@@ -1,15 +1,15 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: click_counts
 #
-#  id                     :integer(4)      not null, primary key
-#  campaign_id            :integer(4)
-#  creative_id            :integer(4)
-#  ad_inventory_source_id :integer(4)
-#  geography_id           :integer(4)
-#  audience_id            :integer(4)
-#  time_window_id         :integer(4)
+#  campaign_id            :integer(4)      not null
+#  creative_id            :integer(4)      not null
+#  ad_inventory_source_id :integer(4)      not null
+#  geography_id           :integer(4)      not null
+#  audience_id            :integer(4)      not null
+#  time_window_id         :integer(4)      not null
+#  click_count            :integer(4)      not null
 #
 
 require 'spec_helper'

@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: geographies
 #

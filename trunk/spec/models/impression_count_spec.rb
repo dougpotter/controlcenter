@@ -1,9 +1,8 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: impression_counts
 #
-#  id                     :integer(4)      not null, primary key
 #  time_window_id         :integer(4)      not null
 #  campaign_id            :integer(4)      not null
 #  creative_id            :integer(4)      not null

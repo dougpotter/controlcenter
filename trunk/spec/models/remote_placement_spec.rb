@@ -1,14 +1,13 @@
 # == Schema Information
-# Schema version: 20100729211736
+# Schema version: 20100803143344
 #
 # Table name: remote_placements
 #
-#  id                :integer(4)      not null, primary key
-#  campaign_id       :integer(4)
-#  geography_id      :integer(4)
-#  audience_id       :integer(4)
-#  time_window_id    :integer(4)
-#  remote_placements :integer(4)
+#  campaign_id            :integer(4)      not null
+#  geography_id           :integer(4)      not null
+#  audience_id            :integer(4)      not null
+#  time_window_id         :integer(4)      not null
+#  remote_placement_count :integer(4)      not null
 #
 
 require 'spec_helper'
