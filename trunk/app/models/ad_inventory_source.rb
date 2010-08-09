@@ -12,4 +12,7 @@
 # Exchange, Ad Conductor, and Open Exchange
 class AdInventorySource < ActiveRecord::Base
   has_and_belongs_to_many :campaigns
+
+  has_many :click_counts
+  has_many :impression_counts
 end

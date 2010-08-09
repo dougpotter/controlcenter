@@ -11,4 +11,9 @@
 # http://www.census.gov/population/www/metroareas/lists/2008/List1.txt
 class Geography < ActiveRecord::Base
   has_and_belongs_to_many :campaigns
+  has_many :states
+  has_many :cities
+
+  has_many :click_counts
+  has_many :impression_counts
 end
