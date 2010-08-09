@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: script/workflows/clearspring-collect-cleanup [options]"
+  
+  opts.separator ''
+  opts.separator 'Action options: (by default, clean up downloaded files over 4 days old and temporary files over 6 hours old)'
+  
+  opts.on('-d', '--downloaded', 'Clean up downloaded files only') do
+    options[:downloaded] = true
+  end
+  opts.on('-D', '--downloaded-age AGE', 'Specify the age of downloaded files to clean up') do |age|
+    options[:downloaded_age] = age
+  end
+  opts.on('-t', '--temporary', 'Clean up temporary files only') do
+    options[:temporary] = true
+  end
+  opts.on('-T', '--temporary-age AGE', 'Specify the age of temporary files to clean up') do |age|
+    options[:temporary_age] = age
+  end
+  
+  opts.separator ''
+  opts.separator 'Configuration options:'
+  
+  opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/clearspring.yml is used)') do |path|
+    options[:config_path] = path
+  end
+  
+  opts.separator ''
+  opts.separator 'Informational options:'
+  
+  opts.on('-h', '--help', 'Display this help text') do
+    puts opts
+    exit
+  end
+end.parse!
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
+
+# 4 days for downloaded files
+# 6 hours for temporary files
+default_age = {:downloaded => 4 * 86400, :temporary => 6 * 3600}
+
+unless options[:downloaded] || options[:temporary]
+  options[:downloaded] = true
+  options[:temporary] = true
+end
+
+%w(downloaded temporary).each do |which|
+  key = "#{which}_age".to_sym
+  if value = options[key]
+    begin
+      options[key] = TimeDistanceParser.parse(value)
+    rescue ArgumentError => e
+      $stderr.puts "Invalid age value: #{value}: #{e.message}"
+      exit(3)
+    end
+  else
+    options[key] = default_age[which.to_sym]
+  end
+end
