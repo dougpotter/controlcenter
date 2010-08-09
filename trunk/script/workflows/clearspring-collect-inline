@@ -39,18 +39,18 @@ parser = OptionParser.new do |opts|
   opts.on('--http-client CLIENT', 'Use specified http client CLIENT (valid values: curb (default), net_http, right_aws)') do |client|
     options[:http_client] = client
   end
-  opts.on('--system-timer', 'Force the use of SystemTimer instead of Timeout') do
-    options[:system_timer] = true
+  opts.on('--[no-]system-timer', 'Force the use of SystemTimer instead of Timeout') do |value|
+    options[:system_timer] = value
   end
   
   opts.separator ''
   opts.separator 'Behavior modifying options:'
   
-  opts.on('-l', '--lock', 'Use locking and quit without doing anything if resources are busy') do
-    options[:lock] = true
+  opts.on('-l', '--[no-]lock', 'Use locking and quit without doing anything if resources are busy') do |value|
+    options[:lock] = value
   end
-  opts.on('-o', '--once', 'Extract each file only if it had not been previously extracted (requires and implies --lock)') do
-    options[:once] = options[:lock] = true
+  opts.on('-o', '--[no-]once', 'Extract each file only if it had not been previously extracted (requires and implies --lock)') do |value|
+    options[:once] = options[:lock] = value
   end
   
   opts.separator ''
@@ -66,17 +66,17 @@ parser = OptionParser.new do |opts|
   opts.separator ''
   opts.separator 'Debugging options:'
   
-  opts.on('-p', '--profile', 'Profile script') do
-    options[:profile] = true
+  opts.on('-p', '--[no-]profile', 'Profile script') do |value|
+    options[:profile] = value
   end
-  opts.on('-d', '--debug', 'Enable debugging output') do
-    options[:debug] = true
+  opts.on('-d', '--[no-]debug', 'Enable debugging output') do |value|
+    options[:debug] = value
   end
-  opts.on('--keep-downloaded', 'Do not delete downloaded files after successful upload') do
-    options[:keep_downloaded] = true
+  opts.on('--[no-]keep-downloaded', 'Do not delete downloaded files after successful upload') do |value|
+    options[:keep_downloaded] = value
   end
-  opts.on('--keep-temporary', 'Do not delete temporary files after they are no longer needed') do
-    options[:keep_temporary] = true
+  opts.on('--[no-]keep-temporary', 'Do not delete temporary files after they are no longer needed') do |value|
+    options[:keep_temporary] = value
   end
   
   opts.separator ''
