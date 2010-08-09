@@ -72,6 +72,12 @@ parser = OptionParser.new do |opts|
   opts.on('-d', '--debug', 'Enable debugging output') do
     options[:debug] = true
   end
+  opts.on('--keep-downloaded', 'Do not delete downloaded files after successful upload') do
+    options[:keep_downloaded] = true
+  end
+  opts.on('--keep-temporary', 'Do not delete temporary files after they are no longer needed') do
+    options[:keep_temporary] = true
+  end
   
   opts.separator ''
   opts.separator 'Informational options:'
@@ -149,6 +155,8 @@ $settings = {
   :lock => config.lock,
   :once => config.once,
   :debug => config.debug,
+  :keep_downloaded => config.keep_downloaded,
+  :keep_temporary => config.keep_temporary,
 }
 
 def settings; $settings end
@@ -166,7 +174,7 @@ def run(ext_params)
   end
   workflows = versions.map do |version_params|
     params = settings.dup
-    [:date, :debug, :lock, :once, :http_client].each do |key|
+    [:date, :debug, :lock, :once, :http_client, :keep_downloaded, :keep_temporary].each do |key|
       unless ext_params[key].nil?
         params[key] = ext_params[key]
       end
@@ -244,6 +252,8 @@ params = {
   :lock => options[:lock],
   :once => options[:once],
   :http_client => options[:http_client],
+  :keep_downloaded => options[:keep_downloaded],
+  :keep_temporary => options[:keep_temporary],
 }
 
 if options[:profile]

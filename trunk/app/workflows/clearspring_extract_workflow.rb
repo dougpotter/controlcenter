@@ -76,11 +76,28 @@ class ClearspringExtractWorkflow
     split_paths.each do |path|
       upload(path)
     end
+    
+    unless params[:keep_temporary]
+      split_paths.each do |path|
+        if params[:debug]
+          debug_print("Remove #{path}")
+        end
+        FileUtils.rm(path)
+      end
+    end
+    
     # See the comment in create_data_provider_file regarding mixing locked
     # and non-locked runs. Status files are only created for once runs
     # (which are also locked).
     if params[:once]
       create_data_provider_file(file_url)
+    end
+    
+    unless params[:keep_downloaded]
+      if params[:debug]
+        debug_print("Remove #{local_path}")
+      end
+      FileUtils.rm(local_path)
     end
   end
   
