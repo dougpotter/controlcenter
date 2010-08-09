@@ -19,6 +19,8 @@ cities = {
   :seed_by_arr => [ :id, :name],
   :column_maps => { :id => 'id', :name => 'name' }
 }
+=begin
+# not using this
 geo_components = { 
   :infile => 'components.csv', 
   :outfile => '006_geo_components.rb', 
@@ -26,6 +28,7 @@ geo_components = {
   :seed_by_arr => [:id, :description, :state_id, :geography_id], 
   :column_maps => {:id => 'id', :description => 'description', :state_id => 'state_id', :geography_id => 'msa_id' } 
 }
+=end
 geographies_cities = {
   :infile => 'msas_cities.csv',
   :outfile => '005_geographies_cities.rb',
@@ -37,8 +40,8 @@ geographies = {
   :infile => 'msas.csv',
   :outfile => '003_geographies.rb',
   :model => 'Geography',
-  :seed_by_arr => [ :id, :description ],
-  :column_maps => { :id => 'id', :description => 'description' }
+  :seed_by_arr => [ :id, :description, :msa],
+  :column_maps => { :id => 'id', :description => 'description', :msa => 'msa' }
 }
 geographies_states = {
   :infile => 'msas_states.csv',
@@ -56,7 +59,7 @@ states = {
 }
 
 # consolidate paramter hashes
-@file_map = {"cities" => cities, "geo_components" => geo_components, "geographies_cities" => geographies_cities, "geographies" => geographies, "geographies_states" => geographies_states, "states" => states}
+@file_map = {"cities" => cities, "geographies_cities" => geographies_cities, "geographies" => geographies, "geographies_states" => geographies_states, "states" => states}
 
 # helper for gen_seed_fu_fixture, build hash of proper format from
 # row of csv data and column mappings

@@ -83,6 +83,7 @@ end
 #assign id to each state and city
 states_hash = Hash.new
 cities_hash = Hash.new
+msas_hash = Hash.new
 id = 1
 for state in states
   states_hash[state] = id
@@ -93,11 +94,18 @@ for city in cities
   cities_hash[city] = id
   id += 1
 end
+id = 1
+for line in msas
+  msa, description = line
+  msas_hash[msa] = id
+  id += 1
+end
 
 FasterCSV.open(File.join(DB_PATH, "msas.csv"), 'w') do |csv|
-  csv << ["id", "description"]
-  for msa in msas
-    csv << msa
+  csv << ["id", "description", "msa"]
+  for line in msas
+    msa, description = line
+    csv << [msas_hash[msa], description, msa] 
   end
 end
 FasterCSV.open(File.join(DB_PATH, "divisions.csv"), 'w') do |csv|
@@ -110,8 +118,8 @@ i = 0
 FasterCSV.open(File.join(DB_PATH, "components.csv"), 'w') do |csv|
   csv << ["id", "description", "state_id", "division_id", "msa_id"]
   for component in components
-    id, description, state, division_id, msa_id = component
-    csv << [id, description, states_hash[state], division_id, msa_id]
+    id, description, state, division_id, msa = component
+    csv << [id, description, states_hash[state], division_id, msas_hash[msa]]
   end
 end
 FasterCSV.open(File.join(DB_PATH, "states.csv"), 'w') do |csv|
@@ -129,15 +137,15 @@ end
 FasterCSV.open(File.join(DB_PATH, "msas_states.csv"), 'w') do |csv|
   csv << ["state_id", "msa_id"]
   for relationship in msas_states
-    abbreviation, msa_id = relationship
-    csv << [states_hash[abbreviation], msa_id]
+    abbreviation, msa = relationship
+    csv << [states_hash[abbreviation], msas_hash[msa]]
   end
 end
 FasterCSV.open(File.join(DB_PATH, "msas_cities.csv"), 'w') do |csv|
   csv << ["city_id", "msa_id"]
   for relationship in msas_cities
-    name, msa_id = relationship
-    csv << [cities_hash[name], msa_id]
+    name, msa = relationship
+    csv << [cities_hash[name], msas_hash[msa]]
   end
 end
 FasterCSV.open(File.join(DB_PATH, "divisions_states.csv"), 'w') do |csv|
