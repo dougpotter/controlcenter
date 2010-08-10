@@ -1,7 +1,7 @@
 require 'yaml'
 require 'ostruct'
 
-class WorkflowParameters
+class YamlConfiguration
   class SettingsMissing < StandardError; end
   
   class << self

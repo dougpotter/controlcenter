@@ -2,6 +2,12 @@ require 'fileutils'
 require_dependency 'semaphore'
 
 class ClearspringExtractWorkflow
+  class << self
+    def default_config_path
+      YamlConfiguration.absolutize('workflows/clearspring')
+    end
+  end
+  
   attr_reader :params
   private :params
   

@@ -130,7 +130,8 @@ def debug
   debugger
 end
 
-$config = WorkflowParameters.load(options[:config_path] || WorkflowParameters.absolutize('workflows/clearspring'))
+config_path = options[:config_path] || ClearspringExtractWorkflow.default_config_path
+$config = YamlConfiguration.load(config_path)
 
 def config
   $config
