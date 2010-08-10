@@ -47,14 +47,17 @@ class HttpClient::Curb < HttpClient::Base
       end
       
       File.open(local_path, 'w') do |file|
-        old_on_body = @curl.on_body do |data|
-          result = old_on_body ? old_on_body.call(data) : data.length
-          file << data if result == data.length
-          result
+        begin
+          old_on_body = @curl.on_body do |data|
+            result = old_on_body ? old_on_body.call(data) : data.length
+            file << data if result == data.length
+            result
+          end
+          
+          execute(url)
+        ensure
+          @curl.on_body
         end
-        
-        execute(url)
-        @curl.on_body
       end
     rescue Curl::Err::MultiBadEasyHandle => e
       # we get this when earlier request failed and client code retried it
