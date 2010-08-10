@@ -130,33 +130,9 @@ def debug
   debugger
 end
 
-config_path = options[:config_path] || ClearspringExtractWorkflow.default_config_path
-$config = YamlConfiguration.load(config_path)
-
-def config
-  $config
-end
-
 require 'strict_hash'
 
-$settings = {
-  :data_source_path => config.clearspring_root_url,
-  :download_root_dir => config.download_root_dir,
-  :gzip_root_dir => config.temp_root_dir,
-  :http_username => config.clearspring_http_username,
-  :http_password => config.clearspring_http_password,
-  :net_io_timeout => config.clearspring_net_io_timeout,
-  :s3_bucket => config.s3_bucket,
-  :clearspring_pid => config.clearspring_pid,
-  # options
-  :http_client => config.http_client,
-  :system_timer => config.force_system_timer,
-  :lock => config.lock,
-  :once => config.once,
-  :debug => config.debug,
-  :keep_downloaded => config.keep_downloaded,
-  :keep_temporary => config.keep_temporary,
-}
+$settings = ClearspringExtractWorkflow::Configuration.new(options)
 
 def settings; $settings end
 
@@ -172,12 +148,7 @@ def run(ext_params)
     end.flatten!
   end
   workflows = versions.map do |version_params|
-    params = settings.dup
-    [:date, :debug, :lock, :once, :http_client, :keep_downloaded, :keep_temporary].each do |key|
-      unless ext_params[key].nil?
-        params[key] = ext_params[key]
-      end
-    end
+    params = settings.merge_user_options(ext_params)
     params.update(version_params)
     options = StrictHashWithIndifferentAccess.new(params)
     options.optional_keys(:hour)

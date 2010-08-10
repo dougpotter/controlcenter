@@ -8,6 +8,46 @@ class ClearspringExtractWorkflow
     end
   end
   
+  class Configuration
+    # Returns parameters from configuration file.
+    #
+    # Allowed options:
+    #
+    # :config_path
+    def initialize(options={})
+      config_path = options[:config_path] || ClearspringExtractWorkflow.default_config_path
+      config = YamlConfiguration.load(config_path)
+      @config_params = {
+        :data_source_path => config.clearspring_root_url,
+        :download_root_dir => config.download_root_dir,
+        :gzip_root_dir => config.temp_root_dir,
+        :http_username => config.clearspring_http_username,
+        :http_password => config.clearspring_http_password,
+        :net_io_timeout => config.clearspring_net_io_timeout,
+        :s3_bucket => config.s3_bucket,
+        :clearspring_pid => config.clearspring_pid,
+        # options
+        :http_client => config.http_client,
+        :system_timer => config.force_system_timer,
+        :lock => config.lock,
+        :once => config.once,
+        :debug => config.debug,
+        :keep_downloaded => config.keep_downloaded,
+        :keep_temporary => config.keep_temporary,
+      }
+    end
+    
+    def merge_user_options(options={})
+      params = @config_params.dup
+      [:date, :debug, :lock, :once, :http_client, :keep_downloaded, :keep_temporary].each do |key|
+        unless options[key].nil?
+          params[key] = options[key]
+        end
+      end
+      params
+    end
+  end
+  
   attr_reader :params
   private :params
   
