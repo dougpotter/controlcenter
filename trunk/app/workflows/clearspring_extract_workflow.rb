@@ -264,12 +264,12 @@ class ClearspringExtractWorkflow
           debug_print "Retrying after exception: #{e} (#{e.class}) at #{e.backtrace.first}"
         end
         
-        if extra_callback
-          extra_callback.call(e)
-        end
         if index == options[:retry_count]
           raise
         else
+          if extra_callback
+            extra_callback.call(e)
+          end
           sleep(options[:sleep_time])
         end
       end
