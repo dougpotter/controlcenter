@@ -260,6 +260,10 @@ class ClearspringExtractWorkflow
         unless exception_classes.detect { |klass| e.is_a?(klass) }
           raise
         end
+        if params[:debug]
+          debug_print "Retrying after exception: #{e} (#{e.class}) at #{e.backtrace.first}"
+        end
+        
         if extra_callback
           extra_callback.call(e)
         end

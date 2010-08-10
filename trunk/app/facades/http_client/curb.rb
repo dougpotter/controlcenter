@@ -56,7 +56,7 @@ class HttpClient::Curb < HttpClient::Base
         execute(url)
         @curl.on_body
       end
-    rescue Curl::Err::MultiBadEasyHandle 
+    rescue Curl::Err::MultiBadEasyHandle => e
       # we get this when earlier request failed and client code retried it
       if retried
         raise
@@ -64,7 +64,7 @@ class HttpClient::Curb < HttpClient::Base
       retried = true
       
       if @debug
-        debug_print "Retrying due to Curl::Err::MultiBadEasyHandle"
+        debug_print "Retrying due to Curl::Err::MultiBadEasyHandle at #{e.backtrace.first}"
       end
       
       create_curl
