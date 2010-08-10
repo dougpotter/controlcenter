@@ -121,8 +121,6 @@ require File.join(File.dirname(__FILE__), '../../config/environment')
 # Important: development version of ruote is required (as of Jun 10, 2010)
 # since it contains bugfixes and features we rely on.
 
-require 'yaml'
-require 'ostruct'
 if options[:profile]
   require 'ruby-prof'
 end
