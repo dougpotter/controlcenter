@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100811025029) do
+ActiveRecord::Schema.define(:version => 20100811031643) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -26,14 +26,8 @@ ActiveRecord::Schema.define(:version => 20100811025029) do
 
   create_table "audiences", :force => true do |t|
     t.string  "description"
-    t.string  "internal_external"
-    t.integer "seed_extraction_id"
-    t.integer "model_id"
-    t.integer "aid",                :null => false
+    t.integer "aid",         :null => false
   end
-
-  add_index "audiences", ["model_id"], :name => "audiences_model_id_fk"
-  add_index "audiences", ["seed_extraction_id"], :name => "audiences_seed_extraction_id_fk"
 
   create_table "audiences_campaigns", :id => false, :force => true do |t|
     t.integer "audience_id", :null => false
@@ -44,13 +38,12 @@ ActiveRecord::Schema.define(:version => 20100811025029) do
   add_index "audiences_campaigns", ["campaign_id"], :name => "audiences_campaigns_campaign_id_fk"
 
   create_table "campaigns", :force => true do |t|
-    t.string   "description",    :default => "", :null => false
-    t.string   "campaign_code",  :default => "", :null => false
+    t.string   "description",   :default => "", :null => false
+    t.string   "campaign_code", :default => "", :null => false
     t.integer  "partner_id"
     t.integer  "cid"
     t.datetime "start_date"
     t.datetime "end_date"
-    t.integer  "time_window_id",                 :null => false
   end
 
   add_index "campaigns", ["cid"], :name => "index_campaigns_on_cid", :unique => true
@@ -253,9 +246,6 @@ ActiveRecord::Schema.define(:version => 20100811025029) do
 
   add_foreign_key "ad_inventory_sources_campaigns", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
   add_foreign_key "ad_inventory_sources_campaigns", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
-
-  add_foreign_key "audiences", "models", :name => "audiences_model_id_fk"
-  add_foreign_key "audiences", "seed_extractions", :name => "audiences_seed_extraction_id_fk"
 
   add_foreign_key "audiences_campaigns", "audiences", :name => "audiences_campaigns_audience_id_fk"
   add_foreign_key "audiences_campaigns", "campaigns", :name => "audiences_campaigns_campaign_id_fk"
