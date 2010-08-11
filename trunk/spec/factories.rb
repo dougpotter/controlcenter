@@ -1,18 +1,14 @@
 Factory.define :campaign do |c|
   c.description  "A Campaign"
-  c.campaign_code  "R45"
+  c.sequence(:campaign_code) { |n|  "1LJ#{n}" }
   c.partner_id { Factory(:partner).id }
-  c.sequence(:cid) { |n| "232309#{n}" }
-  c.time_window_id { Factory(:time_window).id }
+  c.start_time Time.now
+  c.end_time Time.now + 3600
 end
 
 Factory.define :partner do |p|
   p.name  "Webroot"
-end
-
-Factory.define :time_window do |t|
-  t.window_begin  Time.now
-  t.window_end  Time.now + 3600 
+  p.sequence(:partner_code) { |n| 1009 + n }
 end
 
 Factory.define :creative_size do |c|
@@ -25,10 +21,12 @@ Factory.define :creative do |c|
   c.media_type "media type"
   c.creative_size_id {Factory(:creative_size).id}
   c.campaign_id {Factory(:campaign).id}
+  c.sequence(:creative_code) { |n| "293v#{n}" }
 end
 
 Factory.define :ad_inventory_source do |f|
   f.name "name"
+  f.sequence(:ais_code) { |n| "Add#{(n+65).chr.upcase}" }
 end
 
 Factory.define :geography do |g|
@@ -47,13 +45,13 @@ end
 
 Factory.define :audience do |a|
   a.description "description"
-  a.internal_external "internal"
-  a.seed_extraction_id {Factory(:seed_extraction).id}
-  a.model_id {Factory(:model).id}
+  a.sequence(:audience_code) { |n| "AA#{n}99" }
 end
 
 Factory.define :impression_count do |i|
-  i.time_window_id {Factory(:time_window).id}
+  i.start_time Time.now
+  i.end_time Time.now + 60
+  i.duration_in_minutes 1
   i.campaign_id {Factory(:campaign).id}
   i.creative_id {Factory(:creative).id}
   i.ad_inventory_source_id {Factory(:ad_inventory_source).id}
