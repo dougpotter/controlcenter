@@ -2,6 +2,10 @@ require 'fileutils'
 require_dependency 'semaphore'
 
 class ClearspringExtractWorkflow
+  class WorkflowError < StandardError; end
+  class DataProviderNotFound < WorkflowError; end
+  class DataProviderChannelNotFound < WorkflowError; end
+  
   class << self
     def default_config_path
       YamlConfiguration.absolutize('workflows/clearspring')
@@ -343,24 +347,18 @@ class ClearspringExtractWorkflow
   end
   
   def already_extracted?(file_url)
-    file = DataProviderFile.find(:first, :include => {:data_provider_channel => :data_provider},
+    channel = get_channel!(params[:data_source])
+    file = channel.data_provider_files.find(:first,
       :conditions => [
-        'data_providers.name=? and data_provider_channels.name=? and data_provider_files.url=?',
-        'Clearspring', params[:data_source], file_url
+        'data_provider_files.url=?',
+        file_url
       ]
     )
     return !file.nil?
   end
   
   def create_data_provider_file(file_url)
-    channel = DataProviderChannel.find(:first, :include => :data_provider,
-      :conditions => ['data_providers.name=? and data_provider_channels.name=?',
-        'Clearspring', params[:data_source]
-      ]
-    )
-    unless channel
-      raise ArgumentError, 'Channel not found'
-    end
+    channel = get_channel!(params[:data_source])
     
     # Locked and lock-free runs should not be combined, since lock-free run may
     # overwrite data of the locked run and leave it in an inconsistent state and
@@ -387,6 +385,29 @@ class ClearspringExtractWorkflow
       end
     end
 =end
+  end
+  
+  # Raises DataProviderNotFound if clearspring data provider does not exist
+  def get_data_provider!
+    unless @data_provider
+      @data_provider = DataProvider.find_by_name('Clearspring', :include => :data_provider_channels)
+      unless @data_provider
+        raise DataProviderNotFound, "Clearspring data provider does not exist - is db seeded?"
+      end
+    end
+    @data_provider
+  end
+  
+  # Raises DataProviderChannelNotFound if the channel does not exist
+  def get_channel!(channel_name)
+    data_provider = get_data_provider!
+    channel = data_provider.data_provider_channels.detect do |channel|
+      channel.name == channel_name
+    end
+    unless channel
+      raise DataProviderChannelNotFound, "Clearspring data provider channel not found: #{channel_name} - is db seeded?"
+    end
+    channel
   end
   
   # readiness heuristic - to be written
