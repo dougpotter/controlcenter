@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100811034516) do
+ActiveRecord::Schema.define(:version => 20100811194341) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -45,8 +45,8 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
     t.string   "description",   :default => "", :null => false
     t.string   "campaign_code", :default => "", :null => false
     t.integer  "partner_id"
-    t.datetime "start_date"
-    t.datetime "end_date"
+    t.datetime "start_time"
+    t.datetime "end_time"
   end
 
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
@@ -65,13 +65,15 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
   end
 
   create_table "click_counts", :id => false, :force => true do |t|
-    t.integer "campaign_id",            :null => false
-    t.integer "creative_id",            :null => false
-    t.integer "ad_inventory_source_id", :null => false
-    t.integer "geography_id",           :null => false
-    t.integer "audience_id",            :null => false
-    t.integer "time_window_id",         :null => false
-    t.integer "click_count",            :null => false
+    t.integer  "campaign_id",            :null => false
+    t.integer  "creative_id",            :null => false
+    t.integer  "ad_inventory_source_id", :null => false
+    t.integer  "geography_id"
+    t.integer  "audience_id",            :null => false
+    t.integer  "click_count",            :null => false
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer  "duration_in_minutes"
   end
 
   add_index "click_counts", ["ad_inventory_source_id"], :name => "click_counts_ad_inventory_source_id_fk"
@@ -79,7 +81,6 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
   add_index "click_counts", ["campaign_id"], :name => "click_counts_campaign_id_fk"
   add_index "click_counts", ["creative_id"], :name => "click_counts_creative_id_fk"
   add_index "click_counts", ["geography_id"], :name => "click_counts_geography_id_fk"
-  add_index "click_counts", ["time_window_id"], :name => "click_counts_time_window_id_fk"
 
   create_table "creative_sizes", :force => true do |t|
     t.float  "height"
@@ -148,13 +149,15 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
   end
 
   create_table "impression_counts", :id => false, :force => true do |t|
-    t.integer "time_window_id",         :null => false
-    t.integer "campaign_id",            :null => false
-    t.integer "creative_id",            :null => false
-    t.integer "ad_inventory_source_id", :null => false
-    t.integer "geography_id",           :null => false
-    t.integer "audience_id",            :null => false
-    t.integer "impression_count",       :null => false
+    t.integer  "campaign_id",            :null => false
+    t.integer  "creative_id",            :null => false
+    t.integer  "ad_inventory_source_id", :null => false
+    t.integer  "geography_id"
+    t.integer  "audience_id",            :null => false
+    t.integer  "impression_count",       :null => false
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer  "duration_in_minutes"
   end
 
   add_index "impression_counts", ["ad_inventory_source_id"], :name => "impression_counts_ad_inventory_source_id_fk"
@@ -162,7 +165,6 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
   add_index "impression_counts", ["campaign_id"], :name => "impression_counts_campaign_id_fk"
   add_index "impression_counts", ["creative_id"], :name => "impression_counts_creative_id_fk"
   add_index "impression_counts", ["geography_id"], :name => "impression_counts_geography_id_fk"
-  add_index "impression_counts", ["time_window_id"], :name => "impression_counts_time_window_id_fk"
 
   create_table "insertion_orders", :force => true do |t|
     t.string  "description"
@@ -199,21 +201,22 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
 
   create_table "partners", :force => true do |t|
     t.string  "name"
-    t.integer "pid",  :null => false
+    t.integer "partner_code", :null => false
   end
 
   create_table "remote_placements", :id => false, :force => true do |t|
-    t.integer "campaign_id",            :null => false
-    t.integer "geography_id",           :null => false
-    t.integer "audience_id",            :null => false
-    t.integer "time_window_id",         :null => false
-    t.integer "remote_placement_count", :null => false
+    t.integer  "campaign_id",            :null => false
+    t.integer  "geography_id"
+    t.integer  "audience_id",            :null => false
+    t.integer  "remote_placement_count", :null => false
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer  "duration_in_minutes"
   end
 
   add_index "remote_placements", ["audience_id"], :name => "remote_placements_audience_id_fk"
   add_index "remote_placements", ["campaign_id"], :name => "remote_placements_campaign_id_fk"
   add_index "remote_placements", ["geography_id"], :name => "remote_placements_geography_id_fk"
-  add_index "remote_placements", ["time_window_id"], :name => "remote_placements_time_window_id_fk"
 
   create_table "seed_extractions", :force => true do |t|
     t.string "description"
@@ -242,11 +245,6 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
     t.string "abbreviation", :null => false
   end
 
-  create_table "time_windows", :force => true do |t|
-    t.datetime "window_begin"
-    t.datetime "window_end"
-  end
-
   add_foreign_key "ad_inventory_sources_campaigns", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
   add_foreign_key "ad_inventory_sources_campaigns", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
@@ -263,7 +261,6 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
   add_foreign_key "click_counts", "campaigns", :name => "click_counts_campaign_id_fk"
   add_foreign_key "click_counts", "creatives", :name => "click_counts_creative_id_fk"
   add_foreign_key "click_counts", "geographies", :name => "click_counts_geography_id_fk"
-  add_foreign_key "click_counts", "time_windows", :name => "click_counts_time_window_id_fk"
 
   add_foreign_key "creatives", "campaigns", :name => "creatives_campaign_id_fk"
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
@@ -280,13 +277,11 @@ ActiveRecord::Schema.define(:version => 20100811034516) do
   add_foreign_key "impression_counts", "campaigns", :name => "impression_counts_campaign_id_fk"
   add_foreign_key "impression_counts", "creatives", :name => "impression_counts_creative_id_fk"
   add_foreign_key "impression_counts", "geographies", :name => "impression_counts_geography_id_fk"
-  add_foreign_key "impression_counts", "time_windows", :name => "impression_counts_time_window_id_fk"
 
   add_foreign_key "insertion_orders", "campaigns", :name => "insertion_orders_campaign_id_fk"
 
   add_foreign_key "remote_placements", "audiences", :name => "remote_placements_audience_id_fk"
   add_foreign_key "remote_placements", "campaigns", :name => "remote_placements_campaign_id_fk"
   add_foreign_key "remote_placements", "geographies", :name => "remote_placements_geography_id_fk"
-  add_foreign_key "remote_placements", "time_windows", :name => "remote_placements_time_window_id_fk"
 
 end
