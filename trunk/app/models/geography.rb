@@ -16,4 +16,12 @@ class Geography < ActiveRecord::Base
 
   has_many :click_counts
   has_many :impression_counts
+
+  def business_code
+    ""
+  end
+
+  def self.code_to_pk(geography_code)
+    ""
+  end
 end

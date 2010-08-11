@@ -17,14 +17,18 @@
 # impressions along the dimensions given in the (compound) key comprised
 # of all columns except impression count
 class ImpressionCount < ActiveRecord::Base
-  belongs_to :time_window
   belongs_to :campaign
   belongs_to :creative
   belongs_to :ad_inventory_source
   belongs_to :geography
   belongs_to :audience
 
-  validates_presence_of :time_window_id, :campaign_id, :creative_id, :ad_inventory_source_id, :geography_id, :audience_id, :impression_count
+  validates_presence_of :start_time, :end_time, :duration_in_minutes, :campaign_id, :creative_id, :ad_inventory_source_id, :audience_id, :impression_count
   validates_numericality_of :impression_count
+
+  def business_attributes
+    ["start_time", "end_time", "duration_in_minutes", "campaign_code", "creative_code", "ais_code", "audience_code", "geography"]
+  end
+
 end
 

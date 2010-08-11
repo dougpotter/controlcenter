@@ -25,4 +25,12 @@ class Audience < ActiveRecord::Base
   has_many :impression_counts
 
   validates_numericality_of :seed_extraction_id, :model_id
+
+  def business_code
+    :audience_code
+  end
+
+  def self.code_to_pk(audience_code)
+    find_by_audience_code(audience_code).id
+  end
 end

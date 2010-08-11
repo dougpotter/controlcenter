@@ -12,4 +12,13 @@ class Partner < ActiveRecord::Base
   has_many :partner_beacon_requests
   has_many :campaigns
 
+  validates_uniqueness_of :partner_code
+
+  def business_code
+    :partner_code
+  end
+
+  def self.code_to_pk(partner_code)
+    find_by_partner_code(partner_code).id
+  end
 end

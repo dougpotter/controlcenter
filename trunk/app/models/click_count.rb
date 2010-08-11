@@ -21,8 +21,11 @@ class ClickCount < ActiveRecord::Base
   belongs_to :ad_inventory_srouce
   belongs_to :geography
   belongs_to :audience
-  belongs_to :time_window
 
-  validates_presence_of :campaign_id, :creative_id, :ad_inventory_source_id, :geography_id, :audience_id, :time_window_id, :click_count
+  validates_presence_of :campaign_id, :creative_id, :ad_inventory_source_id, :audience_id, :start_time, :end_time, :duration_in_minutes, :click_count
   validates_numericality_of :click_count
+
+  def business_attributes
+    ["start_time", "end_time", "duration_in_minutes", "campaign_code", "creative_code", "ad_inventory_source_code", "geography", "audience_code"]
+  end
 end

@@ -22,8 +22,16 @@ class Campaign < ActiveRecord::Base
 
   has_many :click_counts
   has_many :impression_counts
-  
+
   validates_presence_of :description, :campaign_code
-  validates_uniqueness_of :cid
-  validates_numericality_of :partner_id, :cid
+  validates_uniqueness_of :campaign_code
+  validates_numericality_of :partner_id
+
+  def business_code
+    :campaign_code
+  end
+
+  def self.code_to_pk(campaign_code)
+    find_by_campaign_code(campaign_code).id
+  end
 end

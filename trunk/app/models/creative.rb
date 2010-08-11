@@ -18,4 +18,12 @@ class Creative < ActiveRecord::Base
   has_many :impression_counts
 
   validates_numericality_of :creative_size_id, :campaign_id
+
+  def business_code
+    :creative_code
+  end
+
+  def self.code_to_pk(creative_code)
+    find_by_creative_code(creative_code).id
+  end
 end
