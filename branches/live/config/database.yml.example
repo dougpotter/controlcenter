@@ -1,0 +1,14 @@
+development: &defaults
+  adapter: mysql
+  encoding: utf8
+  database: xgcc_development
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+test:
+  <<: *defaults
+  database: xgcc_test
+
+production:
+  <<: *defaults
