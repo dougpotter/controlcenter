@@ -9,12 +9,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100811031643) do
+ActiveRecord::Schema.define(:version => 20100811034516) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
-    t.string "ais",  :null => false
+    t.string "ais_code", :null => false
   end
+
+  add_index "ad_inventory_sources", ["ais_code"], :name => "index_ad_inventory_sources_on_ais_code", :unique => true
 
   create_table "ad_inventory_sources_campaigns", :id => false, :force => true do |t|
     t.integer "campaign_id",            :null => false
@@ -25,9 +27,11 @@ ActiveRecord::Schema.define(:version => 20100811031643) do
   add_index "ad_inventory_sources_campaigns", ["campaign_id"], :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   create_table "audiences", :force => true do |t|
-    t.string  "description"
-    t.integer "aid",         :null => false
+    t.string "description"
+    t.string "audience_code", :null => false
   end
+
+  add_index "audiences", ["audience_code"], :name => "index_audiences_on_audience_code", :unique => true
 
   create_table "audiences_campaigns", :id => false, :force => true do |t|
     t.integer "audience_id", :null => false
@@ -41,12 +45,11 @@ ActiveRecord::Schema.define(:version => 20100811031643) do
     t.string   "description",   :default => "", :null => false
     t.string   "campaign_code", :default => "", :null => false
     t.integer  "partner_id"
-    t.integer  "cid"
     t.datetime "start_date"
     t.datetime "end_date"
   end
 
-  add_index "campaigns", ["cid"], :name => "index_campaigns_on_cid", :unique => true
+  add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
   add_index "campaigns", ["partner_id"], :name => "campaigns_partner_id_fk"
 
   create_table "campaigns_geographies", :id => false, :force => true do |t|
@@ -89,7 +92,7 @@ ActiveRecord::Schema.define(:version => 20100811031643) do
     t.string  "media_type"
     t.integer "creative_size_id"
     t.integer "campaign_id"
-    t.string  "crid",             :null => false
+    t.string  "creative_code",    :null => false
   end
 
   add_index "creatives", ["campaign_id"], :name => "creatives_campaign_id_fk"
