@@ -24,7 +24,9 @@ class HttpClient::Httpclient < HttpClient::Base
       debug_print "Fetch #{url}"
     end
     
-    @client.get_content(url)
+    map_exceptions(url) do
+      @client.get_content(url)
+    end
   end
   
   def download(url, local_path)
@@ -33,13 +35,25 @@ class HttpClient::Httpclient < HttpClient::Base
     end
     
     File.open(local_path, 'w') do |file|
-      @client.get(url) do |chunk|
-        file << chunk
+      map_exceptions(url) do
+        @client.get(url) do |chunk|
+          file << chunk
+        end
       end
     end
   end
   
   private
+  
+  def map_exceptions(url)
+    begin
+      yield
+    rescue HTTPClient::ReceiveTimeoutError => original_exc
+      exc = HttpClient::NetworkTimeout.new(original_exc.message, :url => url)
+      exc.set_backtrace(original_exc.backtrace)
+      raise exc
+    end
+  end
   
   def debug_print(msg)
     $stderr.puts(msg)
