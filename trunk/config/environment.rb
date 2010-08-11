@@ -14,14 +14,19 @@ Rails::Initializer.run do |config|
   # Add additional load paths for your own custom dirs
   extra_load_paths = %W(
     #{RAILS_ROOT}/app/bases
-    #{RAILS_ROOT}/app/facades
     #{RAILS_ROOT}/app/lib
     #{RAILS_ROOT}/app/participants
     #{RAILS_ROOT}/app/singletons
     #{RAILS_ROOT}/app/workflows
   )
+  
+  # Load paths from which classes should not be eagerly loaded due to dependencies
+  demand_only_load_paths = %W(
+    #{RAILS_ROOT}/app/facades
+  )
 
   config.load_paths += extra_load_paths
+  config.load_paths += demand_only_load_paths
   config.eager_load_paths += extra_load_paths
 
   # Specify gems that this application depends on and have them installed with rake gems:install
