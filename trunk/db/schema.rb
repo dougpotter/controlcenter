@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100810221637) do
+ActiveRecord::Schema.define(:version => 20100811025029) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -44,16 +44,17 @@ ActiveRecord::Schema.define(:version => 20100810221637) do
   add_index "audiences_campaigns", ["campaign_id"], :name => "audiences_campaigns_campaign_id_fk"
 
   create_table "campaigns", :force => true do |t|
-    t.string  "description",    :default => "", :null => false
-    t.string  "campaign_code",  :default => "", :null => false
-    t.integer "partner_id"
-    t.integer "cid"
-    t.integer "time_window_id"
+    t.string   "description",    :default => "", :null => false
+    t.string   "campaign_code",  :default => "", :null => false
+    t.integer  "partner_id"
+    t.integer  "cid"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.integer  "time_window_id",                 :null => false
   end
 
   add_index "campaigns", ["cid"], :name => "index_campaigns_on_cid", :unique => true
   add_index "campaigns", ["partner_id"], :name => "campaigns_partner_id_fk"
-  add_index "campaigns", ["time_window_id"], :name => "campaigns_time_window_id_fk"
 
   create_table "campaigns_geographies", :id => false, :force => true do |t|
     t.integer "campaign_id",  :null => false
@@ -85,8 +86,9 @@ ActiveRecord::Schema.define(:version => 20100810221637) do
   add_index "click_counts", ["time_window_id"], :name => "click_counts_time_window_id_fk"
 
   create_table "creative_sizes", :force => true do |t|
-    t.float "height"
-    t.float "width"
+    t.float  "height"
+    t.float  "width"
+    t.string "common_name"
   end
 
   create_table "creatives", :force => true do |t|
@@ -259,7 +261,6 @@ ActiveRecord::Schema.define(:version => 20100810221637) do
   add_foreign_key "audiences_campaigns", "campaigns", :name => "audiences_campaigns_campaign_id_fk"
 
   add_foreign_key "campaigns", "partners", :name => "campaigns_partner_id_fk"
-  add_foreign_key "campaigns", "time_windows", :name => "campaigns_time_window_id_fk"
 
   add_foreign_key "campaigns_geographies", "campaigns", :name => "campaigns_geographies_campaign_id_fk"
   add_foreign_key "campaigns_geographies", "geographies", :name => "campaigns_geographies_geography_id_fk"
