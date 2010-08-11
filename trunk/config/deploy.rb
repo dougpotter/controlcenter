@@ -51,8 +51,27 @@ set :scm, :subversion
 set :deploy_via, :remote_cache
 
 # URL of your source repository.
-set :repository, "https://xgraph@dev.xgraph.net/svn/xgraph/controlcenter/trunk"
-#set :branch, (ENV['BRANCH']||"master")
+set(:repository) do
+  if branch == 'trunk' || branch.index('/')
+    path = branch
+  else
+    path = "branches/#{branch}"
+  end
+  "https://xgraph@dev.xgraph.net/svn/xgraph/controlcenter/#{path}"
+end
+# Allowed branch specifications:
+#
+# A branch specification without slashes is taken to be a branch name, and
+# branches/ is prepended to the name to obtain repository path.
+# Trunk is treated specially, it corresponds to trunk in repository.
+# A branch specification containing a slash is taken to mean path in repository.
+#
+# Examples:
+#
+# trunk => trunk
+# live => branches/live
+# branches/live => branches/live
+set :branch, ENV['BRANCH'] || "live"
 
 #if we use submodules
 #set :git_enable_submodules, 1
@@ -72,6 +91,7 @@ ssh_options[:port] = 22
 
 task :qa do
   set :application, 'control.qa.xgraph.net'
+  set :branch, 'trunk'
 end
 
 # =============================================================================
