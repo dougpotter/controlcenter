@@ -30,8 +30,10 @@ ActionController::Routing::Routes.draw do |map|
   #     admin.resources :products
   #   end
 
-  map.connect 'factfiling/click_counts/', :controller => "click_counts", :action => "create"
-  map.connect 'factfiling/impression_counts/', :controller => "impression_counts", :action => "create"
+  map.connect 'fact_filing/click_counts/', :controller => "fact_filing", :action => "create", :table_name => "click_counts"
+  map.connect 'fact_filing/click_counts/new', :controller => "fact_filing", :action => "new", :table_name => "click_counts"
+  map.connect 'fact_filing/impression_counts/', :controller => "fact_filing", :action => "create", :table_name => "impression_counts"
+  map.connect 'fact_filing/impression_counts/new', :controller => "fact_filing", :action => "new", :table_name => "impression_counts"
 
   map.resources :fact_reporting
   map.resources :beacon_reports
