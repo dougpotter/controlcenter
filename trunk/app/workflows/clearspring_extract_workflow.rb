@@ -119,7 +119,7 @@ class ClearspringExtractWorkflow
     absolute_file_urls
   end
   
-  def extract_without_locking(file_url)
+  def extract_without_locking(file_url, options={})
     validate_file_url_for_extraction!(file_url)
     local_path = download(file_url)
     split_paths = split(local_path)
@@ -139,7 +139,7 @@ class ClearspringExtractWorkflow
     # See the comment in create_data_provider_file regarding mixing locked
     # and non-locked runs. Status files are only created for once runs
     # (which are also locked).
-    if params[:once]
+    if options[:once]
       create_data_provider_file(file_url)
     end
     
@@ -153,7 +153,7 @@ class ClearspringExtractWorkflow
   
   def extract_with_locking(file_url)
     lock(file_url) do
-      extract_without_locking(file_url)
+      extract_without_locking(file_url, :once => params[:once])
     end
   end
   
