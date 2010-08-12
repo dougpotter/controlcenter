@@ -91,7 +91,7 @@ class HttpClient::Curb < HttpClient::Base
   
   def execute(url)
     @curl.url = url
-    map_exceptions(url) do
+    map_exceptions(exception_map, url) do
       @curl.perform
     end
     check_response(url)
@@ -110,18 +110,11 @@ class HttpClient::Curb < HttpClient::Base
     end
   end
   
-  def map_exceptions(url)
-    begin
-      yield
-    rescue Curl::Err::TimeoutError => original_exc
-      exc = HttpClient::NetworkTimeout.new(original_exc.message, :url => url)
-      exc.set_backtrace(original_exc.backtrace)
-      raise exc
-    rescue IOError => original_exc
-      exc = HttpClient::NetworkError.new(original_exc.message, :url => url)
-      exc.set_backtrace(original_exc.backtrace)
-      raise exc
-    end
+  def exception_map
+    [
+      [Curl::Err::TimeoutError, HttpClient::NetworkTimeout],
+      [IOError, HttpClient::NetworkError],
+    ]
   end
   
   def debug_print(msg)

@@ -5,6 +5,7 @@ module HttpClient
     def initialize(msg=nil, options={})
       super(msg)
       @url = options[:url]
+      @original_exception_class = options[:original_exception_class]
     end
   end
   
@@ -41,6 +42,34 @@ module HttpClient
     
     def download(url, local_path)
       raise NotImplemented
+    end
+    
+    private
+    
+    def map_exceptions(exception_map, url)
+      begin
+        yield
+      rescue Exception => original_exc
+        exception_map.each do |from_cls, to_cls|
+          if original_exc.is_a?(from_cls)
+            convert_and_raise(original_exc, to_cls, url)
+          end
+        end
+        
+        # not mapped, raise original exception
+        raise
+      end
+    end
+    
+    def convert_and_raise(original_exc, converted_cls, url)
+      new_message = "#{original_exc.message} (#{original_exc.class})"
+      exc = converted_cls.new(
+        new_message,
+        :url => url,
+        :original_exception_class => original_exc.class
+      )
+      exc.set_backtrace(original_exc.backtrace)
+      raise exc
     end
   end
 end

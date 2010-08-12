@@ -24,7 +24,7 @@ class HttpClient::Httpclient < HttpClient::Base
       debug_print "Fetch #{url}"
     end
     
-    map_exceptions(url) do
+    map_exceptions(exception_map, url) do
       @client.get_content(url)
     end
   end
@@ -35,7 +35,7 @@ class HttpClient::Httpclient < HttpClient::Base
     end
     
     File.open(local_path, 'w') do |file|
-      map_exceptions(url) do
+      map_exceptions(exception_map, url) do
         @client.get(url) do |chunk|
           file << chunk
         end
@@ -45,14 +45,11 @@ class HttpClient::Httpclient < HttpClient::Base
   
   private
   
-  def map_exceptions(url)
-    begin
-      yield
-    rescue HTTPClient::ReceiveTimeoutError => original_exc
-      exc = HttpClient::NetworkTimeout.new(original_exc.message, :url => url)
-      exc.set_backtrace(original_exc.backtrace)
-      raise exc
-    end
+  def exception_map
+    [
+      [HTTPClient::ReceiveTimeoutError, HttpClient::NetworkTimeout],
+      [SocketError, HttpClient::NetworkError],
+    ]
   end
   
   def debug_print(msg)
