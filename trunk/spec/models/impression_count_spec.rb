@@ -19,12 +19,6 @@ describe ImpressionCount do
     Factory.create(:impression_count)
   end
 
-  it "should require valid foreign key for time windows" do
-    lambda {
-      Factory.create(:impression_count, :time_window_id => 0)
-    }.should raise_error
-  end
-
   it "should require valid foreign key for campaigns" do
     lambda {
       Factory.create(:impression_count, :campaign_id => 0)
@@ -53,5 +47,19 @@ describe ImpressionCount do
     lambda {
       Factory.create(:impression_count, :impression_count => "not a numba")
     }.should raise_error
+  end
+
+  it "should require a start time that occurs before end time" do
+    lambda {
+      Factory.create(:impression_count, {:start_time => Time.now + 60, :end_time => Time.now})
+    }.should raise_error
+  end
+
+  it "should require a unique combination of required dimensions" do
+    attrs = {:campaign_id => 1, :creative_id => 1, :ad_inventory_source_id => 1, :audience_id => 1, :impression_count => 100, :start_time => Time.now, :end_time => (Time.now + 60), :duration_in_minutes => 1}
+    Factory.create(:impression_count, attrs)
+    lambda {
+      Factory.create(:impression_count, attrs)
+    }.should raise_error(ActiveRecord::StatementInvalid)
   end
 end

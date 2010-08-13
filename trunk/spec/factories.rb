@@ -1,6 +1,6 @@
 Factory.define :campaign do |c|
   c.description  "A Campaign"
-  c.sequence(:campaign_code) { |n|  "1LJ#{n}" }
+  c.sequence(:campaign_code) { |n|  "2LJ#{n}" }
   c.partner_id { Factory(:partner).id }
   c.start_time Time.now
   c.end_time Time.now + 3600
@@ -8,7 +8,7 @@ end
 
 Factory.define :partner do |p|
   p.name  "Webroot"
-  p.sequence(:partner_code) { |n| 1009 + n }
+  p.sequence(:partner_code) { |n| 2009 + n }
 end
 
 Factory.define :creative_size do |c|
@@ -26,7 +26,7 @@ end
 
 Factory.define :ad_inventory_source do |f|
   f.name "name"
-  f.sequence(:ais_code) { |n| "Add#{(n+65).chr.upcase}" }
+  f.sequence(:ais_code) { |n| "Add#{(n+66).chr.upcase}" }
 end
 
 Factory.define :model do |m|
@@ -35,7 +35,7 @@ end
 
 Factory.define :audience do |a|
   a.description "description"
-  a.sequence(:audience_code) { |n| "AA#{n}99" }
+  a.sequence(:audience_code) { |n| "AB#{n}99" }
 end
 
 Factory.define :impression_count do |i|
@@ -50,7 +50,9 @@ Factory.define :impression_count do |i|
 end
 
 Factory.define :click_count do |c|
-  c.time_window_id {Factory(:time_window).id}
+  c.start_time Time.now
+  c.end_time Time.now + 60
+  c.duration_in_minutes 1
   c.campaign_id {Factory(:campaign).id}
   c.creative_id {Factory(:creative).id}
   c.ad_inventory_source_id {Factory(:ad_inventory_source).id}

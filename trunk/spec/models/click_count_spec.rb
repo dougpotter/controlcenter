@@ -61,4 +61,18 @@ describe ClickCount do
     Factory.create(:click_count, :click_count => "not a number")
     }.should raise_error
   end
+
+  it "should require end_time after start_time" do
+    lambda {
+      Factory.create(:click_count, {:start_time => Time.now + 60, :end_time => Time.now})
+    }.should raise_error
+  end
+
+  it "should have unique combination of required attributes" do
+    attrs = {:campaign_id => 1, :creative_id => 1, :ad_inventory_source_id => 1, :audience_id => 1, :click_count => 100, :start_time => Time.now, :end_time => (Time.now + 60), :duration_in_minutes => 1}
+    Factory.create(:click_count, attrs)
+    lambda {
+      Factory.create(:click_count, attrs)
+    }.should raise_error(ActiveRecord::StatementInvalid)
+  end
 end

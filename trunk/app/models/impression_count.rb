@@ -25,6 +25,7 @@ class ImpressionCount < ActiveRecord::Base
 
   validates_presence_of :start_time, :end_time, :duration_in_minutes, :campaign_id, :creative_id, :ad_inventory_source_id, :audience_id, :impression_count
   validates_numericality_of :impression_count
+  validates_as_increasing :start_time, :end_time, :allow_nil => false
 
   def business_attributes
     ["start_time", "end_time", "duration_in_minutes", "campaign_code", "creative_code", "ais_code", "audience_code", "geography"]
