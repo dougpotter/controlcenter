@@ -43,12 +43,6 @@ describe ImpressionCount do
     }.should raise_error
   end
 
-  it "should require valid foreign key for geographies" do
-    lambda {
-      Factory.create(:impression_count, :geography_id => 0)
-    }.should raise_error
-  end
-
   it "should require valid foreign key for audiences" do
     lambda {
       Factory.create(:impression_count, :audience_id => 0)

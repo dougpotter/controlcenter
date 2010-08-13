@@ -57,16 +57,10 @@ describe Campaign do
     }.should raise_error
   end
 
-  it "should require integer cid" do
-    lambda {
-      Factory.create(:campaign, :cid => "not an int")
-    }.should raise_error 
-  end
-
   it "shoud require unique cid" do
-    Factory.create(:campaign, :cid => "111")
+    Factory.create(:campaign, :campaign_code => "111")
     lambda {
-      Factory.create(:campaign, :cid => "111")
+      Factory.create(:campaign, :campaign_code => "111")
     }.should raise_error
   end
 end

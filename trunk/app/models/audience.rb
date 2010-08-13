@@ -24,8 +24,6 @@ class Audience < ActiveRecord::Base
   has_many :click_counts
   has_many :impression_counts
 
-  validates_numericality_of :seed_extraction_id, :model_id
-
   def business_code
     :audience_code
   end

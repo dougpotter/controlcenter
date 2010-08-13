@@ -29,16 +29,6 @@ Factory.define :ad_inventory_source do |f|
   f.sequence(:ais_code) { |n| "Add#{(n+65).chr.upcase}" }
 end
 
-Factory.define :geography do |g|
-  g.description "description"
-end
-
-Factory.define :seed_extraction do |s|
-  s.description "description"
-  s.mapper "mapper"
-  s.reducer "reducer"
-end
-
 Factory.define :model do |m|
   m.description "description"
 end
@@ -55,7 +45,6 @@ Factory.define :impression_count do |i|
   i.campaign_id {Factory(:campaign).id}
   i.creative_id {Factory(:creative).id}
   i.ad_inventory_source_id {Factory(:ad_inventory_source).id}
-  i.geography_id {Factory(:geography).id}
   i.audience_id {Factory(:audience).id}
   i.impression_count 10000
 end
@@ -65,7 +54,6 @@ Factory.define :click_count do |c|
   c.campaign_id {Factory(:campaign).id}
   c.creative_id {Factory(:creative).id}
   c.ad_inventory_source_id {Factory(:ad_inventory_source).id}
-  c.geography_id {Factory(:geography).id}
   c.audience_id {Factory(:audience).id}
   c.click_count 1900
 end
@@ -73,7 +61,6 @@ end
 Factory.define :remote_placement do |r|
   r.time_window_id {Factory(:time_window).id}
   r.campaign_id {Factory(:campaign).id}
-  r.geography_id {Factory(:geography).id}
   r.audience_id {Factory(:audience).id}
   r.remote_placement_count 1900
 end
