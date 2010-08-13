@@ -3,6 +3,27 @@ class FactFilingController < ApplicationController
 
   attr_accessor :attrs
   attr_accessor :fact_class
+
+  def show
+    @csv_rows = []
+    @end_time = (Time.parse(params[:end_time]) rescue (Date.today - 1.day))
+    @start_time = (Time.parse(params[:start_time]) rescue (@end_date - 7.day))
+    @fact_class = ActiveRecord.const_get(params[:table_name].classify)
+    results = @fact_class.find(:all, :conditions => ["start_time >= ? AND end_time <= ?", @start_time, @end_time])
+
+    @csv_rows << results.first.attributes.keys.join(",")
+    results.each do |row|
+      @csv_rows << row.attributes.values.join(",")
+    end
+
+    respond_to do |format|
+      format.csv do 
+        render_csv("#{params[:table_name]}-" +
+                   "#{@start_time.strftime("%Y%m%d")}-#{@end_time.strftime("%Y%m%d")}")
+      end
+    end
+  end
+
   def create
     @attrs = {}
     @fact_class = ActiveRecord.const_get(params[:table_name].classify)
