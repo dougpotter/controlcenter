@@ -1,13 +1,11 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: audiences
 #
-#  id                 :integer(4)      not null, primary key
-#  description        :text
-#  internal_external  :text
-#  seed_extraction_id :integer(4)
-#  model_id           :integer(4)
+#  id            :integer(4)      not null, primary key
+#  description   :string(255)
+#  audience_code :string(255)     not null
 #
 
 require 'spec_helper'

@@ -1,13 +1,15 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: remote_placements
 #
 #  campaign_id            :integer(4)      not null
-#  geography_id           :integer(4)      not null
+#  geography_id           :integer(4)
 #  audience_id            :integer(4)      not null
-#  time_window_id         :integer(4)      not null
 #  remote_placement_count :integer(4)      not null
+#  start_time             :datetime
+#  end_time               :datetime
+#  duration_in_minutes    :integer(4)
 #
 
 # Remote Placement is defined as the act of including a targeted

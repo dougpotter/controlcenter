@@ -1,10 +1,11 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: ad_inventory_sources
 #
-#  id   :integer(4)      not null, primary key
-#  name :text
+#  id       :integer(4)      not null, primary key
+#  name     :string(255)
+#  ais_code :string(255)     not null
 #
 
 require 'spec_helper'

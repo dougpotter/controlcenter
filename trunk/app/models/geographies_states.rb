@@ -1,9 +1,8 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: geographies_states
 #
-#  id           :integer(4)      not null, primary key
 #  state_id     :integer(4)
 #  geography_id :integer(4)
 #

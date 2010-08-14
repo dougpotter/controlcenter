@@ -1,11 +1,12 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: creative_sizes
 #
-#  id     :integer(4)      not null, primary key
-#  height :float
-#  width  :float
+#  id          :integer(4)      not null, primary key
+#  height      :float
+#  width       :float
+#  common_name :string(255)
 #
 
 require 'spec_helper'

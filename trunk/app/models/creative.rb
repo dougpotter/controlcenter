@@ -1,13 +1,14 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: creatives
 #
 #  id               :integer(4)      not null, primary key
-#  name             :text
-#  media_type       :text
+#  name             :string(255)
+#  media_type       :string(255)
 #  creative_size_id :integer(4)
 #  campaign_id      :integer(4)
+#  creative_code    :string(255)     not null
 #
 
 # Creative is the visual component of an ad

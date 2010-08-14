@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: data_provider_channels
 #

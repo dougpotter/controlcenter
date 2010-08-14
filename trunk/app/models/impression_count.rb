@@ -1,15 +1,17 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: impression_counts
 #
-#  time_window_id         :integer(4)      not null
 #  campaign_id            :integer(4)      not null
 #  creative_id            :integer(4)      not null
 #  ad_inventory_source_id :integer(4)      not null
-#  geography_id           :integer(4)      not null
+#  geography_id           :integer(4)
 #  audience_id            :integer(4)      not null
 #  impression_count       :integer(4)      not null
+#  start_time             :datetime
+#  end_time               :datetime
+#  duration_in_minutes    :integer(4)
 #
 
 # An Impression is defined as a person viewing an ad. Impression Count

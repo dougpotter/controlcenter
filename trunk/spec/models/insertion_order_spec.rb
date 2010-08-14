@@ -1,10 +1,10 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: insertion_orders
 #
 #  id          :integer(4)      not null, primary key
-#  description :text
+#  description :string(255)
 #  campaign_id :integer(4)
 #
 

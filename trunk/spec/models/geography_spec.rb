@@ -1,10 +1,11 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: geographies
 #
 #  id          :integer(4)      not null, primary key
 #  description :string(255)
+#  msa         :string(255)     not null
 #
 
 require 'spec_helper'

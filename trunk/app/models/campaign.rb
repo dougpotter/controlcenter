@@ -1,14 +1,14 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: campaigns
 #
-#  id             :integer(4)      not null, primary key
-#  description    :text            default(""), not null
-#  campaign_code  :text            default(""), not null
-#  partner_id     :integer(4)
-#  cid            :integer(4)
-#  time_window_id :integer(4)
+#  id            :integer(4)      not null, primary key
+#  description   :string(255)     default(""), not null
+#  campaign_code :string(255)     default(""), not null
+#  partner_id    :integer(4)
+#  start_time    :datetime
+#  end_time      :datetime
 #
 
 # Campaign is defined as a logical grouping of the elements involved

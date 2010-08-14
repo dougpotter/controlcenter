@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100803143344
+# Schema version: 20100813163534
 #
 # Table name: partner_beacon_requests
 #
@@ -15,6 +15,7 @@
 #  xguid            :string(255)
 #  xgcid            :string(255)
 #  puid             :string(255)
+#  pid              :integer(4)
 #
 
 class PartnerBeaconRequest < ActiveRecord::Base
