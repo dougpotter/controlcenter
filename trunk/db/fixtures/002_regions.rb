@@ -6,7 +6,7 @@
 #
 #   script/generate_geo_seeds 
 #
-State.seed_many(:abbreviation,[
+Region.seed_many(:abbreviation,[
   { :abbreviation => "VA" },
   { :abbreviation => "ND" },
   { :abbreviation => "AL" },
