@@ -114,13 +114,6 @@ end
 require File.join(File.dirname(__FILE__), '../../config/boot')
 require File.join(File.dirname(__FILE__), '../../config/environment')
 
-# Uncomment to observe how much i/o is performed
-#require 'file_io_debugging'
-#FileIoDebugging.activate!
-
-# Important: development version of ruote is required (as of Jun 10, 2010)
-# since it contains bugfixes and features we rely on.
-
 if options[:profile]
   require 'ruby-prof'
 end
