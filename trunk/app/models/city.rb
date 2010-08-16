@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100813163534
+# Schema version: 20100816164408
 #
 # Table name: cities
 #
@@ -8,4 +8,6 @@
 #
 
 class City < ActiveRecord::Base
+  belongs_to :region
+  validates_presence_of :name
 end

@@ -1,22 +1,29 @@
 # == Schema Information
-# Schema version: 20100813163534
+# Schema version: 20100816164408
 #
 # Table name: geographies
 #
-#  id          :integer(4)      not null, primary key
-#  description :string(255)
-#  msa         :string(255)     not null
+#  id         :integer(4)      not null, primary key
+#  country_id :integer(4)      not null
+#  msa_id     :integer(4)      not null
+#  zip_id     :integer(4)      not null
+#  region_id  :integer(4)      not null
 #
 
 # Geography is defined as an MSA as defined by the U.S. Census bureau.
 # http://www.census.gov/population/www/metroareas/lists/2008/List1.txt
 class Geography < ActiveRecord::Base
-  has_and_belongs_to_many :campaigns
-  has_many :states
-  has_many :cities
+  belongs_to :country
+  belongs_to :msa
+  belongs_to :zip
+  belongs_to :region
 
   has_many :click_counts
   has_many :impression_counts
+  has_many :remote_placements
+
+  # might want to add a validation which requires at least one attribute
+  # to be present
 
   def business_code
     ""
