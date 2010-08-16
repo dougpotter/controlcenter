@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100813163534) do
+ActiveRecord::Schema.define(:version => 20100816164408) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -64,6 +64,14 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
     t.string "name", :null => false
   end
 
+  create_table "cities_regions", :id => false, :force => true do |t|
+    t.integer "city_id",   :null => false
+    t.integer "region_id", :null => false
+  end
+
+  add_index "cities_regions", ["city_id"], :name => "cities_regions_city_id_fk"
+  add_index "cities_regions", ["region_id"], :name => "cities_regions_region_id_fk"
+
   create_table "click_counts", :id => false, :force => true do |t|
     t.integer  "campaign_id",            :null => false
     t.integer  "creative_id",            :null => false
@@ -79,8 +87,21 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
   add_index "click_counts", ["ad_inventory_source_id"], :name => "click_counts_ad_inventory_source_id_fk"
   add_index "click_counts", ["audience_id"], :name => "click_counts_audience_id_fk"
   add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "required_columns", :unique => true
+  add_index "click_counts", ["campaign_id"], :name => "click_counts_campaign_id_fk"
   add_index "click_counts", ["creative_id"], :name => "click_counts_creative_id_fk"
   add_index "click_counts", ["geography_id"], :name => "click_counts_geography_id_fk"
+
+  create_table "countries", :force => true do |t|
+    t.string "name", :null => false
+  end
+
+  create_table "countries_regions", :id => false, :force => true do |t|
+    t.integer "country_id", :null => false
+    t.integer "region_id",  :null => false
+  end
+
+  add_index "countries_regions", ["country_id"], :name => "countries_regions_country_id_fk"
+  add_index "countries_regions", ["region_id"], :name => "countries_regions_region_id_fk"
 
   create_table "creative_sizes", :force => true do |t|
     t.float  "height"
@@ -134,19 +155,16 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
   end
 
   create_table "geographies", :force => true do |t|
-    t.string "description"
-    t.string "msa",         :null => false
+    t.integer "country_id", :null => false
+    t.integer "msa_id",     :null => false
+    t.integer "zip_id",     :null => false
+    t.integer "region_id",  :null => false
   end
 
-  create_table "geographies_cities", :id => false, :force => true do |t|
-    t.integer "city_id"
-    t.integer "geography_id"
-  end
-
-  create_table "geographies_states", :id => false, :force => true do |t|
-    t.integer "state_id"
-    t.integer "geography_id"
-  end
+  add_index "geographies", ["country_id"], :name => "geographies_country_id_fk"
+  add_index "geographies", ["msa_id"], :name => "geographies_msa_id_fk"
+  add_index "geographies", ["region_id"], :name => "geographies_region_id_fk"
+  add_index "geographies", ["zip_id"], :name => "geographies_zip_id_fk"
 
   create_table "impression_counts", :id => false, :force => true do |t|
     t.integer  "campaign_id",            :null => false
@@ -163,6 +181,7 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
   add_index "impression_counts", ["ad_inventory_source_id"], :name => "impression_counts_ad_inventory_source_id_fk"
   add_index "impression_counts", ["audience_id"], :name => "impression_counts_audience_id_fk"
   add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "required_columns", :unique => true
+  add_index "impression_counts", ["campaign_id"], :name => "impression_counts_campaign_id_fk"
   add_index "impression_counts", ["creative_id"], :name => "impression_counts_creative_id_fk"
   add_index "impression_counts", ["geography_id"], :name => "impression_counts_geography_id_fk"
 
@@ -184,6 +203,18 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
     t.string "description"
   end
 
+  create_table "msas", :force => true do |t|
+    t.string "msa_code", :null => false
+  end
+
+  create_table "msas_regions", :id => false, :force => true do |t|
+    t.integer "msa_id",    :null => false
+    t.integer "region_id", :null => false
+  end
+
+  add_index "msas_regions", ["msa_id"], :name => "msas_regions_msa_id_fk"
+  add_index "msas_regions", ["region_id"], :name => "msas_regions_region_id_fk"
+
   create_table "partner_beacon_requests", :force => true do |t|
     t.string   "host_ip"
     t.datetime "request_time"
@@ -203,6 +234,18 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
     t.string  "name"
     t.integer "partner_code", :null => false
   end
+
+  create_table "regions", :force => true do |t|
+    t.string "abbreviation", :null => false
+  end
+
+  create_table "regions_zips", :id => false, :force => true do |t|
+    t.integer "region_id", :null => false
+    t.integer "zip_id",    :null => false
+  end
+
+  add_index "regions_zips", ["region_id"], :name => "regions_zips_region_id_fk"
+  add_index "regions_zips", ["zip_id"], :name => "regions_zips_zip_id_fk"
 
   create_table "remote_placements", :id => false, :force => true do |t|
     t.integer  "campaign_id",            :null => false
@@ -241,8 +284,8 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
     t.integer "usage"
   end
 
-  create_table "states", :force => true do |t|
-    t.string "abbreviation", :null => false
+  create_table "zips", :force => true do |t|
+    t.string "zip", :null => false
   end
 
   add_foreign_key "ad_inventory_sources_campaigns", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
@@ -256,11 +299,17 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
   add_foreign_key "campaigns_geographies", "campaigns", :name => "campaigns_geographies_campaign_id_fk"
   add_foreign_key "campaigns_geographies", "geographies", :name => "campaigns_geographies_geography_id_fk"
 
+  add_foreign_key "cities_regions", "cities", :name => "cities_regions_city_id_fk"
+  add_foreign_key "cities_regions", "regions", :name => "cities_regions_region_id_fk"
+
   add_foreign_key "click_counts", "ad_inventory_sources", :name => "click_counts_ad_inventory_source_id_fk"
   add_foreign_key "click_counts", "audiences", :name => "click_counts_audience_id_fk"
   add_foreign_key "click_counts", "campaigns", :name => "click_counts_campaign_id_fk"
   add_foreign_key "click_counts", "creatives", :name => "click_counts_creative_id_fk"
   add_foreign_key "click_counts", "geographies", :name => "click_counts_geography_id_fk"
+
+  add_foreign_key "countries_regions", "countries", :name => "countries_regions_country_id_fk"
+  add_foreign_key "countries_regions", "regions", :name => "countries_regions_region_id_fk"
 
   add_foreign_key "creatives", "campaigns", :name => "creatives_campaign_id_fk"
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
@@ -272,6 +321,11 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
 
   add_foreign_key "data_provider_files", "data_provider_channels", :name => "data_provider_files_data_provider_channel_id_fk"
 
+  add_foreign_key "geographies", "countries", :name => "geographies_country_id_fk"
+  add_foreign_key "geographies", "msas", :name => "geographies_msa_id_fk"
+  add_foreign_key "geographies", "regions", :name => "geographies_region_id_fk"
+  add_foreign_key "geographies", "zips", :name => "geographies_zip_id_fk"
+
   add_foreign_key "impression_counts", "ad_inventory_sources", :name => "impression_counts_ad_inventory_source_id_fk"
   add_foreign_key "impression_counts", "audiences", :name => "impression_counts_audience_id_fk"
   add_foreign_key "impression_counts", "campaigns", :name => "impression_counts_campaign_id_fk"
@@ -279,6 +333,12 @@ ActiveRecord::Schema.define(:version => 20100813163534) do
   add_foreign_key "impression_counts", "geographies", :name => "impression_counts_geography_id_fk"
 
   add_foreign_key "insertion_orders", "campaigns", :name => "insertion_orders_campaign_id_fk"
+
+  add_foreign_key "msas_regions", "msas", :name => "msas_regions_msa_id_fk"
+  add_foreign_key "msas_regions", "regions", :name => "msas_regions_region_id_fk"
+
+  add_foreign_key "regions_zips", "regions", :name => "regions_zips_region_id_fk"
+  add_foreign_key "regions_zips", "zips", :name => "regions_zips_zip_id_fk"
 
   add_foreign_key "remote_placements", "audiences", :name => "remote_placements_audience_id_fk"
   add_foreign_key "remote_placements", "campaigns", :name => "remote_placements_campaign_id_fk"
