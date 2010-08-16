@@ -55,6 +55,14 @@ class ClearspringExtractWorkflow < Workflow::Base
   attr_reader :params
   private :params
   
+  def date
+    params[:date]
+  end
+  
+  def hour
+    params[:hour]
+  end
+  
   def initialize(params)
     @params = params
     @http_client = create_http_client(@params)
@@ -62,6 +70,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug])
     @s3_client = S3Client.new(:debug => @params[:debug])
     @network_error_retry_options = {:retry_count => 10, :sleep_time => 10}
+    @update_process_status = params[:update_process_status]
   end
   
   def run
@@ -99,14 +108,16 @@ class ClearspringExtractWorkflow < Workflow::Base
   private
   
   def list_files
-    url = build_data_source_url
-    page_text = retry_network_errors(@network_error_retry_options) do
-      @http_client.fetch(url + '/')
+    with_process_status(:action => 'listing files') do
+      url = build_data_source_url
+      page_text = retry_network_errors(@network_error_retry_options) do
+        @http_client.fetch(url + '/')
+      end
+      files = @parser.parse_any_httpd_file_list(page_text)
+      absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
+      absolute_file_urls.reject! { |url| !should_download_url?(url) }
+      absolute_file_urls
     end
-    files = @parser.parse_any_httpd_file_list(page_text)
-    absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
-    absolute_file_urls.reject! { |url| !should_download_url?(url) }
-    absolute_file_urls
   end
   
   def extract_without_locking(file_url, options={})
@@ -148,34 +159,40 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def download(url)
-    remote_relative_path = build_relative_path(url)
-    local_path = build_local_path(remote_relative_path)
-    FileUtils.mkdir_p(File.dirname(local_path))
-    retry_network_errors(@network_error_retry_options) do
-      @http_client.download(url, local_path)
+    with_process_status(:action => 'downloading file') do
+      remote_relative_path = build_relative_path(url)
+      local_path = build_local_path(remote_relative_path)
+      FileUtils.mkdir_p(File.dirname(local_path))
+      retry_network_errors(@network_error_retry_options) do
+        @http_client.download(url, local_path)
+      end
+      local_path
     end
-    local_path
   end
   
   def split(input_path)
-    local_relative_path = figure_relative_path(params[:download_root_dir], input_path)
-    local_relative_path =~ /^(.*?)(\.log\.gz)?$/
-    name, ext = $1, $2
-    filename_format = "#{name.sub('%', '%%')}.%03d#{ext}"
-    
-    local_path = File.join(params[:gzip_root_dir], filename_format)
-    FileUtils.mkdir_p(File.dirname(local_path))
-    
-    dest_files = @gzip_transformer.transform(
-      input_path,
-      params[:gzip_root_dir],
-      filename_format
-    )
+    with_process_status(:action => 'splitting file') do
+      local_relative_path = figure_relative_path(params[:download_root_dir], input_path)
+      local_relative_path =~ /^(.*?)(\.log\.gz)?$/
+      name, ext = $1, $2
+      filename_format = "#{name.sub('%', '%%')}.%03d#{ext}"
+      
+      local_path = File.join(params[:gzip_root_dir], filename_format)
+      FileUtils.mkdir_p(File.dirname(local_path))
+      
+      dest_files = @gzip_transformer.transform(
+        input_path,
+        params[:gzip_root_dir],
+        filename_format
+      )
+    end
   end
   
   def upload(local_path)
-    retry_aws_errors(@network_error_retry_options) do
-      @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
+    with_process_status(:action => 'uploading file') do
+      retry_aws_errors(@network_error_retry_options) do
+        @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
+      end
     end
   end
   

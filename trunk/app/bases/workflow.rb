@@ -57,5 +57,15 @@ module Workflow
         :debug => params[:debug]
       )
     end
+    
+    def with_process_status(options)
+      if @update_process_status
+        ProcessStatus.set(options) do
+          yield
+        end
+      else
+        yield
+      end
+    end
   end
 end

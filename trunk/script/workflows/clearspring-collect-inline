@@ -140,6 +140,7 @@ def run(ext_params)
   workflows = versions.map do |version_params|
     params = settings.merge_user_options(ext_params)
     params.update(version_params)
+    params[:update_process_status] = true
     options = StrictHashWithIndifferentAccess.new(params)
     options.optional_keys(:hour)
     ClearspringExtractWorkflow.new(options)
@@ -158,14 +159,25 @@ def run(ext_params)
   
   workflows.each do |workflow|
     if ext_params[:discover]
-      files = workflow.discover
-      files.each do |file|
-        puts file
-      end
-    elsif ext_params[:extract]
-      workflow.extract(ext_params[:extract])
+      script_str = 'clearspring-discover'
     else
-      workflow.run
+      script_str = 'clearspring-extract'
+    end
+    params_str = workflow.date
+    if workflow.hour
+      params_str += '-%02d00' % workflow.hour
+    end
+    ProcessStatus.set(:script => script_str, :params => params_str) do
+      if ext_params[:discover]
+        files = workflow.discover
+        files.each do |file|
+          puts file
+        end
+      elsif ext_params[:extract]
+        workflow.extract(ext_params[:extract])
+      else
+        workflow.run
+      end
     end
   end
   0
