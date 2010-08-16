@@ -33,5 +33,6 @@ Campaign.seed_many(:id, :campaign_code, [
   { :id => 32, :campaign_code => "W88H", :partner_id => 1 },
   { :id => 33, :campaign_code => "WCH7", :partner_id => 1 },
   { :id => 34, :campaign_code => "ZNB0", :partner_id => 1 },
-  { :id => 35, :campaign_code => "ZT4R", :partner_id => 16 }
+  { :id => 35, :campaign_code => "ZT4R", :partner_id => 16 },
+  { :id => 36, :campaign_code => "BY51", :partner_id => 16 }
 ])
