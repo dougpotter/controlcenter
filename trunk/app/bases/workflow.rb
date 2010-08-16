@@ -20,4 +20,24 @@ module Workflow
   
   # Attempting to extract partially uploaded files.
   class FileNotReady < WorkflowError; end
+  
+  module UserInputParsing
+    def parse_hours_specification(hours)
+      hours = hours.split(',').map do |hour|
+        hour = hour.strip
+        unless hour =~ /^\d\d?/
+          raise ArgumentError, "Invalid hour value: #{hour}"
+        end
+        hour = hour.to_i
+        if hour < 0 || hour > 23
+          raise ArgumentError, "Hour value out of range: #{hour}"
+        end
+        hour
+      end
+    end
+  end
+  
+  class << self
+    include UserInputParsing
+  end
 end

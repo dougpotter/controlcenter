@@ -16,17 +16,6 @@ parser = OptionParser.new do |opts|
     options[:date] = date
   end
   opts.on('-H', '--hour HOUR', 'Extract for specified HOUR (by default all hours; 24-hour format: 00-23; multiple hours can be specified separated by commas)') do |hours|
-    hours = hours.split(',').map { |hour| hour.strip }
-    hours.map! do |hour|
-      unless hour =~ /^\d\d?/
-        raise OptionParser::ParseError, "Invalid hour value: #{hour}"
-      end
-      hour = hour.to_i
-      if hour < 0 || hour > 23
-        raise OptionParser::ParseError, "Hour value out of range: #{hour}"
-      end
-      hour
-    end
     options[:hours] = hours
   end
   
@@ -113,6 +102,14 @@ end
 
 require File.join(File.dirname(__FILE__), '../../config/boot')
 require File.join(File.dirname(__FILE__), '../../config/environment')
+
+if options[:hours]
+  begin
+    options[:hours] = Workflow.parse_hours_specification(options[:hours])
+  rescue ArgumentError => e
+    raise OptionParser::ParseError, e.message
+  end
+end
 
 if options[:profile]
   require 'ruby-prof'
