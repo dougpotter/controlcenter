@@ -11,9 +11,16 @@ class FactFilingController < ApplicationController
     @fact_class = ActiveRecord.const_get(params[:table_name].classify)
     results = @fact_class.find(:all, :conditions => ["start_time >= ? AND end_time <= ?", @start_time, @end_time])
 
-    @csv_rows << results.first.attributes.keys.join(",")
+    fact_name = params[:table_name].singularize
+    @csv_rows << (results.first.business_objects ? 
+        results.first.business_objects.collect { |obj|
+          obj.business_code || nil
+        }.compact + [ "start_time", "end_time", fact_name ] : results.first.attributes.keys)
     results.each do |row|
-      @csv_rows << row.attributes.values.join(",")
+      @csv_rows << (results.first.business_objects ? 
+          row.business_objects.collect { |obj|
+            obj.send(obj.business_code) rescue nil
+          }.compact + [ row.start_time, row.end_time, row.send(fact_name) ] : row.attributes.values)
     end
 
     respond_to do |format|
@@ -51,7 +58,6 @@ class FactFilingController < ApplicationController
     @attrs[:start_time] = params.delete(:start_time)
     @attrs[:end_time] = params.delete(:end_time)
     @attrs[:duration_in_minutes] = params.delete(:duration_in_minutes)
-    puts "after time: " + @attrs.inspect
   end
 
   def handle_geography
