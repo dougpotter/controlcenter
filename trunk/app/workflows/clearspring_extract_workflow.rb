@@ -1,7 +1,7 @@
 require 'fileutils'
 require_dependency 'semaphore'
 
-class ClearspringExtractWorkflow
+class ClearspringExtractWorkflow < Workflow::Base
   class WorkflowError < StandardError; end
   class DataProviderNotFound < WorkflowError; end
   class DataProviderChannelNotFound < WorkflowError; end
@@ -57,17 +57,7 @@ class ClearspringExtractWorkflow
   
   def initialize(params)
     @params = params
-    if @params[:http_client]
-      http_client_class = HttpClient.const_get(@params[:http_client].camelize)
-    else
-      http_client_class = HttpClient::Curb
-    end
-    @http_client = http_client_class.new(
-      :http_username => @params[:http_username],
-      :http_password => @params[:http_password],
-      :timeout => @params[:net_io_timeout],
-      :debug => @params[:debug]
-    )
+    @http_client = create_http_client(@params)
     @parser = WebParser.new
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug])
     @s3_client = S3Client.new(:debug => @params[:debug])

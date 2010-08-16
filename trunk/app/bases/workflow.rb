@@ -40,4 +40,22 @@ module Workflow
   class << self
     include UserInputParsing
   end
+  
+  class Base
+    private
+    
+    def create_http_client(params)
+      if params[:http_client]
+        http_client_class = HttpClient.const_get(params[:http_client].camelize)
+      else
+        http_client_class = HttpClient::Curb
+      end
+      http_client_class.new(
+        :http_username => params[:http_username],
+        :http_password => params[:http_password],
+        :timeout => params[:net_io_timeout],
+        :debug => params[:debug]
+      )
+    end
+  end
 end
