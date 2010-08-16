@@ -18,6 +18,8 @@ class Partner < ActiveRecord::Base
   def business_code
     :partner_code
   end
+  
+  def pid ; partner_code ; end
 
   def self.code_to_pk(partner_code)
     find_by_partner_code(partner_code).id
