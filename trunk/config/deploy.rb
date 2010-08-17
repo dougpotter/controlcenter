@@ -48,6 +48,16 @@ role(:db, :primary => true) { domain }
 # SCM OPTIONS
 # =============================================================================
 set :scm, :subversion
+
+# User specification.
+# Specifying scm_username affects both local and remote operations, thus
+# deploying human users must enter two sets of credentials on their machines.
+# On the other hand, capistrano does not recognize subversion username
+# prompts, so without specifying username here a manual login and checkout
+# is required on each remote machine to populate subversion auth cache.
+set :scm_username, 'xgraph'
+set :scm_auth_cache, true
+
 set :deploy_via, :remote_cache
 
 # URL of your source repository.
@@ -57,7 +67,8 @@ set(:repository) do
   else
     path = "branches/#{branch}"
   end
-  "https://xgraph@dev.xgraph.net/svn/xgraph/controlcenter/#{path}"
+  # Note: user@ specification here is ignored by subversion in some/all cases
+  "https://dev.xgraph.net/svn/xgraph/controlcenter/#{path}"
 end
 # Allowed branch specifications:
 #
@@ -92,6 +103,14 @@ ssh_options[:port] = 22
 task :qa do
   set :application, 'control.qa.xgraph.net'
   set :branch, 'trunk'
+end
+
+# Environment for testing deployment - a dedicated user account on QA
+task :deploy_test do
+  set :application, 'control.qa.xgraph.net'
+  set :user, 'deploytest'
+  set :deploy_to, "/home/#{user}/deployroot"
+  set :use_sudo, false
 end
 
 # =============================================================================
