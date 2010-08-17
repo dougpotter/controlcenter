@@ -25,7 +25,7 @@ parser = OptionParser.new do |opts|
   opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/clearspring.yml is used)') do |path|
     options[:config_path] = path
   end
-  opts.on('--http-client CLIENT', 'Use specified http client CLIENT (valid values: curb (default), net_http, right_aws)') do |client|
+  opts.on('--http-client CLIENT', 'Use specified http client CLIENT (valid values: curb (default), httpclient, net_http, right_aws, spawn_{curl|wget}[_netrc])') do |client|
     options[:http_client] = client
   end
   opts.on('--[no-]system-timer', 'Force the use of SystemTimer instead of Timeout') do |value|
