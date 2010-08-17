@@ -22,7 +22,7 @@ namespace :workflows do
       require 'subprocess'
       times.each do |date, hour|
         script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-collect-inline')
-        Subprocess.spawn_check(script, '-D', date, '-H', hour)
+        Subprocess.spawn_check([script, '-D', date, '-H', hour])
       end
     end
   end

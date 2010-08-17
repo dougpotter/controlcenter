@@ -4,24 +4,36 @@ module Subprocess
   
   BUFSIZE = 16384
   
-  # Runs command given in args, which use the same syntax as Kernel#exec.
+  # Runs command given in args, which must be a list of arguments.
+  # See Kernel#exec for an explanation of args' contents.
   # Standard input, output and error of the command are connected to the ruby
   # process's standard input, output and error.
   # Does not return anything.
   # If the command fails (exit code non-zero), raises CommandFailed.
-  def spawn_check(*args)
-    unless system(*args)
-      raise CommandFailed
+  # Allowed options:
+  #  :env => hash of environment variables to set in spawned process
+  def spawn_check(args, options={})
+    if pid = fork
+      Process.wait(pid)
+      if $?.exitstatus != 0
+        raise CommandFailed
+      end
+      nil
+    else
+      run_child(args, options)
     end
   end
   module_function :spawn_check
   
-  # Runs command given in args, which use the same syntax as Kernel#exec.
+  # Runs command given in args, which must be a list of arguments.
+  # See Kernel#exec for an explanation of args' contents.
   # Standard input and error of the command are connected to the ruby
   # process's standard input and error.
   # Returs standard output of the command.
   # If the command fails (exit code non-zero), raises CommandFailed.
-  def get_output(*args)
+  # Allowed options:
+  #  :env => hash of environment variables to set in spawned process
+  def get_output(args, options={})
     rd, wr = IO.pipe
     if pid = fork
       wr.close
@@ -37,8 +49,23 @@ module Subprocess
     else
       $stdout.reopen(wr)
       rd.close
-      exec(*args)
+      run_child(args, options)
     end
   end
   module_function :get_output
+  
+  private
+  
+  # Prepares child environment and execs
+  def run_child(args, options)
+    if env = options[:env]
+      env.each do |key, value|
+        # convert both keys and values to strings for convenience.
+        # if this poses a problem, pass strings in :env in the first place
+        ENV[key.to_s] = value.to_s
+      end
+    end
+    exec(*args)
+  end
+  module_function :run_child
 end

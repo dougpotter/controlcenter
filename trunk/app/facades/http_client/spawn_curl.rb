@@ -1,6 +1,8 @@
 require_dependency 'subprocess'
 
 class HttpClient::SpawnCurl < HttpClient::Base
+  include SpawnMixin
+  
   # allowed options:
   # :command
   #   Examples:
@@ -27,7 +29,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
     if @debug
       debug_print "Curl: #{cmd.join(' ')}"
     end
-    Subprocess.get_output(*cmd)
+    get_output(cmd)
   end
   
   def download(url, local_path)
@@ -39,7 +41,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
     if @debug
       debug_print "Curl: #{cmd.join(' ')}"
     end
-    Subprocess.spawn_check(*cmd)
+    spawn_check(cmd)
   end
   
   private

@@ -1,6 +1,8 @@
 require_dependency 'subprocess'
 
 class HttpClient::SpawnWget < HttpClient::Base
+  include SpawnMixin
+  
   # allowed options:
   # :command
   #   Examples:
@@ -27,7 +29,7 @@ class HttpClient::SpawnWget < HttpClient::Base
     if @debug
       debug_print "Wget: #{cmd}"
     end
-    Subprocess.get_output(*cmd)
+    Subprocess.get_output(cmd)
   end
   
   def download(url, local_path)
@@ -39,7 +41,8 @@ class HttpClient::SpawnWget < HttpClient::Base
     if @debug
       debug_print "Wget: #{cmd}"
     end
-    Subprocess.spawn_check(*cmd)
+    Subprocess.spawn_check(cmd)
+    spawn_check(cmd)
   end
   
   private
