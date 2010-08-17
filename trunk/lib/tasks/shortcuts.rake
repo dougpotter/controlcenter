@@ -1,0 +1,1 @@
+task :migrate => 'db:migrate'
