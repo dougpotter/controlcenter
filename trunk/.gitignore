@@ -3,6 +3,7 @@ config/aws.yml
 config/database.yml
 config/ruote_host.yml
 config/workflows/*.yml
+db/development_structure.sql
 log/*.log
 tmp/cache/*
 tmp/pids/*
