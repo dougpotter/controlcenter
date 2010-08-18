@@ -67,5 +67,17 @@ module Workflow
         yield
       end
     end
+    
+    def absolute_to_relative_path(root, absolute_path)
+      root_len, abs_len = root.length, absolute_path.length
+      if abs_len < root_len || absolute_path[0...root_len] != root
+        raise ArgumentError, "Absolute path #{absolute_path} is not under #{root}"
+      end
+      relative_path = absolute_path[root_len...abs_len]
+      if relative_path[0] == '/'
+        relative_path = relative_path[1...relative_path.length]
+      end
+      relative_path
+    end
   end
 end

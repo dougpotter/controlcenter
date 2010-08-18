@@ -160,7 +160,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   
   def download(url)
     with_process_status(:action => 'downloading file') do
-      remote_relative_path = build_relative_path(url)
+      remote_relative_path = url_to_relative_data_source_path(url)
       local_path = build_local_path(remote_relative_path)
       FileUtils.mkdir_p(File.dirname(local_path))
       retry_network_errors(@network_error_retry_options) do
@@ -172,7 +172,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   
   def split(input_path)
     with_process_status(:action => 'splitting file') do
-      local_relative_path = figure_relative_path(params[:download_root_dir], input_path)
+      local_relative_path = absolute_to_relative_path(params[:download_root_dir], input_path)
       local_relative_path =~ /^(.*?)(\.log\.gz)?$/
       name, ext = $1, $2
       filename_format = "#{name.sub('%', '%%')}.%03d#{ext}"
@@ -326,8 +326,8 @@ class ClearspringExtractWorkflow < Workflow::Base
     prefix
   end
   
-  def build_relative_path(remote_url)
-    figure_relative_path(params[:data_source_path], remote_url)
+  def url_to_relative_data_source_path(remote_url)
+    absolute_to_relative_path(params[:data_source_path], remote_url)
   end
   
   def build_local_path(remote_relative_path)
@@ -420,20 +420,6 @@ class ClearspringExtractWorkflow < Workflow::Base
   # readiness heuristic - to be written
   def fully_uploaded?(file_url)
     true
-  end
-  
-  # -----
-  
-  def figure_relative_path(root, absolute_path)
-    root_len, abs_len = root.length, absolute_path.length
-    if abs_len < root_len || absolute_path[0...root_len] != root
-      raise ArgumentError, "Absolute path #{absolute_path} is not under #{root}"
-    end
-    relative_path = absolute_path[root_len...abs_len]
-    if relative_path[0] == '/'
-      relative_path = relative_path[1...relative_path.length]
-    end
-    relative_path
   end
   
   # ------
