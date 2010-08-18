@@ -29,7 +29,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
     if @debug
       debug_print "Curl: #{cmd.join(' ')}"
     end
-    get_output(cmd)
+    get_output(url, cmd)
   end
   
   def download(url, local_path)
@@ -41,7 +41,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
     if @debug
       debug_print "Curl: #{cmd.join(' ')}"
     end
-    spawn_check(cmd)
+    spawn_check(url, cmd)
   end
   
   private

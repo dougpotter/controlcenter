@@ -5,14 +5,14 @@ require 'fileutils'
 module HttpClient::SpawnNetrcMixin
   protected
   
-  def get_output(cmd)
-    with_netrc do |netrc_dir|
+  def get_output(url, cmd)
+    with_netrc(url) do |netrc_dir|
       Subprocess.get_output(cmd, :env => {'HOME' => netrc_dir})
     end
   end
   
-  def spawn_check(cmd)
-    with_netrc do |netrc_dir|
+  def spawn_check(url, cmd)
+    with_netrc(url) do |netrc_dir|
       Subprocess.spawn_check(cmd, :env => {'HOME' => netrc_dir})
     end
   end
@@ -20,12 +20,13 @@ module HttpClient::SpawnNetrcMixin
   # Creates a .netrc file in a temporary directory with
   # http username and password; yields the directory path;
   # removes the directory when yielded to block returns.
-  def with_netrc
+  def with_netrc(url)
+    uri = URI.parse(url)
     mkdtemp do |tmp_dir|
       File.open(file_path = File.join(tmp_dir, '.netrc'), 'w') do |file|
         # for good measure
         FileUtils.chmod(0600, file_path)
-        file << "default login #{@http_username} password #{@http_password}"
+        file << "machine #{uri.host} login #{@http_username} password #{@http_password}"
       end
       yield tmp_dir
     end

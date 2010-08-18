@@ -29,7 +29,7 @@ class HttpClient::SpawnWget < HttpClient::Base
     if @debug
       debug_print "Wget: #{cmd}"
     end
-    Subprocess.get_output(cmd)
+    get_output(url, cmd)
   end
   
   def download(url, local_path)
@@ -41,8 +41,7 @@ class HttpClient::SpawnWget < HttpClient::Base
     if @debug
       debug_print "Wget: #{cmd}"
     end
-    Subprocess.spawn_check(cmd)
-    spawn_check(cmd)
+    spawn_check(url, cmd)
   end
   
   private

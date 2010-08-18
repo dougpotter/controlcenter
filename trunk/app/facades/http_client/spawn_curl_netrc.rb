@@ -12,6 +12,7 @@ class HttpClient::SpawnCurlNetrc < HttpClient::SpawnCurl
     unless @debug
       cmd << '-s'
     end
+    cmd << '-n'
     cmd << '-f'
     cmd + args
   end
