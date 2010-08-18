@@ -66,6 +66,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
     unless @debug
       cmd << '-s'
     end
+    cmd << '-f'
     cmd + args
   end
   
