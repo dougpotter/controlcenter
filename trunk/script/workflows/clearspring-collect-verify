@@ -141,6 +141,7 @@ def run(ext_params)
     params.update(version_params)
     options = StrictHashWithIndifferentAccess.new(params)
     options.optional_keys(:hour)
+    options[:update_process_status] = false
     ClearspringVerifyWorkflow.new(options)
   end
   
