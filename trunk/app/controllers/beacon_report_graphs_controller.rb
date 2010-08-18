@@ -7,7 +7,7 @@ class BeaconReportGraphsController < ApplicationController
     @end_date = (Date.parse(params[:end_date]) rescue (Date.today - 1.day))
     @start_date = (Date.parse(params[:start_date]) rescue (@end_date - 7.days))
     
-    @partner = Partner.find_by_pid(params[:id])
+    @partner = Partner.find_by_partner_code(params[:id])
     
     # TODO: Rewrite this where_hash / where_array business in some more
     # reusable form.
