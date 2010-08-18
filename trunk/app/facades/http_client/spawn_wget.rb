@@ -68,6 +68,7 @@ class HttpClient::SpawnWget < HttpClient::Base
     unless @debug
       cmd << '-q'
     end
+    cmd << '--no-check-certificate'
     cmd + args
   end
   
