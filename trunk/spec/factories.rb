@@ -61,7 +61,6 @@ Factory.define :click_count do |c|
 end
 
 Factory.define :remote_placement do |r|
-  r.time_window_id {Factory(:time_window).id}
   r.campaign_id {Factory(:campaign).id}
   r.audience_id {Factory(:audience).id}
   r.remote_placement_count 1900
