@@ -4,6 +4,11 @@
 require 'vendor/plugins/capistrano_mailer/lib/capistrano_mailer'
 
 # =============================================================================
+# LOCAL MODIFICATIONS
+# =============================================================================
+require 'lib/capistrano_subversion_sync_patch'
+
+# =============================================================================
 # CAP VARIABLES
 # =============================================================================
 # The name of your application. Used for directory and file names associated with the application.
@@ -48,6 +53,11 @@ role(:db, :primary => true) { domain }
 # SCM OPTIONS
 # =============================================================================
 set :scm, :subversion
+
+# Specify minimum version of scm in use. This should be set to the smallest
+# of versions installed on the machine running capistrano commands and the
+# machines which are deployment targets.
+#set :scm_min_version, '1.6.0'
 
 # User specification.
 # Specifying scm_username affects both local and remote operations, thus
