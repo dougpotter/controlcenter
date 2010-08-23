@@ -10,9 +10,21 @@ unless clearspring = DataProvider.find_by_name('Clearspring')
   clearspring = DataProvider.create!(:name => 'Clearspring')
 end
 
-channel_names = %w(view-us share-us search-hashed-us view-int share-int search-hashed-int)
-channel_names.each do |channel_name|
+channel_properties = {
+  'view-us' => 'hourly',
+  'share-us' => 'daily',
+  'search-hashed-us' => 'daily',
+  'view-int' => 'hourly',
+  'share-int' => 'daily',
+  'search-hashed-int' => 'daily',
+}
+channel_properties.each do |channel_name, update_frequency|
   unless channel = clearspring.data_provider_channels.find_by_name(channel_name)
-    channel = DataProviderChannel.create!(:name => channel_name, :data_provider => clearspring)
+    update_frequency = DataProviderChannel.const_get("UPDATES_#{update_frequency.upcase}")
+    channel = DataProviderChannel.create!(
+      :name => channel_name,
+      :data_provider => clearspring,
+      :update_frequency => update_frequency
+    )
   end
 end

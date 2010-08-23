@@ -9,6 +9,9 @@
 #
 
 class DataProviderChannel < ActiveRecord::Base
+  UPDATES_HOURLY = 1
+  UPDATES_DAILY = 2
+  
   belongs_to :data_provider
   has_many :data_provider_files
   
