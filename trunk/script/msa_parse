@@ -12,8 +12,8 @@ require 'fastercsv'
 require 'set'
 
 lines = []
-DB_PATH = File.expand_path(File.join(File.dirname(__FILE__), '..', 'db', 'geo_csv_data'))
-File.open(File.expand_path(File.join(File.expand_path(__FILE__), '..', '..', 'db', 'geo_csv_data', 'geographies.txt')), 'r') do |f|
+DB_PATH = File.expand_path(File.join(File.dirname(__FILE__), '..', 'db', 'geo_source_data'))
+File.open(File.expand_path(File.join(File.expand_path(__FILE__), '..', '..', 'db', 'geo_source_data', 'geographies.txt')), 'r') do |f|
   while (line = f.gets)
     if line.match(/(\d{5})\s{3}(\d{5}|\s{5})\s{3}(\s{5}|\d{5})\s+(\D+)/).to_a.size != 0
       lines << line
@@ -80,7 +80,7 @@ for line in lines
   end
 end
 
-#assign id to each state and city
+#assign id to each state, city, and msa
 states_hash = Hash.new
 cities_hash = Hash.new
 msas_hash = Hash.new
@@ -135,10 +135,10 @@ FasterCSV.open(File.join(DB_PATH, "cities.csv"), 'w') do |csv|
   end
 end
 FasterCSV.open(File.join(DB_PATH, "msas_states.csv"), 'w') do |csv|
-  csv << ["state_id", "msa_id"]
+  csv << ["abbreviation", "msa"]
   for relationship in msas_states
     abbreviation, msa = relationship
-    csv << [states_hash[abbreviation], msas_hash[msa]]
+    csv << [abbreviation,msa]
   end
 end
 FasterCSV.open(File.join(DB_PATH, "msas_cities.csv"), 'w') do |csv|

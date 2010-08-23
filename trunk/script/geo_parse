@@ -1,0 +1,191 @@
+require 'rubygems'
+require 'fastercsv'
+require 'set'
+
+RAILS_ROOT = File.join(File.expand_path(File.dirname(__FILE__)), "..")
+SOURCE_PATH = File.join(RAILS_ROOT, "db", "geo_source_data")
+PARSED_PATH = File.join(RAILS_ROOT, "db", "geo_parsed_data")
+
+class GeoParse
+
+  def parse_msa_states
+    msas = []
+    divisions = []
+    components = []
+    states = Set.new
+    cities = Set.new
+    msas_states = []
+    msas_cities = []
+    div_states = []
+    div_cities = []
+    lines = []
+
+    # read source data
+    File.open(File.join(SOURCE_PATH, 'geographies.txt'), 'r') do |f|
+      while (line = f.gets)
+        if line.match(/(\d{5})\s{3}(\d{5}|\s{5})\s{3}(\s{5}|\d{5})\s+(\D+)/).to_a.size != 0
+          lines << line
+        end
+      end
+    end
+
+    # parse lines
+    for line in lines
+      all, cbsa_code, div_code, fips_state_county, title = line.match(/(\d{5})\s{3}(\d{5}|\s{5})\s{3}(\s{5}|\d{5})\s+(\D+)\n/).to_a
+      if !div_code.include?("  ") && !fips_state_county.include?("  ") 
+        # line describes component within division within msa
+        all, component_name, state = title.match(/(\D+)\,\s(\w{2})/).to_a
+        components << [fips_state_county, component_name, state, div_code, cbsa_code]
+      elsif div_code.include?("  ") && !fips_state_county.include?("  ") 
+        # line describes component with no division (just msa)
+        all, component_name, state = title.match(/(\D+)\,\s(\w{2})/).to_a
+        components << [fips_state_county, component_name, state, "", cbsa_code]
+      elsif !div_code.include?("  ") && fips_state_county.include?("  ") 
+        # line describing division within msa
+        all, cities_group, states_group = title.match(/(\D+)\,\s(\D+?)\s/).to_a
+        cities_split = cities_group.split(/-/)
+        states_split = states_group.split(/-/)
+        for state in states_split
+          div_states << [div_code, state]
+          states << state
+        end
+        for city in cities_split
+          div_cities << [div_code, city]
+          cities << city
+        end
+        divisions << [div_code, title, cbsa_code]
+      else 
+        # line describes msa
+        all, cities_group, states_group = title.match(/(\D+)\,\s(\D+?)\s/).to_a
+        cities_split = cities_group.split(/-/)
+        states_split = states_group.split(/-/)
+        for city in cities_split
+          msas_cities << [city, cbsa_code]
+          cities.delete_if { |i| i.eql?("") }
+          cities << city
+        end
+        for state in states_split
+          msas_states << [state, cbsa_code]
+          states << state
+        end
+        msas << [cbsa_code, title]
+      end
+    end
+    
+    # write msa data
+    FasterCSV.open(File.join(PARSED_PATH, "msas.csv"), 'w') do |csv|
+      csv << ["msa"]
+      for line in msas
+        msa, description = line
+        csv << [msa] 
+      end
+    end
+
+    # write msa_states join data
+    FasterCSV.open(File.join(PARSED_PATH, "msas_states.csv"), 'w') do |csv|
+      csv << ["abbreviation", "msa"]
+      for relationship in msas_states
+        abbreviation, msa = relationship
+        csv << [abbreviation, msa]
+      end
+    end
+  end
+
+
+  def parse_states_zips
+    # parse source file
+    states_zips = []
+    zips = Set.new
+    states = Set.new
+    File.foreach(File.join(SOURCE_PATH, 'zcta5.txt')) do |line|
+      state_zip, fivedigit, zcta, population, housing_units, land_area_meters, water_area_meters, land_area_miles, water_area_miles, latitude, longitude = line.split(/\s+/)
+
+      if state_zip[2..6].match(/[A-Z]+/)
+        next
+      else 
+        state = state_zip[0..1]
+        zip = state_zip[2..6]
+        zips << zip 
+        states_zips << [state, zip]
+        states << [state, "United States of America"]
+      end 
+    end
+
+    File.open(File.join(PARSED_PATH, "zips.csv"), 'w') do |file|
+      file.puts "zip"
+      for zip in zips
+        file.puts zip 
+      end 
+    end
+
+    # write state_zip join data
+    FasterCSV.open(File.join(PARSED_PATH, "states_zips.csv"), 'w') do |csv|
+      csv << ["abbreviation", "zip"]
+      for relationship in states_zips
+        csv << relationship
+      end 
+    end
+
+    # write state data
+    FasterCSV.open(File.join(PARSED_PATH, "states.csv"), 'w') do |csv|
+      csv << ["abbreviation", "country"]
+      for state in states
+        csv << state
+      end
+    end
+  end
+
+
+  def parse_cities_states
+    # parse source file
+    cities = Set.new
+    states = Set.new
+    File.open(File.join(SOURCE_PATH,"places2k.txt"), 'r') do |f|
+      while (line = f.gets)
+        all, state, fips, place_and_type = line.match(/([A-Z]{2})([0-9]{7})((?:[\D^\s]+\s)+)/).to_a
+        temp = place_and_type.split
+        temp.pop
+        place = temp.join(" ")
+        if place == "" # total hack
+         place = "Lexington-Fayette" 
+        end
+        cities << [place, state]
+        if state == ""
+          puts all
+        end
+        states << [state, "United States of America"]
+      end
+    end
+
+    # write cities data
+    FasterCSV.open(File.join(PARSED_PATH, "cities.csv"), 'w') do |csv|
+      csv << ["name","abbreviation"]
+      for city in cities
+        csv << city
+      end
+    end
+
+    # write states data
+    FasterCSV.open(File.join(PARSED_PATH, "states.csv"), 'w') do |csv|
+      csv << ["abbreviation"]
+      for state in states
+        csv << state
+      end
+    end
+  end
+
+  def parse_countries_regions
+    FasterCSV.open(File.join(PARSED_PATH, "countries.csv"), 'w') do |csv|
+      csv << ["name"]
+      csv << ["United States of America"]
+    end
+  end
+  def initialize
+  end
+end
+
+g = GeoParse.new
+g.parse_msa_states
+g.parse_cities_states
+g.parse_states_zips
+g.parse_countries_regions
