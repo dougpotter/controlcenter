@@ -51,8 +51,4 @@ class HttpClient::Httpclient < HttpClient::Base
       [SocketError, HttpClient::NetworkError],
     ]
   end
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
-  end
 end

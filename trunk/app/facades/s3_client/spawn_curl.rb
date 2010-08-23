@@ -1,4 +1,4 @@
-class S3Client::SpawnCurl
+class S3Client::SpawnCurl < S3Client::Base
   def initialize(options={})
     @command = options[:command] || %w(/usr/bin/env curl)
     @s3_host = AwsConfiguration.s3_host || 's3.amazonaws.com'
@@ -62,9 +62,5 @@ class S3Client::SpawnCurl
   
   def build_url(bucket, remote_path)
     "#{@s3_protocol}://#{@s3_host}:#{@s3_port}/#{bucket}/#{remote_path}"
-  end
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
   end
 end

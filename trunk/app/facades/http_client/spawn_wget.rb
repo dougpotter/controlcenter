@@ -70,8 +70,4 @@ class HttpClient::SpawnWget < HttpClient::Base
     cmd << '--no-check-certificate'
     cmd + args
   end
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
-  end
 end

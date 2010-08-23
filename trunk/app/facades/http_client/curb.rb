@@ -116,8 +116,4 @@ class HttpClient::Curb < HttpClient::Base
       [IOError, HttpClient::NetworkError],
     ]
   end
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
-  end
 end

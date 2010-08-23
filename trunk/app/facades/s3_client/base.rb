@@ -1,22 +1,18 @@
-class HttpClient::Base
+class S3Client::Base
   include ExceptionMappingMixin
   
   # allowed options:
-  # :http_username
-  # :http_password
   # :timeout
-  # :connect_timeout (if :timeout is specified and :connect_timeout is not,
-  #   :timeout is used for :connect_timeout as well)
   # :debug
   def initialize(options={})
     raise NotImplemented
   end
   
-  def fetch(url)
+  def put_file(bucket, remote_path, local_path)
     raise NotImplemented
   end
   
-  def download(url, local_path)
+  def list_bucket_files(bucket)
     raise NotImplemented
   end
   

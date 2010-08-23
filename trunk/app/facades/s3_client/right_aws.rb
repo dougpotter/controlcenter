@@ -11,7 +11,7 @@
 require 'right_aws'
 require 'digest/md5'
 
-class S3Client::RightAws
+class S3Client::RightAws < S3Client::Base
   def initialize(options={})
     right_aws_options = {}
     if AwsConfiguration.s3_host
@@ -55,9 +55,5 @@ class S3Client::RightAws
     [
       [RightAws::AwsError, HttpClient::HttpError],
     ]
-  end
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
   end
 end

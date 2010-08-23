@@ -54,8 +54,4 @@ class HttpClient::NetHttp < HttpClient::Base
       raise HttpClient::HttpError.new(resp.code.to_i, resp.body)
     end
   end
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
-  end
 end

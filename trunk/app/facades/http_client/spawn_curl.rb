@@ -72,8 +72,4 @@ class HttpClient::SpawnCurl < HttpClient::Base
     cmd << '-f'
     cmd + args
   end
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
-  end
 end

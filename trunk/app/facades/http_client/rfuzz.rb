@@ -87,8 +87,4 @@ class HttpClient::Rfuzz < HttpClient::Base
       raise HttpClient::HttpError.new(resp.http_status.to_i, resp.http_body)
     end
   end
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
-  end
 end
