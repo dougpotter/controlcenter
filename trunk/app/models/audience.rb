@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100816164408
+# Schema version: 20100819181021
 #
 # Table name: audiences
 #

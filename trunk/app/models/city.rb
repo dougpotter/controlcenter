@@ -1,10 +1,11 @@
 # == Schema Information
-# Schema version: 20100816164408
+# Schema version: 20100819181021
 #
 # Table name: cities
 #
-#  id   :integer(4)      not null, primary key
-#  name :string(255)     not null
+#  id        :integer(4)      not null, primary key
+#  name      :string(255)     not null
+#  region_id :integer(4)      not null
 #
 
 class City < ActiveRecord::Base
