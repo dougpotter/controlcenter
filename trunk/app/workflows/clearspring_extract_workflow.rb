@@ -302,7 +302,7 @@ class ClearspringExtractWorkflow < Workflow::Base
         raise
       end
     end
-    default_options = {:exception_class => RightAws::AwsError, :extra_callback => callback}
+    default_options = {:exception_class => S3Client::HttpError, :extra_callback => callback}
     retry_errors(default_options.update(options)) do
       yield
     end

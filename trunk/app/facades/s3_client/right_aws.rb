@@ -36,10 +36,18 @@ class S3Client::RightAws
       debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
     end
     
-    @s3.store_object_and_verify(:bucket => bucket, :key => remote_path, :data => content, :md5 => md5)
+    map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
+      @s3.store_object_and_verify(:bucket => bucket, :key => remote_path, :data => content, :md5 => md5)
+    end
   end
   
   private
+  
+  def exception_map
+    [
+      [RightAws::AwsError, HttpClient::HttpError],
+    ]
+  end
   
   def debug_print(msg)
     $stderr.puts(msg)
