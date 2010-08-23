@@ -11,7 +11,7 @@
 require 'right_aws'
 require 'digest/md5'
 
-class S3Client
+class S3Client::RightAws
   def initialize(options={})
     right_aws_options = {}
     if AwsConfiguration.s3_host

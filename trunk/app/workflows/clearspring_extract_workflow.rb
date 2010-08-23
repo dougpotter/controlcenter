@@ -68,7 +68,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     @http_client = create_http_client(@params)
     @parser = WebParser.new
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug])
-    @s3_client = S3Client.new(:debug => @params[:debug])
+    @s3_client = S3Client::RightAws.new(:debug => @params[:debug])
     @network_error_retry_options = {:retry_count => 10, :sleep_time => 10}
     @update_process_status = params[:update_process_status]
   end
