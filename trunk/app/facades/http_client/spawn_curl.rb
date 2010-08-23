@@ -59,8 +59,11 @@ class HttpClient::SpawnCurl < HttpClient::Base
       cmd << "#{@http_username}:#{@http_password}"
     end
     if @timeout
-      # curl has no read timeout option, apparently
+      # curl's -y/--speed-time is in fact exactly equivalent
+      # to timeout, provided -Y/--speed-limit is set to default 1
       cmd << '--connect-timeout'
+      cmd << @timeout.to_s
+      cmd << '-y'
       cmd << @timeout.to_s
     end
     unless @debug
