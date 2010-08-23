@@ -64,17 +64,15 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def initialize(params)
-    @params = params
+    initialize_params(params)
     @http_client = create_http_client(@params)
     @parser = WebParser.new
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug])
     @s3_client = S3Client::RightAws.new(:debug => @params[:debug])
-    @network_error_retry_options = {:retry_count => 10, :sleep_time => 10}
-    @update_process_status = params[:update_process_status]
   end
   
   def run
-    files = list_files
+    files = list_data_source_files
     # if :once option was given, #extract will raise a workflow error
     # for files that are being extracted elsewhere or that have been already extracted.
     # #run is called to do both discovery and extraction, and should extract all
@@ -90,7 +88,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def discover
-    list_files
+    list_data_source_files
   end
   
   def extract(file_url)
@@ -107,7 +105,13 @@ class ClearspringExtractWorkflow < Workflow::Base
   
   private
   
-  def list_files
+  def initialize_params(params)
+    @params = params
+    @network_error_retry_options = {:retry_count => 10, :sleep_time => 10}
+    @update_process_status = params[:update_process_status]
+  end
+  
+  def list_data_source_files
     with_process_status(:action => 'listing files') do
       url = build_data_source_url
       page_text = retry_network_errors(@network_error_retry_options) do

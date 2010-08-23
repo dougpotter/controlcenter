@@ -41,6 +41,14 @@ class S3Client::RightAws
     end
   end
   
+  def list_bucket_files(bucket)
+    if @debug
+      debug_print "S3list #{bucket}"
+    end
+    
+    @s3.list_bucket(bucket)
+  end
+  
   private
   
   def exception_map

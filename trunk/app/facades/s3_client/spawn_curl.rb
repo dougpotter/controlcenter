@@ -23,6 +23,14 @@ class S3Client::SpawnCurl
     Subprocess.spawn_check(cmd)
   end
   
+  def list_bucket_files(bucket)
+    if @debug
+      debug_print "S3list #{bucket}"
+    end
+    
+    # todo fill this
+  end
+  
   private
   
   def build_command(*args)
