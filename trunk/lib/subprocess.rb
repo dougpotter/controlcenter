@@ -1,5 +1,11 @@
 module Subprocess
   class CommandFailed < StandardError
+    attr_reader :status
+    
+    def initialize(message, options={})
+      super(message)
+      @status = options[:status]
+    end
   end
   
   BUFSIZE = 16384
@@ -15,8 +21,8 @@ module Subprocess
   def spawn_check(args, options={})
     if pid = fork
       Process.wait(pid)
-      if $?.exitstatus != 0
-        raise CommandFailed
+      if (status = $?.exitstatus) != 0
+        raise CommandFailed.new("Command failed with exit status #{status}: #{args.join(' ')}", :status => status)
       end
       nil
     else
@@ -42,8 +48,8 @@ module Subprocess
         output << buf
       end
       Process.wait(pid)
-      if $?.exitstatus != 0
-        raise CommandFailed
+      if (status = $?.exitstatus) != 0
+        raise CommandFailed.new("Command failed with exit status #{status}: #{args.join(' ')}", :status => status)
       end
       output
     else
