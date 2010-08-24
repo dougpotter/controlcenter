@@ -1,6 +1,10 @@
 class HttpClient::SpawnWgetNetrc < HttpClient::SpawnWget
   include SpawnNetrcMixin
   
-  # wget always examines .netrc if it is present, no additional
-  # command-line arguments are necessary
+  private
+  
+  def build_command(*args)
+    cmd = common_command_options
+    cmd + args
+  end
 end

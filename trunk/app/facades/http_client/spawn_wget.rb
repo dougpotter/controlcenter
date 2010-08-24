@@ -48,6 +48,14 @@ class HttpClient::SpawnWget < HttpClient::Base
   
   def build_command(*args)
     cmd = common_command_options
+    if @http_username
+      cmd << '--user'
+      cmd << @http_username
+    end
+    if @http_password
+      cmd << '--password'
+      cmd << @http_password
+    end
     cmd + args
   end
   
@@ -56,14 +64,6 @@ class HttpClient::SpawnWget < HttpClient::Base
       cmd = @command.dup
     else
       cmd = [@command]
-    end
-    if @http_username
-      cmd << '--user'
-      cmd << @http_username
-    end
-    if @http_password
-      cmd << '--password'
-      cmd << @http_password
     end
     if @timeout
       cmd << '--timeout'

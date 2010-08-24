@@ -48,6 +48,12 @@ class HttpClient::SpawnCurl < HttpClient::Base
   
   def build_command(*args)
     cmd = common_command_options
+    if @http_username
+      cmd << '-u'
+      # note that curl claims it will prompt for password if
+      # --user is given and password is not given
+      cmd << "#{@http_username}:#{@http_password}"
+    end
     cmd + args
   end
   
@@ -56,12 +62,6 @@ class HttpClient::SpawnCurl < HttpClient::Base
       cmd = @command.dup
     else
       cmd = [@command]
-    end
-    if @http_username
-      cmd << '-u'
-      # note that curl claims it will prompt for password if
-      # --user is given and password is not given
-      cmd << "#{@http_username}:#{@http_password}"
     end
     if @timeout
       # curl's -y/--speed-time is in fact exactly equivalent
