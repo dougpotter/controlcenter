@@ -46,7 +46,8 @@ class S3Client::RightAws < S3Client::Base
       debug_print "S3list #{bucket}"
     end
     
-    @s3.list_bucket(bucket)
+    entries = @s3.list_bucket(bucket)
+    entries.map { |entry| entry[:key] }
   end
   
   private
