@@ -1,0 +1,95 @@
+#!/usr/bin/env ruby
+# Generation script for geography-related fixtures
+#
+# Usage:
+# If called with no argument, re-generates all fixtures
+# If called with an argument, re-generates the fixture for that table:
+# ruby scrpt/generate_geo_fixtures name_of_table
+
+require 'rubygems'
+require 'fastercsv'
+require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'vendor/plugins/seed-fu/lib/seed-fu/writer')
+CSV_PATH = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'db', 'geo_csv_data')
+
+# declare paramters for each table being seeded
+cities = {
+  :infile => 'cities.csv',
+  :outfile => '001_cities.rb',
+  :model => 'City',
+  :seed_by_arr => [ :id, :name],
+  :column_maps => { :id => 'id', :name => 'name' }
+}
+geo_components = { 
+  :infile => 'components.csv', 
+  :outfile => '006_geo_components.rb', 
+  :model => 'GeoComponent', 
+  :seed_by_arr => [:id, :description, :state_id, :geography_id], 
+  :column_maps => {:id => 'id', :description => 'description', :state_id => 'state_id', :geography_id => 'msa_id' } 
+}
+geographies_cities = {
+  :infile => 'msas_cities.csv',
+  :outfile => '005_geographies_cities.rb',
+  :model => 'GeographiesCities',
+  :seed_by_arr => [ :city_id, :geography_id ],
+  :column_maps => { :city_id => 'city_id', :geography_id => 'msa_id' }
+}
+geographies = {
+  :infile => 'msas.csv',
+  :outfile => '003_geographies.rb',
+  :model => 'Geography',
+  :seed_by_arr => [ :id, :description ],
+  :column_maps => { :id => 'id', :description => 'description' }
+}
+geographies_states = {
+  :infile => 'msas_states.csv',
+  :outfile => '004_geographeis_states.rb',
+  :model => 'GeographiesStates',
+  :seed_by_arr => [ :state_id, :geography_id ],
+  :column_maps => { :state_id => 'state_id', :geography_id => 'msa_id' }
+}
+states = {
+  :infile => 'states.csv',
+  :outfile => '002_states.rb', 
+  :model => 'State',
+  :seed_by_arr => [ :id, :abbreviation ],
+  :column_maps => { :id => 'id', :abbreviation => 'abbreviation' }
+}
+
+# consolidate paramter hashes
+file_map = {"cities" => cities, "geo_components" => geo_components, "geographies_cities" => geographies_cities, "geographies" => geographies, "geographies_states" => geographies_states, "states" => states}
+
+# helper for gen_seed_fu_fixture, build hash of proper format from
+# row of csv data and column mappings
+def build_add_seed_hash(row, column_maps)
+  hsh = {}
+  column_maps.each do |db_column,infile_column|
+    hsh[db_column] = row[infile_column]
+  end
+  hsh
+end
+
+# write the fixture
+def gen_seed_fu_fixture(table_attr)
+  infile = File.join(CSV_PATH, table_attr[:infile])
+  seed_file = File.join(CSV_PATH, '..', 'fixtures', table_attr[:outfile])
+
+  seed_writer = SeedFu::Writer::SeedMany.new(
+    :seed_file => seed_file,
+    :seed_model => table_attr[:model],
+    :seed_by => table_attr[:seed_by_arr]
+  )
+
+  FasterCSV.foreach(infile, :return_headers => false, :headers => :first_row) do |row|
+    seed_writer.add_seed(build_add_seed_hash(row, table_attr[:column_maps]))
+  end
+  seed_writer.finish
+end
+
+# handle perameter
+if ARGV[0] == nil
+  for f in file_map.values
+    gen_seed_fu_fixture(f)
+  end
+else
+  gen_seed_fu_fixture(ARGV[0])
+end

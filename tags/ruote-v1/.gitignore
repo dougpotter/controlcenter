@@ -1,0 +1,6 @@
+config/appwall.yml
+config/aws.yml
+config/database.yml
+config/ruote_host.yml
+config/workflows/*.yml
+log/*.log

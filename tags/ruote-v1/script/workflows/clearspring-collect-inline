@@ -1,0 +1,189 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: script/workflows/clearspring-collect [options]"
+  
+  opts.on('-s', '--source SOURCE', 'Extract from specified SOURCE only (search-hashed-int/search-hashed-us/share-int/share-us/view-int/view-us, default is to extract all sources)') do |source|
+    options[:source] = source
+  end
+  opts.on('-d', '--date DATE', 'Extract for specified DATE (by default today)') do |date|
+    options[:date] = date
+  end
+  opts.on('-h', '--hour HOUR', 'Extract for specified HOUR (by default all hours; 24-hour format: 00-23)') do |hour|
+    unless hour =~ /^\d\d?/
+      raise OptionParser::ParseError, "Invalid hour value: #{hour}"
+    end
+    hour = hour.to_i
+    if hour < 0 || hour > 23
+      raise OptionParser::ParseError, "Hour value out of range: #{hour}"
+    end
+    options[:hour] = hour
+  end
+  opts.on('-i', '--discover', 'Discover files only') do
+    options[:discover] = true
+  end
+  opts.on('-e', '--extract URL', 'Extract file in URL') do |url|
+    options[:extract] = url
+  end
+  opts.on('-p', '--profile', 'Profile script') do
+    options[:profile] = true
+  end
+  opts.on('-D', '--debug', 'Enable debugging output') do
+    options[:debug] = true
+  end
+  opts.on('-l', '--lock', 'Use locking and quit without doing anything if resources are busy') do
+    options[:lock] = true
+  end
+end.parse!
+
+if options[:discover] && options[:extract]
+  raise OptionParser::ParseError, "--discover and --extract cannot be specified simultaneously"
+end
+
+all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
+if source = options[:source]
+  if all_sources.include?(source)
+    selected_sources = [source]
+  else
+    raise OptionParser::ParseError, "Invalid source value: #{source}"
+  end
+else
+  selected_sources = all_sources
+end
+
+if date = options[:date]
+  unless date =~ /\A\d{8}\Z/
+    raise OptionParser::ParseError, "Invalid date value: #{date}"
+  end
+else
+  date = Time.now.strftime('%Y%m%d')
+end
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
+
+# Uncomment to observe how much i/o is performed
+#require 'file_io_debugging'
+#FileIoDebugging.activate!
+
+# Important: development version of ruote is required (as of Jun 10, 2010)
+# since it contains bugfixes and features we rely on.
+
+require 'yaml'
+require 'ostruct'
+if options[:profile]
+  require 'ruby-prof'
+end
+
+def debug
+  require 'ruby-debug'
+  debugger
+end
+
+$config = WorkflowParameters.load('workflows/clearspring')
+
+def config
+  $config
+end
+
+module StrictHashMixin
+  class KeyError < StandardError; end
+  
+  def [](key)
+    if has_key?(key)
+      super
+    else
+      raise KeyError, "Key does not exist in hash: #{key}"
+    end
+  end
+end
+
+class StrictHash < Hash
+  include StrictHashMixin
+end
+
+class StrictHashWithIndifferentAccess < HashWithIndifferentAccess
+  include StrictHashMixin
+end
+
+$settings = {
+  :data_source_path => config.clearspring_root_url,
+  :download_root_dir => config.download_root_dir,
+  :gzip_root_dir => config.temp_root_dir,
+  :http_username => config.clearspring_http_username,
+  :http_password => config.clearspring_http_password,
+  :s3_bucket => config.s3_bucket,
+  :clearspring_pid => config.clearspring_pid,
+}
+
+def settings; $settings end
+
+def run(ext_params)
+  jobs = []
+  ext_params[:selected_sources].each do |data_source|
+    params = settings.merge({
+      :date => ext_params[:date],
+      :hour => ext_params[:hour],
+      :data_source => data_source,
+      :debug => ext_params[:debug],
+      :lock => ext_params[:lock],
+    })
+    workflow = ClearspringExtractWorkflow.new(StrictHashWithIndifferentAccess.new(params))
+    if ext_params[:discover]
+      files = workflow.discover
+      files.each do |file|
+        puts file
+      end
+    elsif ext_params[:extract]
+      workflow.extract(ext_params[:extract])
+    else
+      workflow.run
+    end
+  end
+end
+
+def start_profiling
+  RubyProf.measure_mode  = RubyProf::PROCESS_TIME 
+  RubyProf.start
+end
+
+def stop_profiling
+  result = RubyProf.stop
+  puts 'Saving graph html view'
+  printer = RubyProf::GraphHtmlPrinter.new(result)
+  printer.print(File.open('profile-output.html', 'w'), :min_percent => 1)
+end
+
+params = {
+  :selected_sources => selected_sources,
+  :date => date,
+  :hour => options[:hour],
+  :debug => options[:debug],
+  :discover => options[:discover],
+  :extract => options[:extract],
+  :lock => options[:lock],
+}
+
+if options[:profile]
+  start_profiling
+  
+  begin
+    ok = run(params)
+  ensure
+    begin
+      stop_profiling
+    rescue Exception => e
+      puts e
+      ok = false
+    end
+  end
+else
+  ok = run(params)
+end
+
+unless ok
+  exit 1
+end
