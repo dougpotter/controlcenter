@@ -1,10 +1,11 @@
 module Subprocess
   class CommandFailed < StandardError
-    attr_reader :status
+    # This attribute is called exitstatus for consistency with Process.wait
+    attr_reader :exitstatus
     
     def initialize(message, options={})
       super(message)
-      @status = options[:status]
+      @exitstatus = options[:exitstatus]
     end
   end
   
@@ -22,7 +23,7 @@ module Subprocess
     if pid = fork
       Process.wait(pid)
       if (status = $?.exitstatus) != 0
-        raise CommandFailed.new("Command failed with exit status #{status}: #{args.join(' ')}", :status => status)
+        raise CommandFailed.new("Command failed with exit status #{status}: #{args.join(' ')}", :exitstatus => status)
       end
       nil
     else
@@ -49,7 +50,7 @@ module Subprocess
       end
       Process.wait(pid)
       if (status = $?.exitstatus) != 0
-        raise CommandFailed.new("Command failed with exit status #{status}: #{args.join(' ')}", :status => status)
+        raise CommandFailed.new("Command failed with exit status #{status}: #{args.join(' ')}", :exitstatus => status)
       end
       output
     else

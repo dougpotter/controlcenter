@@ -84,7 +84,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
   
   def exception_map
     mapper = lambda do |exc, url|
-      case exc.status
+      case exc.exitstatus
       when ERROR_TIMEOUT
         convert_and_raise(exc, HttpClient::NetworkTimeout, url)
       end
