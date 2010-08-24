@@ -32,13 +32,15 @@ module ActiveRecord
 
       # Validates that attributes provided are in order of increasing value.
       #
-      # - passes when either argument is nil
+      # Configuration Options:
+      # :allow_nil - skips validation if either attribute is nil
 
-      def validates_as_increasing(first_attr, second_attr)
+      def validates_as_increasing(first_attr, second_attr, options)
         configuration = { :message => "attribute fails to increase in value" }
+        configuration.update(options)
 
         validates_each(first_attr) do |record, attr_name, value|
-          next if (record.send(first_attr).nil? || record.send(second_attr).nil?)
+          next if (record.send(first_attr).nil? || record.send(second_attr).nil?) && options[:allow_nil]
           if record.send(first_attr) > record.send(second_attr)
             record.errors.add(second_attr, :invalid, :default => configuration[:message], :value => value)
           end
