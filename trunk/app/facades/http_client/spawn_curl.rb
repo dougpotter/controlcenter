@@ -3,6 +3,10 @@ require_dependency 'subprocess'
 class HttpClient::SpawnCurl < HttpClient::Base
   include SpawnMixin
   
+  # Exit statuses: http://curl.haxx.se/docs/manpage.html#EXIT or
+  # http://man.cx/curl%281%29#sec8
+  ERROR_TIMEOUT = 28
+  
   # allowed options:
   # :command
   #   Examples:
@@ -76,5 +80,19 @@ class HttpClient::SpawnCurl < HttpClient::Base
     end
     cmd << '-f'
     cmd
+  end
+  
+  def exception_map
+    mapper = lambda do |exc, url|
+      case exc.status
+      when ERROR_TIMEOUT
+        convert_and_raise(exc, HttpClient::NetworkTimeout, url)
+      end
+      # returning will cause original exception to be reraised
+    end
+    
+    [
+      [Subprocess::CommandFailed, mapper],
+    ]
   end
 end

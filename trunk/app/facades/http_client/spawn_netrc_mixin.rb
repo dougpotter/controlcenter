@@ -7,13 +7,17 @@ module HttpClient::SpawnNetrcMixin
   
   def get_output(url, cmd)
     with_netrc(url) do |netrc_dir|
-      Subprocess.get_output(cmd, :env => {'HOME' => netrc_dir})
+      with_exception_mapping(url) do
+        Subprocess.get_output(cmd, :env => {'HOME' => netrc_dir})
+      end
     end
   end
   
   def spawn_check(url, cmd)
     with_netrc(url) do |netrc_dir|
-      Subprocess.spawn_check(cmd, :env => {'HOME' => netrc_dir})
+      with_exception_mapping(url) do
+        Subprocess.spawn_check(cmd, :env => {'HOME' => netrc_dir})
+      end
     end
   end
   

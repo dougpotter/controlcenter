@@ -7,7 +7,11 @@ module ExceptionMappingMixin
     rescue Exception => original_exc
       exception_map.each do |from_cls, to_cls|
         if original_exc.is_a?(from_cls)
-          convert_and_raise(original_exc, to_cls, url)
+          if to_cls.is_a?(Proc)
+            to_cls.call(original_exc, url)
+          else
+            convert_and_raise(original_exc, to_cls, url)
+          end
         end
       end
       
