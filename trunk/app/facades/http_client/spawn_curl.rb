@@ -47,6 +47,11 @@ class HttpClient::SpawnCurl < HttpClient::Base
   private
   
   def build_command(*args)
+    cmd = common_command_options
+    cmd + args
+  end
+  
+  def common_command_options
     if @command.is_a?(Array)
       cmd = @command.dup
     else
@@ -70,6 +75,6 @@ class HttpClient::SpawnCurl < HttpClient::Base
       cmd << '-s'
     end
     cmd << '-f'
-    cmd + args
+    cmd
   end
 end

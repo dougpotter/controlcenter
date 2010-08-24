@@ -1,18 +1,6 @@
 class HttpClient::SpawnWgetNetrc < HttpClient::SpawnWget
   include SpawnNetrcMixin
   
-  private
-  
-  def build_command(*args)
-    if @command.is_a?(Array)
-      cmd = @command.dup
-    else
-      cmd = [@command]
-    end
-    unless @debug
-      cmd << '-q'
-    end
-    cmd << '--no-check-certificate'
-    cmd + args
-  end
+  # wget always examines .netrc if it is present, no additional
+  # command-line arguments are necessary
 end

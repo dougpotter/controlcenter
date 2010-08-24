@@ -4,16 +4,8 @@ class HttpClient::SpawnCurlNetrc < HttpClient::SpawnCurl
   private
   
   def build_command(*args)
-    if @command.is_a?(Array)
-      cmd = @command.dup
-    else
-      cmd = [@command]
-    end
-    unless @debug
-      cmd << '-s'
-    end
+    cmd = common_command_options
     cmd << '-n'
-    cmd << '-f'
     cmd + args
   end
 end

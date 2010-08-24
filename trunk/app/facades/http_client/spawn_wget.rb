@@ -27,7 +27,7 @@ class HttpClient::SpawnWget < HttpClient::Base
     
     cmd = build_command('-O', '-', url)
     if @debug
-      debug_print "Wget: #{cmd}"
+      debug_print "Wget: #{cmd.join(' ')}"
     end
     get_output(url, cmd)
   end
@@ -39,7 +39,7 @@ class HttpClient::SpawnWget < HttpClient::Base
     
     cmd = build_command('-O', local_path, url)
     if @debug
-      debug_print "Wget: #{cmd}"
+      debug_print "Wget: #{cmd.join(' ')}"
     end
     spawn_check(url, cmd)
   end
@@ -47,6 +47,11 @@ class HttpClient::SpawnWget < HttpClient::Base
   private
   
   def build_command(*args)
+    cmd = common_command_options
+    cmd + args
+  end
+  
+  def common_command_options
     if @command.is_a?(Array)
       cmd = @command.dup
     else
@@ -68,6 +73,6 @@ class HttpClient::SpawnWget < HttpClient::Base
       cmd << '-q'
     end
     cmd << '--no-check-certificate'
-    cmd + args
+    cmd
   end
 end
