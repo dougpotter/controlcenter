@@ -323,9 +323,16 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def prefix_to_download
-    prefix = "#{params[:data_source]}.#{params[:date]}"
-    if params[:hour]
-      prefix += sprintf('-%02d00', params[:hour])
+    basename_prefix(
+      :channel_name => params[:data_source],
+      :date => params[:date], :hour => params[:hour]
+    )
+  end
+  
+  def basename_prefix(options)
+    prefix = "#{options[:channel_name]}.#{options[:date]}"
+    if options[:hour]
+      prefix += sprintf('-%02d00', options[:hour])
     end
     prefix
   end

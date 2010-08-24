@@ -28,6 +28,23 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   end
   
   def check_their_existence
+    data_source_urls = list_data_source_files
+    channel = get_channel!(params[:data_source])
+    if params[:hour]
+      hours = params[:hour]
+      require_all = true
+    else
+      hours = (0..24).to_a
+      require_all = channel.update_frequency == DataProviderChannel::UPDATES_HOURLY
+    end
+    hours.each do |hour|
+      prefix = basename_prefix(
+        :channel_name => params[:data_source],
+        :date => params[:date], :hour => hour
+      )
+      p prefix
+    end
+    p channel, data_source_urls
   end
   
   private
