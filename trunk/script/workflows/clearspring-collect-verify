@@ -195,5 +195,9 @@ params = {
   params[key] = options[key]
 end
 
-status = run(params)
+begin
+  status = run(params)
+rescue Exception => e
+  status = ConsoleUi.handle_unhandled_exception(e)
+end
 exit(status)
