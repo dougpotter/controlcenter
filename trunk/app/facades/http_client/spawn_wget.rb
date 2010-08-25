@@ -1,5 +1,8 @@
 require_dependency 'subprocess'
 
+# Note: wget is unsuitable for working with https connections because it does
+# not properly implement timeout functionality when ssl is involved.
+# See upstream bug: http://savannah.gnu.org/bugs/index.php?20523
 class HttpClient::SpawnWget < HttpClient::Base
   include SpawnMixin
   
