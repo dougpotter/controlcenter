@@ -52,14 +52,6 @@ ActiveRecord::Schema.define(:version => 20100825205845) do
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
   add_index "campaigns", ["partner_id"], :name => "campaigns_partner_id_fk"
 
-  create_table "campaigns_creatives", :id => false, :force => true do |t|
-    t.integer "campaign_id", :null => false
-    t.integer "creative_id", :null => false
-  end
-
-  add_index "campaigns_creatives", ["campaign_id"], :name => "campaigns_creatives_campaign_id_fk"
-  add_index "campaigns_creatives", ["creative_id"], :name => "campaigns_creatives_creative_id_fk"
-
   create_table "campaigns_geographies", :id => false, :force => true do |t|
     t.integer "campaign_id",  :null => false
     t.integer "geography_id", :null => false
@@ -296,9 +288,6 @@ ActiveRecord::Schema.define(:version => 20100825205845) do
   add_foreign_key "audiences_campaigns", "campaigns", :name => "audiences_campaigns_campaign_id_fk"
 
   add_foreign_key "campaigns", "partners", :name => "campaigns_partner_id_fk"
-
-  add_foreign_key "campaigns_creatives", "campaigns", :name => "campaigns_creatives_campaign_id_fk"
-  add_foreign_key "campaigns_creatives", "creatives", :name => "campaigns_creatives_creative_id_fk"
 
   add_foreign_key "campaigns_geographies", "campaigns", :name => "campaigns_geographies_campaign_id_fk"
   add_foreign_key "campaigns_geographies", "geographies", :name => "campaigns_geographies_geography_id_fk"

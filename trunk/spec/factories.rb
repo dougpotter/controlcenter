@@ -26,7 +26,6 @@ Factory.define :creative do |c|
   c.name "creative name"
   c.media_type "media type"
   c.creative_size_id {Factory(:creative_size).id}
-  c.campaign_id {Factory(:campaign).id}
   c.sequence(:creative_code) { |n| "293v#{n}" }
 end
 
