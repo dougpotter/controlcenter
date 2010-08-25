@@ -9,5 +9,5 @@
 
 class Zip < ActiveRecord::Base
   has_and_belongs_to_many :regions
-  validates_presence_of :zip
+  validates_presence_of :zip_code
 end

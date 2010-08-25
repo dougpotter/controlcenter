@@ -6,6 +6,11 @@ Factory.define :campaign do |c|
   c.end_time Time.now + 3600
 end
 
+Factory.define :insertion_order do |i|
+  i.description "An Insertion Order"
+  i.campaign { Factory(:campaign) }
+end
+
 Factory.define :partner do |p|
   p.name  "Webroot"
   p.sequence(:partner_code) { |n| 2009 + n }
@@ -65,4 +70,28 @@ Factory.define :remote_placement do |r|
   r.campaign_id {Factory(:campaign).id}
   r.audience_id {Factory(:audience).id}
   r.remote_placement_count 1900
+end
+
+Factory.define :country do |c|
+  c.country_code "US"
+  c.name "United States"
+end
+
+Factory.define :zip do |z|
+  z.sequence(:zip_code) { |n| "105#{sprintf("%02d", n % 100)}" }
+  z.regions { [ Factory(:region) ] }
+end
+
+Factory.define :region do |r|
+  r.region_code "NY"
+  r.country { Factory(:country) }
+  r.zips { [ Factory(:zip) ] }
+  r.msas { [ Factory(:msa) ] }
+end
+
+Factory.define :msa do |m|
+  m.sequence(:msa_code) { |n| "014#{n}" }
+  m.name "New Amsterdam"
+  # Can't specify both region.msas and msa.regions
+  #m.regions { [ Factory(:region) ] }
 end

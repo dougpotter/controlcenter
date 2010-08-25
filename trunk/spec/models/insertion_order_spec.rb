@@ -15,17 +15,13 @@ describe InsertionOrder do
   before(:each) do
     @valid_attributes = {
       :description => "description",
-      :campaign_id => 3
+      :campaign => Factory.create(:campaign)
     }
   end
 
   it "should create a new instance given valid attributes" do
+    Factory.create(:insertion_order)
     InsertionOrder.create!(@valid_attributes)
   end
 
-  it "should require integer campaign_id" do
-    lambda {
-      InsertionOrder.create!(@valid_attributes.merge({:campaign_id => "string"}))
-    }.should raise_error
-  end
 end

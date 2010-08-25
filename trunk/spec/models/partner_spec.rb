@@ -13,11 +13,13 @@ require 'spec_helper'
 describe Partner do
   before(:each) do
     @valid_attributes = {
-      :name => "Soundspectrum",
+      :name => "Eye-fi",
+      :partner_code => "11380"
     }
   end
 
   it "should create a new instance given valid attributes" do
     Partner.create!(@valid_attributes)
+    Factory.create(:partner)
   end
 end

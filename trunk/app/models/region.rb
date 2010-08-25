@@ -13,4 +13,6 @@ class Region < ActiveRecord::Base
   has_and_belongs_to_many :zips
   has_many :cities
   has_and_belongs_to_many :msas
+  
+  validates_presence_of :region_code
 end

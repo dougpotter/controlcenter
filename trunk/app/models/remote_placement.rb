@@ -23,6 +23,6 @@
 # in the (compound) key comprised of all the columns except 
 # remote_placement_count
 class RemotePlacement < ActiveRecord::Base
-  validates_presence_of :time_window_id, :campaign_id, :geography_id, :audience_id
+  validates_presence_of :campaign_id, :audience_id
   validates_numericality_of :remote_placement_count
 end

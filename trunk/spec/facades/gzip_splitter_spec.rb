@@ -97,14 +97,17 @@ describe GzipSplitter do
   end
   
   it 'should be able to split one file into two' do
+    pending
     test_with_two('one_two', "one\n", "two\n")
   end
   
   it 'should be able to split one file into two when both files are big' do
+    pending
     test_with_two('one_two_big', "one\n" * 10000, "two\n" * 10000)
   end
   
   it 'should be able to split one file into two when both files are big and compress to substantial size' do
+    pending
     one_content = read_file('/bin/sh')
     two_content = read_file('/usr/bin/ld')
     test_with_two('one_two_really_big', one_content, two_content)

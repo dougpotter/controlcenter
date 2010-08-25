@@ -13,11 +13,13 @@ require 'spec_helper'
 describe AdInventorySource do
   before(:each) do
     @valid_attributes = {
-      :name => "Google AdEx"
+      :name => "Google Adx",
+      :ais_code => "AdX"
     }
   end
 
   it "should create a new instance given valid attributes" do
     AdInventorySource.create!(@valid_attributes)
+    Factory.create(:ad_inventory_source)
   end
 end
