@@ -28,15 +28,28 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   end
   
   def check_their_existence
+    have, missing = find_their_files
+    have.each do |options|
+      puts "Have #{date_with_hour(options)}"
+    end
+    missing.each do |options|
+      puts "Missing #{date_with_hour(options)}"
+    end
+  end
+  
+  private
+  
+  def find_their_files
     data_source_urls = list_data_source_files
     options_list, require_all = compute_prefixes_to_check
+    have, missing = [], []
     if require_all
       options_list.each do |options|
         found = data_source_urls.any? { |url| File.basename(url).starts_with?(options[:prefix]) }
         if found
-          puts "Have #{date_with_hour(:date => options[:date], :hour => options[:hour])}"
+          have << {:date => options[:date], :hour => options[:hour]}
         else
-          puts "Missing #{date_with_hour(:date => options[:date], :hour => options[:hour])}"
+          missing << {:date => options[:date], :hour => options[:hour]}
         end
       end
     else
@@ -44,14 +57,13 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
         data_source_urls.any? { |url| File.basename(url).starts_with?(options[:prefix]) }
       end
       if found
-        puts "Have #{date_with_hour(:date => options_list.first[:date])}"
+        have << {:date => options_list.first[:date]}
       else
-        puts "Missing #{date_with_hour(:date => options_list.first[:date])}"
+        missing << {:date => options_list.first[:date]}
       end
     end
+    [have, missing]
   end
-  
-  private
   
   def list_bucket_items
     @s3_client.list_bucket_files(s3_bucket)
