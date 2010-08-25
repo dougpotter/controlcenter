@@ -1,11 +1,11 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20100824223747
 #
 # Table name: regions
 #
-#  id           :integer(4)      not null, primary key
-#  abbreviation :string(255)     not null
-#  country_id   :integer(4)      not null
+#  id          :integer(4)      not null, primary key
+#  region_code :string(255)     not null
+#  country_id  :integer(4)      not null
 #
 
 class Region < ActiveRecord::Base

@@ -1,10 +1,10 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20100824223747
 #
 # Table name: zips
 #
-#  id  :integer(4)      not null, primary key
-#  zip :string(255)     not null
+#  id       :integer(4)      not null, primary key
+#  zip_code :string(255)     not null
 #
 
 class Zip < ActiveRecord::Base

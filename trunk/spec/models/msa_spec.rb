@@ -1,10 +1,11 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20100824223747
 #
 # Table name: msas
 #
 #  id       :integer(4)      not null, primary key
 #  msa_code :string(255)     not null
+#  name     :string(255)
 #
 
 require 'spec_helper'
