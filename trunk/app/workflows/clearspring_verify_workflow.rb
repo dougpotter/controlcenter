@@ -25,27 +25,33 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   end
   
   def check_our_existence
+    have, missing = find_our_files
+    report_existence(have, missing)
   end
   
   def check_their_existence
     have, missing = find_their_files
-    have.each do |options|
-      puts "Have #{date_with_hour(options)}"
-    end
-    missing.each do |options|
-      puts "Missing #{date_with_hour(options)}"
-    end
+    report_existence(have, missing)
   end
   
   private
   
   def find_their_files
     data_source_urls = list_data_source_files
+    check_existence(data_source_urls)
+  end
+  
+  def find_our_files
+    bucket_paths = list_bucket_items
+    check_existence(bucket_paths)
+  end
+  
+  def check_existence(items)
     options_list, require_all = compute_prefixes_to_check
     have, missing = [], []
     if require_all
       options_list.each do |options|
-        found = data_source_urls.any? { |url| File.basename(url).starts_with?(options[:prefix]) }
+        found = items.any? { |item| File.basename(item).starts_with?(options[:prefix]) }
         if found
           have << {:date => options[:date], :hour => options[:hour]}
         else
@@ -54,7 +60,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       end
     else
       found = options_list.any? do |options|
-        data_source_urls.any? { |url| File.basename(url).starts_with?(options[:prefix]) }
+        items.any? { |item| File.basename(item).starts_with?(options[:prefix]) }
       end
       if found
         have << {:date => options_list.first[:date]}
@@ -63,6 +69,15 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       end
     end
     [have, missing]
+  end
+  
+  def report_existence(have, missing)
+    have.each do |options|
+      puts "Have #{date_with_hour(options)}"
+    end
+    missing.each do |options|
+      puts "Missing #{date_with_hour(options)}"
+    end
   end
   
   def list_bucket_items
