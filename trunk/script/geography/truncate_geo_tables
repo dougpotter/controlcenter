@@ -10,10 +10,12 @@ db_name = rails_config.database_configuration[RAILS_ENV]["database"]
 
 connection = ActiveRecord::Base.connection
 
+# IMPORTANT: The following tables are ordered in such a way that deleting them
+# in said order will honor any foreign key constraints.
 TABLE_NAMES = %w{
-  cities countries geographies msas regions zips
   campaigns_geographies msas_regions regions_zips
   msa_regions region_zips
+  zips cities msas regions countries geographies
 }
 
 TABLE_NAMES.each do |table_name|
