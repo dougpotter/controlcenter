@@ -44,9 +44,11 @@ Factory.define :audience do |a|
 end
 
 Factory.define :impression_count do |i|
-  i.start_time Time.now
-  i.end_time Time.now + 60
-  i.duration_in_minutes 1
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  i.start_time rounded_time
+  i.end_time rounded_time + 60.minutes
+  i.duration_in_minutes 60
   i.campaign_id {Factory(:campaign).id}
   i.creative_id {Factory(:creative).id}
   i.ad_inventory_source_id {Factory(:ad_inventory_source).id}
@@ -55,9 +57,11 @@ Factory.define :impression_count do |i|
 end
 
 Factory.define :click_count do |c|
-  c.start_time Time.now
-  c.end_time Time.now + 60
-  c.duration_in_minutes 1
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  c.start_time rounded_time
+  c.end_time rounded_time + 60.minutes
+  c.duration_in_minutes 60
   c.campaign_id {Factory(:campaign).id}
   c.creative_id {Factory(:creative).id}
   c.ad_inventory_source_id {Factory(:ad_inventory_source).id}

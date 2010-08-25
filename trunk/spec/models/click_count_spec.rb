@@ -71,10 +71,9 @@ describe ClickCount do
   end
 
   it "should have unique combination of required attributes" do
-    attrs = {:campaign_id => 1, :creative_id => 1, :ad_inventory_source_id => 1, :audience_id => 1, :click_count => 100, :start_time => Time.now, :end_time => (Time.now + 60), :duration_in_minutes => 1}
-    Factory.create(:click_count, attrs)
+    click_count = Factory.create(:click_count)
     lambda {
-      Factory.create(:click_count, attrs)
+      ClickCount.create!(click_count.attributes)
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
 end

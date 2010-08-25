@@ -58,10 +58,9 @@ describe ImpressionCount do
   end
 
   it "should require a unique combination of required dimensions" do
-    attrs = {:campaign_id => 1, :creative_id => 1, :ad_inventory_source_id => 1, :audience_id => 1, :impression_count => 100, :start_time => Time.now, :end_time => (Time.now + 60), :duration_in_minutes => 1}
-    Factory.create(:impression_count, attrs)
+    impression_count = Factory.create(:impression_count)
     lambda {
-      Factory.create(:impression_count, attrs)
+      ImpressionCount.create!(impression_count.attributes)
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
 end
