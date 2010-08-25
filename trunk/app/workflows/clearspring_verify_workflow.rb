@@ -29,22 +29,26 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   
   def check_their_existence
     data_source_urls = list_data_source_files
-    channel = get_channel!(params[:data_source])
-    if params[:hour]
-      hours = params[:hour]
-      require_all = true
+    options_list, require_all = compute_prefixes_to_check
+    if require_all
+      options_list.each do |options|
+        found = data_source_urls.any? { |url| File.basename(url).starts_with?(options[:prefix]) }
+        if found
+          puts "Have #{date_with_hour(:date => options[:date], :hour => options[:hour])}"
+        else
+          puts "Missing #{date_with_hour(:date => options[:date], :hour => options[:hour])}"
+        end
+      end
     else
-      hours = (0..24).to_a
-      require_all = channel.update_frequency == DataProviderChannel::UPDATES_HOURLY
+      found = options_list.any? do |options|
+        data_source_urls.any? { |url| File.basename(url).starts_with?(options[:prefix]) }
+      end
+      if found
+        puts "Have #{date_with_hour(:date => options_list.first[:date])}"
+      else
+        puts "Missing #{date_with_hour(:date => options_list.first[:date])}"
+      end
     end
-    hours.each do |hour|
-      prefix = basename_prefix(
-        :channel_name => params[:data_source],
-        :date => params[:date], :hour => hour
-      )
-      p prefix
-    end
-    p channel, data_source_urls
   end
   
   private
@@ -62,5 +66,24 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       # this test is a little sketchy but it will work for v1
       our_path[0...their_path_prefix.length] == their_path_prefix
     end
+  end
+  
+  def compute_prefixes_to_check
+    channel = get_channel!(params[:data_source])
+    if params[:hour]
+      hours = params[:hour]
+      require_all = true
+    else
+      hours = (0..24).to_a
+      require_all = channel.update_frequency == DataProviderChannel::UPDATES_HOURLY
+    end
+    options_list = hours.map do |hour|
+      prefix = basename_prefix(
+        :channel_name => params[:data_source],
+        :date => params[:date], :hour => hour
+      )
+      {:date => params[:date], :hour => hour, :prefix => prefix}
+    end
+    [options_list, require_all]
   end
 end

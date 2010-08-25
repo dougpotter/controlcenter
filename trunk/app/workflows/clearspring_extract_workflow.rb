@@ -367,11 +367,15 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def basename_prefix(options)
-    prefix = "#{options[:channel_name]}.#{options[:date]}"
+    "#{options[:channel_name]}.#{date_with_hour(options)}"
+  end
+  
+  def date_with_hour(options)
+    str = options[:date].to_s
     if options[:hour]
-      prefix += sprintf('-%02d00', options[:hour])
+      str += sprintf('-%02d00', options[:hour])
     end
-    prefix
+    str
   end
   
   def url_to_relative_data_source_path(remote_url)
