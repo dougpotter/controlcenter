@@ -14,6 +14,7 @@ end
 Factory.define :creative_size do |c|
   c.sequence(:height) { |n| n + 100 }
   c.sequence(:width) { |n| n + 50 }
+  c.common_name "Meaderscraper"
 end
 
 Factory.define :creative do |c|
