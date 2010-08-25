@@ -21,6 +21,9 @@ module Workflow
   # Attempting to extract partially uploaded files.
   class FileNotReady < WorkflowError; end
   
+  # Split verification was requested and failed
+  class SplitVerificationFailed < WorkflowError; end
+  
   module UserInputParsing
     def parse_hours_specification(hours)
       hours = hours.split(',').map do |hour|

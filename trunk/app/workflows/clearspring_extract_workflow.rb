@@ -38,12 +38,13 @@ class ClearspringExtractWorkflow < Workflow::Base
         :debug => config.debug,
         :keep_downloaded => config.keep_downloaded,
         :keep_temporary => config.keep_temporary,
+        :verify => config.verify,
       }
     end
     
     def merge_user_options(options={})
       params = @config_params.dup
-      [:date, :debug, :lock, :once, :http_client, :keep_downloaded, :keep_temporary].each do |key|
+      [:date, :debug, :lock, :once, :http_client, :keep_downloaded, :keep_temporary, :verify].each do |key|
         unless options[key].nil?
           params[key] = options[key]
         end
@@ -175,21 +176,57 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def split(input_path)
-    with_process_status(:action => 'splitting file') do
-      local_relative_path = absolute_to_relative_path(params[:download_root_dir], input_path)
-      local_relative_path =~ /^(.*?)(\.log\.gz)?$/
-      name, ext = $1, $2
-      filename_format = "#{name.sub('%', '%%')}.%03d#{ext}"
-      
-      local_path = File.join(params[:gzip_root_dir], filename_format)
-      FileUtils.mkdir_p(File.dirname(local_path))
-      
-      dest_files = @gzip_transformer.transform(
-        input_path,
-        params[:gzip_root_dir],
-        filename_format
-      )
+    dest_files = with_process_status(:action => 'splitting file') do
+      perform_split(input_path)
     end
+    
+    if params[:verify]
+      with_process_status(:action => 'verifying split') do
+        verify_split(input_path, dest_files)
+      end
+    end
+    
+    dest_files
+  end
+  
+  def perform_split(input_path)
+    local_relative_path = absolute_to_relative_path(params[:download_root_dir], input_path)
+    local_relative_path =~ /^(.*?)(\.log\.gz)?$/
+    name, ext = $1, $2
+    filename_format = "#{name.sub('%', '%%')}.%03d#{ext}"
+    
+    local_path = File.join(params[:gzip_root_dir], filename_format)
+    FileUtils.mkdir_p(File.dirname(local_path))
+    
+    @gzip_transformer.transform(
+      input_path,
+      params[:gzip_root_dir],
+      filename_format
+    )
+  end
+  
+  def verify_split(input_path, output_paths)
+    source_md5 = compute_md5(input_path)
+    dest_md5 = compute_md5(*output_paths)
+    if source_md5 != dest_md5
+      raise SplitVerificationFailed, "Split files differ from original: #{output_paths.inspect} vs #{input_path.inspect}"
+    end
+  end
+  
+  def compute_md5(*paths)
+    require 'digest/md5'
+    md5 = Digest::MD5.new
+    if params[:debug]
+      debug_print "Gunzip #{paths.join(' ')}"
+    end
+    paths.each do |path|
+      IO.popen("gzip -cd #{path}") do |file|
+        while chunk = file.read(Subprocess::BUFSIZE)
+          md5.update(chunk)
+        end
+      end
+    end
+    md5.hexdigest
   end
   
   def upload(local_path)

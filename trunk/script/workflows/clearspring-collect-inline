@@ -67,6 +67,9 @@ parser = OptionParser.new do |opts|
   opts.on('--[no-]keep-temporary', 'Do not delete temporary files after they are no longer needed') do |value|
     options[:keep_temporary] = value
   end
+  opts.on('-v', '--[no-]verify', 'Verify split/recompressed gzip files against original archives') do |value|
+    options[:verify] = value
+  end
   
   opts.separator ''
   opts.separator 'Informational options:'
@@ -226,6 +229,7 @@ params = {
   :http_client => options[:http_client],
   :keep_downloaded => options[:keep_downloaded],
   :keep_temporary => options[:keep_temporary],
+  :verify => options[:verify],
 }
 
 if options[:profile]
