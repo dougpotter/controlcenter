@@ -17,7 +17,7 @@
 class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :geographies
   has_and_belongs_to_many :ad_inventory_sources
-  has_many :creatives
+  has_and_belongs_to_many :creatives
   belongs_to :partner
 
   has_many :click_counts

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100824223747) do
+ActiveRecord::Schema.define(:version => 20100825205845) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -52,6 +52,14 @@ ActiveRecord::Schema.define(:version => 20100824223747) do
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
   add_index "campaigns", ["partner_id"], :name => "campaigns_partner_id_fk"
 
+  create_table "campaigns_creatives", :id => false, :force => true do |t|
+    t.integer "campaign_id", :null => false
+    t.integer "creative_id", :null => false
+  end
+
+  add_index "campaigns_creatives", ["campaign_id"], :name => "campaigns_creatives_campaign_id_fk"
+  add_index "campaigns_creatives", ["creative_id"], :name => "campaigns_creatives_creative_id_fk"
+
   create_table "campaigns_geographies", :id => false, :force => true do |t|
     t.integer "campaign_id",  :null => false
     t.integer "geography_id", :null => false
@@ -83,6 +91,7 @@ ActiveRecord::Schema.define(:version => 20100824223747) do
   add_index "click_counts", ["audience_id"], :name => "click_counts_audience_id_fk"
   add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "click_counts_required_columns", :unique => true
   add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "required_columns", :unique => true
+  add_index "click_counts", ["campaign_id"], :name => "click_counts_campaign_id_fk"
   add_index "click_counts", ["creative_id"], :name => "click_counts_creative_id_fk"
   add_index "click_counts", ["geography_id"], :name => "click_counts_geography_id_fk"
 
@@ -100,12 +109,10 @@ ActiveRecord::Schema.define(:version => 20100824223747) do
   create_table "creatives", :force => true do |t|
     t.string  "name"
     t.string  "media_type"
-    t.integer "creative_size_id"
-    t.integer "campaign_id"
+    t.integer "creative_size_id", :null => false
     t.string  "creative_code",    :null => false
   end
 
-  add_index "creatives", ["campaign_id"], :name => "creatives_campaign_id_fk"
   add_index "creatives", ["creative_size_id"], :name => "creatives_creative_size_id_fk"
 
   create_table "custom_filters", :force => true do |t|
@@ -171,6 +178,7 @@ ActiveRecord::Schema.define(:version => 20100824223747) do
   add_index "impression_counts", ["audience_id"], :name => "impression_counts_audience_id_fk"
   add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "impression_counts_required_columns", :unique => true
   add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "required_columns", :unique => true
+  add_index "impression_counts", ["campaign_id"], :name => "impression_counts_campaign_id_fk"
   add_index "impression_counts", ["creative_id"], :name => "impression_counts_creative_id_fk"
   add_index "impression_counts", ["geography_id"], :name => "impression_counts_geography_id_fk"
 
@@ -289,6 +297,9 @@ ActiveRecord::Schema.define(:version => 20100824223747) do
 
   add_foreign_key "campaigns", "partners", :name => "campaigns_partner_id_fk"
 
+  add_foreign_key "campaigns_creatives", "campaigns", :name => "campaigns_creatives_campaign_id_fk"
+  add_foreign_key "campaigns_creatives", "creatives", :name => "campaigns_creatives_creative_id_fk"
+
   add_foreign_key "campaigns_geographies", "campaigns", :name => "campaigns_geographies_campaign_id_fk"
   add_foreign_key "campaigns_geographies", "geographies", :name => "campaigns_geographies_geography_id_fk"
 
@@ -300,7 +311,6 @@ ActiveRecord::Schema.define(:version => 20100824223747) do
   add_foreign_key "click_counts", "creatives", :name => "click_counts_creative_id_fk"
   add_foreign_key "click_counts", "geographies", :name => "click_counts_geography_id_fk"
 
-  add_foreign_key "creatives", "campaigns", :name => "creatives_campaign_id_fk"
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
 
   add_foreign_key "custom_filters_line_items", "custom_filters", :name => "custom_filters_line_items_custom_filter_id_fk"
