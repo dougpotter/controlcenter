@@ -26,7 +26,7 @@ class ClickCount < ActiveRecord::Base
 
   validates_presence_of :campaign_id, :creative_id, :ad_inventory_source_id, :audience_id, :start_time, :end_time, :duration_in_minutes, :click_count
   validates_numericality_of :click_count
-  validates_as_increasing :start_time, :end_time, :allow_nil => false
+  validates_as_increasing :start_time, :end_time
   
   def business_objects
     [ campaign, creative, ad_inventory_source, audience ]
