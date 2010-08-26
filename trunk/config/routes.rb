@@ -29,8 +29,10 @@ ActionController::Routing::Routes.draw do |map|
   #     # Directs /admin/products/* to Admin::ProductsController (app/controllers/admin/products_controller.rb)
   #     admin.resources :products
   #   end
-
-  map.resources :fact_filing, :as => "fact_filing/:table_name"
+  
+  map.connect "/home/metrics", :controller => "landing_pages", :action => "metrics"
+  
+  map.resources :facts, :as => "metrics"
   
   map.resources :beacon_reports
   map.resources :beacon_report_graphs

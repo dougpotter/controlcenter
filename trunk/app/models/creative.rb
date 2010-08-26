@@ -22,11 +22,15 @@ class Creative < ActiveRecord::Base
   validates_uniqueness_of :creative_code
   validates_numericality_of :creative_size_id
 
-  def business_code
+  def get_handle 
     :creative_code
   end
 
-  def self.code_to_pk(creative_code)
+  def self.handle_to_id(creative_code)
     find_by_creative_code(creative_code).id
+  end
+
+  def self.id_to_handle(id)
+    find(id).creative_code
   end
 end

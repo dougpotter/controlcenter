@@ -27,9 +27,26 @@ class ClickCount < ActiveRecord::Base
   validates_presence_of :campaign_id, :creative_id, :ad_inventory_source_id, :audience_id, :start_time, :end_time, :duration_in_minutes, :click_count
   validates_numericality_of :click_count
   validates_as_increasing :start_time, :end_time
-  
+
+  def self.get_conditions_string(attrs)
+    s = []
+    for dimension in business_objects
+      if dimension == "ad_inventory_source"
+        s << "ais_id = #{ActiveRecord.const_get(dimension.classify).handle_to_id(attrs[:ais_id])}"
+      else
+        #s << "#{dimension + "_id"} = #{ActiveRecord.const_get(dimension.classify).handle_to_id(attrs[(dimension + "_code").to_sym])}"
+        #s << "#{dimension + "_id"} = #{ActiveRecord.const_get(dimension.classify).handle_to_id(attrs[(dimension + "_code").to_sym])}"
+      end
+    end
+    s.join(",")
+  end
+
   def business_objects
     [ campaign, creative, ad_inventory_source, audience ]
+  end
+
+  def self.business_objects
+    [ "campaign", "creative", "ad_inventory_source", "audience" ]
   end
 
   def business_attributes

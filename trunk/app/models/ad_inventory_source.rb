@@ -17,11 +17,15 @@ class AdInventorySource < ActiveRecord::Base
   has_many :click_counts
   has_many :impression_counts
 
-  def business_code
+  def get_handle
     :ais_code
   end
 
-  def self.code_to_pk(ais_code)
+  def self.handle_to_id(ais_code)
     find_by_ais_code(ais_code).id
+  end
+
+  def self.id_to_handle(id)
+    find(id).ais_code
   end
 end

@@ -25,11 +25,15 @@ class Geography < ActiveRecord::Base
   # might want to add a validation which requires at least one attribute
   # to be present
 
-  def business_code
+  def get_handle 
     ""
   end
 
-  def self.code_to_pk(geography_code)
+  def self.handle_to_id(geography_code)
+    ""
+  end
+
+  def self.id_to_handle(id)
     ""
   end
 end

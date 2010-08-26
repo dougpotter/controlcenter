@@ -15,13 +15,17 @@ class Partner < ActiveRecord::Base
 
   validates_uniqueness_of :partner_code
 
-  def business_code
+  def get_handle
     :partner_code
   end
   
   def pid ; partner_code ; end
 
-  def self.code_to_pk(partner_code)
+  def self.handle_to_id(partner_code)
     find_by_partner_code(partner_code).id
+  end
+
+  def self.id_to_handle(id)
+    find(id).partner_code
   end
 end

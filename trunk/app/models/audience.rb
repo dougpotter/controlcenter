@@ -22,11 +22,15 @@ class Audience < ActiveRecord::Base
   has_many :click_counts
   has_many :impression_counts
 
-  def business_code
+  def get_handle
     :audience_code
   end
 
-  def self.code_to_pk(audience_code)
+  def self.handle_to_id(audience_code)
     find_by_audience_code(audience_code).id
+  end
+
+  def self.id_to_handle(id)
+    find(id).audience_code
   end
 end
