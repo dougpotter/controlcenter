@@ -53,8 +53,14 @@ class S3Client::RightAws < S3Client::Base
   private
   
   def exception_map
+    mapper = lambda do |exc, url|
+      if exc.http_code
+        convert_and_raise(exc, HttpClient::HttpError, url, :code => exc.http_code)
+      end
+    end
+    
     [
-      [RightAws::AwsError, HttpClient::HttpError],
+      [RightAws::AwsError, mapper],
     ]
   end
 end

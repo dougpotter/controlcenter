@@ -196,9 +196,12 @@ rescue Workflow::FileSpecMismatch
 rescue Workflow::FileNotReady
   $stderr.puts("Error: file is not ready to be extracted")
   8
-rescue HttpClient::BaseError => e
-  $stderr.puts("Network error: #{e.message} @ #{e.url}")
+rescue HttpClient::HttpError => e
+  $stderr.puts("Transfer error: #{e.message} @ #{e.url}")
   9
+rescue HttpClient::BaseError => e
+  ConsoleUi.handle_unhandled_exception(e, "Unhandled transfer error: #{e.message} @ #{e.url}")
+  10
 end
 
 def start_profiling

@@ -20,13 +20,13 @@ module ExceptionMappingMixin
     end
   end
   
-  def convert_and_raise(original_exc, converted_cls, url)
+  def convert_and_raise(original_exc, converted_cls, url, extra_options={})
     new_message = "#{original_exc.message} (#{original_exc.class})"
-    exc = converted_cls.new(
-      new_message,
+    options = {
       :url => url,
-      :original_exception_class => original_exc.class
-    )
+      :original_exception_class => original_exc.class,
+    }.update(extra_options)
+    exc = converted_cls.new(new_message, options)
     exc.set_backtrace(original_exc.backtrace)
     raise exc
   end
