@@ -23,7 +23,16 @@
 # hour mark, with some exceptions. Running extraction exactly on the hour
 # is asking for race conditions. Run extraction 15 minutes before every hour.
 every 1.hour, :at => 45 do
-  rake 'workflows:clearspring:autorun'
+  rake 'workflows:clearspring:extract_autorun'
+end
+
+# 7 AM EST is 11 AM or noon UTC depending on DST
+every 1.day, :at => 7 do
+  rake 'workflows:clearspring:verify_daily'
+end
+
+every 1.hour, :at => 15 do
+  rake 'workflows:clearspring:verify_hourly'
 end
 
 # It is helpful to understand cron before editing this file:

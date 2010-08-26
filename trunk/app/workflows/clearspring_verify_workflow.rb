@@ -126,7 +126,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   def compute_prefixes_to_check
     channel = get_channel!(params[:data_source])
     if params[:hour]
-      hours = params[:hour]
+      hours = [params[:hour]]
       require_all = true
     else
       hours = (0..24).to_a
