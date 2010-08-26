@@ -65,11 +65,12 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def initialize(params)
+    super(params)
     initialize_params(params)
     @http_client = create_http_client(@params)
     @parser = WebParser.new
-    @gzip_transformer = GzipSplitter.new(:debug => @params[:debug])
-    @s3_client = S3Client::RightAws.new(:debug => @params[:debug])
+    @gzip_transformer = GzipSplitter.new(:debug => @params[:debug], :logger => @logger)
+    @s3_client = S3Client::RightAws.new(:debug => @params[:debug], :logger => @logger)
   end
   
   def run
@@ -472,11 +473,5 @@ class ClearspringExtractWorkflow < Workflow::Base
   # readiness heuristic - to be written
   def fully_uploaded?(file_url)
     true
-  end
-  
-  # ------
-  
-  def debug_print(msg)
-    $stderr.puts(msg)
   end
 end

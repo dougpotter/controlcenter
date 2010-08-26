@@ -22,7 +22,9 @@ class HttpClient::Rfuzz < HttpClient::Base
   # :http_username
   # :http_password
   # :debug
+  # :logger
   def initialize(options={})
+    super(options)
     @http_username, @http_password = options[:http_username], options[:http_password]
     @debug = options[:debug]
   end

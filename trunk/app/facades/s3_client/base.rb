@@ -1,11 +1,14 @@
 class S3Client::Base
   include ExceptionMappingMixin
   
+  attr_accessor :logger
+  
   # allowed options:
   # :timeout
   # :debug
+  # :logger
   def initialize(options={})
-    raise NotImplemented
+    @logger = options[:logger] || Workflow.default_logger
   end
   
   def put_file(bucket, remote_path, local_path)
@@ -19,6 +22,6 @@ class S3Client::Base
   private
   
   def debug_print(msg)
-    $stderr.puts(msg)
+    logger.debug(self.class.name) { msg }
   end
 end

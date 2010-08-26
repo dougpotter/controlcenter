@@ -95,7 +95,7 @@ def cleanup(dir, age, options={})
 end
 
 def debug_print(msg)
-  $stderr.puts(msg)
+  Workflow.default_logger.debug('clearspring-collect-cleanup') { msg }
 end
 
 settings = ClearspringExtractWorkflow::Configuration.new(options)

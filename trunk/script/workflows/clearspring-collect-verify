@@ -119,8 +119,6 @@ def debug
   debugger
 end
 
-require 'strict_hash'
-
 $settings = ClearspringExtractWorkflow::Configuration.new(options)
 
 def settings; $settings end
@@ -139,10 +137,8 @@ def run(ext_params)
   workflows = versions.map do |version_params|
     params = settings.merge_user_options(ext_params)
     params.update(version_params)
-    options = StrictHashWithIndifferentAccess.new(params)
-    options.optional_keys(:hour)
-    options[:update_process_status] = false
-    ClearspringVerifyWorkflow.new(options)
+    params[:update_process_status] = false
+    ClearspringVerifyWorkflow.new(params)
   end
   
   workflows.each do |workflow|

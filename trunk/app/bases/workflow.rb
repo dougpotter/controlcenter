@@ -42,9 +42,19 @@ module Workflow
   
   class << self
     include UserInputParsing
+    
+    attr_accessor :default_logger
   end
   
+  self.default_logger = Logger.new(STDOUT)
+  
   class Base
+    attr_accessor :logger
+    
+    def initialize(options={})
+      @logger = options[:logger] || Workflow.default_logger
+    end
+    
     private
     
     def create_http_client(params)
@@ -57,7 +67,8 @@ module Workflow
         :http_username => params[:http_username],
         :http_password => params[:http_password],
         :timeout => params[:net_io_timeout],
-        :debug => params[:debug]
+        :debug => params[:debug],
+        :logger => self.logger
       )
     end
     
@@ -81,6 +92,12 @@ module Workflow
         relative_path = relative_path[1...relative_path.length]
       end
       relative_path
+    end
+    
+    # ------
+    
+    def debug_print(msg)
+      logger.debug(self.class.name) { msg }
     end
   end
 end

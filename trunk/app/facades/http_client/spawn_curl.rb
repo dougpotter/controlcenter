@@ -17,7 +17,9 @@ class HttpClient::SpawnCurl < HttpClient::Base
   # :http_password
   # :timeout
   # :debug
+  # :logger
   def initialize(options={})
+    super(options)
     @command = options[:command] || %w(/usr/bin/env curl)
     @http_username, @http_password = options[:http_username], options[:http_password]
     @timeout = options[:timeout]

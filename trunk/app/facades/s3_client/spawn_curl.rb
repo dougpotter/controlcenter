@@ -1,5 +1,6 @@
 class S3Client::SpawnCurl < S3Client::Base
   def initialize(options={})
+    super(options)
     @command = options[:command] || %w(/usr/bin/env curl)
     @s3_host = AwsConfiguration.s3_host || 's3.amazonaws.com'
     @s3_port = AwsConfiguration.s3_port || 443

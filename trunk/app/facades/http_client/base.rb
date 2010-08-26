@@ -1,6 +1,8 @@
 class HttpClient::Base
   include ExceptionMappingMixin
   
+  attr_accessor :logger
+  
   # allowed options:
   # :http_username
   # :http_password
@@ -8,8 +10,9 @@ class HttpClient::Base
   # :connect_timeout (if :timeout is specified and :connect_timeout is not,
   #   :timeout is used for :connect_timeout as well)
   # :debug
+  # :logger
   def initialize(options={})
-    raise NotImplemented
+    @logger = options[:logger] || Workflow.default_logger
   end
   
   def fetch(url)
@@ -23,6 +26,6 @@ class HttpClient::Base
   private
   
   def debug_print(msg)
-    $stderr.puts(msg)
+    logger.debug(self.class.name) { msg }
   end
 end

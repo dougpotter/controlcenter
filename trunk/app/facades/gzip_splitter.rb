@@ -1,11 +1,12 @@
 class GzipSplitter
-  attr_accessor :header_pattern, :read_buffer_size, :debug, :verify
+  attr_accessor :header_pattern, :read_buffer_size, :debug, :verify, :logger
   
   # allowed options:
   # :header_pattern
   # :read_buffer_size
   # :debug -- print debugging messages to $stderr, can be very verbose!
   # :verify -- executes gzip -l and prints compression ratio, or error message
+  # :logger
   def initialize(options={})
     # Defaults, see notes at end of file
     @header_pattern = options[:header_pattern] || "\037\213\b\000\000"
@@ -14,6 +15,8 @@ class GzipSplitter
     @verify = options[:verify] || false
     
     @header_length = @header_pattern.length
+    
+    @logger = options[:logger] || Workflow.default_logger
   end
 
   def transform(input_path, output_dir, output_filename_format)
@@ -115,7 +118,7 @@ class GzipSplitter
   private
   
   def debug_print(msg)
-    $stderr.puts(msg)
+    logger.debug(self.class.name) { msg }
   end
 
   def write_byte_buffer(ofile, buff, clear)

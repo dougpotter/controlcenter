@@ -8,7 +8,9 @@ class HttpClient::RightAws < HttpClient::Base
   # :connect_timeout (if :timeout is specified and :connect_timeout is not,
   #   :timeout is used for :connect_timeout as well)
   # :debug
+  # :logger
   def initialize(options={})
+    super(options)
     @http_username, @http_password = options[:http_username], options[:http_password]
     @timeout, @connect_timeout = options[:timeout], options[:connect_timeout]
     @debug = options[:debug]

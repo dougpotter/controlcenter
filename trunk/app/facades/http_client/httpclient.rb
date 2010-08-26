@@ -6,7 +6,9 @@ class HttpClient::Httpclient < HttpClient::Base
   # :http_password
   # :timeout
   # :debug
+  # :logger
   def initialize(options={})
+    super(options)
     @timeout = options[:timeout]
     @debug = options[:debug]
     @client = HTTPClient.new

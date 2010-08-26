@@ -1,5 +1,5 @@
 module ConsoleUi
-  def handle_unhandled_exception(e, msg)
+  def handle_unhandled_exception(e, msg=nil)
     puts msg || "Unhandled exception:"
     puts "#{e.class}: #{e.message}"
     puts '    in ' + e.backtrace.join("\n  from ")
