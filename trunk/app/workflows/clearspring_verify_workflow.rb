@@ -9,29 +9,33 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   def check_listing
     data_source_urls = list_data_source_files
     our_paths = list_bucket_items
-    data_source_urls.each do |url|
-      remote_relative_path = url_to_relative_data_source_path(url)
-      local_path = build_local_path(remote_relative_path)
-      bucket_path = build_s3_path(local_path)
-      if extracted_paths_include?(our_paths, bucket_path)
-        puts "Have #{bucket_path}"
-      else
-        puts "Missing #{bucket_path}"
-      end
-    end
+    have, missing = check_correspondence(data_source_urls, our_paths)
+    report_correspondence(have, missing)
+    missing.empty?
   end
   
   def check_consistency
+    data_source_urls = list_data_source_files
+    have, missing = check_existence(data_source_urls)
+    report_existence(have, missing)
+    ok = missing.empty?
+    
+    our_paths = list_bucket_items
+    have, missing = check_correspondence(data_source_urls, our_paths)
+    report_correspondence(have, missing)
+    ok && missing.empty?
   end
   
   def check_our_existence
     have, missing = find_our_files
     report_existence(have, missing)
+    missing.empty?
   end
   
   def check_their_existence
     have, missing = find_their_files
     report_existence(have, missing)
+    missing.empty?
   end
   
   private
@@ -44,6 +48,21 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   def find_our_files
     bucket_paths = list_bucket_items
     check_existence(bucket_paths)
+  end
+  
+  def check_correspondence(data_source_urls, our_paths)
+    have, missing = [], []
+    data_source_urls.each do |url|
+      remote_relative_path = url_to_relative_data_source_path(url)
+      local_path = build_local_path(remote_relative_path)
+      bucket_path = build_s3_path(local_path)
+      if extracted_paths_include?(our_paths, bucket_path)
+        have << bucket_path
+      else
+        missing << bucket_path
+      end
+    end
+    [have, missing]
   end
   
   def check_existence(items)
@@ -69,6 +88,15 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       end
     end
     [have, missing]
+  end
+  
+  def report_correspondence(have, missing)
+    have.each do |bucket_path|
+      puts "Have #{bucket_path}"
+    end
+    missing.each do |bucket_path|
+      puts "Missing #{bucket_path}"
+    end
   end
   
   def report_existence(have, missing)
