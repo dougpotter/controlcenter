@@ -8,7 +8,7 @@ end
 
 Factory.define :insertion_order do |i|
   i.description "An Insertion Order"
-  i.campaign { Factory(:campaign) }
+  i.campaign_id { Factory(:campaign).id }
 end
 
 Factory.define :partner do |p|
