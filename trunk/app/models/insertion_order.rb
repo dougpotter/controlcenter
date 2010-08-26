@@ -12,7 +12,5 @@
 # Line Items on the insertion order specify the terms (quantity and
 # price) of delivery
 class InsertionOrder < ActiveRecord::Base
-  belongs_to :campaign
-
   validates_numericality_of :campaign_id
 end

@@ -19,6 +19,7 @@ class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :ad_inventory_sources
   has_and_belongs_to_many :creatives
   belongs_to :partner
+  belongs_to :insertion_order
 
   has_many :click_counts
   has_many :impression_counts
