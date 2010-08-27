@@ -32,7 +32,11 @@ ActionController::Routing::Routes.draw do |map|
   
   map.connect "/home/metrics", :controller => "landing_pages", :action => "metrics"
   
+  # Facts are known on the outside as "metrics"
   map.resources :facts, :as => "metrics"
+  # Also allow for accessing Facts#update without :id, per API spec
+  map.connect "/metrics", :controller => "facts", :action => "update", 
+    :conditions => { :method => :put }
   
   map.resources :beacon_reports
   map.resources :beacon_report_graphs
