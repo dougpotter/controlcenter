@@ -10,24 +10,85 @@ class FactsController < ApplicationController
     @csv_rows = []
     @end_time = (Time.parse(params[:end_time]) rescue (Date.today - 1.day))
     @start_time = (Time.parse(params[:start_time]) rescue (@end_date - 7.day))
-    @fact_class = ActiveRecord.const_get(params[:table_name].classify)
-    results = @fact_class.find(:all, :conditions => ["start_time >= ? AND end_time <= ?", @start_time, @end_time])
 
-    fact_name = params[:table_name].singularize
-    @csv_rows << (results.first.business_objects ? 
-        results.first.business_objects.collect { |obj|
-          obj.business_code || nil
-        }.compact + [ "start_time", "end_time", fact_name ] : results.first.attributes.keys)
-    results.each do |row|
-      @csv_rows << (results.first.business_objects ? 
-          row.business_objects.collect { |obj|
-            obj.send(obj.business_code) rescue nil
-          }.compact + [ row.start_time, row.end_time, row.send(fact_name) ] : row.attributes.values)
+    render :text => nil, :status => 501 unless params[:frequency] = "hour" 
+
+    code_ids = {
+      :campaign_code => "campaign_id",
+      :creative_code => "creative_id",
+      :ais_code => "ad_inventory_source_id",
+      :audience_code => "audience_id",
+      :mpm_code => "media_purchase_method_id"
+    }
+    
+    code_classes = {
+      :campaign_code => Campaign,
+      :creative_code => Creative,
+      :ais_code => AdInventorySource,
+      :audience_code => Audience,
+      :mpm_code => MediaPurchaseMethod
+    }
+
+    group_by_dimensions = params[:dimensions].split(",")
+    group_by_columns = []
+    group_by_dimensions.each do |dim|
+      if code_ids[dim.to_sym]
+        group_by_columns << code_ids[dim.to_sym]
+      else
+        group_by_dimensions.delete(dim)
+      end
     end
+    group_by_columns.concat(["start_time", "end_time"])
+    group_by_clause = group_by_columns.collect { |col|
+      "#{ImpressionCount.connection.quote_column_name(col)}"
+    }.join(", ")
 
+    where_array = params.select { |k, v| 
+      !([ :metrics, :dimensions, :start_time, :end_time, :frequency, :action, :controller, :format ].include?(k.to_sym)) 
+    }
+    where_clause = where_array.collect { |row|
+      "#{ImpressionCount.connection.quote_column_name(row[0])} = ?"
+    }.join(" AND ")
+    where_values = where_array.collect { |row| row[1] }
+
+    grouped_sql_hash = {}
+    params[:metrics].split(",").each_with_index do |fact_name, idx|
+      fact_sum_term = "SUM(#{ImpressionCount.connection.quote_column_name(fact_name)})"
+      table_name = ImpressionCount.connection.quote_table_name(fact_name.pluralize)
+      grouped_sql_result = ImpressionCount.find_by_sql([
+        "SELECT #{group_by_clause}, #{fact_sum_term} " +
+        "FROM #{table_name} WHERE start_time >= ? AND " +
+        "end_time <= ? #{where_clause.empty? ? "" : "AND"} " +
+        "#{where_clause} GROUP BY #{group_by_clause}"
+      ].concat([@start_time, @end_time]).concat(where_values))
+
+      grouped_sql_result.each do |row|
+        grouped_attr_array = []
+        group_by_dimensions.each do |group_dim|
+          grouped_attr_array <<
+            row.send(code_ids[group_dim.to_sym].gsub("_id", "")).send(group_dim)
+        end
+        grouped_attr_array.concat([row.start_time, row.end_time])
+        grouped_sql_hash[grouped_attr_array] ||= []
+        grouped_sql_hash[grouped_attr_array][idx] = row.attributes[fact_sum_term]
+      end
+    end
+    
+    facts = params[:metrics].split(",")
+    
+    @csv_rows = []
+    @csv_rows[0] = []
+    @csv_rows[0].concat(group_by_dimensions)
+    @csv_rows[0].concat(["start_time", "end_time"])
+    @csv_rows[0].concat(facts)
+    
+    grouped_sql_hash.each do |k, v|
+      @csv_rows << k.concat(v)
+    end
+    
     respond_to do |format|
       format.csv do 
-        render_csv("#{params[:table_name]}-" +
+        render_csv("#{facts.join("-")}" +
                    "#{@start_time.strftime("%Y%m%d")}-#{@end_time.strftime("%Y%m%d")}")
       end
     end
