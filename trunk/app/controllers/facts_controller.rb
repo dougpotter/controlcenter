@@ -46,10 +46,15 @@ class FactsController < ApplicationController
     where_array = params.select { |k, v| 
       !([ :metrics, :dimensions, :start_time, :end_time, :frequency, :action, :controller, :format ].include?(k.to_sym)) 
     }
-    where_clause = where_array.collect { |row|
-      "#{ImpressionCount.connection.quote_column_name(row[0])} = ?"
-    }.join(" AND ")
-    where_values = where_array.collect { |row| row[1] }
+    where_clause = (where_array.collect { |dim|
+      code_ids[dim[0].to_sym]
+    }.compact.collect { |col|
+      "#{ImpressionCount.connection.quote_column_name(col)} = ?"
+    }.join(" AND "))
+    
+    where_values = where_array.collect { |row|
+      code_classes[row[0].to_sym] ? code_classes[row[0].to_sym].send(:handle_to_id, row[1]) : nil
+    }.compact
 
     grouped_sql_hash = {}
     params[:metrics].split(",").each_with_index do |fact_name, idx|
