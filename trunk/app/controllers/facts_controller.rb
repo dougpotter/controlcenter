@@ -55,8 +55,6 @@ class FactsController < ApplicationController
       @attrs.select { |k, v| v != nil && v != "" && k.to_s != fact.to_s }.each do |el|
         lookup_attrs[el[0]] = el[1]
       end
-      y lookup_attrs
-      puts lookup_attrs.class
       facts = @fact_class.find(:all, :conditions => lookup_attrs)
       facts[0].send("#{fact}=", facts[0].send(fact) + @attrs[fact].to_f) if facts.size == 1 && params[:operation] == "increment"
       facts[0].save!
