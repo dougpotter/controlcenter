@@ -1,0 +1,13 @@
+config/appwall.yml
+config/aws.yml
+config/database.yml
+config/fakes3.yml
+config/ruote_host.yml
+config/workflows/*.yml
+db/development_structure.sql
+log/*.log
+tmp/cache/*
+tmp/pids/*
+tmp/sessions/*
+tmp/sockets/*
+tmp/test/*

@@ -1,0 +1,22 @@
+development: &common
+  clearspring_http_username: 'xgraph'
+  clearspring_http_password: ''
+  clearspring_net_io_timeout: 60
+  clearspring_root_url: 'https://dex.clearspring.com/data/xgraph/v2'
+  download_root_dir: '/home/etltest/data'
+  temp_root_dir: '/tmp'
+  s3_bucket: xgw
+  clearspring_pid: 15530
+  
+  # Options:
+  #
+  # http_client: curb
+  # force_system_timer: true
+  # lock: true
+  # once: true
+  # debug: true
+  # keep_downloaded: true
+  # keep_temporary: true
+
+production:
+  <<: *common

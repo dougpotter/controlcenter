@@ -1,0 +1,6 @@
+<%= FasterCSV.generate do |csv|
+  @csv_rows.each do |row|
+    csv << row
+  end
+end
+%>

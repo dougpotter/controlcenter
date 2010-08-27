@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+# Fixme: this entire script is a hack.
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+
+require 'yaml'
+
+config_path = Rails.root.join('config/fakes3.yml')
+config = YAML.load(File.read(config_path))
+config = config[RAILS_ENV]
+
+cmd = ['ruby', '-I', config['code_root']]
+if config['daemonize']
+  cmd << File.join(config['code_root'], 'fakes3_daemon')
+  cmd << 'start'
+  cmd << '--'
+else
+  cmd << File.join(config['code_root'], 'fakes3_server')
+end
+if config['upload_root']
+  cmd += ['-u', config['upload_root']]
+end
+exec(*cmd)
