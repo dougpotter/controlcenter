@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100827015325) do
+ActiveRecord::Schema.define(:version => 20100827043937) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -76,23 +76,24 @@ ActiveRecord::Schema.define(:version => 20100827015325) do
   add_index "cities", ["region_id"], :name => "cities_region_id_fk"
 
   create_table "click_counts", :force => true do |t|
-    t.integer  "campaign_id",            :null => false
-    t.integer  "creative_id",            :null => false
-    t.integer  "ad_inventory_source_id", :null => false
+    t.integer  "campaign_id",              :null => false
+    t.integer  "creative_id",              :null => false
+    t.integer  "ad_inventory_source_id",   :null => false
     t.integer  "geography_id"
-    t.integer  "audience_id",            :null => false
-    t.integer  "click_count",            :null => false
+    t.integer  "audience_id",              :null => false
+    t.integer  "click_count",              :null => false
     t.datetime "start_time"
     t.datetime "end_time"
     t.integer  "duration_in_minutes"
+    t.integer  "media_purchase_method_id"
   end
 
   add_index "click_counts", ["ad_inventory_source_id"], :name => "click_counts_ad_inventory_source_id_fk"
   add_index "click_counts", ["audience_id"], :name => "click_counts_audience_id_fk"
-  add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "click_counts_required_columns", :unique => true
-  add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "required_columns", :unique => true
+  add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "media_purchase_method_id", "start_time", "end_time", "duration_in_minutes"], :name => "click_counts_required_columns_20100827", :unique => true
   add_index "click_counts", ["creative_id"], :name => "click_counts_creative_id_fk"
   add_index "click_counts", ["geography_id"], :name => "click_counts_geography_id_fk"
+  add_index "click_counts", ["media_purchase_method_id"], :name => "click_counts_media_purchase_method_id_fk"
 
   create_table "countries", :force => true do |t|
     t.string "name",         :null => false
@@ -162,23 +163,24 @@ ActiveRecord::Schema.define(:version => 20100827015325) do
   add_index "geographies", ["zip_id"], :name => "geographies_zip_id_fk"
 
   create_table "impression_counts", :force => true do |t|
-    t.integer  "campaign_id",            :null => false
-    t.integer  "creative_id",            :null => false
-    t.integer  "ad_inventory_source_id", :null => false
+    t.integer  "campaign_id",              :null => false
+    t.integer  "creative_id",              :null => false
+    t.integer  "ad_inventory_source_id",   :null => false
     t.integer  "geography_id"
-    t.integer  "audience_id",            :null => false
-    t.integer  "impression_count",       :null => false
+    t.integer  "audience_id",              :null => false
+    t.integer  "impression_count",         :null => false
     t.datetime "start_time"
     t.datetime "end_time"
     t.integer  "duration_in_minutes"
+    t.integer  "media_purchase_method_id"
   end
 
   add_index "impression_counts", ["ad_inventory_source_id"], :name => "impression_counts_ad_inventory_source_id_fk"
   add_index "impression_counts", ["audience_id"], :name => "impression_counts_audience_id_fk"
-  add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "impression_counts_required_columns", :unique => true
-  add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "start_time", "end_time", "duration_in_minutes"], :name => "required_columns", :unique => true
+  add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "media_purchase_method_id", "start_time", "end_time", "duration_in_minutes"], :name => "impression_counts_required_columns_20100827", :unique => true
   add_index "impression_counts", ["creative_id"], :name => "impression_counts_creative_id_fk"
   add_index "impression_counts", ["geography_id"], :name => "impression_counts_geography_id_fk"
+  add_index "impression_counts", ["media_purchase_method_id"], :name => "impression_counts_media_purchase_method_id_fk"
 
   create_table "insertion_orders", :force => true do |t|
     t.string  "description"
@@ -192,6 +194,10 @@ ActiveRecord::Schema.define(:version => 20100827015325) do
     t.float   "internal_pricing"
     t.float   "external_pricing"
     t.integer "insertion_order_id"
+  end
+
+  create_table "media_purchase_methods", :force => true do |t|
+    t.string "mpm_code"
   end
 
   create_table "models", :force => true do |t|
@@ -308,6 +314,7 @@ ActiveRecord::Schema.define(:version => 20100827015325) do
   add_foreign_key "click_counts", "campaigns", :name => "click_counts_campaign_id_fk"
   add_foreign_key "click_counts", "creatives", :name => "click_counts_creative_id_fk"
   add_foreign_key "click_counts", "geographies", :name => "click_counts_geography_id_fk"
+  add_foreign_key "click_counts", "media_purchase_methods", :name => "click_counts_media_purchase_method_id_fk"
 
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
 
@@ -328,6 +335,7 @@ ActiveRecord::Schema.define(:version => 20100827015325) do
   add_foreign_key "impression_counts", "campaigns", :name => "impression_counts_campaign_id_fk"
   add_foreign_key "impression_counts", "creatives", :name => "impression_counts_creative_id_fk"
   add_foreign_key "impression_counts", "geographies", :name => "impression_counts_geography_id_fk"
+  add_foreign_key "impression_counts", "media_purchase_methods", :name => "impression_counts_media_purchase_method_id_fk"
 
   add_foreign_key "insertion_orders", "campaigns", :name => "insertion_orders_campaign_id_fk"
 

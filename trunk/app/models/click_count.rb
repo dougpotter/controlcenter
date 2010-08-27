@@ -23,6 +23,7 @@ class ClickCount < ActiveRecord::Base
   belongs_to :ad_inventory_srouce
   belongs_to :geography
   belongs_to :audience
+  belongs_to :media_purchase_method
 
   validates_presence_of :campaign_id, :creative_id, :ad_inventory_source_id, :audience_id, :start_time, :end_time, :duration_in_minutes, :click_count
   validates_numericality_of :click_count
@@ -42,14 +43,14 @@ class ClickCount < ActiveRecord::Base
   end
 
   def business_objects
-    [ campaign, creative, ad_inventory_source, audience ]
+    [ campaign, creative, ad_inventory_source, audience, media_purchase_method ]
   end
 
   def self.business_objects
-    [ "campaign", "creative", "ad_inventory_source", "audience" ]
+    [ "campaign", "creative", "ad_inventory_source", "audience", "media_purchase_methods" ]
   end
 
   def business_attributes
-    ["start_time", "end_time", "duration_in_minutes", "campaign_code", "creative_code", "ad_inventory_source_code", "geography", "audience_code"]
+    ["start_time", "end_time", "duration_in_minutes", "campaign_code", "creative_code", "ad_inventory_source_code", "geography", "audience_code", "mpm_code" ]
   end
 end
