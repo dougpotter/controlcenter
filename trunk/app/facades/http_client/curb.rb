@@ -116,6 +116,8 @@ class HttpClient::Curb < HttpClient::Base
     [
       [Curl::Err::TimeoutError, HttpClient::NetworkTimeout],
       [IOError, HttpClient::NetworkError],
+      # DNS can be flaky
+      [Curl::Err::HostResolutionError, HttpClient::NetworkError],
     ]
   end
 end
