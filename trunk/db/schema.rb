@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(:version => 20100827043937) do
   add_index "click_counts", ["ad_inventory_source_id"], :name => "click_counts_ad_inventory_source_id_fk"
   add_index "click_counts", ["audience_id"], :name => "click_counts_audience_id_fk"
   add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "media_purchase_method_id", "start_time", "end_time", "duration_in_minutes"], :name => "click_counts_required_columns_20100827", :unique => true
+  add_index "click_counts", ["campaign_id"], :name => "click_counts_campaign_id_fk"
   add_index "click_counts", ["creative_id"], :name => "click_counts_creative_id_fk"
   add_index "click_counts", ["geography_id"], :name => "click_counts_geography_id_fk"
   add_index "click_counts", ["media_purchase_method_id"], :name => "click_counts_media_purchase_method_id_fk"
@@ -178,6 +179,7 @@ ActiveRecord::Schema.define(:version => 20100827043937) do
   add_index "impression_counts", ["ad_inventory_source_id"], :name => "impression_counts_ad_inventory_source_id_fk"
   add_index "impression_counts", ["audience_id"], :name => "impression_counts_audience_id_fk"
   add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "media_purchase_method_id", "start_time", "end_time", "duration_in_minutes"], :name => "impression_counts_required_columns_20100827", :unique => true
+  add_index "impression_counts", ["campaign_id"], :name => "impression_counts_campaign_id_fk"
   add_index "impression_counts", ["creative_id"], :name => "impression_counts_creative_id_fk"
   add_index "impression_counts", ["geography_id"], :name => "impression_counts_geography_id_fk"
   add_index "impression_counts", ["media_purchase_method_id"], :name => "impression_counts_media_purchase_method_id_fk"
