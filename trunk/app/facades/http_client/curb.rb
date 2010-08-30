@@ -60,7 +60,7 @@ class HttpClient::Curb < HttpClient::Base
       
       # curb is pretty pathetic - we have to parse headers ourselves.
       # hack this
-      if /content-length:\s+(\d+)/ =~ @curl.header_str.downcase
+      if /^content-length:\s+(\d+)/ =~ @curl.header_str.downcase
         content_length = $1.to_i
       else
         raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
