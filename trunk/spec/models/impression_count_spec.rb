@@ -58,7 +58,6 @@ describe ImpressionCount do
   end
 
   it "should require a unique combination of required dimensions" do
-    pending
     impression_count = Factory.create(:impression_count)
     lambda {
       ImpressionCount.create!(impression_count.attributes)

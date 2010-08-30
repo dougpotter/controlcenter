@@ -71,7 +71,6 @@ describe ClickCount do
   end
 
   it "should have unique combination of required attributes" do
-    pending
     click_count = Factory.create(:click_count)
     lambda {
       ClickCount.create!(click_count.attributes)
