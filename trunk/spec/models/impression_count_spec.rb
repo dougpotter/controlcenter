@@ -62,6 +62,6 @@ describe ImpressionCount do
     impression_count = Factory.create(:impression_count)
     lambda {
       ImpressionCount.create!(impression_count.attributes)
-    }.should raise_error
+    }.should raise_error(ActiveRecord::ActiveRecordError)
   end
 end

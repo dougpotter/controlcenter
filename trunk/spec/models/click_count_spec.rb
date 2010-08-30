@@ -75,6 +75,6 @@ describe ClickCount do
     click_count = Factory.create(:click_count)
     lambda {
       ClickCount.create!(click_count.attributes)
-    }.should raise_error
+    }.should raise_error(ActiveRecord::ActiveRecordError)
   end
 end
