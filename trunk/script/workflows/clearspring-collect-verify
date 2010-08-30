@@ -55,10 +55,16 @@ parser = OptionParser.new do |opts|
     options[:check_sizes] = true
   end
   opts.on('--check-sizes-strictly', 'Like --check-sizes, but tolerate a much smaller difference in sizes assuming data source files were split or recompressed with the same compression level') do
+    options[:check_sizes] = true
     options[:check_sizes_strictly] = true
+  end
+  opts.on('--check-sizes-exactly', 'Like --check-sizes, but require data source and the sum of our storage sizes to be exactly the same (assuming source files were split)') do
+    options[:check_sizes] = true
+    options[:check_sizes_exactly] = true
   end
   opts.on('--check-content', "In addition to matching files, require that data source and our storage files' content is identical. Warning: performs extreme amount of network I/O since it has to download both data source and our storage copies of all affected files!") do
     options[:check_content] = true
+    raise NotImplementedError, "Content check is not yet implemented"
   end
   
   opts.separator ''
@@ -140,6 +146,10 @@ class ClearspringVerifyWorkflowRunner < WorkflowRunner
     end
     workflows = versions.map do |version_params|
       params = settings.merge_user_options(ext_params)
+      %w(check_sizes check_sizes_strictly check_sizes_exactly check_content).each do |key|
+        key = key.to_sym
+        params[key] = ext_params[key]
+      end
       params.update(version_params)
       params[:update_process_status] = false
       params[:logger] = ext_params[:logger]
@@ -187,6 +197,7 @@ params = {
 
 %w(
   check_listing check_consistency check_our_existence check_their_existence
+  check_sizes check_sizes_strictly check_sizes_exactly check_content
   hours debug debug_output_path http_client
 ).each do |key|
   key = key.to_sym

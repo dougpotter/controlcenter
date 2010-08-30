@@ -23,4 +23,7 @@ module HttpClient
   
   class NetworkTimeout < NetworkError
   end
+  
+  class UnsupportedServer < BaseError
+  end
 end
