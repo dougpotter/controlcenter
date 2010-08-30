@@ -61,6 +61,9 @@ parser = OptionParser.new do |opts|
   opts.on('-d', '--[no-]debug', 'Enable debugging output') do |value|
     options[:debug] = value
   end
+  opts.on('--debug-output PATH', 'Store debug output into a file instead of printing it to standard output') do |path|
+    options[:debug_output_path] = path
+  end
   opts.on('--[no-]keep-downloaded', 'Do not delete downloaded files after successful upload') do |value|
     options[:keep_downloaded] = value
   end
@@ -127,77 +130,85 @@ $settings = ClearspringExtractWorkflow::Configuration.new(options)
 
 def settings; $settings end
 
-def run(ext_params)
-  versions = ext_params[:selected_sources].map do |data_source|
-    {:data_source => data_source}
-  end
-  if ext_params[:hours]
-    versions.map! do |version|
-      ext_params[:hours].map do |hour|
-        version.merge(:hour => hour)
-      end
-    end.flatten!
-  end
-  workflows = versions.map do |version_params|
-    params = settings.merge_user_options(ext_params)
-    params.update(version_params)
-    params[:update_process_status] = true
-    ClearspringExtractWorkflow.new(params)
-  end
-  
-  if ext_params[:extract] && workflows.length > 1
-    workflow = workflows.detect do |workflow|
-      workflow.should_download_url?(ext_params[:extract])
+class ClearspringExtractWorkflowRunner < WorkflowRunner
+  def perform(ext_params)
+    versions = ext_params[:selected_sources].map do |data_source|
+      {:data_source => data_source}
     end
-    if workflow
-      workflows = [workflow]
-    else
-      raise Workflow::FileSpecMismatch, "File url does not match any channel/input parameters"
-    end
-  end
-  
-  workflows.each do |workflow|
-    if ext_params[:discover]
-      script_str = 'clearspring-discover'
-    else
-      script_str = 'clearspring-extract'
-    end
-    params_str = workflow.date
-    if workflow.hour
-      params_str += '-%02d00' % workflow.hour
-    end
-    ProcessStatus.set(:script => script_str, :params => params_str) do
-      if ext_params[:discover]
-        files = workflow.discover
-        files.each do |file|
-          puts file
+    if ext_params[:hours]
+      versions.map! do |version|
+        ext_params[:hours].map do |hour|
+          version.merge(:hour => hour)
         end
-      elsif ext_params[:extract]
-        workflow.extract(ext_params[:extract])
+      end.flatten!
+    end
+    workflows = versions.map do |version_params|
+      params = settings.merge_user_options(ext_params)
+      params.update(version_params)
+      params[:update_process_status] = true
+      ClearspringExtractWorkflow.new(params)
+    end
+    
+    if ext_params[:extract] && workflows.length > 1
+      workflow = workflows.detect do |workflow|
+        workflow.should_download_url?(ext_params[:extract])
+      end
+      if workflow
+        workflows = [workflow]
       else
-        workflow.run
+        raise Workflow::FileSpecMismatch, "File url does not match any channel/input parameters"
+      end
+    end
+    
+    workflows.each do |workflow|
+      if ext_params[:discover]
+        script_str = 'clearspring-discover'
+      else
+        script_str = 'clearspring-extract'
+      end
+      params_str = workflow.date
+      if workflow.hour
+        params_str += '-%02d00' % workflow.hour
+      end
+      ProcessStatus.set(:script => script_str, :params => params_str) do
+        if ext_params[:discover]
+          files = workflow.discover
+          files.each do |file|
+            puts file
+          end
+        elsif ext_params[:extract]
+          workflow.extract(ext_params[:extract])
+        else
+          workflow.run
+        end
       end
     end
   end
-  0
-rescue Workflow::FileAlreadyExtracted
-  $stderr.puts("Error: file is already extracted")
-  5
-rescue Workflow::FileExtractionInProgress
-  $stderr.puts("Error: file extraction is in progress")
-  6
-rescue Workflow::FileSpecMismatch
-  $stderr.puts("Error: file does not match specification given")
-  7
-rescue Workflow::FileNotReady
-  $stderr.puts("Error: file is not ready to be extracted")
-  8
-rescue HttpClient::HttpError => e
-  $stderr.puts("Transfer error: #{e.message} @ #{e.url}")
-  9
-rescue HttpClient::BaseError => e
-  ConsoleUi.handle_unhandled_exception(e, "Unhandled transfer error: #{e.message} @ #{e.url}")
-  10
+  
+  def handle_exception(exc)
+    case exc
+    when Workflow::FileAlreadyExtracted
+      report_error("Error: file is already extracted")
+      5
+    when Workflow::FileExtractionInProgress
+      report_error("Error: file extraction is in progress")
+      6
+    when Workflow::FileSpecMismatch
+      report_error("Error: file does not match specification given")
+      7
+    when Workflow::FileNotReady
+      report_error("Error: file is not ready to be extracted")
+      8
+    when HttpClient::HttpError
+      report_error("Transfer error: #{exc.message} @ #{exc.url}")
+      9
+    when HttpClient::BaseError
+      forward_unhandled_exception(exc, :message => "Unhandled transfer error: #{exc.message} @ #{exc.url}")
+      10
+    else
+      super
+    end
+  end
 end
 
 def start_profiling
@@ -219,23 +230,23 @@ end
 params = {
   :selected_sources => selected_sources,
   :date => date,
-  :hours => options[:hours],
-  :debug => options[:debug],
-  :discover => options[:discover],
-  :extract => options[:extract],
-  :lock => options[:lock],
-  :once => options[:once],
-  :http_client => options[:http_client],
-  :keep_downloaded => options[:keep_downloaded],
-  :keep_temporary => options[:keep_temporary],
-  :verify => options[:verify],
 }
+
+%w(
+  discover extract lock once keep_downloaded keep_temporary verify
+  hours debug debug_output_path http_client
+).each do |key|
+  key = key.to_sym
+  params[key] = options[key]
+end
+
+runner = ClearspringExtractWorkflowRunner.new
 
 if options[:profile]
   start_profiling
   
   begin
-    status = run(params)
+    status = runner.run(params)
   ensure
     begin
       stop_profiling
@@ -245,7 +256,7 @@ if options[:profile]
   end
 else
   begin
-    status = run(params)
+    status = runner.run(params)
   rescue Exception => e
     status = ConsoleUi.handle_unhandled_exception(e)
   end

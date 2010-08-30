@@ -67,6 +67,9 @@ parser = OptionParser.new do |opts|
   opts.on('-d', '--[no-]debug', 'Enable debugging output') do |value|
     options[:debug] = value
   end
+  opts.on('--debug-output PATH', 'Store debug output into a file instead of printing it to standard output') do |path|
+    options[:debug_output_path] = path
+  end
   
   opts.separator ''
   opts.separator 'Informational options:'
@@ -123,55 +126,54 @@ $settings = ClearspringExtractWorkflow::Configuration.new(options)
 
 def settings; $settings end
 
-def run(ext_params)
-  versions = ext_params[:selected_sources].map do |data_source|
-    {:data_source => data_source}
-  end
-  if ext_params[:hours]
-    versions.map! do |version|
-      ext_params[:hours].map do |hour|
-        version.merge(:hour => hour)
-      end
-    end.flatten!
-  end
-  workflows = versions.map do |version_params|
-    params = settings.merge_user_options(ext_params)
-    params.update(version_params)
-    params[:update_process_status] = false
-    ClearspringVerifyWorkflow.new(params)
-  end
-  
-  workflows.each do |workflow|
-    if ext_params[:check_listing]
-      workflow.check_listing
-    elsif ext_params[:check_consistency]
-      workflow.check_consistency
-    else
-      if ext_params[:check_our_existence]
-        workflow.check_our_existence
-      end
-      if ext_params[:check_their_existence]
-        workflow.check_their_existence
+class ClearspringVerifyWorkflowRunner < WorkflowRunner
+  def perform(ext_params)
+    versions = ext_params[:selected_sources].map do |data_source|
+      {:data_source => data_source}
+    end
+    if ext_params[:hours]
+      versions.map! do |version|
+        ext_params[:hours].map do |hour|
+          version.merge(:hour => hour)
+        end
+      end.flatten!
+    end
+    workflows = versions.map do |version_params|
+      params = settings.merge_user_options(ext_params)
+      params.update(version_params)
+      params[:update_process_status] = false
+      params[:logger] = ext_params[:logger]
+      ClearspringVerifyWorkflow.new(params)
+    end
+    
+    workflows.each do |workflow|
+      if ext_params[:check_listing]
+        workflow.check_listing
+      elsif ext_params[:check_consistency]
+        workflow.check_consistency
+      else
+        if ext_params[:check_our_existence]
+          workflow.check_our_existence
+        end
+        if ext_params[:check_their_existence]
+          workflow.check_their_existence
+        end
       end
     end
   end
   
-  0
-rescue Workflow::FileAlreadyExtracted
-  $stderr.puts("Error: file is already extracted")
-  5
-rescue Workflow::FileExtractionInProgress
-  $stderr.puts("Error: file extraction is in progress")
-  6
-rescue Workflow::FileSpecMismatch
-  $stderr.puts("Error: file does not match specification given")
-  7
-rescue Workflow::FileNotReady
-  $stderr.puts("Error: file is not ready to be extracted")
-  8
-rescue HttpClient::BaseError => e
-  $stderr.puts("Network error: #{e.message} @ #{e.url}")
-  9
+  def handle_exception(exc)
+    case exc
+    when HttpClient::HttpError
+      report_error("Transfer error: #{exc.message} @ #{exc.url}")
+      9
+    when HttpClient::BaseError
+      forward_unhandled_exception(exc, :message => "Unhandled transfer error: #{exc.message} @ #{exc.url}")
+      10
+    else
+      super
+    end
+  end
 end
 
 if options[:system_timer]
@@ -185,14 +187,16 @@ params = {
 
 %w(
   check_listing check_consistency check_our_existence check_their_existence
-  hours debug http_client
+  hours debug debug_output_path http_client
 ).each do |key|
   key = key.to_sym
   params[key] = options[key]
 end
 
+runner = ClearspringVerifyWorkflowRunner.new
+
 begin
-  status = run(params)
+  status = runner.run(params)
 rescue Exception => e
   status = ConsoleUi.handle_unhandled_exception(e)
 end
