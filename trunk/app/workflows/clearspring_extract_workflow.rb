@@ -36,6 +36,7 @@ class ClearspringExtractWorkflow < Workflow::Base
         :lock => config.lock,
         :once => config.once,
         :debug => config.debug,
+        :debug_output_path => config.debug_output_path,
         :keep_downloaded => config.keep_downloaded,
         :keep_temporary => config.keep_temporary,
         :verify => config.verify,
@@ -44,7 +45,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     
     def merge_user_options(options={})
       params = @config_params.dup
-      [:date, :debug, :lock, :once, :http_client, :keep_downloaded, :keep_temporary, :verify].each do |key|
+      [:date, :debug, :debug_output_path, :lock, :once, :http_client, :keep_downloaded, :keep_temporary, :verify].each do |key|
         unless options[key].nil?
           params[key] = options[key]
         end
@@ -65,6 +66,10 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def initialize(params)
+    if path = params[:debug_output_path]
+      # will also modify params[:debug_output_path]
+      path.gsub!(/:timestamp\b/, Time.now.strftime('%Y%m%d-%H%M%S'))
+    end
     super(params)
     initialize_params(params)
     @http_client = create_http_client(@params)
