@@ -41,6 +41,7 @@ class ClearspringExtractWorkflow < Workflow::Base
         :keep_temporary => config.keep_temporary,
         :verify => config.verify,
       }
+      postprocess_params
     end
     
     def update(options)
@@ -49,6 +50,7 @@ class ClearspringExtractWorkflow < Workflow::Base
           @config_params[key] = value
         end
       end
+      postprocess_params
       self
     end
     
@@ -58,6 +60,16 @@ class ClearspringExtractWorkflow < Workflow::Base
     
     def to_hash
       @config_params
+    end
+    
+    private
+    
+    # XXX consider refactoring this
+    def postprocess_params
+      if path = @config_params[:debug_output_path]
+        # will also modify the hash
+        path.gsub!(/:timestamp\b/, Time.now.strftime('%Y%m%d-%H%M%S'))
+      end
     end
   end
   
@@ -73,10 +85,6 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def initialize(params)
-    if path = params[:debug_output_path]
-      # will also modify params[:debug_output_path]
-      path.gsub!(/:timestamp\b/, Time.now.strftime('%Y%m%d-%H%M%S'))
-    end
     super(params)
     initialize_params(params)
     @http_client = create_http_client(@params)
