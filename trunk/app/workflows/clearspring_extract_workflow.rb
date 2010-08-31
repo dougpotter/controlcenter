@@ -43,14 +43,21 @@ class ClearspringExtractWorkflow < Workflow::Base
       }
     end
     
-    def merge_user_options(options={})
-      params = @config_params.dup
-      [:date, :debug, :debug_output_path, :lock, :once, :http_client, :keep_downloaded, :keep_temporary, :verify].each do |key|
-        unless options[key].nil?
-          params[key] = options[key]
+    def update(options)
+      options.each do |key, value|
+        unless value.nil?
+          @config_params[key] = value
         end
       end
-      params
+      self
+    end
+    
+    def merge(options)
+      dup.update(options)
+    end
+    
+    def to_hash
+      @config_params
     end
   end
   

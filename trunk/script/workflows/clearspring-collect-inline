@@ -127,6 +127,7 @@ def debug
 end
 
 $settings = ClearspringExtractWorkflow::Configuration.new(options)
+$settings.update(options)
 
 def settings; $settings end
 
@@ -143,7 +144,7 @@ class ClearspringExtractWorkflowRunner < WorkflowRunner
       end.flatten!
     end
     workflows = versions.map do |version_params|
-      params = settings.merge_user_options(ext_params)
+      params = settings.merge(ext_params).to_hash
       params.update(version_params)
       params[:update_process_status] = true
       ClearspringExtractWorkflow.new(params)
@@ -246,7 +247,7 @@ if options[:profile]
   start_profiling
   
   begin
-    status = runner.run(params)
+    status = runner.run(settings.merge(params).to_hash)
   ensure
     begin
       stop_profiling

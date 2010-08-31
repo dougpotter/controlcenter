@@ -129,6 +129,7 @@ def debug
 end
 
 $settings = ClearspringExtractWorkflow::Configuration.new(options)
+$settings.update(options)
 
 def settings; $settings end
 
@@ -145,7 +146,7 @@ class ClearspringVerifyWorkflowRunner < WorkflowRunner
       end.flatten!
     end
     workflows = versions.map do |version_params|
-      params = settings.merge_user_options(ext_params)
+      params = settings.merge(ext_params).to_hash
       %w(check_sizes check_sizes_strictly check_sizes_exactly check_content).each do |key|
         key = key.to_sym
         params[key] = ext_params[key]
@@ -207,7 +208,7 @@ end
 runner = ClearspringVerifyWorkflowRunner.new
 
 begin
-  status = runner.run(params)
+  status = runner.run(settings.merge(params).to_hash)
 rescue Exception => e
   status = ConsoleUi.handle_unhandled_exception(e)
 end
