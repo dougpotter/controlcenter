@@ -17,7 +17,7 @@ module FactBehaviors
     # returns object of type FactAggreation
     # TODO: I'd like to separate the building of group_by_list into its
     # own method, but I don't know how within a module
-    def self.aggregate(spec_hash)
+    def aggregate(spec_hash)
       group_by_list = spec_hash[:group_by].collect { |dim|
         if Dimension.model_dimensions.member?(dim)
           dim += "_id"
@@ -29,6 +29,7 @@ module FactBehaviors
       fa = FactAggregation.new
       for metric in spec_hash[:include]
         fact = ActiveRecord.const_get(metric.classify)
+        debugger
         fa.add fact.find_by_sql(
           "SELECT #{group_by_list}, SUM(#{metric})
       FROM #{metric.pluralize}
@@ -37,6 +38,9 @@ module FactBehaviors
       ")
       end 
       return fa
+    end
+
+    def find_all_by_dimensions(conditions)
     end
 
   end
@@ -49,6 +53,46 @@ module FactBehaviors
     end
 
     # Instance methods go here
-  end
 
+    def initialize(*args)
+      relevant_params = scrub_params(args[0])
+      translated_params = translate_to_db(relevant_params)
+      super(translated_params)
+    end
+
+    def scrub_params(params)
+      fact = ActiveRecord.const_get(self.class.to_s)
+      attributes = fact.columns_hash.keys
+      handelized_attributes = Dimension.translate_fks(attributes)
+      relevant_params = {}
+      for key in params.keys
+        if handelized_attributes.member?(key)
+          relevant_params[key] = params[key]
+        end
+      end
+      relevant_params
+    end
+
+    def translate_to_db(params)
+      translated_params = {}
+      debugger
+      params.each do |key, value|
+        fk_name = Dimension.handle_to_fk(key)
+        fk_value = Dimension.id_from_handle(key,value)
+        debugger
+        translated_params.merge({fk_name => fk_value})
+      end
+      translated_params
+    end
+
+    def save(*args)
+    end
+
+    def update(*args)
+    end
+
+    def say_hi
+      puts "HI"
+    end
+  end
 end
