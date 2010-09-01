@@ -18,6 +18,8 @@
 # along the dimensions given in the (compound) primary key comprised of
 # all columns except click counts
 class ClickCount < ActiveRecord::Base
+  acts_as_fact
+
   belongs_to :campaign
   belongs_to :creative
   belongs_to :ad_inventory_srouce

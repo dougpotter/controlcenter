@@ -1,2 +1,3 @@
-class Fact < ActiveRecord::Base
+class Fact
+  acts_as_fact
 end
