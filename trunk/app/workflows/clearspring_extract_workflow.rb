@@ -59,7 +59,8 @@ class ClearspringExtractWorkflow < Workflow::Base
     end
     
     def to_hash
-      @config_params
+      # typically users expect to_* methods to return copies of data
+      @config_params.dup
     end
     
     private
