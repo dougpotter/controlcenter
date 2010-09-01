@@ -2,22 +2,22 @@ require 'faster_csv'
 
 class FactAggregation 
   attr_accessor :facts
-  
+
   def add(fact_arr)
     @facts << fact_arr
     @facts.flatten!
   end
 
   def to_csv
-    rows = FasterCSV.generate do |csv|
-      csv << @facts[0].attributes.keys
-      for fact in @facts
-        csv << fact.attributes.values.map { |f| f.to_s }
-      end
+    rows = []
+    rows << @facts[0].attributes.keys
+    for fact in @facts
+      rows << fact.attributes.values.map { |f| f.to_s }
     end
+    return rows
   end
 
   def initialize
-    @facts = {}
+    @facts = []
   end
 end

@@ -1,6 +1,7 @@
 class FactsController < ApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:update, :index]
-
+  # skip auth before :create should be deleted for production
+  skip_before_filter :verify_authenticity_token, :only => [:create, :update, :index]
+  FACTS = ["impression_count", "click_count"]
   def index
     # Returns object of type FactAggregation
     # Example URL:
@@ -14,7 +15,8 @@ class FactsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.csv do @csv_rows = @fact_aggregation.to_csv
+      @csv_rows = @fact_aggregation.to_csv
+      format.csv do 
         render_csv("facts")  # TODO: Codify name (#616)
       end
     end
@@ -58,9 +60,12 @@ class FactsController < ApplicationController
   private
   def fact_classes_from_params
     fact_classes = []
-    for fact in params[:metrics]
-      fact_classes << ActiveRecord.const_get(fact.classify)
+    for param in params.keys
+      if FACTS.member?(param)
+        fact_classes << ActiveRecord.const_get(param.classify)
+      end
     end
+    fact_classes
   end
 
   def where_conditions_from_params
