@@ -25,6 +25,9 @@ parser = OptionParser.new do |opts|
   opts.separator ''
   opts.separator 'Configuration options:'
   
+  opts.on('-e', '--environment RAILS_ENV', 'Specify rails environment (development/production/test') do |env|
+    ENV['RAILS_ENV'] = env
+  end
   opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/clearspring.yml is used)') do |path|
     options[:config_path] = path
   end
