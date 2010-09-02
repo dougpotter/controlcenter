@@ -19,6 +19,9 @@
 # impressions along the dimensions given in the (compound) key comprised
 # of all columns except impression count
 class ImpressionCount < ActiveRecord::Base
+  
+  acts_as_fact
+
   belongs_to :campaign
   belongs_to :creative
   belongs_to :ad_inventory_source
