@@ -1,6 +1,6 @@
 Factory.define :campaign do |c|
   c.description  "A Campaign"
-  c.sequence(:campaign_code) { |n|  "2LJ#{n}" }
+  c.sequence(:campaign_code) { |n|  "2LR#{n}" }
   c.partner_id { Factory(:partner).id }
   c.start_time Time.now
   c.end_time Time.now + 3600
@@ -13,7 +13,7 @@ end
 
 Factory.define :partner do |p|
   p.name  "Webroot"
-  p.sequence(:partner_code) { |n| 2009 + n }
+  p.sequence(:partner_code) { |n| 2019 + n }
 end
 
 Factory.define :creative_size do |c|
@@ -26,12 +26,12 @@ Factory.define :creative do |c|
   c.name "creative name"
   c.media_type "media type"
   c.creative_size_id {Factory(:creative_size).id}
-  c.sequence(:creative_code) { |n| "293v#{n}" }
+  c.sequence(:creative_code) { |n| "294v#{n}" }
 end
 
 Factory.define :ad_inventory_source do |f|
   f.name "name"
-  f.sequence(:ais_code) { |n| "Add#{(n+66).chr.upcase}" }
+  f.sequence(:ais_code) { |n| "Adc#{(n+66).chr.upcase}" }
 end
 
 Factory.define :model do |m|
@@ -40,7 +40,7 @@ end
 
 Factory.define :audience do |a|
   a.description "description"
-  a.sequence(:audience_code) { |n| "AB#{n}99" }
+  a.sequence(:audience_code) { |n| "AC#{n}99" }
 end
 
 Factory.define :impression_count do |i|

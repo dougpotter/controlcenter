@@ -57,22 +57,37 @@ module FactBehaviors
     # Instance methods go here
 
     def initialize(*args)
-      relevant_params = scrub_params(args[0])
-      translated_params = translate_to_db(relevant_params)
-      super(translated_params)
+      fact = ActiveRecord.const_get(self.class.to_s)
+      attributes = fact.columns_hash.keys
+      if args == [] || params_are_subset(args[0], attributes)
+        super
+      else
+        relevant_params = scrub_params(args[0])
+        translated_params = translate_to_db(relevant_params)
+        super(translated_params)
+      end
     end
+
+    def params_are_subset(params, attributes)
+        params.keys.map{|a| a.to_s}.to_set.subset?(attributes.to_set)
+    end
+
 
     def scrub_params(params)
       fact = ActiveRecord.const_get(self.class.to_s)
       attributes = fact.columns_hash.keys
-      handelized_attributes = Dimension.translate_fks(attributes)
-      relevant_params = {}
-      for key in params.keys
-        if handelized_attributes.member?(key)
-          relevant_params[key] = params[key]
+      if params.keys.to_set.subset?(attributes.to_set)
+        return params
+      else
+        handelized_attributes = Dimension.translate_fks(attributes)
+        relevant_params = {}
+        for key in params.keys
+          if handelized_attributes.member?(key)
+            relevant_params[key] = params[key]
+          end
         end
+        relevant_params
       end
-      relevant_params
     end
 
     def translate_to_db(params)
@@ -87,9 +102,6 @@ module FactBehaviors
         end
       end
       translated_params
-    end
-
-    def save(*args)
     end
 
     def update(*args)
