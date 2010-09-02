@@ -43,21 +43,13 @@ class S3Client::RightAws < S3Client::Base
   end
   
   def list_bucket_items(bucket)
-    if @debug
-      debug_print "S3list #{bucket}"
-    end
-    
-    entries = @s3.list_bucket(bucket)
+    entries = list_bucket_entries(bucket)
     entries.map { |entry| create_item(entry) }
   end
   
   # optimization method
   def list_bucket_files(bucket)
-    if @debug
-      debug_print "S3list #{bucket}"
-    end
-    
-    entries = @s3.list_bucket(bucket)
+    entries = list_bucket_entries(bucket)
     entries.map { |entry| entry[:key] }
   end
   
@@ -76,6 +68,38 @@ class S3Client::RightAws < S3Client::Base
       :last_modified => entry[:last_modified],
     }
     S3Client::Item.new(options)
+  end
+  
+  def list_bucket_entries(bucket)
+    max_keys = 1000
+    offset = 0
+    # not the most efficient data structure, but one which leads to less fail
+    all_entries = []
+    while true
+      if @debug
+        debug_print "S3list #{bucket} #{max_keys}/#{offset}"
+      end
+      
+      entries = @s3.list_bucket(bucket, :max_keys => max_keys)
+      # right_aws does mix symbols and strings like this
+      break unless entries[0][:service]['is_truncated']
+      old_size = all_entries.length
+      entries.each do |entry|
+        unless all_entries.detect do |existing_entry|
+          existing_entry[:key] == entry[:key]
+        end
+        then
+          all_entries << entry
+        end
+      end
+      new_size = all_entries.length
+      if new_size - old_size == entries.length
+        # no overlap
+        raise 'No overlap between entries, probably someone is deleting a lot of entries'
+      end
+      offset += 900
+    end
+    all_entries
   end
   
   def exception_map
