@@ -140,11 +140,11 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   end
   
   def list_bucket_items
-    @s3_client.list_bucket_items(s3_bucket)
+    @s3_client.list_bucket_items(s3_bucket, build_s3_prefix)
   end
   
   def list_bucket_files
-    @s3_client.list_bucket_files(s3_bucket)
+    @s3_client.list_bucket_files(s3_bucket, build_s3_prefix)
   end
   
   # returns a subset of our_paths that corresponds to their_path.

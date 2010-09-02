@@ -412,9 +412,14 @@ class ClearspringExtractWorkflow < Workflow::Base
     params[:s3_bucket]
   end
   
+  def build_s3_prefix
+    # date is required, it should always be given to workflow
+    "#{params[:clearspring_pid]}/v2/raw-#{params[:data_source]}/#{params[:date]}"
+  end
+  
   def build_s3_path(local_path)
     filename = File.basename(local_path)
-    path = "#{params[:clearspring_pid]}/v2/raw-#{params[:data_source]}/#{params[:date]}/#{filename}"
+    "#{build_s3_prefix}/#{filename}"
   end
   
   # returns true if remote_url is not currently being extracted,

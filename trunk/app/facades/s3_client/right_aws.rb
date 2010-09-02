@@ -42,14 +42,14 @@ class S3Client::RightAws < S3Client::Base
     end
   end
   
-  def list_bucket_items(bucket)
-    entries = list_bucket_entries(bucket)
+  def list_bucket_items(bucket, prefix=nil)
+    entries = list_bucket_entries(bucket, prefix)
     entries.map { |entry| create_item(entry) }
   end
   
   # optimization method
-  def list_bucket_files(bucket)
-    entries = list_bucket_entries(bucket)
+  def list_bucket_files(bucket, prefix=nil)
+    entries = list_bucket_entries(bucket, prefix)
     entries.map { |entry| entry[:key] }
   end
   
@@ -70,16 +70,16 @@ class S3Client::RightAws < S3Client::Base
     S3Client::Item.new(options)
   end
   
-  def list_bucket_entries(bucket)
+  def list_bucket_entries(bucket, prefix)
     max_keys = 1000
     # not the most efficient data structure, but one which leads to less fail
     all_entries = []
     while true
       marker = all_entries.empty? ? nil : all_entries[-5][:key]
       if @debug
-        debug_print "S3list #{bucket} #{marker}+#{max_keys}"
+        debug_print "S3list #{bucket}:#{prefix} #{marker}+#{max_keys}"
       end
-      entries = @s3.list_bucket(bucket, :max_keys => max_keys, :marker => marker)
+      entries = @s3.list_bucket(bucket, :prefix => prefix, :max_keys => max_keys, :marker => marker)
       break if entries.empty?
       
       if all_entries.empty?
