@@ -81,7 +81,7 @@ describe ClickCount do
   it "should require non null click_count (validations test)" do
     lambda {
       Factory.create(:click_count, :click_count => nil)
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "should require non null click_count (db test)" do
