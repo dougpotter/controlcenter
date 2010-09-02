@@ -72,6 +72,15 @@ module Workflow
       )
     end
     
+    def create_s3_client(params)
+      if params[:s3_client]
+        s3_client_class = S3Client.const_get(params[:s3_client].camelize)
+      else
+        s3_client_class = S3Client::RightAws
+      end
+      s3_client_class.new(:debug => @params[:debug], :logger => @logger)
+    end
+    
     def with_process_status(options)
       if @update_process_status
         ProcessStatus.set(options) do

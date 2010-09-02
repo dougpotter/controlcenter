@@ -91,7 +91,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     @http_client = create_http_client(@params)
     @parser = WebParser.new
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug], :logger => @logger)
-    @s3_client = S3Client::RightAws.new(:debug => @params[:debug], :logger => @logger)
+    @s3_client = create_s3_client(@params)
   end
   
   def run

@@ -4,7 +4,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     initialize_params(params)
     @http_client = create_http_client(@params)
     @parser = WebParser.new
-    @s3_client = S3Client::RightAws.new(:debug => @params[:debug], :logger => @logger)
+    @s3_client = create_s3_client(@params)
   end
   
   def check_listing
