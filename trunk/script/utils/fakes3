@@ -12,11 +12,11 @@ config = config[RAILS_ENV]
 
 cmd = ['ruby', '-I', config['code_root']]
 if config['daemonize']
-  cmd << File.join(config['code_root'], 'fakes3_daemon')
+  cmd << File.join(config['code_root'], 'bin/fakes3_daemon')
   cmd << 'start'
   cmd << '--'
 else
-  cmd << File.join(config['code_root'], 'fakes3_server')
+  cmd << File.join(config['code_root'], 'bin/fakes3_server')
 end
 if config['upload_root']
   cmd += ['-u', config['upload_root']]
