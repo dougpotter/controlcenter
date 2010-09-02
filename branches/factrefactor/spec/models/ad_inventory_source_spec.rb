@@ -26,7 +26,7 @@ describe AdInventorySource do
   it "should require non null ais_code (validations test)" do
     lambda {
       Factory.create(:ad_inventory_source, :ais_code => nil)
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "should require non null ais_code (db test)" do

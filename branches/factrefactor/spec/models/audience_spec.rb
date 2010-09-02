@@ -40,7 +40,7 @@ describe Audience do
   it "should require non null audience code (validations test)" do
     lambda {
       Factory.create(:audience, :audience_code => nil)
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "should require non null audience code (db test)" do
