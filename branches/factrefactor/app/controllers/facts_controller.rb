@@ -15,9 +15,9 @@ class FactsController < ApplicationController
 
     respond_to do |format|
       format.html
-      @csv_rows = @fact_aggregation.to_csv
       format.csv do 
-        render_csv("facts")  # TODO: Codify name (#616)
+        @csv_rows = @fact_aggregation.to_csv
+        render_csv
       end
     end
   end

@@ -13,8 +13,10 @@ class ApplicationController < ActionController::Base
   # Create headers necessary for proper CSV file generation
   # Grabbed from http://stackoverflow.com/questions/94502/
   def render_csv(filename = nil)
-    filename ||= params[:action]
-    filename += '.csv'
+    # Set filename to ultimately requested file by default, and force appending
+    # of .csv
+    filename ||= request.path.gsub(/^.*\//, "")
+    filename += '.csv' unless filename ~= /\.csv$/
     
     # String#index returns nil if no match is found
     if request.env['HTTP_USER_AGENT'].index("MSIE")
