@@ -64,4 +64,12 @@ describe Creative do
       Factory.create(:creative, :creative_code => "same")
     }.should raise_error
   end
+
+  it "should require unique creative_code (db test)" do
+    lambda {
+      Factory.create(:creative, :creative_code => "same")
+      c = Factory.build(:creative, :creative_code => "same")
+      c.save(false)
+    }.should raise_error(ActiveRecord::StatementInvalid)
+  end
 end
