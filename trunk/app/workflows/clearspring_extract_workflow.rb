@@ -44,6 +44,12 @@ class ClearspringExtractWorkflow < Workflow::Base
       postprocess_params
     end
     
+    def dup
+      new = super
+      new.instance_variable_set('@config_params', @config_params.dup)
+      new
+    end
+    
     def update(options)
       options.each do |key, value|
         unless value.nil?
@@ -70,6 +76,9 @@ class ClearspringExtractWorkflow < Workflow::Base
       if path = @config_params[:debug_output_path]
         # will also modify the hash
         path.gsub!(/:timestamp\b/, Time.now.strftime('%Y%m%d-%H%M%S'))
+      end
+      if @config_params[:once]
+        @config_params[:lock] = true
       end
     end
   end

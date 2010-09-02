@@ -51,10 +51,10 @@ parser = OptionParser.new do |opts|
   opts.separator ''
   opts.separator 'Action options: (by default, discover and extract discovered files)'
   
-  opts.on('-i', '--discover', 'Discover files only') do
+  opts.on('-I', '--discover', 'Discover files only') do
     options[:discover] = true
   end
-  opts.on('-e', '--extract URL', 'Extract file in URL') do |url|
+  opts.on('-E', '--extract URL', 'Extract file in URL') do |url|
     options[:extract] = url
   end
   
