@@ -29,7 +29,6 @@ module FactBehaviors
       fa = FactAggregation.new
       for metric in spec_hash[:include]
         fact = ActiveRecord.const_get(metric.classify)
-        debugger
         fa.add fact.find_by_sql(
           "SELECT #{group_by_list}, SUM(#{metric})
       FROM #{metric.pluralize}
@@ -43,6 +42,9 @@ module FactBehaviors
     def find_all_by_dimensions(conditions)
     end
 
+    def is_fact?
+      true
+    end
   end
 
   module InstanceMethods
@@ -75,12 +77,14 @@ module FactBehaviors
 
     def translate_to_db(params)
       translated_params = {}
-      debugger
       params.each do |key, value|
-        fk_name = Dimension.handle_to_fk(key)
-        fk_value = Dimension.id_from_handle(key,value)
-        debugger
-        translated_params.merge({fk_name => fk_value})
+        if Dimension.model_dimensions.member?(key[0..-6]) || key == "ais_code"
+          fk_name = Dimension.handle_to_fk(key)
+          fk_value = Dimension.id_from_handle(key,value)
+          translated_params.merge!({fk_name => fk_value})
+        else
+          translated_params.merge!({key => value})
+        end
       end
       translated_params
     end

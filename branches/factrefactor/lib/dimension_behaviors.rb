@@ -12,12 +12,16 @@ module DimensionBehaviors
   end
 
   module ClassMethods
-    HANDLE_TO_FK = {"campaign_code" => "campaign_id", "ais_code" => "ad_inventory_source_id", "creative_code" => "creative_id", "partner_code" => "partner_id", "media_purchase_code" => "media_purchase_id"}
-    FK_TO_HANDLE = {"campaign_id" => "campaign_code", "ad_inventory_source_id" => "ais_code", "creative_id" => "creative_code", "partner_id" => "partner_code", "media_purchase_id" => "media_purchase_code"}
+    HANDLE_TO_FK = {"campaign_code" => "campaign_id", "ais_code" => "ad_inventory_source_id", "creative_code" => "creative_id", "partner_code" => "partner_id", "media_purchase_code" => "media_purchase_id", "audience_code" => "audience_id"}
+    FK_TO_HANDLE = {"audience_id" => "audience_code", "campaign_id" => "campaign_code", "ad_inventory_source_id" => "ais_code", "creative_id" => "creative_code", "partner_id" => "partner_code", "media_purchase_method_id" => "media_purchase_code"}
     # Class methods go here
     
     def model_dimensions
-      ["campaign", "ad_inventory_source", "creative", "partner", "media_purchase_method"]
+      ["campaign", "ad_inventory_source", "creative", "partner", "media_purchase_method", "audience"]
+    end
+
+    def non_model_dimensions
+      ["start_time", "end_time", "duration_in_minutes"]
     end
 
     def translate_fks(attributes)
@@ -38,14 +42,12 @@ module DimensionBehaviors
 
     def id_from_handle(handle, handle_value)
       if handle == "ais_code"
-        id = AdInventorySource.find_by_ais_code(handle_value).id
+        return AdInventorySource.find_by_ais_code(handle_value).id
       else
         fact = ActiveRecord.const_get(handle[0..-6].classify)
-        find_string = "SELECT * FROM #{fact.to_s.underscore.pluralize} WHERE ? = ?"
-        id = fact.find_by_sql(find_string, handle, handle_value).id
+        find_string = "SELECT * FROM #{fact.to_s.underscore.pluralize} WHERE #{handle} = ?"
+        return (fact.find_by_sql [find_string, handle_value])[0].id
       end
-      debugger
-      return id
     end
   end
 

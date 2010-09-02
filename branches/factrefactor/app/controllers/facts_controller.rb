@@ -28,8 +28,9 @@ class FactsController < ApplicationController
 
   def create_many
     fact_classes_from_params.each do |fact_class|
-      fact_class.new(params)
-      if fact_class.save!
+      ttt = fact_class.new(params)
+      debugger
+      if ttt.save!
         render :text => nil, :status => 200
       else
         render :text => nil, :status => 422
