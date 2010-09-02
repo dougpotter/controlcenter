@@ -63,4 +63,17 @@ describe ImpressionCount do
       ImpressionCount.create!(impression_count.attributes)
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
+
+  it "should require non null impression_count (validations test)" do
+    lambda {
+      Factory.create(:impression_count, :impression_count => nil)
+    }.should raise_error(ActiveRecord::RecordInvalid)
+  end
+
+  it "should require non null impression_count (db test)" do
+    lambda {
+      i = Factory.build(:impression_count, :impression_count => nil)
+      i.save(false)
+    }.should raise_error(ActiveRecord::StatementInvalid)
+  end
 end
