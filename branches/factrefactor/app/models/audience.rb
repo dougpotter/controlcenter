@@ -21,6 +21,8 @@ class Audience < ActiveRecord::Base
 
   has_many :click_counts
   has_many :impression_counts
+  
+  validates_presence_of :audience_code
 
   def get_handle
     :audience_code

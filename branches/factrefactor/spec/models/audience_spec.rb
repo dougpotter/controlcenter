@@ -36,4 +36,17 @@ describe Audience do
       f.save(false)
     }.should raise_error
   end
+
+  it "should require non null audience code (validations test)" do
+    lambda {
+      Factory.create(:audience, :audience_code => nil)
+    }.should raise_error(ActiveRecord::StatementInvalid)
+  end
+
+  it "should require non null audience code (db test)" do
+    lambda {
+      a = Factory.build(:audience, :audience_code => nil)
+      a.save(false)
+    }.should raise_error(ActiveRecord::StatementInvalid)
+  end
 end
