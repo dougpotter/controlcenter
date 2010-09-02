@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100827043937) do
+ActiveRecord::Schema.define(:version => 20100902200410) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(:version => 20100827043937) do
   add_index "click_counts", ["ad_inventory_source_id"], :name => "click_counts_ad_inventory_source_id_fk"
   add_index "click_counts", ["audience_id"], :name => "click_counts_audience_id_fk"
   add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "media_purchase_method_id", "start_time", "end_time", "duration_in_minutes"], :name => "click_counts_required_columns_20100827", :unique => true
+  add_index "click_counts", ["campaign_id"], :name => "click_counts_campaign_id_fk"
   add_index "click_counts", ["creative_id"], :name => "click_counts_creative_id_fk"
   add_index "click_counts", ["geography_id"], :name => "click_counts_geography_id_fk"
   add_index "click_counts", ["media_purchase_method_id"], :name => "click_counts_media_purchase_method_id_fk"
@@ -113,6 +114,7 @@ ActiveRecord::Schema.define(:version => 20100827043937) do
     t.string  "creative_code",    :null => false
   end
 
+  add_index "creatives", ["creative_code"], :name => "index_creatives_on_creative_code", :unique => true
   add_index "creatives", ["creative_size_id"], :name => "creatives_creative_size_id_fk"
 
   create_table "custom_filters", :force => true do |t|
@@ -178,6 +180,7 @@ ActiveRecord::Schema.define(:version => 20100827043937) do
   add_index "impression_counts", ["ad_inventory_source_id"], :name => "impression_counts_ad_inventory_source_id_fk"
   add_index "impression_counts", ["audience_id"], :name => "impression_counts_audience_id_fk"
   add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "media_purchase_method_id", "start_time", "end_time", "duration_in_minutes"], :name => "impression_counts_required_columns_20100827", :unique => true
+  add_index "impression_counts", ["campaign_id"], :name => "impression_counts_campaign_id_fk"
   add_index "impression_counts", ["creative_id"], :name => "impression_counts_creative_id_fk"
   add_index "impression_counts", ["geography_id"], :name => "impression_counts_geography_id_fk"
   add_index "impression_counts", ["media_purchase_method_id"], :name => "impression_counts_media_purchase_method_id_fk"
