@@ -263,7 +263,7 @@ if options[:profile]
   end
 else
   begin
-    status = runner.run(params)
+    status = runner.run(settings.merge(params).to_hash)
   rescue Exception => e
     status = ConsoleUi.handle_unhandled_exception(e)
   end
