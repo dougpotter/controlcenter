@@ -47,26 +47,27 @@ end
 
 def push_config_files(paths)
   paths = resolve_config_file_paths(paths)
-  paths.each do |local_path, remote_path|
-    put File.read(local_path), remote_path
+  paths.each do |local_path, remote_shared_path, remote_release_path|
+    put File.read(local_path), remote_shared_path
   end
 end
 
 def symlink_config_files(paths)
   paths = resolve_config_file_paths(paths)
-  paths.each do |path|
-    run "ln -nfs #{shared_path}/config/#{path} #{release_path}/config/#{path}"
+  paths.each do |local_path, remote_shared_path, remote_release_path|
+    run "ln -nfs #{remote_shared_path} #{remote_release_path}"
   end
 end
 
 def resolve_config_file_paths(shortpaths)
   shortpaths.map do |shortpath|
     basepath = File.join(File.dirname(__FILE__), '../config', shortpath)
-    remote_path = File.join(shared_path, 'config', shortpath)
+    remote_shared_path = File.join(shared_path, 'config', shortpath)
+    remote_release_path = File.join(release_path, 'config', shortpath)
     if File.exist?(prodpath = basepath + '.production')
-      [prodpath, remote_path]
+      [prodpath, remote_shared_path, remote_release_path]
     else
-      [basepath, remote_path]
+      [basepath, remote_shared_path, remote_release_path]
     end
   end
 end
