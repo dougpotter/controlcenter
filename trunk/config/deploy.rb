@@ -127,72 +127,76 @@ task :deploy_test do
 end
 
 # =============================================================================
-# APPWALL CONFIGURATION
+# CONFIGURATION
 # =============================================================================
-after "deploy:update_code", "appwall:symlink"
 
-namespace :appwall do
-
-  desc "Push new appwall configuration"
-  task :push do
-    put File.read(File.join(File.dirname(__FILE__), 'appwall.yml')),
-      File.join(shared_path, 'config', 'appwall.yml')
+def define_configuration_tasks(namespace, config_file_paths)
+  namespace(:config) do
+    namespace(namespace) do
+      desc("Push new #{namespace} configuration")
+      task(:push) do
+        push_config_files(config_file_paths)
+      end
+      
+      desc("Make symlink for #{namespace} configuration")
+      task(:symlink) do
+        symlink_config_files(config_file_paths)
+      end
+    end
   end
   
-  desc "Make symlink for appwall yaml"
-  task :symlink do
-    run "ln -nfs #{shared_path}/config/appwall.yml #{release_path}/config/appwall.yml"
+  after 'deploy:update_code', "config:#{namespace}:symlink"
+end
+
+def push_config_files(paths)
+  paths = resolve_config_file_paths(paths)
+  paths.each do |local_path, remote_path|
+    put File.read(local_path), remote_path
   end
 end
+
+def symlink_config_files(paths)
+  paths = resolve_config_file_paths(paths)
+  paths.each do |path|
+    run "ln -nfs #{shared_path}/config/#{path} #{release_path}/config/#{path}"
+  end
+end
+
+def resolve_config_file_paths(shortpaths)
+  shortpaths.map do |shortpath|
+    basepath = File.join(File.dirname(__FILE__), shortpath)
+    remote_path = File.join(shared_path, 'config', shortpath)
+    if File.exist?(prodpath = basepath + '.production')
+      [prodpath, remote_path]
+    else
+      [basepath, remote_path]
+    end
+  end
+end
+
+# =============================================================================
+# APPWALL CONFIGURATION
+# =============================================================================
+
+define_configuration_tasks(:appwall, %w(appwall.yml))
 
 # =============================================================================
 # AWS CONFIGURATION
 # =============================================================================
-after "deploy:update_code", "aws:symlink"
 
-namespace :aws do
-
-  desc "Push new AWS configuration"
-  task :push do
-    put File.read(File.join(File.dirname(__FILE__), 'aws.yml')),
-      File.join(shared_path, 'config', 'aws.yml')
-  end
-  
-  desc "Make symlink for AWS yaml"
-  task :symlink do
-    run "ln -nfs #{shared_path}/config/aws.yml #{release_path}/config/aws.yml"
-  end
-end
+define_configuration_tasks(:aws, %w(aws.yml))
 
 # =============================================================================
 # WORKFLOWS CONFIGURATION
 # =============================================================================
-after "deploy:update_code", "workflows:symlink"
 
-namespace :workflows do
+define_configuration_tasks(:workflows, %w(workflows/clearspring.yml))
 
-  namespace :push do
-    desc "Push ALL workflow configurations"
-    task :all do
-      clearspring
-    end
-    
-    desc "Push new Clearspring configuration"
-    task :clearspring do
-      put File.read(File.join(File.dirname(__FILE__), 'workflows/clearspring.yml')),
-        File.join(shared_path, 'config', 'workflows', 'clearspring.yml')
-    end
-  end
-  
-  desc "Make symlink for workflows' yamls"
-  task :symlink do
-    run <<-CMD
-      for workflow in clearspring; do
-        ln -nfs #{shared_path}/config/workflows/$workflow.yml #{release_path}/config/workflows/$workflow.yml;
-      done
-    CMD
-  end
-end
+# =============================================================================
+# SCHEDULE CONFIGURATION
+# =============================================================================
+
+define_configuration_tasks(:schedule, %w(schedule.rb))
 
 # =============================================================================
 # DATABASE TASKS
