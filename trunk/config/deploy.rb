@@ -127,54 +127,6 @@ task :deploy_test do
 end
 
 # =============================================================================
-# CONFIGURATION
-# =============================================================================
-
-def define_configuration_tasks(namespace, config_file_paths)
-  namespace(:config) do
-    namespace(namespace) do
-      desc("Push new #{namespace} configuration")
-      task(:push) do
-        push_config_files(config_file_paths)
-      end
-      
-      desc("Make symlink for #{namespace} configuration")
-      task(:symlink) do
-        symlink_config_files(config_file_paths)
-      end
-    end
-  end
-  
-  after 'deploy:update_code', "config:#{namespace}:symlink"
-end
-
-def push_config_files(paths)
-  paths = resolve_config_file_paths(paths)
-  paths.each do |local_path, remote_path|
-    put File.read(local_path), remote_path
-  end
-end
-
-def symlink_config_files(paths)
-  paths = resolve_config_file_paths(paths)
-  paths.each do |path|
-    run "ln -nfs #{shared_path}/config/#{path} #{release_path}/config/#{path}"
-  end
-end
-
-def resolve_config_file_paths(shortpaths)
-  shortpaths.map do |shortpath|
-    basepath = File.join(File.dirname(__FILE__), shortpath)
-    remote_path = File.join(shared_path, 'config', shortpath)
-    if File.exist?(prodpath = basepath + '.production')
-      [prodpath, remote_path]
-    else
-      [basepath, remote_path]
-    end
-  end
-end
-
-# =============================================================================
 # APPWALL CONFIGURATION
 # =============================================================================
 
