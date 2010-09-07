@@ -22,6 +22,9 @@ parser = OptionParser.new do |opts|
   opts.separator ''
   opts.separator 'Configuration options:'
   
+  opts.on('-e', '--environment RAILS_ENV', 'Specify rails environment (development/production/test') do |env|
+    ENV['RAILS_ENV'] = env
+  end
   opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/clearspring.yml is used)') do |path|
     options[:config_path] = path
   end
@@ -55,10 +58,16 @@ parser = OptionParser.new do |opts|
     options[:check_sizes] = true
   end
   opts.on('--check-sizes-strictly', 'Like --check-sizes, but tolerate a much smaller difference in sizes assuming data source files were split or recompressed with the same compression level') do
+    options[:check_sizes] = true
     options[:check_sizes_strictly] = true
+  end
+  opts.on('--check-sizes-exactly', 'Like --check-sizes, but require data source and the sum of our storage sizes to be exactly the same (assuming source files were split)') do
+    options[:check_sizes] = true
+    options[:check_sizes_exactly] = true
   end
   opts.on('--check-content', "In addition to matching files, require that data source and our storage files' content is identical. Warning: performs extreme amount of network I/O since it has to download both data source and our storage copies of all affected files!") do
     options[:check_content] = true
+    raise NotImplementedError, "Content check is not yet implemented"
   end
   
   opts.separator ''
@@ -66,6 +75,9 @@ parser = OptionParser.new do |opts|
   
   opts.on('-d', '--[no-]debug', 'Enable debugging output') do |value|
     options[:debug] = value
+  end
+  opts.on('--debug-output PATH', 'Store debug output into a file instead of printing it to standard output') do |path|
+    options[:debug_output_path] = path
   end
   
   opts.separator ''
@@ -120,58 +132,62 @@ def debug
 end
 
 $settings = ClearspringExtractWorkflow::Configuration.new(options)
+$settings.update(options)
 
 def settings; $settings end
 
-def run(ext_params)
-  versions = ext_params[:selected_sources].map do |data_source|
-    {:data_source => data_source}
-  end
-  if ext_params[:hours]
-    versions.map! do |version|
-      ext_params[:hours].map do |hour|
-        version.merge(:hour => hour)
+class ClearspringVerifyWorkflowRunner < WorkflowRunner
+  def perform(ext_params)
+    versions = ext_params[:selected_sources].map do |data_source|
+      {:data_source => data_source}
+    end
+    if ext_params[:hours]
+      versions.map! do |version|
+        ext_params[:hours].map do |hour|
+          version.merge(:hour => hour)
+        end
+      end.flatten!
+    end
+    workflows = versions.map do |version_params|
+      params = settings.merge(ext_params).to_hash
+      %w(check_sizes check_sizes_strictly check_sizes_exactly check_content).each do |key|
+        key = key.to_sym
+        params[key] = ext_params[key]
       end
-    end.flatten!
-  end
-  workflows = versions.map do |version_params|
-    params = settings.merge_user_options(ext_params)
-    params.update(version_params)
-    params[:update_process_status] = false
-    ClearspringVerifyWorkflow.new(params)
-  end
-  
-  workflows.each do |workflow|
-    if ext_params[:check_listing]
-      workflow.check_listing
-    elsif ext_params[:check_consistency]
-      workflow.check_consistency
-    else
-      if ext_params[:check_our_existence]
-        workflow.check_our_existence
-      end
-      if ext_params[:check_their_existence]
-        workflow.check_their_existence
+      params.update(version_params)
+      params[:update_process_status] = false
+      params[:logger] = ext_params[:logger]
+      ClearspringVerifyWorkflow.new(params)
+    end
+    
+    workflows.each do |workflow|
+      if ext_params[:check_listing]
+        workflow.check_listing
+      elsif ext_params[:check_consistency]
+        workflow.check_consistency
+      else
+        if ext_params[:check_our_existence]
+          workflow.check_our_existence
+        end
+        if ext_params[:check_their_existence]
+          workflow.check_their_existence
+        end
       end
     end
   end
   
-  0
-rescue Workflow::FileAlreadyExtracted
-  $stderr.puts("Error: file is already extracted")
-  5
-rescue Workflow::FileExtractionInProgress
-  $stderr.puts("Error: file extraction is in progress")
-  6
-rescue Workflow::FileSpecMismatch
-  $stderr.puts("Error: file does not match specification given")
-  7
-rescue Workflow::FileNotReady
-  $stderr.puts("Error: file is not ready to be extracted")
-  8
-rescue HttpClient::BaseError => e
-  $stderr.puts("Network error: #{e.message} @ #{e.url}")
-  9
+  def handle_exception(exc)
+    case exc
+    when HttpClient::HttpError
+      report_error("Transfer error: #{exc.message} @ #{exc.url}")
+      9
+    when HttpClient::BaseError
+      forward_unhandled_exception(exc, :message => "Unhandled transfer error: #{exc.message} @ #{exc.url}")
+      10
+    else
+      super
+    end
+  end
 end
 
 if options[:system_timer]
@@ -185,14 +201,17 @@ params = {
 
 %w(
   check_listing check_consistency check_our_existence check_their_existence
-  hours debug http_client
+  check_sizes check_sizes_strictly check_sizes_exactly check_content
+  hours debug debug_output_path http_client
 ).each do |key|
   key = key.to_sym
   params[key] = options[key]
 end
 
+runner = ClearspringVerifyWorkflowRunner.new
+
 begin
-  status = run(params)
+  status = runner.run(settings.merge(params).to_hash)
 rescue Exception => e
   status = ConsoleUi.handle_unhandled_exception(e)
 end

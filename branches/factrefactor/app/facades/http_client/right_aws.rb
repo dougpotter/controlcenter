@@ -39,9 +39,23 @@ class HttpClient::RightAws < HttpClient::Base
     end
   end
   
+  def get_url_content_length(url)
+    if @debug
+      debug_print "Head #{url}"
+    end
+    
+    issue_request(url, :method => :head) do |resp|
+      if length = resp['content-length']
+        length.to_i
+      else
+        raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
+      end
+    end
+  end
+  
   private
   
-  def issue_request(url)
+  def issue_request(url, options={})
     options = {
       :http_connection_read_timeout => @timeout,
       :http_connection_connect_timeout => @timeout,
@@ -51,7 +65,12 @@ class HttpClient::RightAws < HttpClient::Base
     end
     conn = Rightscale::HttpConnection.new(options)
     uri = URI.parse(url)
-    req = Net::HTTP::Get.new(uri.path)
+    if options[:method] == :head
+      request_class = Net::HTTP::Head
+    else
+      request_class = Net::HTTP::Get
+    end
+    req = request_class.new(uri.path)
     if @http_username && @http_password
       req.basic_auth(@http_username, @http_password)
     end

@@ -22,6 +22,9 @@ set(:domain) { application }
 set :user, "www"
 set :runner, user
 
+# Experimenting with not using sudo.
+set :use_sudo, false
+
 # Rails environment. Used by application setup tasks and migrate tasks.
 set :rails_env, "production"
 set :rake, "rake"

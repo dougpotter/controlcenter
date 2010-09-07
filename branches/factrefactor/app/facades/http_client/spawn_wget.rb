@@ -49,6 +49,25 @@ class HttpClient::SpawnWget < HttpClient::Base
     spawn_check(url, cmd)
   end
   
+  def get_url_content_length(url)
+    if @debug
+      debug_print "Head #{url}"
+    end
+    
+    # wget does not provide a sensible way to do a HEAD request
+    cmd = build_command('--spider', '-S', url)
+    if @debug
+      debug_print "Wget: #{cmd.join(' ')}"
+    end
+    output = get_error(url, cmd)
+    if /^  content-length:\s+(\d+)/ =~ output.downcase
+      content_length = $1.to_i
+    else
+      raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
+    end
+    content_length
+  end
+  
   private
   
   def build_command(*args)

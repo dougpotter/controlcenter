@@ -13,6 +13,14 @@ module HttpClient::SpawnNetrcMixin
     end
   end
   
+  def get_error(url, cmd)
+    with_netrc(url) do |netrc_dir|
+      with_exception_mapping(url) do
+        Subprocess.get_error(cmd, :env => {'HOME' => netrc_dir})
+      end
+    end
+  end
+  
   def spawn_check(url, cmd)
     with_netrc(url) do |netrc_dir|
       with_exception_mapping(url) do

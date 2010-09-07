@@ -41,6 +41,26 @@ module Subprocess
   # Allowed options:
   #  :env => hash of environment variables to set in spawned process
   def get_output(args, options={})
+    pipe_one_output(args, options.merge(:output_stream => STDOUT))
+  end
+  module_function :get_output
+  
+  # Runs command given in args, which must be a list of arguments.
+  # See Kernel#exec for an explanation of args' contents.
+  # Standard input and output of the command are connected to the ruby
+  # process's standard input and output.
+  # Returs standard error of the command.
+  # If the command fails (exit code non-zero), raises CommandFailed.
+  # Allowed options:
+  #  :env => hash of environment variables to set in spawned process
+  def get_error(args, options={})
+    pipe_one_output(args, options.merge(:output_stream => STDERR))
+  end
+  module_function :get_error
+  
+  private
+  
+  def pipe_one_output(args, options)
     rd, wr = IO.pipe
     if pid = fork
       wr.close
@@ -54,14 +74,12 @@ module Subprocess
       end
       output
     else
-      $stdout.reopen(wr)
+      options[:output_stream].reopen(wr)
       rd.close
       run_child(args, options)
     end
   end
-  module_function :get_output
-  
-  private
+  module_function :pipe_one_output
   
   # Prepares child environment and execs
   def run_child(args, options)

@@ -45,6 +45,21 @@ class HttpClient::Httpclient < HttpClient::Base
     end
   end
   
+  def get_url_content_length(url)
+    if @debug
+      debug_print "Head #{url}"
+    end
+    
+    map_exceptions(exception_map, url) do
+      resp = @client.head(url)
+      if length = resp.header['content-length'][0]
+        length.to_i
+      else
+        raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
+      end
+    end
+  end
+  
   private
   
   def exception_map

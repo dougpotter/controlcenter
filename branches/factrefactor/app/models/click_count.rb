@@ -30,6 +30,13 @@ class ClickCount < ActiveRecord::Base
   validates_presence_of :campaign_id, :creative_id, :ad_inventory_source_id, :audience_id, :start_time, :end_time, :duration_in_minutes, :click_count
   validates_numericality_of :click_count
   validates_as_increasing :start_time, :end_time
+  validate :enforce_unique_index
+
+  def enforce_unique_index
+    if ClickCount.exists?(self.attributes)
+      errors.add_to_base('There is already a click count with the same dimension combination')
+    end
+  end
 
   def self.get_conditions_string(attrs)
     s = []

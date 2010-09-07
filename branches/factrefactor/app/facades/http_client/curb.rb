@@ -17,33 +17,18 @@ class HttpClient::Curb < HttpClient::Base
   end
   
   def fetch(url)
-    retried = false
-    begin
+    retry_multi_bad_easy_handle do
       if @debug
         debug_print "Fetch #{url}"
       end
       
       execute(url)
       @curl.body_str
-    rescue Curl::Err::MultiBadEasyHandle 
-      # we get this when earlier request failed and client code retried it
-      if retried
-        raise
-      end
-      retried = true
-      
-      if @debug
-        debug_print "Retrying due to Curl::Err::MultiBadEasyHandle"
-      end
-      
-      create_curl
-      retry
     end
   end
   
   def download(url, local_path)
-    retried = false
-    begin
+    retry_multi_bad_easy_handle do
       if @debug
         debug_print "Download #{url} -> #{local_path}"
       end
@@ -61,6 +46,35 @@ class HttpClient::Curb < HttpClient::Base
           @curl.on_body
         end
       end
+    end
+  end
+  
+  def get_url_content_length(url)
+    retry_multi_bad_easy_handle do
+      if @debug
+        debug_print "Head #{url}"
+      end
+      
+      @curl.head = true
+      execute(url)
+      
+      # curb is pretty pathetic - we have to parse headers ourselves.
+      # hack this
+      if /^content-length:\s+(\d+)/ =~ @curl.header_str.downcase
+        content_length = $1.to_i
+      else
+        raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
+      end
+      content_length
+    end
+  end
+  
+  private
+  
+  def retry_multi_bad_easy_handle
+    retried = false
+    begin
+      yield
     rescue Curl::Err::MultiBadEasyHandle => e
       # we get this when earlier request failed and client code retried it
       if retried
@@ -76,8 +90,6 @@ class HttpClient::Curb < HttpClient::Base
       retry
     end
   end
-  
-  private
   
   def create_curl
     @curl = Curl::Easy.new
@@ -116,6 +128,8 @@ class HttpClient::Curb < HttpClient::Base
     [
       [Curl::Err::TimeoutError, HttpClient::NetworkTimeout],
       [IOError, HttpClient::NetworkError],
+      # DNS can be flaky
+      [Curl::Err::HostResolutionError, HttpClient::NetworkError],
     ]
   end
 end

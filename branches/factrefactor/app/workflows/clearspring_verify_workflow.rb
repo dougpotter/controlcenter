@@ -1,5 +1,6 @@
 class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   def initialize(params)
+    super(params)
     initialize_params(params)
     @http_client = create_http_client(@params)
     @parser = WebParser.new
@@ -8,10 +9,10 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   
   def check_listing
     data_source_urls = list_data_source_files
-    our_paths = list_bucket_items
-    have, missing = check_correspondence(data_source_urls, our_paths)
-    report_correspondence(have, missing)
-    missing.empty?
+    our_paths = list_bucket_files
+    have, missing, partial = check_correspondence(data_source_urls, our_paths)
+    report_correspondence(have, missing, partial)
+    missing.empty? && partial.empty?
   end
   
   def check_consistency
@@ -20,10 +21,10 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     report_existence(have, missing)
     ok = missing.empty?
     
-    our_paths = list_bucket_items
-    have, missing = check_correspondence(data_source_urls, our_paths)
-    report_correspondence(have, missing)
-    ok && missing.empty?
+    our_paths = list_bucket_files
+    have, missing, partial = check_correspondence(data_source_urls, our_paths)
+    report_correspondence(have, missing, partial)
+    ok && missing.empty? && partial.empty?
   end
   
   def check_our_existence
@@ -46,23 +47,50 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   end
   
   def find_our_files
-    bucket_paths = list_bucket_items
+    bucket_paths = list_bucket_files
     check_existence(bucket_paths)
   end
   
   def check_correspondence(data_source_urls, our_paths)
-    have, missing = [], []
+    have, missing, partial = [], [], []
     data_source_urls.each do |url|
       remote_relative_path = url_to_relative_data_source_path(url)
       local_path = build_local_path(remote_relative_path)
       bucket_path = build_s3_path(local_path)
-      if extracted_paths_include?(our_paths, bucket_path)
-        have << bucket_path
+      extracted_paths = bucket_paths_under(our_paths, bucket_path)
+      if ok = !extracted_paths.empty?
+        if params[:check_sizes]
+          source_size = @http_client.get_url_content_length(url)
+          items = list_bucket_items
+          extracted_items = extracted_paths.map do |path|
+            items.detect { |item| item.path == path }
+          end
+          extracted_size = extracted_items.inject(0) do |sum, item|
+            sum + item.size
+          end
+          if params[:check_sizes_exactly]
+            ok = extracted_size == source_size
+          else
+            difference = (1 - extracted_size.to_f/source_size).abs
+            if params[:check_sizes_strictly]
+              ok = difference < 0.1
+            else
+              ok = difference < 0.2
+            end
+          end
+        end
+        if ok && params[:check_content]
+        end
+        if ok
+          have << bucket_path
+        else
+          partial << bucket_path
+        end
       else
         missing << bucket_path
       end
     end
-    [have, missing]
+    [have, missing, partial]
   end
   
   def check_existence(items)
@@ -90,12 +118,15 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     [have, missing]
   end
   
-  def report_correspondence(have, missing)
+  def report_correspondence(have, missing, partial)
     have.each do |bucket_path|
       puts "Have #{bucket_path}"
     end
     missing.each do |bucket_path|
       puts "Missing #{bucket_path}"
+    end
+    partial.each do |bucket_path|
+      puts "Partial #{bucket_path}"
     end
   end
   
@@ -109,15 +140,20 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   end
   
   def list_bucket_items
+    @s3_client.list_bucket_items(s3_bucket)
+  end
+  
+  def list_bucket_files
     @s3_client.list_bucket_files(s3_bucket)
   end
   
+  # returns a subset of our_paths that corresponds to their_path.
   # due to gzip splitting our paths do not necessarily correspond exactly to
   # data source paths. our paths may contain a suffix distinguishing one
   # split file from another
-  def extracted_paths_include?(our_paths, their_path)
+  def bucket_paths_under(our_paths, their_path)
     their_path_prefix = their_path.sub(/\.log\.gz$/, '')
-    our_paths.any? do |our_path|
+    our_paths.select do |our_path|
       # this test is a little sketchy but it will work for v1
       our_path[0...their_path_prefix.length] == their_path_prefix
     end

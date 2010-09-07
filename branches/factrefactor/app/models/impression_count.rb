@@ -32,6 +32,14 @@ class ImpressionCount < ActiveRecord::Base
   validates_presence_of :start_time, :end_time, :duration_in_minutes, :campaign_id, :creative_id, :ad_inventory_source_id, :audience_id, :impression_count
   validates_numericality_of :impression_count
   validates_as_increasing :start_time, :end_time
+  validate :enforce_unique_index
+
+  def enforce_unique_index
+    if ImpressionCount.exists?(self.attributes)
+      errors.add_to_base('There already exists an ImpressionCount with the same dimension combination')
+    end
+  end
+
 
   def business_objects
     [ campaign, creative, ad_inventory_source, audience, media_purchase_method ]

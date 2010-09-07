@@ -36,20 +36,41 @@ class ClearspringExtractWorkflow < Workflow::Base
         :lock => config.lock,
         :once => config.once,
         :debug => config.debug,
+        :debug_output_path => config.debug_output_path,
         :keep_downloaded => config.keep_downloaded,
         :keep_temporary => config.keep_temporary,
         :verify => config.verify,
       }
+      postprocess_params
     end
     
-    def merge_user_options(options={})
-      params = @config_params.dup
-      [:date, :debug, :lock, :once, :http_client, :keep_downloaded, :keep_temporary, :verify].each do |key|
-        unless options[key].nil?
-          params[key] = options[key]
+    def update(options)
+      options.each do |key, value|
+        unless value.nil?
+          @config_params[key] = value
         end
       end
-      params
+      postprocess_params
+      self
+    end
+    
+    def merge(options)
+      dup.update(options)
+    end
+    
+    def to_hash
+      # typically users expect to_* methods to return copies of data
+      @config_params.dup
+    end
+    
+    private
+    
+    # XXX consider refactoring this
+    def postprocess_params
+      if path = @config_params[:debug_output_path]
+        # will also modify the hash
+        path.gsub!(/:timestamp\b/, Time.now.strftime('%Y%m%d-%H%M%S'))
+      end
     end
   end
   

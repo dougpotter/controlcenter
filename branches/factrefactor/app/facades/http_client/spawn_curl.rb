@@ -50,6 +50,24 @@ class HttpClient::SpawnCurl < HttpClient::Base
     spawn_check(url, cmd)
   end
   
+  def get_url_content_length(url)
+    if @debug
+      debug_print "Head #{url}"
+    end
+    
+    cmd = build_command('-I', url)
+    if @debug
+      debug_print "Curl: #{cmd.join(' ')}"
+    end
+    output = get_output(url, cmd)
+    if /^content-length:\s+(\d+)/ =~ output.downcase
+      content_length = $1.to_i
+    else
+      raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
+    end
+    content_length
+  end
+  
   private
   
   def build_command(*args)

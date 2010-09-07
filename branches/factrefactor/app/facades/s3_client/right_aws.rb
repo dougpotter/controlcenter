@@ -42,6 +42,16 @@ class S3Client::RightAws < S3Client::Base
     end
   end
   
+  def list_bucket_items(bucket)
+    if @debug
+      debug_print "S3list #{bucket}"
+    end
+    
+    entries = @s3.list_bucket(bucket)
+    entries.map { |entry| create_item(entry) }
+  end
+  
+  # optimization method
   def list_bucket_files(bucket)
     if @debug
       debug_print "S3list #{bucket}"
@@ -52,6 +62,21 @@ class S3Client::RightAws < S3Client::Base
   end
   
   private
+  
+  def create_item(entry)
+    if etag = entry[:e_tag]
+      md5 = S3Client::Item.etag_to_md5(etag)
+    else
+      md5 = nil
+    end
+    options = {
+      :key => entry[:key],
+      :size => entry[:size],
+      :md5 => md5,
+      :last_modified => entry[:last_modified],
+    }
+    S3Client::Item.new(options)
+  end
   
   def exception_map
     mapper = lambda do |exc, url|
