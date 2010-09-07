@@ -25,7 +25,7 @@ class WorkflowRunner
   private
   
   def create_logger(options)
-    if path = options[:debug_output_path]
+    if (path = options[:debug_output_path]) && path != '-'
       Logger.new(path)
     else
       nil
