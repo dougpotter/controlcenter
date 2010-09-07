@@ -86,6 +86,10 @@ class ClearspringExtractWorkflow < Workflow::Base
   attr_reader :params
   private :params
   
+  def channel
+    params[:data_source]
+  end
+  
   def date
     params[:date]
   end
@@ -195,7 +199,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def download(url)
-    with_process_status(:action => 'downloading file') do
+    with_process_status(:action => "downloading #{File.basename(url)}") do
       remote_relative_path = url_to_relative_data_source_path(url)
       local_path = build_local_path(remote_relative_path)
       FileUtils.mkdir_p(File.dirname(local_path))
@@ -207,12 +211,12 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def split(input_path)
-    dest_files = with_process_status(:action => 'splitting file') do
+    dest_files = with_process_status(:action => "splitting #{File.basename(input_path)}") do
       perform_split(input_path)
     end
     
     if params[:verify]
-      with_process_status(:action => 'verifying split') do
+      with_process_status(:action => "verifying split #{File.basename(input_path)}") do
         verify_split(input_path, dest_files)
       end
     end
@@ -240,7 +244,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     source_md5 = compute_md5(input_path)
     dest_md5 = compute_md5(*output_paths)
     if source_md5 != dest_md5
-      raise SplitVerificationFailed, "Split files differ from original: #{output_paths.inspect} vs #{input_path.inspect}"
+      raise SplitVerificationFailed, "Split files differ from original #{output_paths.inspect} vs #{input_path.inspect}"
     end
   end
   
@@ -261,7 +265,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def upload(local_path)
-    with_process_status(:action => 'uploading file') do
+    with_process_status(:action => "uploading #{File.basename(local_path)}") do
       retry_aws_errors(@network_error_retry_options) do
         @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
       end
