@@ -179,6 +179,7 @@ end
 # DEPLOY SECTION
 # =============================================================================
 namespace :deploy do
+  desc 'Deploys complete control center package'
   task :default do
     transaction do
       update_code
@@ -194,6 +195,18 @@ namespace :deploy do
     set :use_sudo, false
     cleanup
     set :use_sudo, true
+  end
+  
+  desc 'Deploys workflow-related parts only (no web application component)'
+  task :workflow do
+    transaction do
+      update_code
+      symlink
+      # Note that if we are using a single database for web application
+      # instance and workflow instance, this will migrate the web application
+      # instance also
+      migrate
+    end
   end
 
   desc "Install gems required by application as defined with config.gem"
