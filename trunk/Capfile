@@ -1,4 +1,22 @@
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
+
+# =============================================================================
+# REQUIRED PLUGINS
+# =============================================================================
+
+require 'vendor/plugins/capistrano_mailer/lib/capistrano_mailer'
+
 Dir['vendor/plugins/*/recipes/*.rb'].each { |plugin| load(plugin) }
-load 'lib/configuration_deployment'
+
+# =============================================================================
+# LOCAL MODIFICATIONS
+# =============================================================================
+
+require 'lib/capistrano_subversion_sync_patch'
+require 'lib/configuration_deployment'
+
+# =============================================================================
+# DEPLOYMENT CONFIGURATION
+# =============================================================================
+
 load 'config/deploy'
