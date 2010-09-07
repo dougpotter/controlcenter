@@ -35,7 +35,6 @@ Rails::Initializer.run do |config|
   # config.gem "aws-s3", :lib => "aws/s3"
   
   config.gem "fastercsv"
-  config.gem "ruote", :lib => false
   # http fetches in workflows use curb
   config.gem "curb", :lib => false
 

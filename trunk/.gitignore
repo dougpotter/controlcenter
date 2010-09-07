@@ -6,8 +6,6 @@ config/database.yml
 config/database.yml.production
 config/fakes3.yml
 config/fakes3.yml.production
-config/ruote_host.yml
-config/ruote_host.yml.production
 config/schedule.rb
 config/schedule.rb.production
 config/workflows/*.yml

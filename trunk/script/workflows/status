@@ -1,4 +1,0 @@
-#!/usr/bin/env ruby
-
-ARGV.replace(['RuoteReflector.print_status'])
-load(File.join(File.dirname(__FILE__), '../runner'))
