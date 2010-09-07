@@ -123,10 +123,10 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       puts "Have #{bucket_path}"
     end
     missing.each do |bucket_path|
-      puts "Missing #{bucket_path}"
+      STDERR.puts "Missing #{bucket_path}"
     end
     partial.each do |bucket_path|
-      puts "Partial #{bucket_path}"
+      STDERR.puts "Partial #{bucket_path}"
     end
   end
   
@@ -135,7 +135,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       puts "Have #{date_with_hour(options)}"
     end
     missing.each do |options|
-      puts "Missing #{date_with_hour(options)}"
+      STDERR.puts "Missing #{date_with_hour(options)}"
     end
   end
   
