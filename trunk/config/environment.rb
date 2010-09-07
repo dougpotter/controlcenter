@@ -15,7 +15,6 @@ Rails::Initializer.run do |config|
   extra_load_paths = %W(
     #{RAILS_ROOT}/app/bases
     #{RAILS_ROOT}/app/lib
-    #{RAILS_ROOT}/app/participants
     #{RAILS_ROOT}/app/singletons
     #{RAILS_ROOT}/app/workflows
   )

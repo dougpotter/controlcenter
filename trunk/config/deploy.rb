@@ -13,10 +13,10 @@ require 'lib/capistrano_subversion_sync_patch'
 # =============================================================================
 # The name of your application. Used for directory and file names associated with the application.
 set :application, ENV["XGCC_APPLICATION"] || "control.xgraph.net"
-set(:host) { application }
+set(:host) { ENV["HOST"] || application }
 
 # Primary domain name of your application. Used as a default for all server roles.
-set(:domain) { application }
+set(:domain) { host }
 
 # Login user for ssh.
 set :user, "www"

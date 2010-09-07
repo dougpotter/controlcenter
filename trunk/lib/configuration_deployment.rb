@@ -48,6 +48,7 @@ end
 def push_config_files(paths)
   paths = resolve_config_file_paths(paths)
   paths.each do |local_path, remote_shared_path, remote_release_path|
+    run "mkdir -p #{File.dirname(remote_shared_path)}"
     put File.read(local_path), remote_shared_path
   end
 end

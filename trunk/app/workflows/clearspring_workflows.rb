@@ -1,3 +1,4 @@
+=begin skip to avoid requiring ruote installation in production
 HttpParticipant
 PageParsingParticipant
 GzipParticipant
@@ -86,3 +87,4 @@ class ClearspringWorkflows < WorkflowDictionary
     end
   end
 end
+=end

@@ -1,3 +1,4 @@
+=begin skip to avoid requiring ruote installation in production
 # Ruote does not have explicit parameter passing to participants
 # or returning values from them. Instead variables are put into
 # workitem.fields hash where they may be read or written at will.
@@ -318,3 +319,4 @@ class ParticipantBuilder
     end
   end
 end
+=end

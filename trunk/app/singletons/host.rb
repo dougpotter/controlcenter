@@ -1,3 +1,4 @@
+=begin skip to avoid requiring ruote installation in production
 require 'rubygems'
 require 'singleton'
 require 'delegate'
@@ -40,3 +41,4 @@ class Host < Director
     job.wait
   end
 end
+=end

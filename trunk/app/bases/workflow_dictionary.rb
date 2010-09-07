@@ -1,3 +1,4 @@
+=begin skip to avoid requiring ruote installation in production
 FrameworkParticipant
 
 class WorkflowNotFound < StandardError
@@ -33,3 +34,4 @@ class WorkflowDictionary
     participant :argument_validator, :required_keys => required_keys
   end
 end
+=end
