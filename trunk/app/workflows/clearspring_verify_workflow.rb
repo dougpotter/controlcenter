@@ -165,7 +165,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       hours = [params[:hour]]
       require_all = true
     else
-      hours = (0..24).to_a
+      hours = (0...24).to_a
       require_all = channel.update_frequency == DataProviderChannel::UPDATES_HOURLY
     end
     options_list = hours.map do |hour|
