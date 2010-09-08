@@ -58,10 +58,12 @@ describe ImpressionCount do
   end
 
   it "should require a unique combination of required dimensions" do
-    impression_count = Factory.create(:impression_count)
+    impression_count = Factory.build(:impression_count)
+    attributes = impression_count.attributes
+    impression_count.save
     lambda {
-      ImpressionCount.create!(impression_count.attributes)
-    }.should raise_error(ActiveRecord::ActiveRecordError)
+      Factory.create(:impression_count, attributes)
+    }.should raise_error
   end
 
   it "should require non null impression_count (validations test)" do

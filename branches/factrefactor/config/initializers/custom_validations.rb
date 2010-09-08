@@ -45,6 +45,31 @@ module ActiveRecord
           end
         end
       end
+
+      # validate uniquenss of required attribute combo
+      def validates_as_unique
+        columns = self.dimension_columns.map { |c| c.to_sym }
+        where_clause = []
+        validates_each(columns) do |record, attr_name, value|
+          if value == nil
+            next
+          elsif attr_name == :start_time || attr_name == :end_time
+            where_clause << "#{attr_name} = \"#{value.strftime("%Y-%m-%d %H:%M:%S")}\""
+          else
+            where_clause << "#{attr_name} = \"#{value}\""
+          end 
+
+          if attr_name == columns[-1]
+            duplicates = self.find_by_sql("SELECT * FROM #{self.to_s.underscore.pluralize} WHERE #{where_clause.join(" AND ")}")
+            where_clause = []
+            if duplicates == []
+              true
+            else
+              record.errors.add("set of dimension columns is not unique")
+            end 
+          end
+        end
+      end 
     end
   end
 end

@@ -2,12 +2,10 @@ module FactBehaviors
 
   def self.included(base)
     base.class_eval do
-
       def self.acts_as_fact
         extend  ClassMethods
         include InstanceMethods
       end
-
     end
   end
 
@@ -43,6 +41,12 @@ module FactBehaviors
     def find_all_by_dimensions(conditions)
     end
 
+    def dimension_columns
+      columns_hash.keys.delete_if { |k|
+        k.match(/.*_count$/) || k == "id"
+      }
+    end
+
     def is_fact?
       true
     end
@@ -52,7 +56,9 @@ module FactBehaviors
     def self.included( base )
       # Method statements go here; e.g.:
       #validates_presence_of :start_time
-
+      if base.respond_to?(:validates_as_unique)
+        base.validates_as_unique
+      end
     end
 
     # Instance methods go here

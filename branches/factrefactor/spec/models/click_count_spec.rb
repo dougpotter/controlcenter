@@ -71,11 +71,12 @@ describe ClickCount do
   end
 
   it "should have unique combination of required attributes" do
-    click_count = Factory.build(:click_count)
-    attributes = click_count.attributes
+    c = Factory.build(:click_count)
+    attributes = c.attributes
+    c.save
     lambda {
       Factory.create(:click_count, attributes)
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.should raise_error
   end
 
   it "should require non null click_count (validations test)" do
