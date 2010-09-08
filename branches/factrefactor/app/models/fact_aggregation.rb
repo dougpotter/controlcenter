@@ -1,5 +1,3 @@
-require 'faster_csv'
-
 class FactAggregation 
   attr_accessor :facts
 

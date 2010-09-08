@@ -24,15 +24,6 @@ class Audience < ActiveRecord::Base
   
   validates_presence_of :audience_code
 
-  def get_handle
-    :audience_code
-  end
-
-  def self.handle_to_id(audience_code)
-    find_by_audience_code(audience_code).id
-  end
-
-  def self.id_to_handle(id)
-    find(id).audience_code
-  end
+  acts_as_dimension
+  business_index :audience_code, :aka => "aid"
 end

@@ -1,4 +1,5 @@
 module DimensionBehaviors
+  class InvalidDimensionSpecifiation < Exception ; end
 
   def self.included(base)
     base.class_eval do
@@ -12,49 +13,110 @@ module DimensionBehaviors
   end
 
   module ClassMethods
-    HANDLE_TO_FK = {"campaign_code" => "campaign_id", "ais_code" => "ad_inventory_source_id", "creative_code" => "creative_id", "partner_code" => "partner_id", "media_purchase_code" => "media_purchase_id", "audience_code" => "audience_id"}
-    FK_TO_HANDLE = {"audience_id" => "audience_code", "campaign_id" => "campaign_code", "ad_inventory_source_id" => "ais_code", "creative_id" => "creative_code", "partner_id" => "partner_code", "media_purchase_method_id" => "media_purchase_code"}
     # Class methods go here
     
-    def model_dimensions
-      ["campaign", "ad_inventory_source", "creative", "partner", "media_purchase_method", "audience"]
-    end
+    def business_index_dictionary ; @@business_index_dictionary ; end
+    def business_index_aliases ; @@business_index_aliases ; end
 
-    def non_model_dimensions
-      ["start_time", "end_time", "duration_in_minutes"]
+    # Valid options:
+    #   :as => 
+    #   :aka => 
+    def business_index(index_column, options = {})
+      pkey = self.name.foreign_key.to_sym
+      @@business_index_dictionary ||= HashWithIndifferentAccess.new
+      @@business_index_aliases ||= HashWithIndifferentAccess.new
+      if options[:as]
+        case options[:as]
+        when nil then nil
+        when Array then 
+          options[:as].each do |as_el|
+            @@business_index_dictionary[as_el] = pkey
+            @@business_index_aliases[as_el] = index_column
+          end
+        else
+          @@business_index_dictionary[options[:as]] = pkey
+          @@business_index_aliases[options[:as]] = index_column
+        end
+              
+      elsif options[:aka]
+        case options[:aka]
+        when nil then nil
+        when Array then 
+          options[:aka].push(index_column).each do |as_el|
+            @@business_index_dictionary[as_el] = pkey
+            @@business_index_aliases[as_el] = index_column
+          end
+        else
+          [options[:aka], index_column].each do |as_el|
+            @@business_index_dictionary[as_el] = pkey
+            @@business_index_aliases[as_el] = index_column
+          end
+        end
+        
+      else
+        @@business_index_dictionary[index_column] = pkey
+        @@business_index_aliases[index_column] = index_column
+      end
     end
-
-    def translate_fks(attributes)
-      handleized = []
-      for attribute in attributes
-        if FK_TO_HANDLE.keys.member?(attribute)
-          handleized << FK_TO_HANDLE[attribute]
-        else 
-          handleized << attribute
+    
+    # TODO: Implement this method as necessary
+    def business_indices(*args)
+    end
+    alias :business_indexes :business_indices
+    
+    
+    def find_by_business_index(param, arg)
+      translated_rows = 
+        const_get(
+          @@business_index_dictionary[param].to_s.gsub(/_id$/, "").classify
+        ).send("find_all_by_#{@@business_index_aliases[param].to_s}", arg)
+      if translated_rows.size > 1
+        raise "Multiple rows for single business index value"
+      end
+      translated_rows = translated_rows[0]
+    end
+    
+    def keyize_index_attributes(attributes = nil)
+      return {} if attributes.nil?
+      
+      key_attrs = {}
+      attributes.each do |param, arg|
+        if @@business_index_dictionary.include?(param)
+          translated_arg = nil
+          if (row = find_by_business_index(param, arg))
+            translated_arg = row.id
+          else
+            translated_arg = nil
+          end
+          
+          if key_attrs[@@business_index_dictionary[param]].nil? ||
+              key_attrs[@@business_index_dictionary[param]] == translated_arg
+            key_attrs[@@business_index_dictionary[param]] = translated_arg
+          else
+            raise InvalidDimensionSpecifiation
+          end
         end
       end
-      handleized
+      return key_attrs
     end
-
-    def handle_to_fk(handle)
-      HANDLE_TO_FK[handle]
+    
+    def keyize_indices(business_indices)
+      return [] if business_indices.nil? || business_indices.empty?
+      
+      return (business_indices.collect { |idx|
+        @@business_index_dictionary[idx]
+      }.compact.uniq)
     end
-
-    def id_from_handle(handle, handle_value)
-      if handle == "ais_code"
-        return AdInventorySource.find_by_ais_code(handle_value).id
-      else
-        fact = ActiveRecord.const_get(handle[0..-6].classify)
-        find_string = "SELECT * FROM #{fact.to_s.underscore.pluralize} WHERE #{handle} = ?"
-        return (fact.find_by_sql [find_string, handle_value])[0].id
-      end
+        
+    def scalar_dimensions
+      [ :start_time, :end_time ]
     end
+    
   end
 
   module InstanceMethods
     def self.included( base )
       # Method statements go here; e.g.:
-
     end
 
     # Instance methods go here

@@ -14,18 +14,8 @@ class Partner < ActiveRecord::Base
   has_many :campaigns
 
   validates_uniqueness_of :partner_code
-
-  def get_handle
-    :partner_code
-  end
-  
   def pid ; partner_code ; end
 
-  def self.handle_to_id(partner_code)
-    find_by_partner_code(partner_code).id
-  end
-
-  def self.id_to_handle(id)
-    find(id).partner_code
-  end
+  acts_as_dimension
+  business_index :partner_code, :aka => "pid"
 end
