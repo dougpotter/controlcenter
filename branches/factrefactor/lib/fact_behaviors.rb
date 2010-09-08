@@ -16,29 +16,39 @@ module FactBehaviors
     # TODO: I'd like to separate the building of group_by_list into its
     # own method, but I don't know how within a module
     def aggregate(spec_hash)
-      group_by_list = spec_hash[:group_by].collect { |dim|
-        if Dimension.model_dimensions.member?(dim)
-          dim += "_id"
-        else 
-          dim 
-        end 
-      }.join(",")
+      group_by_list = keyize_indices(spec_hash[:group_by])
 
       fa = FactAggregation.new
       for metric in spec_hash[:include]
         fact = ActiveRecord.const_get(metric.classify)
         fa.add fact.find_by_sql(
           "SELECT #{group_by_list}, SUM(#{metric})
-      FROM #{metric.pluralize}
-      WHERE #{spec_hash[:where]}
-      GROUP BY #{group_by_list}
-      ")
+          FROM #{metric.pluralize}
+          WHERE #{spec_hash[:where]}
+          GROUP BY #{group_by_list}"
+        )
       end 
       fa.adjust_time_zone(spec_hash[:tz_offset])
       return fa
     end
 
-    def find_all_by_dimensions(conditions)
+    # TODO: Write test to verify behavior of this function
+    def is_fact?(sym_or_class_or_str = nil)
+      return case sym_or_class_or_str
+      when Symbol then
+        is_fact?(sym_or_class_or_str.to_s)
+      when String then
+        begin
+          is_fact?(const_get(sym_or_class_or_str.classify))
+        rescue
+          false
+        end
+      when Class then
+        sym_or_class_or_str.respond_to?("is_fact?") && 
+          sym_or_class_or_str.send("is_fact?")
+      when NilClass then true
+      else false
+      end
     end
 
     def dimension_columns
@@ -47,8 +57,22 @@ module FactBehaviors
       }
     end
 
-    def is_fact?
-      true
+    def find_all_by_dimensions(conditions)
+    end
+    
+    def native_attributes?(params)
+      fact = ActiveRecord.const_get(self.name)
+      native_attribute_set = fact.columns_hash.keys.to_set
+      
+      params.keys.map{|a| a.to_s}.to_set.subset?(native_attribute_set)
+    end
+    
+    def keyize_index_attributes(index_attributes)
+      Dimension.keyize_index_attributes(index_attributes)
+    end
+    
+    def keyize_indices(business_indices)
+      Dimension.keyize_indices(business_indices)
     end
   end
 
@@ -63,59 +87,19 @@ module FactBehaviors
 
     # Instance methods go here
 
-    def initialize(*args)
-      fact = ActiveRecord.const_get(self.class.to_s)
-      attributes = fact.columns_hash.keys
-      if args == [] || params_are_subset(args[0], attributes)
+    def initialize(attributes = nil)
+      if attributes.nil? || attributes.empty? || native_attributes?(attributes)
         super
       else
-        relevant_params = scrub_params(args[0])
-        translated_params = translate_to_db(relevant_params)
+        translated_params = keyize_index_attributes(attributes)
         super(translated_params)
       end
     end
-
-    def params_are_subset(params, attributes)
-        params.keys.map{|a| a.to_s}.to_set.subset?(attributes.to_set)
-    end
-
-
-    def scrub_params(params)
-      fact = ActiveRecord.const_get(self.class.to_s)
-      attributes = fact.columns_hash.keys
-      if params.keys.to_set.subset?(attributes.to_set)
-        return params
-      else
-        handelized_attributes = Dimension.translate_fks(attributes)
-        relevant_params = {}
-        for key in params.keys
-          if handelized_attributes.member?(key)
-            relevant_params[key] = params[key]
-          end
-        end
-        relevant_params
-      end
-    end
-
-    def translate_to_db(params)
-      translated_params = {}
-      params.each do |key, value|
-        if Dimension.model_dimensions.member?(key[0..-6]) || key == "ais_code"
-          fk_name = Dimension.handle_to_fk(key)
-          fk_value = Dimension.id_from_handle(key,value)
-          translated_params.merge!({fk_name => fk_value})
-        else
-          translated_params.merge!({key => value})
-        end
-      end
-      translated_params
-    end
+    
+    def is_fact? ; true ; end
 
     def update(*args)
     end
-
-    def say_hi
-      puts "HI"
-    end
+    
   end
 end

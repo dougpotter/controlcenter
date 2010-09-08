@@ -19,10 +19,13 @@
 # all columns except click counts
 class ClickCount < ActiveRecord::Base
   acts_as_fact
+  # TODO: Implement requires_dimensions and accepts_dimensions
+  #requires_dimensions :campaign, :ad_inventory_source, :audience, :creative
+  #accepts_dimensions :media_purchase_method
 
   belongs_to :campaign
   belongs_to :creative
-  belongs_to :ad_inventory_srouce
+  belongs_to :ad_inventory_source
   belongs_to :geography
   belongs_to :audience
   belongs_to :media_purchase_method
@@ -38,28 +41,4 @@ class ClickCount < ActiveRecord::Base
     end
   end
 
-  def self.get_conditions_string(attrs)
-    s = []
-    for dimension in business_objects
-      if dimension == "ad_inventory_source"
-        s << "ais_id = #{ActiveRecord.const_get(dimension.classify).handle_to_id(attrs[:ais_id])}"
-      else
-        #s << "#{dimension + "_id"} = #{ActiveRecord.const_get(dimension.classify).handle_to_id(attrs[(dimension + "_code").to_sym])}"
-        #s << "#{dimension + "_id"} = #{ActiveRecord.const_get(dimension.classify).handle_to_id(attrs[(dimension + "_code").to_sym])}"
-      end
-    end
-    s.join(",")
-  end
-
-  def business_objects
-    [ campaign, creative, ad_inventory_source, audience, media_purchase_method ]
-  end
-
-  def self.business_objects
-    [ "campaign", "creative", "ad_inventory_source", "audience", "media_purchase_methods" ]
-  end
-
-  def business_attributes
-    ["start_time", "end_time", "duration_in_minutes", "campaign_code", "creative_code", "ad_inventory_source_code", "geography", "audience_code", "mpm_code" ]
-  end
 end

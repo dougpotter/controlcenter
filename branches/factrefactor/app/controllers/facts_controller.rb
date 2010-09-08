@@ -5,9 +5,9 @@ class FactsController < ApplicationController
   def index
     # Returns object of type FactAggregation
     # Example URL:
-    # http://127.0.0.1:3000/metrics.csv?metrics=click_count&dimensions=campaign,start_time&frequency=hour&start_time=%222010-08-25%2000:00:00%22&end_time=%222010-08-30%2000:00:00%22
-    #
-
+    # /metrics.csv?metrics=click_count&dimensions=campaign_code,start_time
+    # &frequency=hour&start_time=2010-08-25%2000:00:00
+    # &end_time=2010-08-30%2000:00:00
     @fact_aggregation = Fact.aggregate({
       :include => params[:metrics].split(","),
       :group_by => params[:dimensions].split(","),
@@ -65,7 +65,7 @@ class FactsController < ApplicationController
   def fact_classes_from_params
     fact_classes = []
     for param in params.keys
-      if FACTS.member?(param)
+      if Fact.is_fact?(param)
         fact_classes << ActiveRecord.const_get(param.classify)
       end
     end
