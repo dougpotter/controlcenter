@@ -96,6 +96,12 @@ class HttpClient::Curb < HttpClient::Base
       # note: curl's timeout applies to the entire download operation
       # (not to each network read), and is not the timeout we want
       @curl.connect_timeout = @options[:timeout]
+      if @curl.respond_to?(:low_speed_time=) && @curl.respond_to?(:low_speed_limit=)
+        @curl.low_speed_time = @options[:timeout]
+        @curl.low_speed_limit = 1
+      else
+        raise NotImplementedError, "Your version of curb does not support low speed time/limit curl options"
+      end
     end
   end
   
