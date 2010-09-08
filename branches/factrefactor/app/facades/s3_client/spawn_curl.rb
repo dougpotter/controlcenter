@@ -24,11 +24,26 @@ class S3Client::SpawnCurl < S3Client::Base
     Subprocess.spawn_check(cmd)
   end
   
+  def list_bucket_items(bucket)
+  end
+  
   def list_bucket_files(bucket)
     if @debug
       debug_print "S3list #{bucket}"
     end
     
+    url = build_url(bucket)
+    cmd = build_command(url)
+    
+    if @debug
+      debug_print "Curl #{cmd.join(' ')}"
+    end
+    
+    output = Subprocess.get_output(cmd)
+    
+    p output
+    
+    raise NotImplementedError
     # todo fill this
   end
   
@@ -61,7 +76,8 @@ class S3Client::SpawnCurl < S3Client::Base
     cmd + args
   end
   
-  def build_url(bucket, remote_path)
+  def build_url(bucket, remote_path=nil)
+    # empty remote_path will generate valid bucket listing urls
     "#{@s3_protocol}://#{@s3_host}:#{@s3_port}/#{bucket}/#{remote_path}"
   end
 end

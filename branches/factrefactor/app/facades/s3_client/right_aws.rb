@@ -42,22 +42,14 @@ class S3Client::RightAws < S3Client::Base
     end
   end
   
-  def list_bucket_items(bucket)
-    if @debug
-      debug_print "S3list #{bucket}"
-    end
-    
-    entries = @s3.list_bucket(bucket)
+  def list_bucket_items(bucket, prefix=nil)
+    entries = list_bucket_entries(bucket, prefix)
     entries.map { |entry| create_item(entry) }
   end
   
   # optimization method
-  def list_bucket_files(bucket)
-    if @debug
-      debug_print "S3list #{bucket}"
-    end
-    
-    entries = @s3.list_bucket(bucket)
+  def list_bucket_files(bucket, prefix=nil)
+    entries = list_bucket_entries(bucket, prefix)
     entries.map { |entry| entry[:key] }
   end
   
@@ -76,6 +68,46 @@ class S3Client::RightAws < S3Client::Base
       :last_modified => entry[:last_modified],
     }
     S3Client::Item.new(options)
+  end
+  
+  def list_bucket_entries(bucket, prefix)
+    max_keys = 1000
+    # not the most efficient data structure, but one which leads to less fail
+    all_entries = []
+    while true
+      marker = all_entries.empty? ? nil : all_entries[-5][:key]
+      if @debug
+        debug_print "S3list #{bucket}:#{prefix} #{marker}+#{max_keys}"
+      end
+      entries = @s3.list_bucket(bucket, :prefix => prefix, :max_keys => max_keys, :marker => marker)
+      break if entries.empty?
+      
+      if all_entries.empty?
+        all_entries = entries
+      else
+        old_size = all_entries.length
+        entries.each do |entry|
+          unless all_entries.detect do |existing_entry|
+            existing_entry[:key] == entry[:key]
+          end
+          then
+            all_entries << entry
+          end
+        end
+        new_size = all_entries.length
+        if new_size == entries.length
+          raise 'New and old entries are the exact same set'
+        end
+        if new_size - old_size == entries.length
+          # no overlap
+          raise 'No overlap between entries, probably someone is deleting a lot of entries'
+        end
+      end
+      
+      # right_aws does mix symbols and strings like this
+      break unless entries[0][:service]['is_truncated']
+    end
+    all_entries
   end
   
   def exception_map

@@ -44,6 +44,12 @@ class ClearspringExtractWorkflow < Workflow::Base
       postprocess_params
     end
     
+    def dup
+      new = super
+      new.instance_variable_set('@config_params', @config_params.dup)
+      new
+    end
+    
     def update(options)
       options.each do |key, value|
         unless value.nil?
@@ -71,11 +77,18 @@ class ClearspringExtractWorkflow < Workflow::Base
         # will also modify the hash
         path.gsub!(/:timestamp\b/, Time.now.strftime('%Y%m%d-%H%M%S'))
       end
+      if @config_params[:once]
+        @config_params[:lock] = true
+      end
     end
   end
   
   attr_reader :params
   private :params
+  
+  def channel
+    params[:data_source]
+  end
   
   def date
     params[:date]
@@ -91,7 +104,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     @http_client = create_http_client(@params)
     @parser = WebParser.new
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug], :logger => @logger)
-    @s3_client = S3Client::RightAws.new(:debug => @params[:debug], :logger => @logger)
+    @s3_client = create_s3_client(@params)
   end
   
   def run
@@ -186,7 +199,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def download(url)
-    with_process_status(:action => 'downloading file') do
+    with_process_status(:action => "downloading #{File.basename(url)}") do
       remote_relative_path = url_to_relative_data_source_path(url)
       local_path = build_local_path(remote_relative_path)
       FileUtils.mkdir_p(File.dirname(local_path))
@@ -198,12 +211,12 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def split(input_path)
-    dest_files = with_process_status(:action => 'splitting file') do
+    dest_files = with_process_status(:action => "splitting #{File.basename(input_path)}") do
       perform_split(input_path)
     end
     
     if params[:verify]
-      with_process_status(:action => 'verifying split') do
+      with_process_status(:action => "verifying split #{File.basename(input_path)}") do
         verify_split(input_path, dest_files)
       end
     end
@@ -231,7 +244,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     source_md5 = compute_md5(input_path)
     dest_md5 = compute_md5(*output_paths)
     if source_md5 != dest_md5
-      raise SplitVerificationFailed, "Split files differ from original: #{output_paths.inspect} vs #{input_path.inspect}"
+      raise SplitVerificationFailed, "Split files differ from original #{output_paths.inspect} vs #{input_path.inspect}"
     end
   end
   
@@ -252,7 +265,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def upload(local_path)
-    with_process_status(:action => 'uploading file') do
+    with_process_status(:action => "uploading #{File.basename(local_path)}") do
       retry_aws_errors(@network_error_retry_options) do
         @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
       end
@@ -412,9 +425,14 @@ class ClearspringExtractWorkflow < Workflow::Base
     params[:s3_bucket]
   end
   
+  def build_s3_prefix
+    # date is required, it should always be given to workflow
+    "#{params[:clearspring_pid]}/v2/raw-#{params[:data_source]}/#{params[:date]}"
+  end
+  
   def build_s3_path(local_path)
     filename = File.basename(local_path)
-    path = "#{params[:clearspring_pid]}/v2/raw-#{params[:data_source]}/#{params[:date]}/#{filename}"
+    "#{build_s3_prefix}/#{filename}"
   end
   
   # returns true if remote_url is not currently being extracted,

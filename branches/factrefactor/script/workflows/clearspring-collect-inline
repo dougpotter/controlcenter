@@ -31,6 +31,9 @@ parser = OptionParser.new do |opts|
   opts.on('--http-client CLIENT', 'Use specified http client CLIENT (valid values: curb (default), httpclient, net_http, right_aws, spawn_{curl|wget}[_netrc])') do |client|
     options[:http_client] = client
   end
+  opts.on('--s3-client CLIENT', 'Use specified s3 client CLIENT (valid values: right_aws (default), spawn_curl') do |client|
+    options[:s3_client] = client
+  end
   opts.on('--[no-]system-timer', 'Force the use of SystemTimer instead of Timeout') do |value|
     options[:system_timer] = value
   end
@@ -48,10 +51,10 @@ parser = OptionParser.new do |opts|
   opts.separator ''
   opts.separator 'Action options: (by default, discover and extract discovered files)'
   
-  opts.on('-i', '--discover', 'Discover files only') do
+  opts.on('-I', '--discover', 'Discover files only') do
     options[:discover] = true
   end
-  opts.on('-e', '--extract URL', 'Extract file in URL') do |url|
+  opts.on('-E', '--extract URL', 'Extract file in URL') do |url|
     options[:extract] = url
   end
   
@@ -170,7 +173,7 @@ class ClearspringExtractWorkflowRunner < WorkflowRunner
       else
         script_str = 'clearspring-extract'
       end
-      params_str = workflow.date
+      params_str = "#{workflow.channel} #{workflow.date}"
       if workflow.hour
         params_str += '-%02d00' % workflow.hour
       end
@@ -260,7 +263,7 @@ if options[:profile]
   end
 else
   begin
-    status = runner.run(params)
+    status = runner.run(settings.merge(params).to_hash)
   rescue Exception => e
     status = ConsoleUi.handle_unhandled_exception(e)
   end

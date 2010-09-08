@@ -15,7 +15,6 @@ Rails::Initializer.run do |config|
   extra_load_paths = %W(
     #{RAILS_ROOT}/app/bases
     #{RAILS_ROOT}/app/lib
-    #{RAILS_ROOT}/app/participants
     #{RAILS_ROOT}/app/singletons
     #{RAILS_ROOT}/app/workflows
   )
@@ -36,7 +35,6 @@ Rails::Initializer.run do |config|
   # config.gem "aws-s3", :lib => "aws/s3"
   
   config.gem "fastercsv"
-  config.gem "ruote", :lib => false
   # http fetches in workflows use curb
   config.gem "curb", :lib => false
 

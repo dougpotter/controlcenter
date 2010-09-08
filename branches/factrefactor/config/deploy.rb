@@ -1,22 +1,12 @@
 # =============================================================================
-# REQUIRED PLUGINS
-# =============================================================================
-require 'vendor/plugins/capistrano_mailer/lib/capistrano_mailer'
-
-# =============================================================================
-# LOCAL MODIFICATIONS
-# =============================================================================
-require 'lib/capistrano_subversion_sync_patch'
-
-# =============================================================================
 # CAP VARIABLES
 # =============================================================================
 # The name of your application. Used for directory and file names associated with the application.
 set :application, ENV["XGCC_APPLICATION"] || "control.xgraph.net"
-set(:host) { application }
+set(:host) { ENV["XGCC_HOST"] || application }
 
 # Primary domain name of your application. Used as a default for all server roles.
-set(:domain) { application }
+set(:domain) { host }
 
 # Login user for ssh.
 set :user, "www"
@@ -129,70 +119,26 @@ end
 # =============================================================================
 # APPWALL CONFIGURATION
 # =============================================================================
-after "deploy:update_code", "appwall:symlink"
 
-namespace :appwall do
-
-  desc "Push new appwall configuration"
-  task :push do
-    put File.read(File.join(File.dirname(__FILE__), 'appwall.yml')),
-      File.join(shared_path, 'config', 'appwall.yml')
-  end
-  
-  desc "Make symlink for appwall yaml"
-  task :symlink do
-    run "ln -nfs #{shared_path}/config/appwall.yml #{release_path}/config/appwall.yml"
-  end
-end
+define_configuration_tasks(:appwall, %w(appwall.yml))
 
 # =============================================================================
 # AWS CONFIGURATION
 # =============================================================================
-after "deploy:update_code", "aws:symlink"
 
-namespace :aws do
-
-  desc "Push new AWS configuration"
-  task :push do
-    put File.read(File.join(File.dirname(__FILE__), 'aws.yml')),
-      File.join(shared_path, 'config', 'aws.yml')
-  end
-  
-  desc "Make symlink for AWS yaml"
-  task :symlink do
-    run "ln -nfs #{shared_path}/config/aws.yml #{release_path}/config/aws.yml"
-  end
-end
+define_configuration_tasks(:aws, %w(aws.yml))
 
 # =============================================================================
 # WORKFLOWS CONFIGURATION
 # =============================================================================
-after "deploy:update_code", "workflows:symlink"
 
-namespace :workflows do
+define_configuration_tasks(:workflows, %w(workflows/clearspring.yml))
 
-  namespace :push do
-    desc "Push ALL workflow configurations"
-    task :all do
-      clearspring
-    end
-    
-    desc "Push new Clearspring configuration"
-    task :clearspring do
-      put File.read(File.join(File.dirname(__FILE__), 'workflows/clearspring.yml')),
-        File.join(shared_path, 'config', 'workflows', 'clearspring.yml')
-    end
-  end
-  
-  desc "Make symlink for workflows' yamls"
-  task :symlink do
-    run <<-CMD
-      for workflow in clearspring; do
-        ln -nfs #{shared_path}/config/workflows/$workflow.yml #{release_path}/config/workflows/$workflow.yml;
-      done
-    CMD
-  end
-end
+# =============================================================================
+# SCHEDULE CONFIGURATION
+# =============================================================================
+
+define_configuration_tasks(:schedule, %w(schedule.rb))
 
 # =============================================================================
 # DATABASE TASKS
@@ -223,6 +169,7 @@ end
 # DEPLOY SECTION
 # =============================================================================
 namespace :deploy do
+  desc 'Deploys complete control center package'
   task :default do
     transaction do
       update_code
@@ -238,6 +185,18 @@ namespace :deploy do
     set :use_sudo, false
     cleanup
     set :use_sudo, true
+  end
+  
+  desc 'Deploys workflow-related parts only (no web application component)'
+  task :workflow do
+    transaction do
+      update_code
+      symlink
+      # Note that if we are using a single database for web application
+      # instance and workflow instance, this will migrate the web application
+      # instance also
+      migrate
+    end
   end
 
   desc "Install gems required by application as defined with config.gem"

@@ -1,9 +1,15 @@
 config/appwall.yml
+config/appwall.yml.production
 config/aws.yml
+config/aws.yml.production
 config/database.yml
+config/database.yml.production
 config/fakes3.yml
-config/ruote_host.yml
+config/fakes3.yml.production
+config/schedule.rb
+config/schedule.rb.production
 config/workflows/*.yml
+config/workflows/*.yml.production
 db/development_structure.sql
 log/*.log
 tmp/cache/*

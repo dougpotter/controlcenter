@@ -4,7 +4,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     initialize_params(params)
     @http_client = create_http_client(@params)
     @parser = WebParser.new
-    @s3_client = S3Client::RightAws.new(:debug => @params[:debug], :logger => @logger)
+    @s3_client = create_s3_client(@params)
   end
   
   def check_listing
@@ -123,10 +123,10 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       puts "Have #{bucket_path}"
     end
     missing.each do |bucket_path|
-      puts "Missing #{bucket_path}"
+      STDERR.puts "Missing #{bucket_path}"
     end
     partial.each do |bucket_path|
-      puts "Partial #{bucket_path}"
+      STDERR.puts "Partial #{bucket_path}"
     end
   end
   
@@ -135,16 +135,16 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       puts "Have #{date_with_hour(options)}"
     end
     missing.each do |options|
-      puts "Missing #{date_with_hour(options)}"
+      STDERR.puts "Missing #{date_with_hour(options)}"
     end
   end
   
   def list_bucket_items
-    @s3_client.list_bucket_items(s3_bucket)
+    @s3_client.list_bucket_items(s3_bucket, build_s3_prefix)
   end
   
   def list_bucket_files
-    @s3_client.list_bucket_files(s3_bucket)
+    @s3_client.list_bucket_files(s3_bucket, build_s3_prefix)
   end
   
   # returns a subset of our_paths that corresponds to their_path.
@@ -165,7 +165,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       hours = [params[:hour]]
       require_all = true
     else
-      hours = (0..24).to_a
+      hours = (0...24).to_a
       require_all = channel.update_frequency == DataProviderChannel::UPDATES_HOURLY
     end
     options_list = hours.map do |hour|

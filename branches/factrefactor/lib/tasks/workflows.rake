@@ -39,17 +39,21 @@ namespace :workflows do
     end
     
     desc 'Verifies extraction for hourly updated channels on an hourly basis'
-    task :verify_hourly do
+    task :verify_hourly => :environment do
       now = Time.now.utc
       # need to go back based on how far back extract_autorun goes
       time = now - 8.hours
       date = time.strftime('%Y%m%d')
       hour = time.strftime('%H')
       
+      channels = DataProviderChannel.hourly
+      
       # not the most efficient way of doing it, improve this later
       require 'subprocess'
       script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-collect-verify')
-      Subprocess.spawn_check([script, '-D', date, '-H', hour, '--check-consistency'])
+      channels.each do |channel|
+        Subprocess.spawn_check([script, '-D', date, '-H', hour, '--check-consistency', '-C', channel.name])
+      end
     end
   end
 end
