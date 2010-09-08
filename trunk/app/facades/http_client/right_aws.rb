@@ -5,14 +5,12 @@ class HttpClient::RightAws < HttpClient::Base
   # :http_username
   # :http_password
   # :timeout
-  # :connect_timeout (if :timeout is specified and :connect_timeout is not,
-  #   :timeout is used for :connect_timeout as well)
   # :debug
   # :logger
   def initialize(options={})
     super(options)
     @http_username, @http_password = options[:http_username], options[:http_password]
-    @timeout, @connect_timeout = options[:timeout], options[:connect_timeout]
+    @timeout = options[:timeout]
     @debug = options[:debug]
   end
   
@@ -60,9 +58,6 @@ class HttpClient::RightAws < HttpClient::Base
       :http_connection_read_timeout => @timeout,
       :http_connection_connect_timeout => @timeout,
     }
-    if @connect_timeout
-      options[:http_connection_connect_timeout] = @connect_timeout
-    end
     conn = Rightscale::HttpConnection.new(options)
     uri = URI.parse(url)
     if options[:method] == :head
