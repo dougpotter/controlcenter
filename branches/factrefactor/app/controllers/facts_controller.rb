@@ -6,11 +6,14 @@ class FactsController < ApplicationController
     # Returns object of type FactAggregation
     # Example URL:
     # http://127.0.0.1:3000/metrics.csv?metrics=click_count&dimensions=campaign,start_time&frequency=hour&start_time=%222010-08-25%2000:00:00%22&end_time=%222010-08-30%2000:00:00%22
+    #
+
     @fact_aggregation = Fact.aggregate({
       :include => params[:metrics].split(","),
       :group_by => params[:dimensions].split(","),
       :where => where_conditions_from_params,
-      :frequency => params[:frequency]
+      :frequency => params[:frequency],
+      :tz_offset => params[:time_zone_offset]
     })
 
     respond_to do |format|

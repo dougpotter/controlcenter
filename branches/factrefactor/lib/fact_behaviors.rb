@@ -36,6 +36,7 @@ module FactBehaviors
       GROUP BY #{group_by_list}
       ")
       end 
+      fa.adjust_time_zone(spec_hash[:tz_offset])
       return fa
     end
 
