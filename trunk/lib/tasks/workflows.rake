@@ -30,7 +30,7 @@ namespace :workflows do
         # XXX this is now very inefficient
         require 'subprocess'
         times.each do |date, hour|
-          script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-collect-inline')
+          script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-extract')
           Subprocess.spawn_check([script, '-C', channel.name, '-D', date, '-H', hour])
         end
       end
@@ -44,7 +44,7 @@ namespace :workflows do
       
       # not the most efficient way of doing it, improve this later
       require 'subprocess'
-      script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-collect-verify')
+      script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-verify')
       Subprocess.spawn_check([script, '-D', date, '--check-consistency'])
     end
     
@@ -62,7 +62,7 @@ namespace :workflows do
       
       # not the most efficient way of doing it, improve this later
       require 'subprocess'
-      script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-collect-verify')
+      script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-verify')
       channels.each do |channel|
         Subprocess.spawn_check([script, '-D', date, '-H', hour, '--check-consistency', '-C', channel.name])
       end

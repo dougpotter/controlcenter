@@ -4,7 +4,7 @@ require 'optparse'
 
 options = {}
 parser = OptionParser.new do |opts|
-  opts.banner = "Usage: script/workflows/clearspring-collect-cleanup [options]"
+  opts.banner = "Usage: script/workflows/clearspring-cleanup [options]"
   
   opts.separator ''
   opts.separator 'Action options: (by default, clean up downloaded files over 4 days old and temporary files over 6 hours old)'
@@ -98,7 +98,7 @@ def cleanup(dir, age, options={})
 end
 
 def debug_print(msg)
-  Workflow.default_logger.debug('clearspring-collect-cleanup') { msg }
+  Workflow.default_logger.debug('clearspring-cleanup') { msg }
 end
 
 settings = ClearspringExtractWorkflow::Configuration.new(options)
