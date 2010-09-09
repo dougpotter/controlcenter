@@ -5,8 +5,6 @@ class HttpClient::Curb < HttpClient::Base
   # :http_username
   # :http_password
   # :timeout
-  # :connect_timeout (if :timeout is specified and :connect_timeout is not,
-  #   :timeout is used for :connect_timeout as well)
   # :debug
   # :logger
   def initialize(options={})
@@ -95,11 +93,15 @@ class HttpClient::Curb < HttpClient::Base
     @curl = Curl::Easy.new
     @curl.userpwd = "#{@options[:http_username]}:#{@options[:http_password]}"
     if @options[:timeout]
-      # note: connect_timeout can be overwritten below
-      @curl.timeout = @curl.connect_timeout = @options[:timeout]
-    end
-    if @options[:connect_timeout]
-      @curl.connect_timeout = @options[:connect_timeout]
+      # note: curl's timeout applies to the entire download operation
+      # (not to each network read), and is not the timeout we want
+      @curl.connect_timeout = @options[:timeout]
+      if @curl.respond_to?(:low_speed_time=) && @curl.respond_to?(:low_speed_limit=)
+        @curl.low_speed_time = @options[:timeout]
+        @curl.low_speed_limit = 1
+      else
+        raise NotImplementedError, "Your version of curb does not support low speed time/limit curl options"
+      end
     end
   end
   

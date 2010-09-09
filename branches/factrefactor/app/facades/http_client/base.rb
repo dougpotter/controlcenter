@@ -7,8 +7,6 @@ class HttpClient::Base
   # :http_username
   # :http_password
   # :timeout
-  # :connect_timeout (if :timeout is specified and :connect_timeout is not,
-  #   :timeout is used for :connect_timeout as well)
   # :debug
   # :logger
   def initialize(options={})
