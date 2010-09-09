@@ -76,11 +76,12 @@ module DimensionBehaviors
       translated_rows = translated_rows[0]
     end
     
-    def keyize_index_attributes(attributes = nil)
+    def keyize_index_attributes(attributes = nil, options = {})
       return {} if attributes.nil?
       
       key_attrs = {}
       attributes.each do |param, arg|
+        # Business indices
         if @@business_index_dictionary.include?(param)
           translated_arg = nil
           if (row = find_by_business_index(param, arg))
@@ -95,6 +96,12 @@ module DimensionBehaviors
           else
             raise InvalidDimensionSpecifiation
           end
+          
+        # Scalar indices; no translation
+        elsif options[:include] && 
+            (options[:include].include?(param.to_sym) || 
+            options[:include].include?(param.to_s))
+          key_attrs[param] = arg
         end
       end
       return key_attrs
@@ -109,7 +116,7 @@ module DimensionBehaviors
     end
         
     def scalar_dimensions
-      [ :start_time, :end_time ]
+      [ :start_time, :end_time, :duration_in_minutes ]
     end
     
   end

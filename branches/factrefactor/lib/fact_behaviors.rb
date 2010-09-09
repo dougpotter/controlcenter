@@ -68,18 +68,26 @@ module FactBehaviors
     end
     
     def keyize_index_attributes(index_attributes)
-      Dimension.keyize_index_attributes(index_attributes)
+      Dimension.keyize_index_attributes(index_attributes, {
+        :include => scalar_dimensions
+      })
     end
     
     def keyize_indices(business_indices)
       Dimension.keyize_indices(business_indices)
+    end
+    
+    def scalar_dimensions
+      Dimension.scalar_dimensions.push(
+        self.name.to_s.tableize.singularize.to_sym
+      )
     end
   end
 
   module InstanceMethods
     def self.included( base )
       # Method statements go here; e.g.:
-      #validates_presence_of :start_time
+      #base.validates_presence_of :start_time
       if base.respond_to?(:validates_as_unique)
         base.validates_as_unique
       end
@@ -88,10 +96,10 @@ module FactBehaviors
     # Instance methods go here
 
     def initialize(attributes = nil)
-      if attributes.nil? || attributes.empty? || native_attributes?(attributes)
+      if attributes.nil? || attributes.empty? || self.class.native_attributes?(attributes)
         super
       else
-        translated_params = keyize_index_attributes(attributes)
+        translated_params = self.class.keyize_index_attributes(attributes)
         super(translated_params)
       end
     end

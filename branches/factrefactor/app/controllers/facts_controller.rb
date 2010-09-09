@@ -31,14 +31,13 @@ class FactsController < ApplicationController
 
   def create_many
     fact_classes_from_params.each do |fact_class|
-      ttt = fact_class.new(params)
-      debugger
-      if ttt.save!
-        render :text => nil, :status => 200
-      else
+      fact = fact_class.new(params)
+      unless fact.save!
         render :text => nil, :status => 422
       end
     end
+    
+    render :text => nil, :status => 200
   end
 
   def update
