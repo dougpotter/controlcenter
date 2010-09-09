@@ -15,20 +15,20 @@ module FactBehaviors
     # returns object of type FactAggreation
     # TODO: I'd like to separate the building of group_by_list into its
     # own method, but I don't know how within a module
-    def aggregate(spec_hash)
-      group_by_list = keyize_indices(spec_hash[:group_by])
+    def aggregate(options = {})
+      group_by_list = keyize_indices(options[:group_by])
 
       fa = FactAggregation.new
-      for metric in spec_hash[:include]
+      for metric in options[:include]
         fact = ActiveRecord.const_get(metric.classify)
-        fa.add fact.find_by_sql(
+        fa.add(fact.find_by_sql(
           "SELECT #{group_by_list}, SUM(#{metric})
           FROM #{metric.pluralize}
-          WHERE #{spec_hash[:where]}
+          WHERE #{options[:where]}
           GROUP BY #{group_by_list}"
-        )
+        ))
       end 
-      fa.adjust_time_zone(spec_hash[:tz_offset])
+      fa.adjust_time_zone(options[:tz_offset])
       return fa
     end
 
@@ -85,7 +85,7 @@ module FactBehaviors
     end
     
     def scalar_fact
-      self.name.to_s.tableize.singularize.to_sym
+      self.name.to_s.underscore.to_sym
     end
   end
 
@@ -95,6 +95,16 @@ module FactBehaviors
       #base.validates_presence_of :start_time
       if base.respond_to?(:validates_as_unique)
         base.validates_as_unique :on => :create
+      end
+      
+      Dimension.business_index_dictionary.each do |key, value|
+        base.class_eval do
+          define_method(key) {
+            self.send(value.to_s.gsub(/_id$/, "")).send(
+              Dimension.business_index_aliases[key]
+            )
+          }
+        end
       end
     end
 

@@ -19,7 +19,10 @@ class FactsController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do 
-        @csv_rows = @fact_aggregation.to_csv
+        @csv_rows = @fact_aggregation.to_csv({
+          :facts => params[:metrics].split(","),
+          :dimensions => params[:dimensions].split(",")
+        })
         render_csv
       end
     end
