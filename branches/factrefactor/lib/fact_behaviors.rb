@@ -22,10 +22,10 @@ module FactBehaviors
       for metric in options[:include]
         fact = ActiveRecord.const_get(metric.classify)
         fa.add(fact.find_by_sql(
-          "SELECT #{group_by_list}, SUM(#{metric})
+          "SELECT #{group_by_list.join(", ")}, SUM(#{metric})
           FROM #{metric.pluralize}
           WHERE #{options[:where]}
-          GROUP BY #{group_by_list}"
+          GROUP BY #{group_by_list.join(", ")}"
         ))
       end 
       fa.adjust_time_zone(options[:tz_offset])
