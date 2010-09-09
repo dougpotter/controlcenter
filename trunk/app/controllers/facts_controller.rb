@@ -21,7 +21,8 @@ class FactsController < ApplicationController
       format.csv do 
         @csv_rows = @fact_aggregation.to_csv({
           :facts => params[:metrics].split(","),
-          :dimensions => params[:dimensions].split(",")
+          :dimensions => params[:dimensions].split(","),
+          :frequency => params[:frequency]
         })
         render_csv
       end

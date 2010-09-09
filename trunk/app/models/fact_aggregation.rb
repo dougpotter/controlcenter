@@ -21,9 +21,33 @@ class FactAggregation
 
   def to_csv(options = {})
     rows = []
+    
+    frequency_name_set = case options[:frequency]
+    when "hour" then
+      %w{ day hour }
+    when "day" then
+      %w{ day }
+    when "week" then
+      %w{ week }
+    else
+      []
+    end
+    
+    # TODO: DRY!!! (See lib/fact_behaviors.rb)
+    frequency_attribute_set = case options[:frequency]
+    when "hour" then
+      [ "DATE(start_time)", "HOUR(start_time)" ]
+    when "day" then
+      [ "DATE(start_time)" ]
+    when "week" then
+      [ "DATE_SUB(DATE(start_time), INTERVAL (DAYOFWEEK(start_time) - 1) DAY)" ]
+    else
+      []
+    end
+    
     rows << (
       options[:dimensions] && options[:facts] ?
-      options[:dimensions] + options[:facts] :
+      options[:dimensions] + frequency_name_set + options[:facts] :
       @observations[0].attributes.keys
     )
     row_hash = {}
@@ -31,7 +55,8 @@ class FactAggregation
     for fact in @observations
       fact_value = fact.attributes["SUM(#{fact.class.name.to_s.underscore})"]
       if options[:dimensions] && options[:facts]
-        dim_array = options[:dimensions].collect { |dim| fact.send(dim) }
+        dim_array = options[:dimensions].collect { |dim| fact.send(dim) } +
+          frequency_attribute_set.collect { |attrib| fact.attributes[attrib] }
         row_hash[dim_array] ||= []
         options[:facts].each_with_index do |fact_name, idx|
           row_hash[dim_array][idx] ||= fact.attributes["SUM(#{fact_name.to_s})"]

@@ -111,7 +111,6 @@ module DimensionBehaviors
       return [] if business_indices.nil? || business_indices.empty?
       
       return (business_indices.collect { |idx|
-        puts idx
         Dimension.scalar_dimensions.include?(idx.to_sym) ?
           idx.to_sym :
           @@business_index_dictionary[idx]
