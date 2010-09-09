@@ -28,15 +28,6 @@ class Campaign < ActiveRecord::Base
   validates_uniqueness_of :campaign_code
   validates_numericality_of :partner_id
 
-  def get_handle
-    :campaign_code
-  end
-
-  def self.handle_to_id(campaign_code)
-    find_by_campaign_code(campaign_code).id
-  end
-
-  def self.id_to_handle(id)
-    find(id).campaign_code
-  end
+  acts_as_dimension
+  business_index :campaign_code, :aka => "cid"
 end

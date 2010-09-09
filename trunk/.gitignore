@@ -17,3 +17,5 @@ tmp/pids/*
 tmp/sessions/*
 tmp/sockets/*
 tmp/test/*
+doc/debug.rtf
+*.swp

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100827043937) do
+ActiveRecord::Schema.define(:version => 20100902200410) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -114,6 +114,7 @@ ActiveRecord::Schema.define(:version => 20100827043937) do
     t.string  "creative_code",    :null => false
   end
 
+  add_index "creatives", ["creative_code"], :name => "index_creatives_on_creative_code", :unique => true
   add_index "creatives", ["creative_size_id"], :name => "creatives_creative_size_id_fk"
 
   create_table "custom_filters", :force => true do |t|

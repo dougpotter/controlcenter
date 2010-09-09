@@ -1,14 +1,5 @@
 class MediaPurchaseMethod < ActiveRecord::Base
-  
-  def get_handle
-    :mpm_code
-  end
+  acts_as_dimension
+  business_index :mpm_code, :aka => "mpm"
 
-  def self.handle_to_id(mpm_code)
-    find_by_mpm_code(mpm_code).id
-  end
-
-  def self.id_to_handle(id)
-    find(id).mpm_code
-  end
 end

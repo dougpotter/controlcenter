@@ -11,5 +11,5 @@
 
 class CreativeSize < ActiveRecord::Base
   has_many :creatives
-  # should there be a validation to make sure there's no duplicate sizes - e.g. validates_unique_comination :height :width
+  validates_uniqueness_of :height, :scope => [ :width ]
 end

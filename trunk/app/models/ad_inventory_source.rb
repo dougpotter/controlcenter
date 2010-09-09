@@ -17,15 +17,8 @@ class AdInventorySource < ActiveRecord::Base
   has_many :click_counts
   has_many :impression_counts
 
-  def get_handle
-    :ais_code
-  end
+  validates_presence_of :ais_code
 
-  def self.handle_to_id(ais_code)
-    find_by_ais_code(ais_code).id
-  end
-
-  def self.id_to_handle(id)
-    find(id).ais_code
-  end
+  acts_as_dimension
+  business_index :ais_code, :aka => "ais"
 end

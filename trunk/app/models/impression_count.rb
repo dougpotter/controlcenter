@@ -19,6 +19,12 @@
 # impressions along the dimensions given in the (compound) key comprised
 # of all columns except impression count
 class ImpressionCount < ActiveRecord::Base
+  acts_as_fact
+  # TODO: Implement requires_dimensions and accepts_dimensions
+  #requires_dimensions :campaign, :ad_inventory_source, :audience, :creative
+  #accepts_dimensions :media_purchase_method
+  
+
   belongs_to :campaign
   belongs_to :creative
   belongs_to :ad_inventory_source
@@ -35,15 +41,6 @@ class ImpressionCount < ActiveRecord::Base
     if ImpressionCount.exists?(self.attributes)
       errors.add_to_base('There already exists an ImpressionCount with the same dimension combination')
     end
-  end
-
-
-  def business_objects
-    [ campaign, creative, ad_inventory_source, audience, media_purchase_method ]
-  end
-
-  def business_attributes
-    ["start_time", "end_time", "duration_in_minutes", "campaign_code", "creative_code", "ais_code", "audience_code", "geography", "mpm_code"]
   end
 
 end
