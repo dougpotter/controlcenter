@@ -226,13 +226,13 @@ namespace :show do
   end
 
   task :tickets do
-    puts `svn update > /dev/null && svn log -r #{current_revision}:HEAD | grep '#[0-9]' | sort | uniq`.gsub(/(#[0-9]+)/){|match|
+    puts `svn log https://dev.xgraph.net/svn/xgraph/controlcenter -r #{current_revision}:HEAD | grep '#[0-9]' | sort | uniq`.gsub(/(#[0-9]+)/){|match|
       '<a href="https://dev.xgraph.net/trac/ticket/'+match.gsub(/[^0-9]/,"")+'">'+match+'</a>'
     }.gsub(/\n/,"<br />\n")
   end
 
   task :changes do
-    puts `svn update > /dev/null && svn log -r #{current_revision}:HEAD | grep '#[0-9]' | sort | uniq`
+    puts `svn log https://dev.xgraph.net/svn/xgraph/controlcenter -r #{current_revision}:HEAD | grep '#[0-9]' | sort | uniq`
   end
 end
 
@@ -275,7 +275,7 @@ namespace :deploy do
                 :latest_release => latest_release,
           ],[   # Send some custom vars you've setup in your deploy.rb to be sent out with the notification email!
                 # will be rendered as a section of the email called 'Release Data'
-                :tickets => `svn update > /dev/null && svn log -r #{previous_revision}:HEAD | grep '#[0-9]' | sort | uniq`.gsub(/(#[0-9]+)/){|match|
+                :tickets => `svn log https://dev.xgraph.net/svn/xgraph/controlcenter -r #{previous_revision}:HEAD | grep '#[0-9]' | sort | uniq`.gsub(/(#[0-9]+)/){|match|
                             '<a href="https://dev.xgraph.net/trac/ticket/'+match.gsub(/[^0-9]/,"")+'">'+match+'</a>'
                             }.gsub(/\n/,"<br />\n")
           ],[   # Send some more custom vars you've setup in your deploy.rb to be sent out with the notification email!
