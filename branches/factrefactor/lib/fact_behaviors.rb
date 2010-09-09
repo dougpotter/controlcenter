@@ -57,7 +57,10 @@ module FactBehaviors
       }
     end
 
-    def find_all_by_dimensions(conditions)
+    def find_all_by_dimensions(options = {})
+      find(:all, {
+        :conditions => keyize_index_attributes(options[:conditions])
+      })
     end
     
     def native_attributes?(params)
@@ -67,9 +70,13 @@ module FactBehaviors
       params.keys.map{|a| a.to_s}.to_set.subset?(native_attribute_set)
     end
     
-    def keyize_index_attributes(index_attributes)
+    def keyize_index_attributes(index_attributes, options = {})
       Dimension.keyize_index_attributes(index_attributes, {
-        :include => scalar_dimensions
+        :include => (
+          options[:include_fact] ?
+          Dimension.scalar_dimensions.push(scalar_fact) :
+          Dimension.scalar_dimensions
+        )
       })
     end
     
@@ -77,10 +84,8 @@ module FactBehaviors
       Dimension.keyize_indices(business_indices)
     end
     
-    def scalar_dimensions
-      Dimension.scalar_dimensions.push(
-        self.name.to_s.tableize.singularize.to_sym
-      )
+    def scalar_fact
+      self.name.to_s.tableize.singularize.to_sym
     end
   end
 
@@ -89,7 +94,7 @@ module FactBehaviors
       # Method statements go here; e.g.:
       #base.validates_presence_of :start_time
       if base.respond_to?(:validates_as_unique)
-        base.validates_as_unique
+        base.validates_as_unique :on => :create
       end
     end
 
@@ -99,15 +104,25 @@ module FactBehaviors
       if attributes.nil? || attributes.empty? || self.class.native_attributes?(attributes)
         super
       else
-        translated_params = self.class.keyize_index_attributes(attributes)
+        translated_params = self.class.keyize_index_attributes(attributes, {
+          :include_fact => true
+        })
+        super(translated_params)
+      end
+    end
+    
+    def update_attributes(attributes = nil)
+      if attributes.nil? || attributes.empty? || self.class.native_attributes?(attributes)
+        super(attributes)
+      else
+        translated_params = self.class.keyize_index_attributes(attributes, {
+          :include_fact => true
+        })
         super(translated_params)
       end
     end
     
     def is_fact? ; true ; end
-
-    def update(*args)
-    end
     
   end
 end

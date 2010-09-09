@@ -47,10 +47,10 @@ module ActiveRecord
       end
 
       # validate uniquenss of required attribute combo
-      def validates_as_unique
+      def validates_as_unique(options = {})
         columns = self.dimension_columns.map { |c| c.to_sym }
         where_clause = []
-        validates_each(columns) do |record, attr_name, value|
+        validates_each(columns, options) do |record, attr_name, value|
           if value == nil
             next
           elsif attr_name == :start_time || attr_name == :end_time
