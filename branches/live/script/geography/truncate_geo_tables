@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+# truncate_geo_tables: Truncate all existing geography tables, removing data,
+#   for purposes of fresh re-seeding.
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
+
+rails_config = Rails::Configuration.new
+db_name = rails_config.database_configuration[RAILS_ENV]["database"]
+
+connection = ActiveRecord::Base.connection
+
+# IMPORTANT: The following tables are ordered in such a way that deleting them
+# in said order will honor any foreign key constraints.
+TABLE_NAMES = %w{
+  campaigns_geographies msas_regions regions_zips
+  msa_regions region_zips
+  zips cities msas regions countries geographies
+}
+
+TABLE_NAMES.each do |table_name|
+  if connection.tables.include?(table_name)
+    quoted_table_name = connection.quote_column_name(table_name)
+    connection.execute("TRUNCATE TABLE #{quoted_table_name};")
+  end
+end

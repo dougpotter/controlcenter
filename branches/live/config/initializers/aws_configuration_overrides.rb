@@ -1,0 +1,1 @@
+AppConfigReader.new('aws').apply!
