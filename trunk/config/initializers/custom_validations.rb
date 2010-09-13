@@ -48,25 +48,33 @@ module ActiveRecord
 
       # validate uniquenss of required attribute combo
       def validates_as_unique(options = {})
-        columns = self.dimension_columns.map { |c| c.to_sym }
-        where_clause = []
-        validates_each(columns, options) do |record, attr_name, value|
-          if value.nil?
-            next
-          elsif attr_name == :start_time || attr_name == :end_time
-            where_clause << "#{attr_name} = #{quote_value(value.strftime("%Y-%m-%d %H:%M:%S"))}"
-          else
-            where_clause << "#{attr_name} = #{quote_value(value)}"
-          end 
-
-          if attr_name == columns[-1]
-            duplicates = self.find_by_sql("SELECT * FROM #{connection.quote_table_name(self.to_s.underscore.pluralize)} WHERE #{where_clause.join(" AND ")}")
-            where_clause = []
-            if duplicates.empty?
-              true
+        validated_columns = self.dimension_columns.map { |c| c.to_sym }
+        return if validated_columns.empty?
+        validates_each(validated_columns.first, options) do |record, attr_name, value|
+          where_parts = []
+          validated_columns.each do |column|
+            value = record.send(column)
+            if value.nil?
+              # ignore
+            elsif attr_name == :start_time || attr_name == :end_time
+              where_parts << "#{connection.quote_table_name(column)} = #{quote_value(value.strftime("%Y-%m-%d %H:%M:%S"))}"
             else
-              record.errors.add("set of dimension columns is not unique")
+              where_parts << "#{connection.quote_table_name(column)} = #{quote_value(value)}"
+            end
+          end
+          
+          if !where_parts.empty?
+            # don't need this since we only validate as unique on create currently
+            #unless record.new_record?
+              #where_parts << "#{connection.quote_table_name(primary_key)} <> #{quote_value(record.send(primary_key))}"
+            #end
+            
+            duplicates = self.find_by_sql("SELECT * FROM #{connection.quote_table_name(self.to_s.underscore.pluralize)} WHERE #{where_parts.join(" AND ")}")
+            unless duplicates.empty?
+              record.errors.add_to_base("Set of dimension columns is not unique")
             end 
+          else
+            record.errors.add_to_base('All columns in validates_as_unique constraint have nil values')
           end
         end
       end 
