@@ -54,13 +54,13 @@ module ActiveRecord
           if value == nil
             next
           elsif attr_name == :start_time || attr_name == :end_time
-            where_clause << "#{attr_name} = \"#{value.strftime("%Y-%m-%d %H:%M:%S")}\""
+            where_clause << "#{attr_name} = #{quote_value(value.strftime("%Y-%m-%d %H:%M:%S"))}"
           else
-            where_clause << "#{attr_name} = \"#{value}\""
+            where_clause << "#{attr_name} = #{quote_value(value)}"
           end 
 
           if attr_name == columns[-1]
-            duplicates = self.find_by_sql("SELECT * FROM #{self.to_s.underscore.pluralize} WHERE #{where_clause.join(" AND ")}")
+            duplicates = self.find_by_sql("SELECT * FROM #{connection.quote_table_name(self.to_s.underscore.pluralize)} WHERE #{where_clause.join(" AND ")}")
             where_clause = []
             if duplicates == []
               true
