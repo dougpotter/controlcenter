@@ -31,7 +31,7 @@ ActionController::Routing::Routes.draw do |map|
   #   end
   
   map.metrics_home "/home/metrics", :controller => "landing_pages", :action => "metrics" 
-  map.form_update "/home/metrics/form_update", :controller => "landing_pages", :action => "update_form"
+  map.update_form "/home/metrics/update_form", :controller => "landing_pages", :action => "update_form"
   
   # Facts are known on the outside as "metrics"
   map.resources :facts, :as => "metrics"
@@ -44,8 +44,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :beacon_report_graphs
 
   # You can have the root of your site routed with map.root -- just remember to delete public/index.html.
-  map.root :controller => "beacon_reports",
-           :action => "index"
+  map.root :controller => "landing_pages",
+           :action => "metrics"
 
   # See how all your routes lay out with "rake routes"
 

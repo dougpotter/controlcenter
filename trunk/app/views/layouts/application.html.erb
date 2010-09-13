@@ -7,8 +7,8 @@
 <%= stylesheet_link_tag ["reset", "application"], :cache => "all" %>
 <%= javascript_include_tag [
   "swfobject", "application", "mootools-1.2.4-core"], :cache => "all" %>
-<link rel="shortcut icon" href="<%= image_path "favicon.ico" %>" />
-
+  <link rel="shortcut icon" href="<%= image_path "favicon.ico" %>" />
+  
 </head>
 
 <body>
@@ -23,15 +23,8 @@
 
         <ul class="nav">
           <%= content_tag(:li, 
-            link_to("Beacon Reports", beacon_reports_url),
-            :class => current_if(:beacon_reports)) %>
-          <%= content_tag(:li, 
-            link_to("Campaign Management", '#'),
-            :class => "") %>
-          <%= content_tag(:li, 
-            link_to("ETL Dashboard", '#'),
-            :class => "") %>
-
+            link_to("Metric Reporting", metrics_home_url),
+            :class => current_if(:metric_reports)) %>
         </ul>
 
       </div>

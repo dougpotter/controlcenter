@@ -179,7 +179,7 @@ label {
 .param_selector_row a:hover { color: #75439A; }
 .param_selector_row a:active { color: #75439A; }
 
-.bilevel_input {
+.bilevel_input, .dimension_input {
   float: left;
   padding: 0px 5px 5px 0px;
 }
