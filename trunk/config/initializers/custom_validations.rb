@@ -51,7 +51,7 @@ module ActiveRecord
         columns = self.dimension_columns.map { |c| c.to_sym }
         where_clause = []
         validates_each(columns, options) do |record, attr_name, value|
-          if value == nil
+          if value.nil?
             next
           elsif attr_name == :start_time || attr_name == :end_time
             where_clause << "#{attr_name} = #{quote_value(value.strftime("%Y-%m-%d %H:%M:%S"))}"
@@ -62,7 +62,7 @@ module ActiveRecord
           if attr_name == columns[-1]
             duplicates = self.find_by_sql("SELECT * FROM #{connection.quote_table_name(self.to_s.underscore.pluralize)} WHERE #{where_clause.join(" AND ")}")
             where_clause = []
-            if duplicates == []
+            if duplicates.empty?
               true
             else
               record.errors.add("set of dimension columns is not unique")
