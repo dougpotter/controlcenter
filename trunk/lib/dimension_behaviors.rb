@@ -1,5 +1,5 @@
 module DimensionBehaviors
-  class InvalidDimensionSpecifiation < Exception ; end
+  class InvalidDimensionSpecification < Exception ; end
 
   def self.included(base)
     base.class_eval do
@@ -94,7 +94,7 @@ module DimensionBehaviors
               key_attrs[@@business_index_dictionary[param]] == translated_arg
             key_attrs[@@business_index_dictionary[param]] = translated_arg
           else
-            raise InvalidDimensionSpecifiation
+            raise InvalidDimensionSpecification
           end
           
         # Scalar indices; no translation
