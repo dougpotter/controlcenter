@@ -166,6 +166,20 @@ namespace :db do
 end
 
 # =============================================================================
+# COMPILATION
+# =============================================================================
+
+# Important: shpaml compiler loads environment and therefore compiling
+# templates has to follow db symlinking
+after "deploy:update_code", "deploy:compile"
+
+namespace :deploy do
+  task :compile do
+    run "cd #{release_path} && rake RAILS_ENV=#{rails_env} shpaml:compile"
+  end
+end
+
+# =============================================================================
 # DEPLOY SECTION
 # =============================================================================
 namespace :deploy do
