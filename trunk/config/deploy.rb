@@ -246,42 +246,46 @@ namespace :deploy do
   desc "Send email notification of deployment"
   task :notify do
     show.me
-    mailer.send([#only send variables you want to be in the email
-                :rails_env => rails_env,
-                :host => host,
-                :task_name => task_name,
-                :application => application,
-                :repository => repository,
-                :scm => scm,
-                :deploy_via => deploy_via,
-                :deploy_to => deploy_to,
-                :revision => revision,
-                :real_revision => real_revision,
-                :release_name => release_name,
-                :version_dir => version_dir,
-                :shared_dir => shared_dir,
-                :current_dir => current_dir,
-                :releases_path => releases_path,
-                :shared_path => shared_path,
-                :current_path => current_path,
-                :release_path => release_path,
-                :releases => releases,
-                :current_release => current_release,
-                :previous_release => previous_release,
-                :current_revision => current_revision,
-                :latest_revision => latest_revision,
-                :previous_revision => previous_revision,
-                :run_method => run_method,
-                :latest_release => latest_release,
-          ],[   # Send some custom vars you've setup in your deploy.rb to be sent out with the notification email!
-                # will be rendered as a section of the email called 'Release Data'
-                :tickets => `svn log https://dev.xgraph.net/svn/xgraph/controlcenter -r #{previous_revision}:HEAD | grep '#[0-9]' | sort | uniq`.gsub(/(#[0-9]+)/){|match|
-                            '<a href="https://dev.xgraph.net/trac/ticket/'+match.gsub(/[^0-9]/,"")+'">'+match+'</a>'
-                            }.gsub(/\n/,"<br />\n")
-          ],[   # Send some more custom vars you've setup in your deploy.rb to be sent out with the notification email!
-                # will be rendered as a section of the email called 'Extra Information'
-          ]
-        )
+    if ENV['XGCC_NO_CAP_MAILER'].nil? || !%w(1 yes true).include?(ENV['XGCC_NO_CAP_MAILER'].downcase)
+      mailer.send([#only send variables you want to be in the email
+                  :rails_env => rails_env,
+                  :host => host,
+                  :task_name => task_name,
+                  :application => application,
+                  :repository => repository,
+                  :scm => scm,
+                  :deploy_via => deploy_via,
+                  :deploy_to => deploy_to,
+                  :revision => revision,
+                  :real_revision => real_revision,
+                  :release_name => release_name,
+                  :version_dir => version_dir,
+                  :shared_dir => shared_dir,
+                  :current_dir => current_dir,
+                  :releases_path => releases_path,
+                  :shared_path => shared_path,
+                  :current_path => current_path,
+                  :release_path => release_path,
+                  :releases => releases,
+                  :current_release => current_release,
+                  :previous_release => previous_release,
+                  :current_revision => current_revision,
+                  :latest_revision => latest_revision,
+                  :previous_revision => previous_revision,
+                  :run_method => run_method,
+                  :latest_release => latest_release,
+            ],[   # Send some custom vars you've setup in your deploy.rb to be sent out with the notification email!
+                  # will be rendered as a section of the email called 'Release Data'
+                  :tickets => `svn log https://dev.xgraph.net/svn/xgraph/controlcenter -r #{previous_revision}:HEAD | grep '#[0-9]' | sort | uniq`.gsub(/(#[0-9]+)/){|match|
+                              '<a href="https://dev.xgraph.net/trac/ticket/'+match.gsub(/[^0-9]/,"")+'">'+match+'</a>'
+                              }.gsub(/\n/,"<br />\n")
+            ],[   # Send some more custom vars you've setup in your deploy.rb to be sent out with the notification email!
+                  # will be rendered as a section of the email called 'Extra Information'
+            ]
+          )
+    else
+      puts "Capistrano mailer disabled via XGCC_NO_CAP_MAILER"
+    end
   end
 end
 
