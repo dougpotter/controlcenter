@@ -1,11 +1,41 @@
-div class="dimension_input"
-  label for="partner_select" | Partner:
+div class=dimension_input
+  label for="start_day" | Start:
   >br
   
-  = select_tag("partner_select", "<option value=\"0\">All</option>" + options_from_collection_for_select(@partners, "id", "name", @partner))
+  = date_select 'start', 'bar'
 
-div class="dimension_input"
-  label for="campaign_select" | Campaign:
+div class=dimension_input
+  label for="start_day" | End:
   >br
-  = select_tag("campaign_select", "<option value=\"0\">All</option>" + options_from_collection_for_select(@campaigns, "id", "campaign_code", @campaign))
+  
+  = date_select 'end', 'bar'
 
+div class=dimension_input
+  label for=frequency | Frequency:
+  >br
+  
+  = select_tag('frequency', options_for_frequency_select)
+
+div class=dimension_input
+  label for=metric | Metric:
+  >br
+  
+  = select_tag('metric', options_for_metric_select)
+
+div style='clear:both;'
+  >br
+
+% for label, name, form_tag_name in dimensions
+  div class="dimension_input"
+    label for="<%= name %>_select"
+      = label + ':'
+    >br
+    
+    = check_box '#{name}_group', 'group'
+    label for='<%= name %>_group' | Group By?
+    >br
+    
+    label for='<%= name %>_filter' | Filter By:
+    >br
+    
+    = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"), :multiple => true)
