@@ -69,7 +69,7 @@ module ActiveRecord
               #where_parts << "#{connection.quote_table_name(primary_key)} <> #{quote_value(record.send(primary_key))}"
             #end
             
-            duplicates = self.find_by_sql("SELECT * FROM #{connection.quote_table_name(self.to_s.underscore.pluralize)} WHERE #{where_parts.join(" AND ")}")
+            duplicates = self.find_by_sql("SELECT 1 FROM #{connection.quote_table_name(self.to_s.underscore.pluralize)} WHERE #{where_parts.join(" AND ")}")
             unless duplicates.empty?
               record.errors.add_to_base("Set of dimension columns is not unique")
             end 
