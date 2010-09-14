@@ -1,8 +1,0 @@
-<div class="dimension_input">
-  <label for="partner_select">Partner:</label><br />
-  <%= select_tag("partner_select", "<option value=\"0\">All</option>" + options_from_collection_for_select(@partners, "id", "name", @partner)) %>
-</div>
-<div class="dimension_input">
-  <label for="campaign_select">Campaign:</label><br />
-  <%= select_tag("campaign_select", "<option value=\"0\">All</option>" + options_from_collection_for_select(@campaigns, "id", "campaign_code", @campaign)) %>
-</div>
