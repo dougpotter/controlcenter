@@ -1,7 +1,8 @@
 class LandingPagesController < ApplicationController
   def metrics 
-    @partners = Partner.find(:all)
-    @campaigns = Campaign.find(:all)
+    @partners = Partner.all(:order => :name)
+    @campaigns = Campaign.all(:order => :campaign_code)
+    @creatives = Creative.all(:order => :creative_code)
   end
 
   def update_form

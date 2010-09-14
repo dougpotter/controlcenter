@@ -20,42 +20,19 @@ module LandingPagesHelper
   end
   
   def options_for_partner_select
-    options_from_collection_for_select(@partners, "id", "name", @partner)
-    options_for_select(partners)
+    options_from_collection_for_select(@partners, :id, :partner_code_and_name)
   end
   
   def options_for_creative_select
-    options_for_select(creatives)
+    options_from_collection_for_select(@creatives, :id, :creative_code)
   end
   
   def options_for_campaign_select
-    options_from_collection_for_select(@campaigns, "id", "campaign_code", @campaign)
-    options_for_select(campaigns)
+    options_from_collection_for_select(@campaigns, :id, :campaign_code)
   end
   
   def all_filter_option
     "<option value=\"\">All</option>"
-  end
-  
-  def partners
-    [
-      ['Partner 1', 1],
-      ['Partner 2', 2],
-    ]
-  end
-  
-  def creatives
-    [
-      ['Creative 1', 1],
-      ['Creative 2', 2],
-    ]
-  end
-  
-  def campaigns
-    [
-      ['Campaign 1', 1],
-      ['Campaign 2', 2],
-    ]
   end
   
   def dimensions

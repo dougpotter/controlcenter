@@ -15,6 +15,10 @@ class Partner < ActiveRecord::Base
 
   validates_uniqueness_of :partner_code
   def pid ; partner_code ; end
+  
+  def partner_code_and_name
+    "#{partner_code} #{name}"
+  end
 
   acts_as_dimension
   business_index :partner_code, :aka => "pid"
