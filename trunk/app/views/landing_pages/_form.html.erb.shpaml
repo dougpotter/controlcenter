@@ -44,5 +44,18 @@ div style='clear:both;'
     
     = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"))
 
-div class=dimension_input style='clear:both;'
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  Format:
+  = radio_button_tag 'format', 'csv', :checked => 'checked'
+  label for=format_csv | CSV
+  = radio_button_tag 'format', 'html'
+  label for=format_html | HTML
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
   = submit_tag('Go')

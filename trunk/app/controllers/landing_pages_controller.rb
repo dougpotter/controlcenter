@@ -40,10 +40,12 @@ class LandingPagesController < ApplicationController
         group[key] = true
       end
     end
+    format = params[:format]
+    format = 'csv' unless %w(csv html).include?(format)
     
-    format = FactsController::TIME_FORMAT
-    start_time = start_date.utc.strftime(format)
-    end_time = end_date.utc.strftime(format)
+    time_format = FactsController::TIME_FORMAT
+    start_time = start_date.utc.strftime(time_format)
+    end_time = end_date.utc.strftime(time_format)
     metrics = metric
     dimensions = group.keys.join(',')
     tz_offset = 0
@@ -53,7 +55,8 @@ class LandingPagesController < ApplicationController
       :frequency => frequency,
       :metrics => metrics,
       :dimensions => dimensions,
-      :tz_offset => tz_offset
+      :tz_offset => tz_offset,
+      :format => format
     )
   end
 
