@@ -1,14 +1,14 @@
 module LandingPagesHelper
   FREQUENCIES = [
-    ['Hourly', 'hourly'],
-    ['Daily', 'daily'],
-    ['Weekly', 'weekly'],
-    ['Monthly', 'monthly'],
+    ['Hourly', 'hour'],
+    ['Daily', 'day'],
+    ['Weekly', 'week'],
+    ['Monthly', 'month'],
   ]
   
   METRICS = [
-    ['Click Count', 'clicks'],
-    ['Impression Count', 'impressions'],
+    ['Click Count', 'click_count'],
+    ['Impression Count', 'impression_count'],
   ]
   
   def options_for_frequency_select

@@ -30,6 +30,7 @@ ActionController::Routing::Routes.draw do |map|
   #     admin.resources :products
   #   end
   
+  map.metrics_report '/home/metrics/report', :controller => 'landing_pages', :action => 'report'
   map.metrics_home "/home/metrics", :controller => "landing_pages", :action => "metrics" 
   map.update_form "/home/metrics/update_form", :controller => "landing_pages", :action => "update_form"
   

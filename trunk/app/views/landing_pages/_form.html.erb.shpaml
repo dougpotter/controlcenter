@@ -2,13 +2,17 @@ div class=dimension_input
   label for="start_day" | Start:
   >br
   
-  = date_select 'start', 'bar'
+  = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'start_year')
+  = select_month(Date.current, {}, :name => 'start_month')
+  = select_day(Date.current, {}, :name => 'start_day')
 
 div class=dimension_input
   label for="start_day" | End:
   >br
   
-  = date_select 'end', 'bar'
+  = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'end_year')
+  = select_month(Date.current, {}, :name => 'end_month')
+  = select_day(Date.current, {}, :name => 'end_day')
 
 div class=dimension_input
   label for=frequency | Frequency:
@@ -31,7 +35,7 @@ div style='clear:both;'
       = label + ':'
     >br
     
-    = check_box '#{name}_group', 'group'
+    = check_box_tag "#{name}_group", '1'
     label for='<%= name %>_group' | Group By?
     >br
     
@@ -39,3 +43,6 @@ div style='clear:both;'
     >br
     
     = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"))
+
+div class=dimension_input style='clear:both;'
+  = submit_tag('Go')

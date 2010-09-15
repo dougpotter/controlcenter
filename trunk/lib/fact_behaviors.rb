@@ -20,9 +20,12 @@ module FactBehaviors
 
       case options[:frequency]
       when "hour" then
-        group_by_list += [ "DATE(start_time)", "HOUR(start_time)" ]
+        group_by_list += [
+          SqlGenerator.date_from_datetime('start_time'),
+          SqlGenerator.hour_from_datetime('start_time'),
+        ]
       when "day" then
-        group_by_list << "DATE(start_time)"
+        group_by_list << SqlGenerator.date_from_datetime('start_time')
       when "week" then
         group_by_list << 
           "DATE_SUB(DATE(start_time), INTERVAL (DAYOFWEEK(start_time) - 1) DAY)"
@@ -30,7 +33,7 @@ module FactBehaviors
       
       fa = FactAggregation.new
       for metric in options[:include]
-        fact = ActiveRecord.const_get(metric.classify)
+        fact = Object.const_get(metric.classify)
         fa.add(fact.find_by_sql(
           "SELECT #{group_by_list.join(", ")}, SUM(#{metric})
           FROM #{metric.pluralize}

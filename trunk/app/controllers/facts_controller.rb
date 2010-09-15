@@ -1,4 +1,6 @@
 class FactsController < ApplicationController
+  TIME_FORMAT = "%Y-%m-%d %H:%M:%S".freeze
+  
   # skip auth before :create should be deleted for production
   skip_before_filter :verify_authenticity_token, :only => [:create, :update, :index]
   FACTS = ["impression_count", "click_count"]
@@ -87,8 +89,8 @@ class FactsController < ApplicationController
 
   def where_conditions_from_params
     s = []
-    s << "start_time >= \"#{Time.parse(params[:start_time]).strftime("%Y-%m-%d %H:%M:%S")}\""
-    s << "end_time <= \"#{Time.parse(params[:end_time]).strftime("%Y-%m-%d %H:%M:%S")}\""
+    s << "start_time >= #{ActiveRecord::Base.quote_value(Time.parse(params[:start_time]).strftime(TIME_FORMAT))}"
+    s << "end_time <= #{ActiveRecord::Base.quote_value(Time.parse(params[:end_time]).strftime(TIME_FORMAT))}"
     s.join(" AND ")
   end
 end
