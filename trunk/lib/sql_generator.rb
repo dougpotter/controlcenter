@@ -38,5 +38,9 @@ module SqlGenerator
     def method_missing(meth, *args)
       @@impl.send(meth, *args)
     end
+    
+    def respond_to?(meth)
+      super || @@impl.respond_to?(meth)
+    end
   end
 end
