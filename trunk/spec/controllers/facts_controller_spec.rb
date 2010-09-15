@@ -65,7 +65,6 @@ describe FactsController do
     # frequency, test all frequencies separately.
     # This test is for monthly frequency.
     it "should be successful with month frequency" do
-      pending
       # index fails when invoked without parameters
       get 'index',
         :start_time => '2010-01-01 00:00:00',
