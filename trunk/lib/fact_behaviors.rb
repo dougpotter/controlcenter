@@ -22,20 +22,24 @@ module FactBehaviors
       # Note: FactAggregation expects the expressions being selected
       # to be aliased to correct column names
       case options[:frequency]
-      when "hour" then
+      when "hour"
         date = SqlGenerator.date_from_datetime('start_time')
         hour = SqlGenerator.hour_from_datetime('start_time')
         group_by_list += [date, hour]
         column_aliases[date] = 'date'
         column_aliases[hour] = 'hour'
-      when "day" then
+      when "day"
         date = SqlGenerator.date_from_datetime('start_time')
         group_by_list << date
         column_aliases[date] = 'date'
-      when "week" then
+      when "week"
         start_date = SqlGenerator.beginning_of_week_from_datetime('start_time')
         column_aliases[start_date] = 'start_date'
         group_by_list << start_date
+      when nil
+        raise ArgumentError, "Frequency must be given in current implementation"
+      else
+        raise ArgumentError, "Unknown frequency: #{options[:frequency]}"
       end
       
       fa = FactAggregation.new
