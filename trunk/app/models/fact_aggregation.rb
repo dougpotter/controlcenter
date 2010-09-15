@@ -33,14 +33,15 @@ class FactAggregation
       []
     end
     
-    # TODO: DRY!!! (See lib/fact_behaviors.rb)
+    # Note: FactBehaviors' job is to alias the expressions to
+    # correct column names
     frequency_attribute_set = case options[:frequency]
     when "hour" then
-      [ "DATE(start_time)", "HOUR(start_time)" ]
+      [ 'date', 'hour' ]
     when "day" then
-      [ "DATE(start_time)" ]
+      [ 'date' ]
     when "week" then
-      [ "DATE_SUB(DATE(start_time), INTERVAL (DAYOFWEEK(start_time) - 1) DAY)" ]
+      [ 'start_date' ]
     else
       []
     end
@@ -53,13 +54,13 @@ class FactAggregation
     row_hash = {}
     column_sets = []
     for fact in @observations
-      fact_value = fact.attributes["SUM(#{fact.class.name.to_s.underscore})"]
+      fact_value = fact.attributes['sum']
       if options[:dimensions] && options[:facts]
         dim_array = options[:dimensions].collect { |dim| fact.send(dim) } +
           frequency_attribute_set.collect { |attrib| fact.attributes[attrib] }
         row_hash[dim_array] ||= []
         options[:facts].each_with_index do |fact_name, idx|
-          row_hash[dim_array][idx] ||= fact.attributes["SUM(#{fact_name.to_s})"]
+          row_hash[dim_array][idx] ||= fact.attributes['sum']
         end
       else
         column_sets << fact.attributes.values

@@ -17,25 +17,39 @@ module FactBehaviors
     # own method, but I don't know how within a module
     def aggregate(options = {})
       group_by_list = keyize_indices(options[:group_by])
-
+      column_aliases = {}
+      
+      # Note: FactAggregation expects the expressions being selected
+      # to be aliased to correct column names
       case options[:frequency]
       when "hour" then
-        group_by_list += [
-          SqlGenerator.date_from_datetime('start_time'),
-          SqlGenerator.hour_from_datetime('start_time'),
-        ]
+        date = SqlGenerator.date_from_datetime('start_time')
+        hour = SqlGenerator.hour_from_datetime('start_time')
+        group_by_list += [date, hour]
+        column_aliases[date] = 'date'
+        column_aliases[hour] = 'hour'
       when "day" then
-        group_by_list << SqlGenerator.date_from_datetime('start_time')
+        date = SqlGenerator.date_from_datetime('start_time')
+        group_by_list << date
+        column_aliases[date] = 'date'
       when "week" then
-        group_by_list << 
-          "DATE_SUB(DATE(start_time), INTERVAL (DAYOFWEEK(start_time) - 1) DAY)"
+        start_date = SqlGenerator.beginning_of_week_from_datetime('start_time')
+        column_aliases[start_date] = 'start_date'
+        group_by_list << start_date
       end
       
       fa = FactAggregation.new
       for metric in options[:include]
         fact = Object.const_get(metric.classify)
+        columns = group_by_list.map do |expr|
+          if aliased = column_aliases[expr]
+            "#{expr} as #{aliased}"
+          else
+            expr
+          end
+        end.join(', ')
         fa.add(fact.find_by_sql(
-          "SELECT #{group_by_list.join(", ")}, SUM(#{metric})
+          "SELECT #{columns}, SUM(#{metric}) as sum
           FROM #{metric.pluralize}
           WHERE #{options[:where]}
           GROUP BY #{group_by_list.join(", ")}"
