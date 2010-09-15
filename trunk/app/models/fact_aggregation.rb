@@ -29,6 +29,8 @@ class FactAggregation
       %w{ day }
     when "week" then
       %w{ week }
+    when "month" then
+      %w{ month }
     else
       []
     end
@@ -41,6 +43,8 @@ class FactAggregation
     when "day" then
       [ 'date' ]
     when "week" then
+      [ 'start_date' ]
+    when "month" then
       [ 'start_date' ]
     else
       []

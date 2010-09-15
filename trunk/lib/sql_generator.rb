@@ -11,6 +11,10 @@ module SqlGenerator
     def beginning_of_week_from_datetime(expr)
       "DATE_SUB(DATE(#{expr}), INTERVAL (DAYOFWEEK(#{expr}) - 1) DAY)"
     end
+
+    def beginning_of_month_from_datetime(expr)
+      "DATE_SUB(DATE(#{expr}), INTERVAL (DAYOFMONTH(#{expr}) - 1) DAY)"
+    end
   end
   
   class PostgreSQL
@@ -25,6 +29,11 @@ module SqlGenerator
     def beginning_of_week_from_datetime(expr)
       # Note: on postgres sunday is day 0
       "(#{expr})::date - date_part('dow', (#{expr})::date)::integer"
+    end
+
+    def beginning_of_month_from_datetime(expr)
+      # Note: on postgres first day of the month is 1
+      "(#{expr})::date - date_part('day', (#{expr})::date)::integer + 1"
     end
   end
   

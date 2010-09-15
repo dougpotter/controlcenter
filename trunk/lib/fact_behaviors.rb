@@ -18,7 +18,7 @@ module FactBehaviors
     def aggregate(options = {})
       group_by_list = keyize_indices(options[:group_by])
       column_aliases = {}
-      
+
       # Note: FactAggregation expects the expressions being selected
       # to be aliased to correct column names
       case options[:frequency]
@@ -36,6 +36,10 @@ module FactBehaviors
         start_date = SqlGenerator.beginning_of_week_from_datetime('start_time')
         column_aliases[start_date] = 'start_date'
         group_by_list << start_date
+      when "month"
+        start_date = SqlGenerator.beginning_of_month_from_datetime('start_time')
+        group_by_list << start_date
+        column_aliases[start_date] = 'start_date'
       when nil
         raise ArgumentError, "Frequency must be given in current implementation"
       else
