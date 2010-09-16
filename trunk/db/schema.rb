@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100916175833) do
+ActiveRecord::Schema.define(:version => 20100916201530) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -101,6 +101,7 @@ ActiveRecord::Schema.define(:version => 20100916175833) do
     t.datetime "start_time",          :null => false
     t.datetime "end_time",            :null => false
     t.integer  "duration_in_minutes", :null => false
+    t.integer  "conversion_count",    :null => false
   end
 
   add_index "conversion_counts", ["campaign_id"], :name => "conversion_counts_campaign_id_fk"
@@ -289,37 +290,40 @@ ActiveRecord::Schema.define(:version => 20100916175833) do
   end
 
   create_table "unique_conversion_counts", :force => true do |t|
-    t.integer  "campaign_id",         :null => false
-    t.datetime "start_time",          :null => false
-    t.datetime "end_time",            :null => false
-    t.integer  "duration_in_minutes", :null => false
+    t.integer  "campaign_id",             :null => false
+    t.datetime "start_time",              :null => false
+    t.datetime "end_time",                :null => false
+    t.integer  "duration_in_minutes",     :null => false
+    t.integer  "unique_conversion_count", :null => false
   end
 
   add_index "unique_conversion_counts", ["campaign_id"], :name => "unique_conversion_counts_campaign_id_fk"
 
   create_table "unique_remote_placement_counts", :force => true do |t|
-    t.integer  "audience_id",         :null => false
-    t.datetime "start_time",          :null => false
-    t.datetime "end_time",            :null => false
-    t.integer  "duration_in_minutes", :null => false
+    t.integer  "audience_id",                   :null => false
+    t.datetime "start_time",                    :null => false
+    t.datetime "end_time",                      :null => false
+    t.integer  "duration_in_minutes",           :null => false
+    t.integer  "unique_remote_placement_count", :null => false
   end
 
   add_index "unique_remote_placement_counts", ["audience_id"], :name => "unique_remote_placement_counts_audience_id_fk"
 
-  create_table "unique_view_through_counts", :force => true do |t|
-    t.integer  "campaign_id",            :null => false
-    t.integer  "ad_inventory_source_id", :null => false
-    t.integer  "audience_id",            :null => false
-    t.integer  "creative_id",            :null => false
-    t.datetime "start_time",             :null => false
-    t.datetime "end_time",               :null => false
+  create_table "unique_view_through_conversion_counts", :force => true do |t|
+    t.integer  "campaign_id",                          :null => false
+    t.integer  "ad_inventory_source_id",               :null => false
+    t.integer  "audience_id",                          :null => false
+    t.integer  "creative_id",                          :null => false
+    t.datetime "start_time",                           :null => false
+    t.datetime "end_time",                             :null => false
     t.integer  "duration_in_minutes"
+    t.integer  "unique_view_through_conversion_count", :null => false
   end
 
-  add_index "unique_view_through_counts", ["ad_inventory_source_id"], :name => "unique_view_through_counts_ad_inventory_source_id_fk"
-  add_index "unique_view_through_counts", ["audience_id"], :name => "unique_view_through_counts_audience_id_fk"
-  add_index "unique_view_through_counts", ["campaign_id"], :name => "unique_view_through_counts_campaign_id_fk"
-  add_index "unique_view_through_counts", ["creative_id"], :name => "unique_view_through_counts_creative_id_fk"
+  add_index "unique_view_through_conversion_counts", ["ad_inventory_source_id"], :name => "unique_view_through_counts_ad_inventory_source_id_fk"
+  add_index "unique_view_through_conversion_counts", ["audience_id"], :name => "unique_view_through_counts_audience_id_fk"
+  add_index "unique_view_through_conversion_counts", ["campaign_id"], :name => "unique_view_through_counts_campaign_id_fk"
+  add_index "unique_view_through_conversion_counts", ["creative_id"], :name => "unique_view_through_counts_creative_id_fk"
 
   create_table "zips", :force => true do |t|
     t.string "zip_code", :null => false
@@ -389,9 +393,9 @@ ActiveRecord::Schema.define(:version => 20100916175833) do
 
   add_foreign_key "unique_remote_placement_counts", "audiences", :name => "unique_remote_placement_counts_audience_id_fk"
 
-  add_foreign_key "unique_view_through_counts", "ad_inventory_sources", :name => "unique_view_through_counts_ad_inventory_source_id_fk"
-  add_foreign_key "unique_view_through_counts", "audiences", :name => "unique_view_through_counts_audience_id_fk"
-  add_foreign_key "unique_view_through_counts", "campaigns", :name => "unique_view_through_counts_campaign_id_fk"
-  add_foreign_key "unique_view_through_counts", "creatives", :name => "unique_view_through_counts_creative_id_fk"
+  add_foreign_key "unique_view_through_conversion_counts", "ad_inventory_sources", :name => "unique_view_through_counts_ad_inventory_source_id_fk"
+  add_foreign_key "unique_view_through_conversion_counts", "audiences", :name => "unique_view_through_counts_audience_id_fk"
+  add_foreign_key "unique_view_through_conversion_counts", "campaigns", :name => "unique_view_through_counts_campaign_id_fk"
+  add_foreign_key "unique_view_through_conversion_counts", "creatives", :name => "unique_view_through_counts_creative_id_fk"
 
 end
