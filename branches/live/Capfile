@@ -4,7 +4,9 @@ load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 # REQUIRED PLUGINS
 # =============================================================================
 
-require 'vendor/plugins/capistrano_mailer/lib/capistrano_mailer'
+if ENV['XGCC_NO_CAP_MAILER'].nil? || !%w(1 yes true).include?(ENV['XGCC_NO_CAP_MAILER'].downcase)
+  require 'vendor/plugins/capistrano_mailer/lib/capistrano_mailer'
+end
 
 Dir['vendor/plugins/*/recipes/*.rb'].each { |plugin| load(plugin) }
 
