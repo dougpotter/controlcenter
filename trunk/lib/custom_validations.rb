@@ -61,7 +61,7 @@ module CustomValidations
           value = record.send(column)
           if value.nil?
             # ignore
-          elsif attr_name == :start_time || attr_name == :end_time
+          elsif column == :start_time || column == :end_time
             where_parts << "#{connection.quote_table_name(column)} = #{quote_value(value.strftime("%Y-%m-%d %H:%M:%S"))}"
           else
             where_parts << "#{connection.quote_table_name(column)} = #{quote_value(value)}"
