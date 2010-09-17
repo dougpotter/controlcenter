@@ -24,10 +24,19 @@ describe LandingPagesController do
       get 'report',
         :start_year => 2010, :start_month => 1, :start_day => 1,
         :end_year => 2011, :end_month => 1, :end_day => 1,
-        :frequency => 'hour', :metric => 'impression_count',
+        :frequency => 'hour', :metrics => ['impression_count'],
         :format => 'html'
       # we get redirected to facts controller with adjusted parameters
       response.should be_redirect
+=begin does not seem to work
+      response.should redirect_to(
+        :controller => 'facts', :action => 'index', :format => 'html',
+        :start_time => '2010-01-01', :end_time => '2011-01-01',
+        :tz_offset => 0,
+        :frequency => 'hour', :metrics => 'impression_count',
+        :dimensions => ''
+      )
+=end
     end
   end
 end

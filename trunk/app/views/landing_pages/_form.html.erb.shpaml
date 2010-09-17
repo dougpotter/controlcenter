@@ -37,7 +37,7 @@ div class=dimension_input
   label for=metric | Metric:
   >br
   
-  = select_tag('metric', options_for_metric_select)
+  = select_tag('metrics', options_for_metric_select, :multiple => true)
 
 div style='clear:both;'
   >br

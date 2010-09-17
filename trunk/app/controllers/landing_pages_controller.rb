@@ -33,7 +33,7 @@ class LandingPagesController < ApplicationController
     start_date = REPORT_TZ.local(params[:start_year], params[:start_month], params[:start_day])
     end_date = REPORT_TZ.local(params[:end_year], params[:end_month], params[:end_day])
     frequency = params[:frequency]
-    metric = params[:metric]
+    metrics = params[:metrics] || []
     group = {}
     %w(campaign creative partner).each do |key|
       if params["#{key}_group"] && params["#{key}_group"].to_i > 0
@@ -46,7 +46,7 @@ class LandingPagesController < ApplicationController
     time_format = FactsController::TIME_FORMAT
     start_time = start_date.utc.strftime(time_format)
     end_time = end_date.utc.strftime(time_format)
-    metrics = metric
+    metrics = metrics.join(',')
     dimensions = group.keys.join(',')
     tz_offset = 0
     
