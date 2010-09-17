@@ -44,15 +44,15 @@ div style='clear:both;'
 
 % for label, name, form_tag_name in dimensions
   div class="dimension_input"
-    label for="<%= name %>_select"
+    label for="<%= form_tag_name %>_select"
       = label + ':'
     >br
     
-    = check_box_tag "#{name}_group", '1'
-    label for='<%= name %>_group' | Group By?
+    = check_box_tag "#{form_tag_name}_group", '1'
+    label for='<%= form_tag_name %>_group' | Group By?
     >br
     
-    label for='<%= name %>_filter' | Filter By:
+    label for='<%= form_tag_name %>' | Filter By:
     >br
     
     = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"))

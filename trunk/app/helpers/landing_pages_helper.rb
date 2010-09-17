@@ -38,9 +38,9 @@ module LandingPagesHelper
   def dimensions
     [
       # label, name, form_tag_name
-      ['Partner', 'partner', 'partners'],
-      ['Creative', 'creative', 'creatives'],
-      ['Campaign', 'campaign', 'campaigns'],
+      ['Partner', 'partner', 'partner_code'],
+      ['Creative', 'creative', 'creative_code'],
+      ['Campaign', 'campaign', 'campaign_code'],
     ]
   end
 end

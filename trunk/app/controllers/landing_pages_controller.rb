@@ -1,5 +1,6 @@
 class LandingPagesController < ApplicationController
   REPORT_TZ = ActiveSupport::TimeZone['America/New_York']
+  DIMENSION_FIELDS = %w(campaign_code creative_code partner_code)
   
   def metrics 
     @partners = Partner.all(:order => :name)
@@ -35,9 +36,13 @@ class LandingPagesController < ApplicationController
     frequency = params[:frequency]
     metrics = params[:metrics] || []
     group = {}
-    %w(campaign creative partner).each do |key|
+    filters = {}
+    DIMENSION_FIELDS.each do |key|
       if params["#{key}_group"] && params["#{key}_group"].to_i > 0
         group[key] = true
+      end
+      unless params[key].blank?
+        filters[key] = params[key]
       end
     end
     format = params[:format]
@@ -55,6 +60,7 @@ class LandingPagesController < ApplicationController
       :frequency => frequency,
       :metrics => metrics,
       :dimensions => dimensions,
+      :filters => filters,
       :tz_offset => tz_offset,
       :format => format
     )
