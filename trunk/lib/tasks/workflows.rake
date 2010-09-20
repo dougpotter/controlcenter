@@ -6,6 +6,7 @@ namespace :workflows do
       # apparently Time.zone does not exist here
       now = Time.now.utc
       
+      settings = ClearspringExtractWorkflow::Configuration.new
       channels = DataProviderChannel.all
       channels.each do |channel|
         # add one hour to the hours to extract hours in the past.
@@ -23,29 +24,30 @@ namespace :workflows do
           time = now + index.hours
           
           # convert to date & hour pair for workflow
-          [time.strftime('%Y%m%d'), time.strftime('%H')]
+          [time.strftime('%Y%m%d'), time.hour]
         end
         
-        # not the most efficient way of doing it, improve this later
-        # XXX this is now very inefficient
-        require 'subprocess'
         times.each do |date, hour|
-          script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-extract')
-          Subprocess.spawn_check([script, '-C', channel.name, '-D', date, '-H', hour])
+          options = settings.merge(:date => date, :hour => hour, :channel => channel)
+          workflow = ClearspringExtractWorkflow.new(options.to_hash)
+          workflow.run
         end
       end
     end
     
     desc 'Verifies as much extraction as possible on a daily basis'
-    task :verify_daily do
+    task :verify_daily => :environment do
       now = Time.now.utc
       yesterday = now - 1.day
       date = yesterday.strftime('%Y%m%d')
       
-      # not the most efficient way of doing it, improve this later
-      require 'subprocess'
-      script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-verify')
-      Subprocess.spawn_check([script, '-D', date, '--check-consistency'])
+      settings = ClearspringExtractWorkflow::Configuration.new
+      channels = DataProviderChannel.all
+      channels.each do |channel|
+        options = settings.merge(:date => date, :channel => channel)
+        workflow = ClearspringVerifyWorkflow.new(options.to_hash)
+        workflow.check_consistency
+      end
     end
     
     desc 'Verifies extraction for hourly updated channels on an hourly basis'
@@ -58,13 +60,12 @@ namespace :workflows do
       date = time.strftime('%Y%m%d')
       hour = time.strftime('%H')
       
+      settings = ClearspringExtractWorkflow::Configuration.new
       channels = DataProviderChannel.hourly
-      
-      # not the most efficient way of doing it, improve this later
-      require 'subprocess'
-      script = File.join(File.dirname(__FILE__), '../../script/workflows/clearspring-verify')
       channels.each do |channel|
-        Subprocess.spawn_check([script, '-D', date, '-H', hour, '--check-consistency', '-C', channel.name])
+        options = settings.merge(:date => date, :hour => hour, :channel => channel)
+        workflow = ClearspringVerifyWorkflow.new(options.to_hash)
+        workflow.check_consistency
       end
     end
   end
