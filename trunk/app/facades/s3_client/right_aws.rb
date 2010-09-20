@@ -79,7 +79,9 @@ class S3Client::RightAws < S3Client::Base
       if @debug
         debug_print "S3list #{bucket}:#{prefix} #{marker}+#{max_keys}"
       end
-      entries = @s3.list_bucket(bucket, :prefix => prefix, :max_keys => max_keys, :marker => marker)
+      entries = map_exceptions(exception_map, "#{bucket}:#{prefix}") do
+        @s3.list_bucket(bucket, :prefix => prefix, :max_keys => max_keys, :marker => marker)
+      end
       break if entries.empty?
       
       if all_entries.empty?

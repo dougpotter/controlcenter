@@ -177,7 +177,7 @@ class ClearspringVerifyWorkflowRunner < WorkflowRunner
   def handle_exception(exc)
     case exc
     when HttpClient::HttpError
-      report_error("Transfer error: #{exc.message} @ #{exc.url}")
+      report_error("Transfer error: #{exc.message} @ #{exc.url} [#{exc.code}]")
       9
     when HttpClient::BaseError
       forward_unhandled_exception(exc, :message => "Unhandled transfer error: #{exc.message} @ #{exc.url}")

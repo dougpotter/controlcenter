@@ -202,7 +202,7 @@ class ClearspringExtractWorkflowRunner < WorkflowRunner
       report_error("Error: file is not ready to be extracted")
       8
     when HttpClient::HttpError
-      report_error("Transfer error: #{exc.message} @ #{exc.url}")
+      report_error("Transfer error: #{exc.message} @ #{exc.url} [#{exc.code}]")
       9
     when HttpClient::BaseError
       forward_unhandled_exception(exc, :message => "Unhandled transfer error: #{exc.message} @ #{exc.url}")

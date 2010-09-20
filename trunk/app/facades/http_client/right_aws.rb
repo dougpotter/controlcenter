@@ -81,7 +81,12 @@ class HttpClient::RightAws < HttpClient::Base
     when Net::HTTPSuccess
       yield resp
     else
-      raise HttpClient::HttpError.new(resp.code.to_i, resp.body)
+      raise HttpClient::HttpError.new(
+        "HTTP #{resp.code}",
+        :code => resp.code.to_i,
+        :body => resp.body,
+        :url => url
+      )
     end
   end
 end
