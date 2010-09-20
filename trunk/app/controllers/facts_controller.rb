@@ -92,8 +92,17 @@ class FactsController < ApplicationController
 
   def where_conditions_from_params
     s = []
-    s << "start_time >= #{ActiveRecord::Base.quote_value(Time.parse(params[:start_time]).strftime(TIME_FORMAT))}"
-    s << "end_time <= #{ActiveRecord::Base.quote_value(Time.parse(params[:end_time]).strftime(TIME_FORMAT))}"
+    a = params[:filters].split(",")
+    filters = Hash[*a.each_with_index {|val,idx| [val.to_sym, a[idx+1]] }.flatten]
+    s << "start_time >= #{ActiveRecord::Base.quote_value(Time.parse(filters.delete("start_time")).strftime(TIME_FORMAT))}"
+    s << "end_time <= #{ActiveRecord::Base.quote_value(Time.parse(filters.delete("end_time")).strftime(TIME_FORMAT))}"
+
+
+    filters.each { |dim,val|
+      pk_name = Dimension.business_index_dictionary[dim]
+      pk_val = Dimension.find_by_business_index(dim, val).id
+      s << pk_name.to_s + " = " + pk_val.to_s
+    }
     s
   end
 end
