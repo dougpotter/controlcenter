@@ -1,5 +1,7 @@
 class UniqueConversionCount < ActiveRecord::Base
-  acts_as_fact
+  acts_as_unique_fact
+
+  belongs_to :campaign
 
   validates_presence_of :campaign_id, :start_time, :end_time, :duration_in_minutes, :unique_conversion_count
   validates_numericality_of :unique_conversion_count

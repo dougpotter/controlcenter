@@ -19,7 +19,7 @@
 # impressions along the dimensions given in the (compound) key comprised
 # of all columns except impression count
 class ImpressionCount < ActiveRecord::Base
-  acts_as_fact
+  acts_as_additive_fact
   # TODO: Implement requires_dimensions and accepts_dimensions
   #requires_dimensions :campaign, :ad_inventory_source, :audience, :creative
   #accepts_dimensions :media_purchase_method
