@@ -1,4 +1,4 @@
-class LandingPagesController < ApplicationController
+class CampaignManagementController < ApplicationController
   def metrics 
     @partners = Partner.find(:all)
     @campaigns = Campaign.find(:all)
