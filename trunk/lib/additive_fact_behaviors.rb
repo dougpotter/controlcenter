@@ -18,7 +18,6 @@ module AdditiveFactBehaviors
       column_aliases = {}
 
       parse_frequency_for_grouping(options[:frequency], group_by_list, column_aliases)
-      debugger
       metric = options[:fact]
       fact = Object.const_get(metric.classify)
       columns = group_by_list.map do |expr|
