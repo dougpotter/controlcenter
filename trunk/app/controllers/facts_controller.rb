@@ -3,20 +3,23 @@ class FactsController < ApplicationController
   
   # skip auth before :create should be deleted for production
   skip_before_filter :verify_authenticity_token, :only => [:create, :update, :index]
-  FACTS = ["impression_count", "click_count"]
+
   def index
     # Returns object of type FactAggregation
     # Example URL:
     # /metrics.csv?metrics=click_count&dimensions=campaign_code,start_time
     # &frequency=hour&start_time=2010-08-25%2000:00:00
     # &end_time=2010-08-30%2000:00:00
-    @fact_aggregation = Fact.aggregate({
+    
+    @fact_aggregation = FactAggregation.new
+    options = {
       :include => params[:metrics].split(","),
-      :group_by => params[:dimensions].split(","),
       :where => where_conditions_from_params,
+      :group_by => params[:dimensions].split(","),
       :frequency => params[:frequency],
-      :tz_offset => params[:time_zone_offset]
-    })
+      :tz_offset => params[:tz_offset]
+    }
+    Fact.aggregate(@fact_aggregation, options)
 
     respond_to do |format|
       format.html
@@ -91,6 +94,6 @@ class FactsController < ApplicationController
     s = []
     s << "start_time >= #{ActiveRecord::Base.quote_value(Time.parse(params[:start_time]).strftime(TIME_FORMAT))}"
     s << "end_time <= #{ActiveRecord::Base.quote_value(Time.parse(params[:end_time]).strftime(TIME_FORMAT))}"
-    s.join(" AND ")
+    s
   end
 end
