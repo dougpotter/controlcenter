@@ -87,7 +87,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   private :params
   
   def channel
-    params[:data_source]
+    params[:channel]
   end
   
   def date
@@ -387,7 +387,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   # -----
   
   def build_data_source_url
-    "#{params[:data_source_path]}/#{params[:data_source]}"
+    "#{params[:data_source_path]}/#{channel.name}"
   end
   
   def build_absolute_url(remote_url, file)
@@ -396,7 +396,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   
   def prefix_to_download
     basename_prefix(
-      :channel_name => params[:data_source],
+      :channel_name => channel.name,
       :date => params[:date], :hour => params[:hour]
     )
   end
@@ -427,7 +427,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   
   def build_s3_prefix
     # date is required, it should always be given to workflow
-    "#{params[:clearspring_pid]}/v2/raw-#{params[:data_source]}/#{params[:date]}"
+    "#{params[:clearspring_pid]}/v2/raw-#{channel.name}/#{params[:date]}"
   end
   
   def build_s3_path(local_path)
@@ -446,7 +446,6 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def already_extracted?(file_url)
-    channel = get_channel!(params[:data_source])
     file = channel.data_provider_files.find(:first,
       :conditions => [
         'data_provider_files.url=?',
@@ -457,8 +456,6 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def create_data_provider_file(file_url)
-    channel = get_channel!(params[:data_source])
-    
     # Locked and lock-free runs should not be combined, since lock-free run may
     # overwrite data of the locked run and leave it in an inconsistent state and
     # the locked run would report success.

@@ -86,7 +86,12 @@ class HttpClient::Rfuzz < HttpClient::Base
     when '200'
       yield resp
     else
-      raise HttpClient::HttpError.new(resp.http_status.to_i, resp.http_body)
+      raise HttpClient::HttpError.new(
+        "HTTP #{resp.http_status}",
+        :code => resp.http_status.to_i,
+        :body => resp.http_body,
+        :url => url
+      )
     end
   end
 end
