@@ -16,8 +16,7 @@ describe FactsController do
     it "should be successful with hour frequency" do
       # index fails when invoked without parameters
       get 'index',
-        :start_time => '2010-01-01 00:00:00',
-        :end_time => '2010-01-02 00:00:00',
+        :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
         :metrics => 'impression_count',
         :dimensions => 'campaigns',
         :frequency => 'hour',
@@ -33,8 +32,7 @@ describe FactsController do
     it "should be successful with day frequency" do
       # index fails when invoked without parameters
       get 'index',
-        :start_time => '2010-01-01 00:00:00',
-        :end_time => '2010-02-01 00:00:00',
+        :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
         :metrics => 'impression_count',
         :dimensions => 'campaigns',
         :frequency => 'day',
@@ -50,8 +48,7 @@ describe FactsController do
     it "should be successful with week frequency" do
       # index fails when invoked without parameters
       get 'index',
-        :start_time => '2010-01-01 00:00:00',
-        :end_time => '2010-03-01 00:00:00',
+        :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
         :metrics => 'impression_count',
         :dimensions => 'campaigns',
         :frequency => 'week',
@@ -67,8 +64,7 @@ describe FactsController do
     it "should be successful with month frequency" do
       # index fails when invoked without parameters
       get 'index',
-        :start_time => '2010-01-01 00:00:00',
-        :end_time => '2011-01-01 00:00:00',
+        :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
         :metrics => 'impression_count',
         :dimensions => 'campaigns',
         :frequency => 'month',
