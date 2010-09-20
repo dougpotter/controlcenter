@@ -160,7 +160,6 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   end
   
   def compute_prefixes_to_check
-    channel = get_channel!(params[:data_source])
     if params[:hour]
       hours = [params[:hour]]
       require_all = true
@@ -170,7 +169,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     end
     options_list = hours.map do |hour|
       prefix = basename_prefix(
-        :channel_name => params[:data_source],
+        :channel_name => channel.name,
         :date => params[:date], :hour => hour
       )
       {:date => params[:date], :hour => hour, :prefix => prefix}

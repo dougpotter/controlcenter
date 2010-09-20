@@ -92,17 +92,6 @@ parser = OptionParser.new do |opts|
   end
 end.parse!
 
-all_sources = %w(view-us view-int search-hashed-us search-hashed-int share-us share-int)
-if source = options[:source]
-  if all_sources.include?(source)
-    selected_sources = [source]
-  else
-    raise OptionParser::ParseError, "Invalid source value: #{source}"
-  end
-else
-  selected_sources = all_sources
-end
-
 if date = options[:date]
   unless date =~ /\A\d{8}\Z/
     raise OptionParser::ParseError, "Invalid date value: #{date}"
@@ -120,6 +109,12 @@ end
 
 require File.join(File.dirname(__FILE__), '../../config/boot')
 require File.join(File.dirname(__FILE__), '../../config/environment')
+
+data_provider = DataProvider.find_by_name('Clearspring')
+unless data_provider
+  raise "Clearspring data provider not found, is databases seeded?"
+end
+selected_channels = Workflow.parse_source_specification(data_provider, options[:source])
 
 if options[:hours]
   begin
@@ -141,8 +136,8 @@ def settings; $settings end
 
 class ClearspringVerifyWorkflowRunner < WorkflowRunner
   def perform(ext_params)
-    versions = ext_params[:selected_sources].map do |data_source|
-      {:data_source => data_source}
+    versions = ext_params[:selected_channels].map do |channel|
+      {:channel => channel}
     end
     if ext_params[:hours]
       versions.map! do |version|
@@ -198,7 +193,7 @@ if options[:system_timer]
 end
 
 params = {
-  :selected_sources => selected_sources,
+  :selected_channels => selected_channels,
   :date => date,
 }
 
