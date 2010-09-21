@@ -40,6 +40,11 @@ class ClearspringExtractWorkflow < Workflow::Base
         :keep_downloaded => config.keep_downloaded,
         :keep_temporary => config.keep_temporary,
         :verify => config.verify,
+        :record => config.record,
+        :trust_recorded => config.trust_recorded,
+        :check_sizes => config.check_sizes,
+        :check_sizes_strictly => config.check_sizes_strictly,
+        :check_sizes_exactly => config.check_sizes_exactly,
       }
       postprocess_params
     end
@@ -79,6 +84,9 @@ class ClearspringExtractWorkflow < Workflow::Base
       end
       if @config_params[:once]
         @config_params[:lock] = true
+      end
+      if @config_params[:check_sizes_strictly] || @config_params[:check_sizes_exactly]
+        @config_params[:check_sizes] = true
       end
     end
   end
