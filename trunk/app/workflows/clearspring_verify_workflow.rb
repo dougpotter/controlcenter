@@ -181,10 +181,17 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   # data source paths. our paths may contain a suffix distinguishing one
   # split file from another
   def bucket_paths_under(our_paths, their_path)
+    # need to account for the following case:
+    #
+    # .../view-us.20100920-0100.1.001.log.gz
+    # .../view-us.20100920-0100.10.001.log.gz
+    #
+    # verifying hour 1 should not use hour 10 files.
+    # use a regexp match with \b instead of a simple prefix match
     their_path_prefix = their_path.sub(/\.log\.gz$/, '')
+    their_path_regexp = /^#{Regexp.quote(their_path_prefix)}\b/
     our_paths.select do |our_path|
-      # this test is a little sketchy but it will work for v1
-      our_path[0...their_path_prefix.length] == their_path_prefix
+      our_path =~ their_path_regexp
     end
   end
   
