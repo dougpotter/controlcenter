@@ -101,6 +101,14 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
             if params[:record]
               mark_data_provider_file_bogus(url)
             end
+            
+            bucket_path.instance_variable_set('@extracted_size', extracted_size)
+            bucket_path.instance_variable_set('@source_size', source_size)
+            
+            class << bucket_path
+              attr_reader :extracted_size, :source_size
+            end
+            
             partial << bucket_path
           end
         else
@@ -147,7 +155,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       STDERR.puts "Missing #{bucket_path}"
     end
     partial.each do |bucket_path|
-      STDERR.puts "Partial #{bucket_path}"
+      STDERR.puts "Partial #{bucket_path}: extracted size #{bucket_path.extracted_size}, source size #{bucket_path.source_size}"
     end
   end
   
