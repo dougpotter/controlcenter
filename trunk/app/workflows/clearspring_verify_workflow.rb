@@ -203,10 +203,12 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     # was not verified, we're not going to change its status.
     # if no record exists for a file, we are not going to create one here
     # either
-    file = channel.data_provider_files.find_by_url_and_status(file_url, DataProviderFile::EXTRACTED)
-    if file
-      file.status = dataProviderFile::BOGUS
-      file.save!
+    DataProviderFile.transaction do
+      file = channel.data_provider_files.find_by_url_and_status(file_url, DataProviderFile::EXTRACTED)
+      if file
+        file.status = dataProviderFile::BOGUS
+        file.save!
+      end
     end
   end
 end

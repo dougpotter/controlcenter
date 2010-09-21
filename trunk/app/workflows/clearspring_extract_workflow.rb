@@ -155,6 +155,13 @@ class ClearspringExtractWorkflow < Workflow::Base
       end
       files = @parser.parse_any_httpd_file_list(page_text)
       absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
+      
+      if params[:record]
+        absolute_file_urls.each do |url|
+          note_data_provider_file_discovered(url)
+        end
+      end
+      
       absolute_file_urls.reject! { |url| !should_download_url?(url) }
       absolute_file_urls
     end
@@ -181,7 +188,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     # and non-locked runs. Status files are only created for once runs
     # (which are also locked).
     if options[:once]
-      create_data_provider_file(file_url)
+      create_data_provider_file(file_url, DataProviderFile::EXTRACTED)
     end
     
     unless params[:keep_downloaded]
@@ -448,14 +455,15 @@ class ClearspringExtractWorkflow < Workflow::Base
   def already_extracted?(file_url)
     file = channel.data_provider_files.find(:first,
       :conditions => [
-        'data_provider_files.url=?',
-        file_url
+        'data_provider_files.url=? and status <> ?',
+        file_url,
+        DataProviderFile::DISCOVERED
       ]
     )
     return !file.nil?
   end
   
-  def create_data_provider_file(file_url, status=DataProviderFile::EXTRACTED)
+  def create_data_provider_file(file_url, status)
     # Locked and lock-free runs should not be combined, since lock-free run may
     # overwrite data of the locked run and leave it in an inconsistent state and
     # the locked run would report success.
@@ -463,27 +471,29 @@ class ClearspringExtractWorkflow < Workflow::Base
     # Due to verification and also rerunning extraction however we must allow
     # updating status on existing files.
     
-    file = channel.data_provider_files.find_by_url(file_url)
-    if file
-      file.status = status
-      file.save!
-    else
-      begin
-        file = DataProviderFile.create!(
-          :url => file_url,
-          :data_provider_channel => channel,
-          :status => status
-        )
-      rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
-        # see if someone else created the file concurrently
-        file = channel.data_provider_files.find_by_url(file_url)
-        unless file
-          raise
-        end
-        # XXX what are the actual use cases that would generate conflicts?
-        # what should we do in these cases?
+    DataProviderFile.transaction do
+      file = channel.data_provider_files.find_by_url(file_url)
+      if file
         file.status = status
         file.save!
+      else
+        begin
+          file = DataProviderFile.create!(
+            :url => file_url,
+            :data_provider_channel => channel,
+            :status => status
+          )
+        rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
+          # see if someone else created the file concurrently
+          file = channel.data_provider_files.find_by_url(file_url)
+          unless file
+            raise
+          end
+          # XXX what are the actual use cases that would generate conflicts?
+          # what should we do in these cases?
+          file.status = status
+          file.save!
+        end
       end
     end
   end
@@ -514,5 +524,21 @@ class ClearspringExtractWorkflow < Workflow::Base
   # readiness heuristic - to be written
   def fully_uploaded?(file_url)
     true
+  end
+  
+  def note_data_provider_file_discovered(file_url)
+    # discovered is the initial status. we never want to change status
+    # from another status to discovered. here, only create a file object
+    # if it does not already exist.
+    DataProviderFile.transaction do
+      file = channel.data_provider_files.find_by_url(file_url)
+      unless file
+        file = DataProviderFile.create!(
+          :url => file_url,
+          :data_provider_channel => channel,
+          :status => DataProviderFile::DISCOVERED
+        )
+      end
+    end
   end
 end

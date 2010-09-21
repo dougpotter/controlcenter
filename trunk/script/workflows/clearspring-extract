@@ -47,6 +47,9 @@ parser = OptionParser.new do |opts|
   opts.on('-o', '--[no-]once', 'Extract each file only if it had not been previously extracted (requires and implies --lock)') do |value|
     options[:once] = options[:lock] = value
   end
+  opts.on('-r', '--[no-]record', 'Record discovered files in database') do |value|
+    options[:record] = value
+  end
   
   opts.separator ''
   opts.separator 'Action options: (by default, discover and extract discovered files)'
@@ -235,7 +238,7 @@ params = {
 }
 
 %w(
-  discover extract lock once keep_downloaded keep_temporary verify
+  discover extract lock once record keep_downloaded keep_temporary verify
   hours debug debug_output_path http_client
 ).each do |key|
   key = key.to_sym
