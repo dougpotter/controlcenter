@@ -463,7 +463,11 @@ class ClearspringExtractWorkflow < Workflow::Base
     # Only create status files for once (which are locked) runs. This should serve
     # as a reminder to people to use locking if they want to see the status
     # (which in production should be just about always).
-    file = DataProviderFile.create!(:url => file_url, :data_provider_channel => channel)
+    file = DataProviderFile.create!(
+      :url => file_url,
+      :data_provider_channel => channel,
+      :status => DataProviderFile::EXTRACTED
+    )
 
 =begin alternative implementation
     file = channel.data_provider_files.find_by_url(file_url)
