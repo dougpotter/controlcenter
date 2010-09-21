@@ -212,9 +212,19 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     # if no record exists for a file, we are not going to create one here
     # either
     DataProviderFile.transaction do
-      file = channel.data_provider_files.find_by_url_and_status(file_url, DataProviderFile::EXTRACTED)
+      # we don't want to mark bogus files that are being extracted,
+      # or files that we have not yet attempted to extract.
+      # we want to mark bogus files which have been extracted, this is easy.
+      # we also want to mark bogus files that have been verified, because
+      # we have different verification levels and stricter levels may
+      # reject files that less strict levels claimed were correctly extracted.
+      file = channel.data_provider_files.first(
+        :conditions => ['url = ? and status in (?)',
+        file_url,
+        [DataProviderFile::EXTRACTED, DataProviderFile::VERIFIED]]
+      )
       if file
-        file.status = dataProviderFile::BOGUS
+        file.status = DataProviderFile::BOGUS
         file.save!
       end
     end

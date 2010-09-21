@@ -455,9 +455,9 @@ class ClearspringExtractWorkflow < Workflow::Base
   def already_extracted?(file_url)
     file = channel.data_provider_files.find(:first,
       :conditions => [
-        'data_provider_files.url=? and status <> ?',
+        'data_provider_files.url=? and status not in (?)',
         file_url,
-        DataProviderFile::DISCOVERED
+        [DataProviderFile::DISCOVERED, DataProviderFile::BOGUS]
       ]
     )
     return !file.nil?
