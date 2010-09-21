@@ -455,36 +455,37 @@ class ClearspringExtractWorkflow < Workflow::Base
     return !file.nil?
   end
   
-  def create_data_provider_file(file_url)
+  def create_data_provider_file(file_url, status=DataProviderFile::EXTRACTED)
     # Locked and lock-free runs should not be combined, since lock-free run may
     # overwrite data of the locked run and leave it in an inconsistent state and
     # the locked run would report success.
     #
-    # Only create status files for once (which are locked) runs. This should serve
-    # as a reminder to people to use locking if they want to see the status
-    # (which in production should be just about always).
-    file = DataProviderFile.create!(
-      :url => file_url,
-      :data_provider_channel => channel,
-      :status => DataProviderFile::EXTRACTED
-    )
-
-=begin alternative implementation
+    # Due to verification and also rerunning extraction however we must allow
+    # updating status on existing files.
+    
     file = channel.data_provider_files.find_by_url(file_url)
     if file
-      # XXX already exists, check and update status?
+      file.status = status
+      file.save!
     else
       begin
-        file = DataProviderFile.create!(:url => file_url, :data_provider_channel => channel)
+        file = DataProviderFile.create!(
+          :url => file_url,
+          :data_provider_channel => channel,
+          :status => status
+        )
       rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
         # see if someone else created the file concurrently
         file = channel.data_provider_files.find_by_url(file_url)
         unless file
           raise
         end
+        # XXX what are the actual use cases that would generate conflicts?
+        # what should we do in these cases?
+        file.status = status
+        file.save!
       end
     end
-=end
   end
   
   # Raises DataProviderNotFound if clearspring data provider does not exist
