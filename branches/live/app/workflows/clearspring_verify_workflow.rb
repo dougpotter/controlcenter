@@ -57,37 +57,58 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       remote_relative_path = url_to_relative_data_source_path(url)
       local_path = build_local_path(remote_relative_path)
       bucket_path = build_s3_path(local_path)
-      extracted_paths = bucket_paths_under(our_paths, bucket_path)
-      if ok = !extracted_paths.empty?
-        if params[:check_sizes]
-          source_size = @http_client.get_url_content_length(url)
-          items = list_bucket_items
-          extracted_items = extracted_paths.map do |path|
-            items.detect { |item| item.path == path }
-          end
-          extracted_size = extracted_items.inject(0) do |sum, item|
-            sum + item.size
-          end
-          if params[:check_sizes_exactly]
-            ok = extracted_size == source_size
-          else
-            difference = (1 - extracted_size.to_f/source_size).abs
-            if params[:check_sizes_strictly]
-              ok = difference < 0.1
+      
+      ok = false
+      if params[:trust_recorded]
+        data_provider_file = DataProviderFile.find_by_url(url)
+        if data_provider_file && data_provider_file.status == DataProviderFile::VERIFIED
+          have << bucket_path
+          ok = true
+        end
+      end
+      
+      if !ok
+        extracted_paths = bucket_paths_under(our_paths, bucket_path)
+        if ok = !extracted_paths.empty?
+          if params[:check_sizes]
+            source_size = @http_client.get_url_content_length(url)
+            items = list_bucket_items
+            extracted_items = extracted_paths.map do |path|
+              items.detect { |item| item.path == path }
+            end
+            extracted_size = extracted_items.inject(0) do |sum, item|
+              sum + item.size
+            end
+            if params[:check_sizes_exactly]
+              ok = extracted_size == source_size
             else
-              ok = difference < 0.2
+              difference = (1 - extracted_size.to_f/source_size).abs
+              if params[:check_sizes_strictly]
+                ok = difference < 0.1
+              else
+                ok = difference < 0.2
+              end
             end
           end
-        end
-        if ok && params[:check_content]
-        end
-        if ok
-          have << bucket_path
+          if ok && params[:check_content]
+          end
+          if ok
+            if params[:record]
+              create_data_provider_file(url, DataProviderFile::VERIFIED)
+            end
+            have << bucket_path
+          else
+            if params[:record]
+              mark_data_provider_file_bogus(url)
+            end
+            partial << bucket_path
+          end
         else
-          partial << bucket_path
+          if params[:record]
+            mark_data_provider_file_bogus(url)
+          end
+          missing << bucket_path
         end
-      else
-        missing << bucket_path
       end
     end
     [have, missing, partial]
@@ -175,5 +196,17 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       {:date => params[:date], :hour => hour, :prefix => prefix}
     end
     [options_list, require_all]
+  end
+  
+  def mark_data_provider_file_bogus
+    # we only want to mark previously verified files as bogus; if a file
+    # was not verified, we're not going to change its status.
+    # if no record exists for a file, we are not going to create one here
+    # either
+    file = channel.data_provider_files.find_by_url_and_status(file_url, DataProviderFile::EXTRACTED)
+    if file
+      file.status = dataProviderFile::BOGUS
+      file.save!
+    end
   end
 end

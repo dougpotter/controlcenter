@@ -10,6 +10,21 @@
 #
 
 class DataProviderFile < ActiveRecord::Base
+  # a file object created for discovered files starts off in discovered
+  # status
+  DISCOVERED = 1
+  # when a file extraction begins, its corresponding file object's status
+  # is changed to extracting
+  EXTRACTING = 2
+  # when extraction is complete, status is set to extracted
+  EXTRACTED = 3
+  # when a separate process verifies file after extraction, the file
+  # object's status is set to verified
+  VERIFIED = 4
+  # a file object in verified status that subsequently fails verification is
+  # set to bogus status
+  BOGUS = 5
+  
   belongs_to :data_provider_channel
   
   def initialize(options)

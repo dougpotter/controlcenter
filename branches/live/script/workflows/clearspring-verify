@@ -39,6 +39,16 @@ parser = OptionParser.new do |opts|
   end
   
   opts.separator ''
+  opts.separator 'Behavior modifying options:'
+  
+  opts.on('-r', '--[no-]record', 'Record successfully verified files in database') do |value|
+    options[:record] = value
+  end
+  opts.on('-t', '--[no-]trust-recorded', 'Report that files in verified status are verified without verifying them') do |value|
+    options[:trust_recorded] = value
+  end
+  
+  opts.separator ''
   opts.separator 'Action options: (by default, check everything except for --check-content)'
   
   opts.on('--check-correspondence', 'Check whether each file in data source has one or more corresponding files in our storage') do
@@ -148,7 +158,10 @@ class ClearspringVerifyWorkflowRunner < WorkflowRunner
     end
     workflows = versions.map do |version_params|
       params = settings.merge(ext_params).to_hash
-      %w(check_sizes check_sizes_strictly check_sizes_exactly check_content).each do |key|
+      %w(
+        check_sizes check_sizes_strictly check_sizes_exactly check_content
+        record trust_recorded
+      ).each do |key|
         key = key.to_sym
         params[key] = ext_params[key]
       end
