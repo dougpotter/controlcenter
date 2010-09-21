@@ -198,7 +198,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     [options_list, require_all]
   end
   
-  def mark_data_provider_file_bogus
+  def mark_data_provider_file_bogus(file_url)
     # we only want to mark previously verified files as bogus; if a file
     # was not verified, we're not going to change its status.
     # if no record exists for a file, we are not going to create one here
