@@ -1,0 +1,25 @@
+h2 | Files
+
+table
+  tr
+    th | Url
+    th | Status
+  % for file in @files
+    tr
+      td
+        = file.url
+      td
+        = file.status
+
+h2 | Counts by status
+
+table
+  tr
+    th | Status
+    th | Count
+  % for status, count in @counts_by_status
+    tr
+      td
+        = status
+      td
+        = count

@@ -101,6 +101,14 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
             if params[:record]
               mark_data_provider_file_bogus(url)
             end
+            
+            bucket_path.instance_variable_set('@extracted_size', extracted_size)
+            bucket_path.instance_variable_set('@source_size', source_size)
+            
+            class << bucket_path
+              attr_reader :extracted_size, :source_size
+            end
+            
             partial << bucket_path
           end
         else
@@ -147,7 +155,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       STDERR.puts "Missing #{bucket_path}"
     end
     partial.each do |bucket_path|
-      STDERR.puts "Partial #{bucket_path}"
+      STDERR.puts "Partial #{bucket_path}: extracted size #{bucket_path.extracted_size}, source size #{bucket_path.source_size}"
     end
   end
   
@@ -203,10 +211,22 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     # was not verified, we're not going to change its status.
     # if no record exists for a file, we are not going to create one here
     # either
-    file = channel.data_provider_files.find_by_url_and_status(file_url, DataProviderFile::EXTRACTED)
-    if file
-      file.status = dataProviderFile::BOGUS
-      file.save!
+    DataProviderFile.transaction do
+      # we don't want to mark bogus files that are being extracted,
+      # or files that we have not yet attempted to extract.
+      # we want to mark bogus files which have been extracted, this is easy.
+      # we also want to mark bogus files that have been verified, because
+      # we have different verification levels and stricter levels may
+      # reject files that less strict levels claimed were correctly extracted.
+      file = channel.data_provider_files.first(
+        :conditions => ['url = ? and status in (?)',
+        file_url,
+        [DataProviderFile::EXTRACTED, DataProviderFile::VERIFIED]]
+      )
+      if file
+        file.status = DataProviderFile::BOGUS
+        file.save!
+      end
     end
   end
 end
