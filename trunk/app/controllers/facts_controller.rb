@@ -8,7 +8,7 @@ class FactsController < ApplicationController
   def index
 
     # deal with nulls
-    params[:all_total] ? params[:all_total] = params[:all_total] : params[:all_total] = ""
+    params[:summarize] ? params[:summarize] = params[:summarize] : params[:summarize] = ""
 
     # parse params hash 
     @fact_aggregation = FactAggregation.new
@@ -17,7 +17,7 @@ class FactsController < ApplicationController
       :where => where_conditions_from_params,
       :group_by => params[:dimensions].split(","),
       :frequency => params[:frequency],
-      :all_total => params[:all_total].split(","),
+      :summarize => params[:summarize].split(","),
       :tz_offset => params[:tz_offset]
     }
     # aggregate facts

@@ -41,7 +41,7 @@ module AdditiveFactBehaviors
         return
       end
       # summary query
-      query_arr = parse_agg_dimensions(options[:all_total], columns, group_by_list)
+      query_arr = parse_agg_dimensions(options[:summarize], columns, group_by_list)
       for query in query_arr
         sql_string = "SELECT #{query[:cols].join(", ")}, #{query[:alls].join(", ")}, SUM(#{metric}) as sum
         FROM #{metric.pluralize}
@@ -56,19 +56,19 @@ module AdditiveFactBehaviors
     end
     
     # takes arrays of:
-    # 1. dimensions on which to aggregate
+    # 1. dimensions to summarize
     # 2. columns (aliased where appropriate)
     # 3. columns on which to group (un aliased)
     # and returns an array of hashes, each representing one query and containing:
-    # 1. the 'non-all' columns to select (:cols)
-    # 2. the 'all' columns to select (:alls)
+    # 1. the non-summary columns to select (:cols)
+    # 2. the summary columns to select (:alls)
     # 3. the columns on which to group (:group_by_columns)
-    def parse_agg_dimensions(agg_dims, columns, group_by_list)
+    def parse_agg_dimensions(summarize_dims, columns, group_by_list)
       query_arr = []
-      num_of_agg_dims = agg_dims.size
+      num_of_summarized_dims = summarize_dims.size
       i = 0
-      for num_to_take in 1..num_of_agg_dims
-        combos = choose(agg_dims, num_to_take)
+      for num_to_take in 1..num_of_summarized_dims
+        combos = choose(summarize_dims, num_to_take)
         for combo in combos
           query_arr[i] = Hash.new
           query_arr[i][:cols] = columns.reject { |e| keyize_indices(combo).member?(e) }
