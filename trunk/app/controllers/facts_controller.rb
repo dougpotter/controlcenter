@@ -3,22 +3,24 @@ class FactsController < ApplicationController
   
   # skip auth before :create should be deleted for production
   skip_before_filter :verify_authenticity_token, :only => [:create, :update, :index]
-
+  
+  # Takes url conforming to spec and returns fact aggregation report
   def index
-    # Returns object of type FactAggregation
-    # Example URL:
-    # /metrics.csv?metrics=click_count&dimensions=campaign_code,start_time
-    # &frequency=hour&start_time=2010-08-25%2000:00:00
-    # &end_time=2010-08-30%2000:00:00
-    
+
+    # deal with nulls
+    params[:all_total] ? params[:all_total] = params[:all_total] : params[:all_total] = ""
+
+    # parse params hash 
     @fact_aggregation = FactAggregation.new
     options = {
       :include => params[:metrics].split(","),
       :where => where_conditions_from_params,
       :group_by => params[:dimensions].split(","),
       :frequency => params[:frequency],
+      :all_total => params[:all_total].split(","),
       :tz_offset => params[:tz_offset]
     }
+    # aggregate facts
     Fact.aggregate(@fact_aggregation, options)
 
     respond_to do |format|

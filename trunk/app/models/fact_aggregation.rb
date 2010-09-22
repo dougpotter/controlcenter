@@ -55,17 +55,19 @@ class FactAggregation
       options[:dimensions] + frequency_name_set + options[:facts] :
       @observations[0].attributes.keys
     )
+
     row_hash = {}
     column_sets = []
     for fact in @observations
       fact_value = fact.attributes['sum']
+      debugger
       if options[:dimensions] && options[:facts]
-        dim_array = options[:dimensions].collect { |dim| fact.send(dim) } +
+        dim_array = options[:dimensions].collect { |dim| 
+            fact.send(dim) ? fact.send(dim) : 'all'
+        } +
           frequency_attribute_set.collect { |attrib| fact.attributes[attrib] }
         row_hash[dim_array] ||= []
-        options[:facts].each_with_index do |fact_name, idx|
-          row_hash[dim_array][idx] ||= fact.attributes['sum']
-        end
+        row_hash[dim_array][options[:facts].index(fact.class.to_s.underscore)] ||= fact.attributes['sum']
       else
         column_sets << fact.attributes.values
       end

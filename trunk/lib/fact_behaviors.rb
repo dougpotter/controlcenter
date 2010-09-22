@@ -11,13 +11,10 @@ module FactBehaviors
 
   module ClassMethods
     # Class methods go here
-    # takes hash of include, group_by, where, and frequency params and
-    # returns object of type FactAggreation
-    # TODO: I'd like to separate the building of group_by_list into its
-    # own method, but I don't know how within a module
-
+    
+    # fills fact aggregation object with appropriate facts according to parsed
+    # params hash (options) 
     def aggregate(fa, options = {})
-
       for metric in options[:include]
         options[:fact] = metric
         fact = Object.const_get(metric.classify)
@@ -31,7 +28,9 @@ module FactBehaviors
       fa.adjust_time_zone(options[:tz_offset])
       return fa
     end
-
+    
+    # fills group_by_list and column_aliases with appropriate SQL given the
+    # supplied frequency
     def parse_frequency_for_grouping(frequency, group_by_list, column_aliases)
       case frequency
       when "hour"
@@ -127,9 +126,13 @@ module InstanceMethods
     Dimension.business_index_dictionary.each do |key, value|
       base.class_eval do
         define_method(key) {
+          begin 
           self.send(value.to_s.gsub(/_id$/, "")).send(
             Dimension.business_index_aliases[key]
         )
+          rescue 
+            nil
+          end
         }
       end
     end
