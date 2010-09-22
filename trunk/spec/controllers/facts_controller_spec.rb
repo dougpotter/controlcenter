@@ -18,7 +18,7 @@ describe FactsController do
       get 'index',
         :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
         :metrics => 'impression_count',
-        :dimensions => 'campaigns',
+        :dimensions => 'campaign_code',
         :frequency => 'hour',
         :tz_offset => 0
       response.should be_success
@@ -34,7 +34,7 @@ describe FactsController do
       get 'index',
         :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
         :metrics => 'impression_count',
-        :dimensions => 'campaigns',
+        :dimensions => 'campaign_code',
         :frequency => 'day',
         :tz_offset => 0
       response.should be_success
@@ -50,7 +50,7 @@ describe FactsController do
       get 'index',
         :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
         :metrics => 'impression_count',
-        :dimensions => 'campaigns',
+        :dimensions => 'campaign_code',
         :frequency => 'week',
         :tz_offset => 0
       response.should be_success
@@ -66,8 +66,40 @@ describe FactsController do
       get 'index',
         :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
         :metrics => 'impression_count',
-        :dimensions => 'campaigns',
+        :dimensions => 'campaign_code',
         :frequency => 'month',
+        :tz_offset => 0
+      response.should be_success
+    end
+
+    # Basic functionality check - requesting a report with some
+    # sensible parameters should not produce errors.
+    # This is a test of summary funcitonality with one summery
+    # dimension.
+    it "should be successful with one summary dimension" do
+      # index fails when invoked without parameters
+      get 'index',
+        :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
+        :metrics => 'impression_count',
+        :dimensions => 'campaign_code,creative_code,ais_code',
+        :frequency => 'day',
+        :summarize => 'creative_code',
+        :tz_offset => 0
+      response.should be_success
+    end
+
+    # Basic functionality check - requesting a report with some
+    # sensible parameters should not produce errors.
+    # This is a test of summary funcitonality with two summery
+    # dimensions.
+    it "should be successful with two summary dimensions" do
+      # index fails when invoked without parameters
+      get 'index',
+        :filters => "start_time,2010-01-01 00:00:00,end_time,2010-01-02 00:00:00",
+        :metrics => 'impression_count',
+        :dimensions => 'campaign_code,creative_code,ais_code',
+        :frequency => 'day',
+        :summarize => 'creative_code,campaign_code',
         :tz_offset => 0
       response.should be_success
     end
