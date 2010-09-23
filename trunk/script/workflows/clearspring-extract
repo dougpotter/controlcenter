@@ -171,7 +171,7 @@ class ClearspringExtractWorkflowRunner < WorkflowRunner
       else
         script_str = 'clearspring-extract'
       end
-      params_str = "#{workflow.channel} #{workflow.date}"
+      params_str = "#{workflow.channel.name} #{workflow.date}"
       if workflow.hour
         params_str += '-%02d00' % workflow.hour
       end
