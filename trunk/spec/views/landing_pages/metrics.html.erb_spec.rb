@@ -6,6 +6,9 @@ describe "/landing_pages/metrics" do
     assigns[:partners] = []
     assigns[:campaigns] = []
     assigns[:creatives] = []
+    assigns[:ad_inventory_sources] = []
+    assigns[:audiences] = []
+    assigns[:media_purchase_methods] = []
     
     render
   end
