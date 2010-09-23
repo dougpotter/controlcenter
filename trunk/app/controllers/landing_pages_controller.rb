@@ -51,12 +51,15 @@ class LandingPagesController < ApplicationController
     time_format = FactsController::TIME_FORMAT
     start_time = start_date.utc.strftime(time_format)
     end_time = end_date.utc.strftime(time_format)
+    filters['start_time'] = start_time
+    filters['end_time'] = end_time
+    
     metrics = metrics.join(',')
     dimensions = group.keys.join(',')
+    filters = filters.map { |key, value| "#{key},#{value}" }.join(',')
     tz_offset = 0
     
     redirect_to facts_path(
-      :start_time => start_time, :end_time => end_time,
       :frequency => frequency,
       :metrics => metrics,
       :dimensions => dimensions,
