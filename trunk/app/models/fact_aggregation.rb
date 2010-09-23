@@ -55,15 +55,25 @@ class FactAggregation
       options[:dimensions] + frequency_name_set + options[:facts] :
       @observations[0].attributes.keys
     )
+    
+    cache = BusinessIndexLookupCache.new
 
     row_hash = {}
     column_sets = []
     for fact in @observations
       fact_value = fact.attributes['sum']
-      debugger
       if options[:dimensions] && options[:facts]
-        dim_array = options[:dimensions].collect { |dim| 
-            fact.send(dim) || 'all'
+        dim_array = options[:dimensions].collect { |dim|
+          id_column = Dimension.business_index_dictionary[dim]
+          if id_column
+            if (id = fact.send(id_column)) != 0
+              cache.resolve_code(id_column, id, dim)
+            else
+              'all'
+            end
+          else
+            fact.send(dim)
+          end
         } +
           frequency_attribute_set.collect { |attrib| fact.send(attrib) }
         row_hash[dim_array] ||= []
