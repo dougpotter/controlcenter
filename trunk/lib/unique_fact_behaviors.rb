@@ -17,7 +17,7 @@ module UniqueFactBehaviors
 
       if !options[:group_by].include?("start_time") 
         if !options[:group_by].include?("end_time")
-          raise RuntimeError, "unique metrics must be gropued on either start or end time"
+          raise RuntimeError, "unique metrics must be grouped on either start or end time"
         end
       end
 
