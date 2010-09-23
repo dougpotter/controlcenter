@@ -7,9 +7,6 @@ class FactsController < ApplicationController
   # Takes url conforming to spec and returns fact aggregation report
   def index
 
-    # deal with nulls
-    params[:summarize] ? params[:summarize] = params[:summarize] : params[:summarize] = ""
-
     # parse params hash 
     @fact_aggregation = FactAggregation.new
     options = {
@@ -17,7 +14,7 @@ class FactsController < ApplicationController
       :where => where_conditions_from_params,
       :group_by => params[:dimensions].split(","),
       :frequency => params[:frequency],
-      :summarize => params[:summarize].split(","),
+      :summarize => params[:summarize] ? params[:summarize].split(",") : [],
       :tz_offset => params[:tz_offset]
     }
     # aggregate facts
