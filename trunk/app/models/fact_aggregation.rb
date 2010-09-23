@@ -63,9 +63,9 @@ class FactAggregation
       debugger
       if options[:dimensions] && options[:facts]
         dim_array = options[:dimensions].collect { |dim| 
-            fact.send(dim) ? fact.send(dim) : 'all'
+            fact.send(dim) || 'all'
         } +
-          frequency_attribute_set.collect { |attrib| fact.attributes[attrib] }
+          frequency_attribute_set.collect { |attrib| fact.send(attrib) }
         row_hash[dim_array] ||= []
         row_hash[dim_array][options[:facts].index(fact.class.to_s.underscore)] ||= fact.attributes['sum']
       else
