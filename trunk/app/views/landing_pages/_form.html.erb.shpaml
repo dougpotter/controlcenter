@@ -52,6 +52,10 @@ div style='clear:both;'
     label for='<%= form_tag_name %>_group' | Group By?
     >br
     
+    = check_box_tag "#{form_tag_name}_summarize", '1'
+    label for='<%= form_tag_name %>_group' | Summarize?
+    >br
+    
     label for='<%= form_tag_name %>' | Filter By:
     >br
     

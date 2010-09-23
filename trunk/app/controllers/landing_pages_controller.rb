@@ -36,10 +36,15 @@ class LandingPagesController < ApplicationController
     frequency = params[:frequency]
     metrics = params[:metrics] || []
     group = {}
+    summarize = {}
     filters = {}
     DIMENSION_FIELDS.each do |key|
-      if params["#{key}_group"] && params["#{key}_group"].to_i > 0
+      if (value = params["#{key}_group"]) && value.to_i > 0
         group[key] = true
+        # only grouped by columns may be summarized
+        if (value = params["#{key}_summarize"]) && value.to_i > 0
+          summarize[key] = true
+        end
       end
       unless params[key].blank?
         filters[key] = params[key]
@@ -56,6 +61,7 @@ class LandingPagesController < ApplicationController
     
     metrics = metrics.join(',')
     dimensions = group.keys.join(',')
+    summarize = summarize.keys.join(',')
     filters = filters.map { |key, value| "#{key},#{value}" }.join(',')
     tz_offset = 0
     
@@ -63,6 +69,7 @@ class LandingPagesController < ApplicationController
       :frequency => frequency,
       :metrics => metrics,
       :dimensions => dimensions,
+      :summarize => summarize,
       :filters => filters,
       :tz_offset => tz_offset,
       :format => format
