@@ -1,11 +1,17 @@
 class LandingPagesController < ApplicationController
   REPORT_TZ = ActiveSupport::TimeZone['America/New_York']
-  DIMENSION_FIELDS = %w(campaign_code creative_code partner_code)
+  DIMENSION_FIELDS = %w(
+    campaign_code creative_code partner_code
+    ais_code audience_code mpm_code
+  )
   
   def metrics 
     @partners = Partner.all(:order => :name)
     @campaigns = Campaign.all(:order => :campaign_code)
     @creatives = Creative.all(:order => :creative_code)
+    @ad_inventory_sources = AdInventorySource.all(:order => :ais_code)
+    @audiences = Audience.all(:order => :audience_code)
+    @media_purchase_methods = MediaPurchaseMethod.all(:order => :mpm_code)
   end
   
   # A note about time zones:
