@@ -9,6 +9,10 @@ module LandingPagesHelper
   METRICS = [
     ['Click Count', 'click_count'],
     ['Impression Count', 'impression_count'],
+    ['Conversion Count', 'conversion_count'],
+    ['Unique Conversion Count', 'unique_conversion_count'],
+    ['Unique Remote Placement Count', 'unique_remote_placement_count'],
+    ['Unique View-Through Conversions', 'unique_view_through_conversion_count'],
   ]
   
   def options_for_frequency_select
