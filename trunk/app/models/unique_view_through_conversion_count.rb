@@ -1,5 +1,5 @@
 class UniqueViewThroughConversionCount < ActiveRecord::Base
-  acts_as_fact
+  acts_as_unique_fact
 
   validates_presence_of :start_time, :end_time, :duration_in_minutes, :unique_view_through_conversion_count
   validates_numericality_of :unique_view_through_conversion_count
