@@ -27,6 +27,7 @@ module UniqueFactBehaviors
       
       parse_frequency_for_grouping(options[:frequency], group_by_list, column_aliases)
       parse_frequency_for_filtering(options[:frequency], where_list)
+      parse_summarize(options[:summarize], where_list)
 
       metric = options[:fact]
       fact = Object.const_get(metric.classify)
@@ -37,13 +38,19 @@ module UniqueFactBehaviors
           expr
         end
       end.join(', ')
-      debugger
+
       fa.add(fact.find_by_sql(
         "SELECT #{columns}, SUM(#{metric}) as sum
         FROM #{metric.pluralize}
         WHERE #{where_list.join(" AND ")}
         GROUP BY #{group_by_list.join(", ")}"
       ))
+    end
+
+    def parse_summarize(options, where_list)
+      for dimension in options
+        where_list << "ISNULL(#{keyize_indices(dimension)})"
+      end
     end
 
     def parse_frequency_for_filtering(frequency, where_list)
