@@ -1,0 +1,15 @@
+h1 | Edit Campaign
+
+div id=graph_selector_panel
+  = form_tag campaign_path, :method => 'put'
+    = render :partial => 'form'
+
+    div style='clear:both;'
+      >span
+
+    div class=dimension_input
+      = submit_tag('Save')
+  </form>
+
+div style='clear:both;'
+  >span

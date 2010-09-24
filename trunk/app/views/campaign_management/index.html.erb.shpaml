@@ -1,0 +1,13 @@
+h1 | Campaigns
+
+div id=graph_selector_panel
+  ul
+    % for campaign in @campaigns
+      li
+        = link_to campaign.campaign_code, edit_campaign_path(campaign)
+
+div style='clear:both;'
+  >span
+
+p
+  = link_to 'New campaign', new_campaign_path
