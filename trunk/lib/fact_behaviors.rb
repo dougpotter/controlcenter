@@ -113,6 +113,10 @@ module FactBehaviors
   def scalar_fact
     self.name.to_s.underscore.to_sym
   end
+
+  def is_fact?
+    true
+  end
 end
 
 module InstanceMethods
