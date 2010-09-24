@@ -43,6 +43,10 @@ Factory.define :audience do |a|
   a.sequence(:audience_code) { |n| "AC#{n}99" }
 end
 
+Factory.define :media_purchase_method do |m|
+  m.sequence(:mpm_code) { |n| "23k#{n}" }
+end
+
 Factory.define :impression_count do |i|
   t = Time.new
   rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
@@ -99,23 +103,65 @@ Factory.define :unique_remote_placement_count do |u|
   u.unique_remote_placement_count 1000
 end
 
-Factory.define :unique_view_through_conversion_count do |u|
+Factory.define :unique_view_through_conversion_count do |f|
   t = Time.new
   rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
-  u.start_time rounded_time
-  u.end_time rounded_time + 60.minutes
-  u.duration_in_minutes 60
-  u.campaign_id {Factory(:campaign).id}
-  u.creative_id {Factory(:creative).id}
-  u.ad_inventory_source_id {Factory(:ad_inventory_source).id}
-  u.audience_id {Factory(:audience).id}
-  u.unique_view_through_conversion_count 1200
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.campaign_id {Factory(:campaign).id}
+  f.creative_id {Factory(:creative).id}
+  f.ad_inventory_source_id {Factory(:ad_inventory_source).id}
+  f.audience_id {Factory(:audience).id}
+  f.unique_view_through_conversion_count 1200
 end
 
 Factory.define :remote_placement do |r|
   r.campaign_id {Factory(:campaign).id}
   r.audience_id {Factory(:audience).id}
   r.remote_placement_count 1900
+end
+
+Factory.define :media_cost do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.partner_id {Factory(:partner).id}
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.media_cost 98989
+end
+
+Factory.define :unique_click_count do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.partner_id {Factory(:partner).id}
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.unique_click_count 1000
+end
+
+Factory.define :unique_impression_count do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.partner_id {Factory(:partner).id}
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.unique_impression_count 1005
 end
 
 Factory.define :country do |c|
