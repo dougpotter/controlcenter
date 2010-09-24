@@ -71,18 +71,34 @@ class CampaignManagementController < ApplicationController
     @ad_inventory_sources = AdInventorySource.all(:order => 'name')
     @creatives = Creative.all(:order => 'name')
     @creative_sizes = CreativeSize.all(:order => 'common_name')
+    @creative = Creative.new
+    @new_creatives ||= []
   end
   
   def update_campaign_objects
     @campaign.attributes = params[:campaign]
+    
     if @campaign.partner.nil?
       @new_partner = Partner.new(params[:new_partner])
       @campaign.partner = @new_partner
     end
+    
     if !params[:use_creatives].blank?
       @creatives = Creative.find(params[:use_creatives].keys)
     else
       @creatives = []
+    end
+    
+    # if no text fields are filled in for a creative, assume that
+    # the user is not trying to add that creative
+    @new_creatives = []
+    checked_fields = %w(creative_code name media_type)
+    unless (new_creatives = params[:creative]).blank?
+      new_creatives.each do |attrs|
+        if checked_fields.any? { |field| !attrs[field].blank? }
+          @new_creatives << Creative.new(attrs)
+        end
+      end
     end
   end
   
@@ -91,6 +107,9 @@ class CampaignManagementController < ApplicationController
     # error messages for campaign are displayed
     @campaign.valid?
     ok_to_save = (@new_partner.nil? || @new_partner.valid?) && @campaign.valid?
+    @new_creatives.each do |creative|
+      ok_to_save = creative.valid? && ok_to_save
+    end
     if ok_to_save
       new_record = @campaign.new_record?
       Campaign.transaction do
@@ -112,6 +131,10 @@ class CampaignManagementController < ApplicationController
           if new_record || !@campaign.creatives.include?(creative)
             @campaign.creatives << creative
           end
+        end
+        @new_creatives.each do |creative|
+          creative.save!
+          @campaign.creatives << creative
         end
       end
     end

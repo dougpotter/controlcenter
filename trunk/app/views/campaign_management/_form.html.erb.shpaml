@@ -80,4 +80,9 @@ div class=dimension_input
   label for="campaign_end_time" | Create new creative(s):
   >br
   
-  = render :partial => 'creative_form', :locals => {:f => f}
+  % for creative in @new_creatives
+    % fields_for('creative[]', creative) do |creative_form|
+      = render :partial => 'creative_form', :locals => {:f => creative_form, :object => creative}
+  
+  % fields_for('creative[]', @creative) do |creative_form|
+    = render :partial => 'creative_form', :locals => {:f => creative_form}
