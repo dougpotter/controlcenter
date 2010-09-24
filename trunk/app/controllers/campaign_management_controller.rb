@@ -10,6 +10,18 @@ class CampaignManagementController < ApplicationController
   
   def index
     @campaigns = Campaign.all(:order => 'campaign_code')
+    @partners = Partner.all(:order => :name)
+    @ad_inventory_sources = AdInventorySource.all(:order => :ais_code)
+  end
+  
+  def filter_list
+    scope = Campaign
+    %w(partner_id ad_inventory_source_id).each do |column|
+      if value = params[column]
+        scope = scope.scoped(:conditions => ["#{Campaign.quote_identifier(column)}=?", value])
+      end
+    end
+    @campaigns = scope.all(:order => 'campaign_code')
   end
   
   def show
