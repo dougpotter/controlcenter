@@ -1,15 +1,14 @@
 h1 | New Campaign
 
 div id=graph_selector_panel
-  = form_tag campaigns_path, :method => 'post'
-    = render :partial => 'form'
+  % form_for @campaign, :url => campaigns_path(:method => 'post') do |f|
+    = render :partial => 'form', :locals => {:f => f}
 
     div style='clear:both;'
       >span
 
     div class=dimension_input
       = submit_tag('Go')
-  </form>
 
 div style='clear:both;'
   >span

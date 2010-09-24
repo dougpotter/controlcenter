@@ -26,7 +26,7 @@ class Campaign < ActiveRecord::Base
 
   validates_presence_of :description, :campaign_code
   validates_uniqueness_of :campaign_code
-  validates_numericality_of :partner_id
+  validates_presence_of :partner
 
   acts_as_dimension
   business_index :campaign_code, :aka => "cid"

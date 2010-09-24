@@ -16,6 +16,9 @@ div class=dimension_input
   div style='clear:both;'
     >br
 
+div style='clear:both;'
+  >span
+
 div class=dimension_input
   label for="campaign_partner_id" | Start Date
   >br
@@ -39,3 +42,6 @@ div class=dimension_input
 
   div style='clear:both;'
     >br
+
+div style='clear:both;'
+  >span

@@ -39,7 +39,11 @@ class CampaignManagementController < ApplicationController
   
   def create
     @campaign = Campaign.new(params[:campaign])
-    if @campaign.save
+    if @campaign.partner.nil?
+      @new_partner = Partner.new(params[:new_partner])
+      @campaign.partner = @new_partner
+    end
+    if save_campaign
       redirect_to campaigns_path
     else
       prepare_form
@@ -55,7 +59,11 @@ class CampaignManagementController < ApplicationController
   def update
     @campaign = Campaign.find(params[:id])
     @campaign.attributes = params[:campaign]
-    if @campaign.save
+    if @campaign.partner.nil?
+      @new_partner = Partner.new(params[:new_partner])
+      @campaign.partner = @new_partner
+    end
+    if save_campaign
       redirect_to campaigns_path
     else
       prepare_form
@@ -68,5 +76,21 @@ class CampaignManagementController < ApplicationController
   def prepare_form
     @partners = Partner.find(:all, :order => 'name')
     @ad_inventory_sources = AdInventorySource.all(:order => 'name')
+  end
+  
+  def save_campaign
+    # if partner is invalid, check campaign validity anyway so that
+    # error messages for campaign are displayed
+    @campaign.valid?
+    ok_to_save = (@new_partner.nil? || @new_partner.valid?) && @campaign.valid?
+    if ok_to_save
+      Campaign.transaction do
+        if @new_partner
+          @new_partner.save!
+        end
+        @campaign.save!
+      end
+    end
+    ok_to_save
   end
 end

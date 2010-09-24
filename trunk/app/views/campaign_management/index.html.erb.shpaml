@@ -7,7 +7,7 @@ div id=graph_selector_panel
   = form_remote_tag :url => {:action => 'filter_list'}
     = render :partial => 'index_filter_fields'
 
-    div style='clear:both;'
+    div class=dimension_input
       = submit_tag('Go')
     
     div style='clear:both;'
