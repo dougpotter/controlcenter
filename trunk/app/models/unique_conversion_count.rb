@@ -3,7 +3,7 @@ class UniqueConversionCount < ActiveRecord::Base
 
   belongs_to :campaign
 
-  validates_presence_of :campaign_id, :start_time, :end_time, :duration_in_minutes, :unique_conversion_count
+  validates_presence_of :start_time, :end_time, :duration_in_minutes, :unique_conversion_count
   validates_numericality_of :unique_conversion_count
   validates_as_increasing :start_time, :end_time
   validate :enforce_unique_index
