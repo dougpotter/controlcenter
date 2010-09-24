@@ -59,7 +59,7 @@ div style='clear:both;'
     label for='<%= form_tag_name %>' | Filter By:
     >br
     
-    = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"))
+    = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"), :multiple => true)
 
 div style='clear:both;'
   >br

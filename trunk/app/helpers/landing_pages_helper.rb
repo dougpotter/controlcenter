@@ -24,27 +24,27 @@ module LandingPagesHelper
   end
   
   def options_for_partner_select
-    options_from_collection_for_select(@partners, :id, :partner_code_and_name)
+    options_from_collection_for_select(@partners, :partner_code, :partner_code_and_name)
   end
   
   def options_for_creative_select
-    options_from_collection_for_select(@creatives, :id, :creative_code)
+    options_from_collection_for_select(@creatives, :creative_code, :creative_code)
   end
   
   def options_for_campaign_select
-    options_from_collection_for_select(@campaigns, :id, :campaign_code)
+    options_from_collection_for_select(@campaigns, :campaign_code, :campaign_code)
   end
   
   def options_for_ad_inventory_source_select
-    options_from_collection_for_select(@ad_inventory_sources, :id, :ais_code)
+    options_from_collection_for_select(@ad_inventory_sources, :ais_code, :ais_code)
   end
   
   def options_for_audience_select
-    options_from_collection_for_select(@audiences, :id, :audience_code)
+    options_from_collection_for_select(@audiences, :audience_code, :audience_code)
   end
   
   def options_for_media_purchase_method_select
-    options_from_collection_for_select(@media_purchase_methods, :id, :mpm_code)
+    options_from_collection_for_select(@media_purchase_methods, :mpm_code, :mpm_code)
   end
   
   def all_filter_option

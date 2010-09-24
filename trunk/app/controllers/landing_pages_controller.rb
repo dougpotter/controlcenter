@@ -53,7 +53,12 @@ class LandingPagesController < ApplicationController
         end
       end
       unless params[key].blank?
-        filters[key] = params[key]
+        # users may select 'All' and a filter; drop 'All' in such cases
+        values = params[key].reject { |value| value.blank? }
+        # if 'All' was the only choice, do not filter
+        unless values.empty?
+          filters[key] = values
+        end
       end
     end
     format = params[:format]
@@ -68,7 +73,7 @@ class LandingPagesController < ApplicationController
     metrics = metrics.join(',')
     dimensions = group.keys.join(',')
     summarize = summarize.keys.join(',')
-    filters = filters.map { |key, value| "#{key},#{value}" }.join(',')
+    filters = filters.map { |key, values| values.map { |value| "#{key},#{value}" }.join(',') }.join(',')
     tz_offset = 0
     
     redirect_to facts_path(
