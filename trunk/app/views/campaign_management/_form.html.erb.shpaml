@@ -63,3 +63,21 @@ div style='clear:both;'
 
 h2 | Creatives:
 
+div class=dimension_input
+  label for="campaign_end_time" | Use existing creative(s):
+  >br
+  
+  % for creative in @creatives
+    div class=dimension_input
+      = check_box_tag "use_creatives[#{creative.id}]", 1, @campaign.creatives.include?(creative)
+      label for="use_creatives_<%= creative.id %>"
+        = creative.creative_code
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  label for="campaign_end_time" | Create new creative(s):
+  >br
+  
+  = render :partial => 'creative_form', :locals => {:f => f}

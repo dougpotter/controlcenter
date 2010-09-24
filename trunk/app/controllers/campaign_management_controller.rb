@@ -38,11 +38,8 @@ class CampaignManagementController < ApplicationController
   end
   
   def create
-    @campaign = Campaign.new(params[:campaign])
-    if @campaign.partner.nil?
-      @new_partner = Partner.new(params[:new_partner])
-      @campaign.partner = @new_partner
-    end
+    @campaign = Campaign.new
+    update_campaign_objects
     if save_campaign
       redirect_to campaigns_path
     else
@@ -58,11 +55,7 @@ class CampaignManagementController < ApplicationController
   
   def update
     @campaign = Campaign.find(params[:id])
-    @campaign.attributes = params[:campaign]
-    if @campaign.partner.nil?
-      @new_partner = Partner.new(params[:new_partner])
-      @campaign.partner = @new_partner
-    end
+    update_campaign_objects
     if save_campaign
       redirect_to campaigns_path
     else
@@ -76,6 +69,21 @@ class CampaignManagementController < ApplicationController
   def prepare_form
     @partners = Partner.find(:all, :order => 'name')
     @ad_inventory_sources = AdInventorySource.all(:order => 'name')
+    @creatives = Creative.all(:order => 'name')
+    @creative_sizes = CreativeSize.all(:order => 'common_name')
+  end
+  
+  def update_campaign_objects
+    @campaign.attributes = params[:campaign]
+    if @campaign.partner.nil?
+      @new_partner = Partner.new(params[:new_partner])
+      @campaign.partner = @new_partner
+    end
+    if !params[:use_creatives].blank?
+      @creatives = Creative.find(params[:use_creatives].keys)
+    else
+      @creatives = []
+    end
   end
   
   def save_campaign
@@ -84,11 +92,27 @@ class CampaignManagementController < ApplicationController
     @campaign.valid?
     ok_to_save = (@new_partner.nil? || @new_partner.valid?) && @campaign.valid?
     if ok_to_save
+      new_record = @campaign.new_record?
       Campaign.transaction do
         if @new_partner
           @new_partner.save!
         end
         @campaign.save!
+        
+        # new campaigns cannot have any creatives
+        unless new_record
+          @campaign.creatives.each do |creative|
+            unless @creatives.include?(creative)
+              @campaign.creatives.delete(creative)
+            end
+          end
+        end
+        @creatives.each do |creative|
+          # new campaigns cannot have any creatives
+          if new_record || !@campaign.creatives.include?(creative)
+            @campaign.creatives << creative
+          end
+        end
       end
     end
     ok_to_save

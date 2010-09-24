@@ -1,0 +1,24 @@
+
+div class=dimension_input
+  label for="creative_code" | Code:
+  >br
+  
+  = text_field('creative', 'code', :size => 5)
+
+div class=dimension_input
+  label for="creative_name" | Name:
+  >br
+  
+  = text_field('creative', 'name', :size => 5)
+
+div class=dimension_input
+  label for="creative_media_type" | Media type:
+  >br
+  
+  = text_field('creative', 'media_type', :size => 5)
+
+div class=dimension_input
+  label for="creative_size_id" | Size:
+  >br
+  
+  = select('creative', 'size_id', options_from_collection_for_select(@creative_sizes, :id, :common_name, f.object))
