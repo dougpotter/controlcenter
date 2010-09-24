@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100916201530) do
+ActiveRecord::Schema.define(:version => 20100924161717) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -290,7 +290,7 @@ ActiveRecord::Schema.define(:version => 20100916201530) do
   end
 
   create_table "unique_conversion_counts", :force => true do |t|
-    t.integer  "campaign_id",             :null => false
+    t.integer  "campaign_id"
     t.datetime "start_time",              :null => false
     t.datetime "end_time",                :null => false
     t.integer  "duration_in_minutes",     :null => false
@@ -300,7 +300,7 @@ ActiveRecord::Schema.define(:version => 20100916201530) do
   add_index "unique_conversion_counts", ["campaign_id"], :name => "unique_conversion_counts_campaign_id_fk"
 
   create_table "unique_remote_placement_counts", :force => true do |t|
-    t.integer  "audience_id",                   :null => false
+    t.integer  "audience_id"
     t.datetime "start_time",                    :null => false
     t.datetime "end_time",                      :null => false
     t.integer  "duration_in_minutes",           :null => false
@@ -310,10 +310,10 @@ ActiveRecord::Schema.define(:version => 20100916201530) do
   add_index "unique_remote_placement_counts", ["audience_id"], :name => "unique_remote_placement_counts_audience_id_fk"
 
   create_table "unique_view_through_conversion_counts", :force => true do |t|
-    t.integer  "campaign_id",                          :null => false
-    t.integer  "ad_inventory_source_id",               :null => false
-    t.integer  "audience_id",                          :null => false
-    t.integer  "creative_id",                          :null => false
+    t.integer  "campaign_id"
+    t.integer  "ad_inventory_source_id"
+    t.integer  "audience_id"
+    t.integer  "creative_id"
     t.datetime "start_time",                           :null => false
     t.datetime "end_time",                             :null => false
     t.integer  "duration_in_minutes"

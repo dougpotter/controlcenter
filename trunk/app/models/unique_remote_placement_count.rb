@@ -1,7 +1,7 @@
 class UniqueRemotePlacementCount < ActiveRecord::Base
   acts_as_fact
 
-  validates_presence_of :audience_id, :start_time, :end_time, :duration_in_minutes, :unique_remote_placement_count
+  validates_presence_of :start_time, :end_time, :duration_in_minutes, :unique_remote_placement_count
   validates_numericality_of :unique_remote_placement_count
   validates_as_increasing :start_time, :end_time
   validate :enforce_unique_index
