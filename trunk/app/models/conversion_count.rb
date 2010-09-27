@@ -1,5 +1,5 @@
 class ConversionCount < ActiveRecord::Base
-  acts_as_fact
+  acts_as_additive_fact
 
   belongs_to :campaign
 
