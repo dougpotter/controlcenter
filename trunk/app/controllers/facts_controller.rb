@@ -90,18 +90,25 @@ class FactsController < ApplicationController
   end
 
   def where_conditions_from_params
-    s = []
-    a = params[:filters].split(",")
-    filters = Hash[*a.each_with_index {|val,idx| [val.to_sym, a[idx+1]] }.flatten]
-    s << "start_time >= #{ActiveRecord::Base.quote_value(Time.parse(filters.delete("start_time")).strftime(TIME_FORMAT))}"
-    s << "end_time <= #{ActiveRecord::Base.quote_value(Time.parse(filters.delete("end_time")).strftime(TIME_FORMAT))}"
+    filters = params[:filters].split(",")
+    conds = []
+    hash = {}
+    for i in 0..filters.size/2 - 1
+      if !hash.keys.include?(filters.first)
+        hash[filters.shift] = [filters.shift]
+      else
+        hash[filters.shift] << filters.shift
+      end
+    end
 
-
-    filters.each { |dim,val|
+    conds << "start_time >= #{ActiveRecord::Base.quote_value(Time.parse(hash.delete("start_time").to_s).strftime(TIME_FORMAT))}"
+    conds << "end_time <= #{ActiveRecord::Base.quote_value(Time.parse(hash.delete("end_time").to_s).strftime(TIME_FORMAT))}"
+    
+    hash.each { |dim,vals|
       pk_name = Dimension.business_index_dictionary[dim]
-      pk_val = Dimension.find_by_business_index(dim, val).id
-      s << pk_name.to_s + " = " + pk_val.to_s
+      s = " IN(" + vals.map { |v| Dimension.find_by_business_index(dim, v).id }.join(",") + ")"
+      conds << pk_name.to_s + s
     }
-    s
+    conds
   end
 end
