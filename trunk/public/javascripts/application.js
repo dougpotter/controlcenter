@@ -38,5 +38,36 @@ var ReportPage = {
     $('end_year').value = end.getYear();
     $('end_month').value = end.getMonth()+1;
     $('end_day').value = end.getDate();
+  },
+  
+  initGroupSummarizeBoxes: function() {
+    var groupBoxes = $$('input.group-box');
+    var summarizeBoxes = $$('input.summarize-box');
+    var groupToSummarize = {};
+    var summarizeToGroup = {};
+    var groupClick = function(event) {
+      var element = event.target;
+      if (!element.checked) {
+        var summarize = $(groupToSummarize[element.id]);
+        summarize.checked = false;
+      }
+    };
+    var summarizeClick = function(event) {
+      var element = event.target;
+      if (element.checked) {
+        var group = $(summarizeToGroup[element.id]);
+        group.checked = true;
+      }
+    };
+    // a small hack assuming group and summarize boxes are ordered
+    // in document order, and nothing else uses these class names
+    for (var i = 0; i < groupBoxes.length; ++i) {
+      var groupBox = groupBoxes[i];
+      var summarizeBox = summarizeBoxes[i];
+      groupToSummarize[groupBox.id] = summarizeBox.id;
+      summarizeToGroup[summarizeBox.id] = groupBox.id;
+      groupBox.addEvent('click', groupClick);
+      summarizeBox.addEvent('click', summarizeClick);
+    }
   }
 };

@@ -56,12 +56,12 @@ div style='clear:both;'
       = label + ':'
     >br
     
-    = check_box_tag "#{form_tag_name}_group", '1'
+    = check_box_tag "#{form_tag_name}_group", '1', false, :class => 'group-box'
     label for='<%= form_tag_name %>_group' | Group By?
     >br
     
-    = check_box_tag "#{form_tag_name}_summarize", '1'
-    label for='<%= form_tag_name %>_group' | Summarize?
+    = check_box_tag "#{form_tag_name}_summarize", '1', false, :class => 'summarize-box'
+    label for='<%= form_tag_name %>_summarize' | Summarize?
     >br
     
     label for='<%= form_tag_name %>' | Filter By:
