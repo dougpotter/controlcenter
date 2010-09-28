@@ -21,16 +21,15 @@ module UniqueFactBehaviors
         end
       end
 
-      where_list = options[:where]
+      metric = options[:fact]
+      fact = Object.const_get(metric.classify)
+      where_list = fact.new.where_conditions_from_params(options[:where])
       group_by_list = keyize_indices(options[:group_by])
       column_aliases = {}
-      
-      parse_frequency_for_grouping(options[:frequency], group_by_list, column_aliases)
+      parse_frequency_for_grouping(options[:fact].pluralize, options[:frequency], group_by_list, column_aliases)
       parse_frequency_for_filtering(options[:frequency], where_list)
       parse_summarize(options[:summarize], where_list)
 
-      metric = options[:fact]
-      fact = Object.const_get(metric.classify)
       columns = group_by_list.map do |expr|
         if aliased = column_aliases[expr]
           "#{expr} as #{aliased}"
