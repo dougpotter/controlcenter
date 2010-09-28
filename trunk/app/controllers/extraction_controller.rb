@@ -9,5 +9,9 @@ class ExtractionController < ApplicationController
       counts[file.status] = (counts[file.status] || 0) + 1
       counts
     end
+    
+    @date = Time.parse(date)
+    @previous_day = (@date - 1.day).strftime('%Y%m%d')
+    @next_day = (@date + 1.day).strftime('%Y%m%d')
   end
 end
