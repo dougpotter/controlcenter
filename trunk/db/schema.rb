@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100924161717) do
+ActiveRecord::Schema.define(:version => 20100924164020) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -211,6 +211,24 @@ ActiveRecord::Schema.define(:version => 20100924161717) do
     t.integer "insertion_order_id"
   end
 
+  create_table "media_costs", :force => true do |t|
+    t.integer  "partner_id",               :null => false
+    t.integer  "campaign_id",              :null => false
+    t.integer  "media_purchase_method_id", :null => false
+    t.integer  "audience_id",              :null => false
+    t.integer  "creative_id",              :null => false
+    t.datetime "start_time",               :null => false
+    t.datetime "end_time",                 :null => false
+    t.integer  "duration_in_minutes",      :null => false
+    t.float    "media_cost",               :null => false
+  end
+
+  add_index "media_costs", ["audience_id"], :name => "media_costs_audience_id_fk"
+  add_index "media_costs", ["campaign_id"], :name => "media_costs_campaign_id_fk"
+  add_index "media_costs", ["creative_id"], :name => "media_costs_creative_id_fk"
+  add_index "media_costs", ["media_purchase_method_id"], :name => "media_costs_media_purchase_method_id_fk"
+  add_index "media_costs", ["partner_id"], :name => "media_costs_partner_id_fk"
+
   create_table "media_purchase_methods", :force => true do |t|
     t.string "mpm_code"
   end
@@ -289,6 +307,24 @@ ActiveRecord::Schema.define(:version => 20100924161717) do
     t.integer "usage"
   end
 
+  create_table "unique_click_counts", :force => true do |t|
+    t.integer  "partner_id"
+    t.integer  "campaign_id"
+    t.integer  "media_purchase_method_id"
+    t.integer  "audience_id"
+    t.integer  "creative_id"
+    t.datetime "start_time",               :null => false
+    t.datetime "end_time",                 :null => false
+    t.integer  "duration_in_minutes",      :null => false
+    t.integer  "unique_click_count",       :null => false
+  end
+
+  add_index "unique_click_counts", ["audience_id"], :name => "unique_click_counts_audience_id_fk"
+  add_index "unique_click_counts", ["campaign_id"], :name => "unique_click_counts_campaign_id_fk"
+  add_index "unique_click_counts", ["creative_id"], :name => "unique_click_counts_creative_id_fk"
+  add_index "unique_click_counts", ["media_purchase_method_id"], :name => "unique_click_counts_media_purchase_method_id_fk"
+  add_index "unique_click_counts", ["partner_id"], :name => "unique_click_counts_partner_id_fk"
+
   create_table "unique_conversion_counts", :force => true do |t|
     t.integer  "campaign_id"
     t.datetime "start_time",              :null => false
@@ -298,6 +334,24 @@ ActiveRecord::Schema.define(:version => 20100924161717) do
   end
 
   add_index "unique_conversion_counts", ["campaign_id"], :name => "unique_conversion_counts_campaign_id_fk"
+
+  create_table "unique_impression_counts", :force => true do |t|
+    t.integer  "partner_id"
+    t.integer  "campaign_id"
+    t.integer  "media_purchase_method_id"
+    t.integer  "audience_id"
+    t.integer  "creative_id"
+    t.datetime "start_time",               :null => false
+    t.datetime "end_time",                 :null => false
+    t.integer  "duration_in_minutes",      :null => false
+    t.integer  "unique_impression_count",  :null => false
+  end
+
+  add_index "unique_impression_counts", ["audience_id"], :name => "unique_impression_counts_audience_id_fk"
+  add_index "unique_impression_counts", ["campaign_id"], :name => "unique_impression_counts_campaign_id_fk"
+  add_index "unique_impression_counts", ["creative_id"], :name => "unique_impression_counts_creative_id_fk"
+  add_index "unique_impression_counts", ["media_purchase_method_id"], :name => "unique_impression_counts_media_purchase_method_id_fk"
+  add_index "unique_impression_counts", ["partner_id"], :name => "unique_impression_counts_partner_id_fk"
 
   create_table "unique_remote_placement_counts", :force => true do |t|
     t.integer  "audience_id"
@@ -377,6 +431,12 @@ ActiveRecord::Schema.define(:version => 20100924161717) do
 
   add_foreign_key "insertion_orders", "campaigns", :name => "insertion_orders_campaign_id_fk"
 
+  add_foreign_key "media_costs", "audiences", :name => "media_costs_audience_id_fk"
+  add_foreign_key "media_costs", "campaigns", :name => "media_costs_campaign_id_fk"
+  add_foreign_key "media_costs", "creatives", :name => "media_costs_creative_id_fk"
+  add_foreign_key "media_costs", "media_purchase_methods", :name => "media_costs_media_purchase_method_id_fk"
+  add_foreign_key "media_costs", "partners", :name => "media_costs_partner_id_fk"
+
   add_foreign_key "msas_regions", "msas", :name => "msas_regions_msa_id_fk"
   add_foreign_key "msas_regions", "regions", :name => "msas_regions_region_id_fk"
 
@@ -389,7 +449,19 @@ ActiveRecord::Schema.define(:version => 20100924161717) do
   add_foreign_key "remote_placements", "campaigns", :name => "remote_placements_campaign_id_fk"
   add_foreign_key "remote_placements", "geographies", :name => "remote_placements_geography_id_fk"
 
+  add_foreign_key "unique_click_counts", "audiences", :name => "unique_click_counts_audience_id_fk"
+  add_foreign_key "unique_click_counts", "campaigns", :name => "unique_click_counts_campaign_id_fk"
+  add_foreign_key "unique_click_counts", "creatives", :name => "unique_click_counts_creative_id_fk"
+  add_foreign_key "unique_click_counts", "media_purchase_methods", :name => "unique_click_counts_media_purchase_method_id_fk"
+  add_foreign_key "unique_click_counts", "partners", :name => "unique_click_counts_partner_id_fk"
+
   add_foreign_key "unique_conversion_counts", "campaigns", :name => "unique_conversion_counts_campaign_id_fk"
+
+  add_foreign_key "unique_impression_counts", "audiences", :name => "unique_impression_counts_audience_id_fk"
+  add_foreign_key "unique_impression_counts", "campaigns", :name => "unique_impression_counts_campaign_id_fk"
+  add_foreign_key "unique_impression_counts", "creatives", :name => "unique_impression_counts_creative_id_fk"
+  add_foreign_key "unique_impression_counts", "media_purchase_methods", :name => "unique_impression_counts_media_purchase_method_id_fk"
+  add_foreign_key "unique_impression_counts", "partners", :name => "unique_impression_counts_partner_id_fk"
 
   add_foreign_key "unique_remote_placement_counts", "audiences", :name => "unique_remote_placement_counts_audience_id_fk"
 

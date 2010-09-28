@@ -18,7 +18,6 @@ class FactsController < ApplicationController
       :tz_offset => params[:tz_offset]
     }
     # aggregate facts
-    debugger
     Fact.aggregate(@fact_aggregation, options)
 
     respond_to do |format|
