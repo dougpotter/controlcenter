@@ -66,8 +66,9 @@ var ReportPage = {
       var summarizeBox = summarizeBoxes[i];
       groupToSummarize[groupBox.id] = summarizeBox.id;
       summarizeToGroup[summarizeBox.id] = groupBox.id;
-      groupBox.addEvent('click', groupClick);
-      summarizeBox.addEvent('click', summarizeClick);
     }
+    var form = $('report_form');
+    form.addEvent('click:relay(input[@class="group-box"])', groupClick);
+    form.addEvent('click:relay(input[@class="summarize-box"])', summarizeClick);
   }
 };
