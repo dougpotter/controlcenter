@@ -2,12 +2,20 @@ div class=dimension_input
   label for="start_day" | Start:
   >br
   
+  = check_box_tag "start_date_group", '1'
+  label for='start_date_group' | Group By?
+  >br
+  
   = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'start_year', :id => 'start_year')
   = select_month(Date.current, {}, :name => 'start_month', :id => 'start_month')
   = select_day(Date.current, {}, :name => 'start_day', :id => 'start_day')
 
 div class=dimension_input
-  label for="start_day" | End:
+  label for="end_day" | End:
+  >br
+  
+  = check_box_tag "end_date_group", '1'
+  label for='end_date_group' | Group By?
   >br
   
   = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'end_year', :id => 'end_year')

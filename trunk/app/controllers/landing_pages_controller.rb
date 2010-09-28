@@ -61,6 +61,11 @@ class LandingPagesController < ApplicationController
         end
       end
     end
+    %w(start end).each do |key|
+      if (value = params["#{key}_date_group"]) && value.to_i > 0
+        group["#{key}_time"] = true
+      end
+    end
     format = params[:format]
     format = 'csv' unless %w(csv html).include?(format)
     
