@@ -1,39 +1,39 @@
 module SqlGenerator
   class MySQL
-    def date_from_datetime(expr)
-      "date(#{expr})"
+    def date_from_datetime(expr, options)
+      "date(#{options[:fact_table]}.#{expr})"
     end
     
-    def hour_from_datetime(expr)
-      "hour(#{expr})"
+    def hour_from_datetime(expr, options)
+      "hour(#{options[:fact_table]}.#{expr})"
     end
     
-    def beginning_of_week_from_datetime(expr)
-      "DATE_SUB(DATE(#{expr}), INTERVAL (DAYOFWEEK(#{expr}) - 1) DAY)"
+    def beginning_of_week_from_datetime(expr, options)
+      "DATE_SUB(DATE(#{options[:fact_table]}.#{expr}), INTERVAL (DAYOFWEEK(#{options[:fact_table]}.#{expr}) - 1) DAY)"
     end
 
-    def beginning_of_month_from_datetime(expr)
-      "DATE_SUB(DATE(#{expr}), INTERVAL (DAYOFMONTH(#{expr}) - 1) DAY)"
+    def beginning_of_month_from_datetime(expr, options)
+      "DATE_SUB(DATE(#{options[:fact_table]}.#{expr}), INTERVAL (DAYOFMONTH(#{options[:fact_table]}.#{expr}) - 1) DAY)"
     end
   end
   
   class PostgreSQL
-    def date_from_datetime(expr)
-      "(#{expr})::date"
+    def date_from_datetime(expr, options)
+      "(#{options[:fact_table]}.#{expr})::date"
     end
     
-    def hour_from_datetime(expr)
-      "date_part('hour', (#{expr})::timestamp)"
+    def hour_from_datetime(expr, options)
+      "date_part('hour', (#{options[:fact_table]}.#{expr})::timestamp)"
     end
     
-    def beginning_of_week_from_datetime(expr)
+    def beginning_of_week_from_datetime(expr, options)
       # Note: on postgres sunday is day 0
-      "(#{expr})::date - date_part('dow', (#{expr})::date)::integer"
+      "(#{options[:fact_table]}.#{expr})::date - date_part('dow', (#{options[:fact_table]}.#{expr})::date)::integer"
     end
 
-    def beginning_of_month_from_datetime(expr)
+    def beginning_of_month_from_datetime(expr, options)
       # Note: on postgres first day of the month is 1
-      "(#{expr})::date - date_part('day', (#{expr})::date)::integer + 1"
+      "(#{options[:fact_table]}.#{expr})::date - date_part('day', (#{options[:fact_table]}.#{expr})::date)::integer + 1"
     end
   end
   

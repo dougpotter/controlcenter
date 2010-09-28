@@ -12,13 +12,14 @@ module AdditiveFactBehaviors
   end
 
   module ClassMethods
+    WHICH_TABLE = {"partner_id" => "campaigns"}
 
     # filles fact aggregation (fa) with appropriate results based on a parsed
     # params hash (options)
     def aggregate(fa, options = {})
       group_by_list = keyize_indices(options[:group_by])
       column_aliases = {}
-      parse_frequency_for_grouping(options[:frequency], group_by_list, column_aliases)
+      parse_frequency_for_grouping(options[:fact].pluralize, options[:frequency], group_by_list, column_aliases)
       metric = options[:fact]
       fact = Object.const_get(metric.classify)
       columns = group_by_list.map do |expr|
@@ -28,12 +29,31 @@ module AdditiveFactBehaviors
           expr
         end
       end
-      
+      where_clause = fact.new.where_conditions_from_params(options[:where])
+
+
+      # construct join clause with appropate joins
+      from_clause = "#{metric.pluralize}"
+      if foreign_dimensions = join_tables?(options[:group_by], fact)
+        for dim in foreign_dimensions
+          table = WHICH_TABLE[dim.singularize.concat("_id")]
+          from_clause += " JOIN #{table} on #{metric.pluralize}.#{table.singularize.concat("_id")} = #{table}.id"
+
+          col_index_for_replacement = columns.index(table.singularize.concat("_id").to_sym)
+          col_replacement = "#{table}.id as \"#{table.singularize.concat("_id")}\""
+          columns[col_index_for_replacement] = col_replacement
+
+          grp_index_for_replacement = group_by_list.index(table.singularize.concat("_id").to_sym)
+          grp_replacement = "#{table.singularize.concat("_id")}"
+          group_by_list[grp_index_for_replacement] = grp_replacement
+        end
+      end
+
       # standard query
       fa.add(fact.find_by_sql(
         "SELECT #{columns.join(", ")}, SUM(#{metric}) as sum
-          FROM #{metric.pluralize}
-          WHERE #{options[:where].join(" AND ")}
+          FROM #{from_clause}
+          WHERE #{where_clause.join(" AND ")}
           GROUP BY #{group_by_list.join(", ")}"
       ))
 
@@ -44,8 +64,8 @@ module AdditiveFactBehaviors
       query_arr = parse_agg_dimensions(options[:summarize], columns, group_by_list)
       for query in query_arr
         sql_string = "SELECT #{query[:cols].join(", ")}, #{query[:alls].join(", ")}, SUM(#{metric}) as sum
-        FROM #{metric.pluralize}
-        WHERE #{options[:where].join(" AND ")}"
+        FROM #{from_clause}
+        WHERE #{where_clause.join(" AND ")}"
         if query[:group_by_columns] != []
           sql_string.concat(" GROUP BY #{query[:group_by_columns].join(", ")}")
         end
@@ -54,7 +74,25 @@ module AdditiveFactBehaviors
 
       fa.adjust_time_zone(options[:tz_offset])
     end
-    
+
+    def join_tables?(group_by, fact)
+      fact_table_columns = fact.new.attributes.keys
+      join_tables = []
+      for dim in group_by
+        pk = Dimension.keyize_indices(dim).to_s
+        if !fact_table_columns.include?(pk)
+          join_tables << pk[0..-4].pluralize
+        end
+      end
+
+      if join_tables.size > 0
+        return join_tables
+      else
+        return nil
+      end
+    end
+
+
     # takes arrays of:
     # 1. dimensions to summarize
     # 2. columns (aliased where appropriate)
@@ -79,7 +117,7 @@ module AdditiveFactBehaviors
       end
       query_arr
     end
-    
+
     # takes array of business columns and returns SQL which will select the 
     # associated primary key with the (string) value 'all'
     def allize(collumns_for_all)
@@ -89,7 +127,7 @@ module AdditiveFactBehaviors
       end
       arr
     end
-    
+
     # n choose k function for arrays. returns all combinations of k
     # elements from array n
     def choose(n, k)

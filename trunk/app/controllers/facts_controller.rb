@@ -1,9 +1,9 @@
 class FactsController < ApplicationController
   TIME_FORMAT = "%Y-%m-%d %H:%M:%S".freeze
-  
+
   # skip auth before :create should be deleted for production
   skip_before_filter :verify_authenticity_token, :only => [:create, :update, :index]
-  
+
   # Takes url conforming to spec and returns fact aggregation report
   def index
 
@@ -11,13 +11,14 @@ class FactsController < ApplicationController
     @fact_aggregation = FactAggregation.new
     options = {
       :include => params[:metrics].split(","),
-      :where => where_conditions_from_params,
+      :where => params[:filters],
       :group_by => params[:dimensions].split(","),
       :frequency => params[:frequency],
       :summarize => params[:summarize] ? params[:summarize].split(",") : [],
       :tz_offset => params[:tz_offset]
     }
     # aggregate facts
+    debugger
     Fact.aggregate(@fact_aggregation, options)
 
     respond_to do |format|
@@ -44,7 +45,7 @@ class FactsController < ApplicationController
         render :text => nil, :status => 422
       end
     end
-    
+
     render :text => nil, :status => 200
   end
 
@@ -61,10 +62,10 @@ class FactsController < ApplicationController
             fact_class.scalar_fact => (
               all_facts[0].send(fact_class.scalar_fact) + 
               params[fact_class.scalar_fact].to_f
-            )
+          )
           })
         end
-        
+
         unless all_facts[0].update_attributes(params)
           render :text => nil, :status => 422
           return
@@ -74,7 +75,7 @@ class FactsController < ApplicationController
         return
       end
     end
-    
+
     render :text => nil, :status => 200
   end
 
@@ -87,28 +88,5 @@ class FactsController < ApplicationController
       end
     end
     fact_classes
-  end
-
-  def where_conditions_from_params
-    filters = params[:filters].split(",")
-    conds = []
-    hash = {}
-    for i in 0..filters.size/2 - 1
-      if !hash.keys.include?(filters.first)
-        hash[filters.shift] = [filters.shift]
-      else
-        hash[filters.shift] << filters.shift
-      end
-    end
-
-    conds << "start_time >= #{ActiveRecord::Base.quote_value(Time.parse(hash.delete("start_time").to_s).strftime(TIME_FORMAT))}"
-    conds << "end_time <= #{ActiveRecord::Base.quote_value(Time.parse(hash.delete("end_time").to_s).strftime(TIME_FORMAT))}"
-    
-    hash.each { |dim,vals|
-      pk_name = Dimension.business_index_dictionary[dim]
-      s = " IN(" + vals.map { |v| Dimension.find_by_business_index(dim, v).id }.join(",") + ")"
-      conds << pk_name.to_s + s
-    }
-    conds
   end
 end

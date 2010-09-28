@@ -1,4 +1,5 @@
 module FactBehaviors
+  TIME_FORMAT = "%Y-%m-%d %H:%M:%S".freeze
 
   def self.included(base)
     base.class_eval do
@@ -11,7 +12,7 @@ module FactBehaviors
 
   module ClassMethods
     # Class methods go here
-    
+
     # fills fact aggregation object with appropriate facts according to parsed
     # params hash (options) 
     def aggregate(fa, options = {})
@@ -28,27 +29,27 @@ module FactBehaviors
       fa.adjust_time_zone(options[:tz_offset])
       return fa
     end
-    
+
     # fills group_by_list and column_aliases with appropriate SQL given the
     # supplied frequency
-    def parse_frequency_for_grouping(frequency, group_by_list, column_aliases)
+    def parse_frequency_for_grouping(fact_table, frequency, group_by_list, column_aliases)
       case frequency
       when "hour"
-        date = SqlGenerator.date_from_datetime('start_time')
-        hour = SqlGenerator.hour_from_datetime('start_time')
+        date = SqlGenerator.date_from_datetime('start_time', {:fact_table => fact_table})
+        hour = SqlGenerator.hour_from_datetime('start_time', {:fact_table => fact_table})
         group_by_list.concat([date, hour])
         column_aliases[date] = 'date'
         column_aliases[hour] = 'hour'
       when "day"
-        date = SqlGenerator.date_from_datetime('start_time')
+        date = SqlGenerator.date_from_datetime('start_time', {:fact_table => fact_table})
         group_by_list << date
         column_aliases[date] = 'date'
       when "week"
-        start_date = SqlGenerator.beginning_of_week_from_datetime('start_time')
+        start_date = SqlGenerator.beginning_of_week_from_datetime('start_time', {:fact_table => fact_table})
         column_aliases[start_date] = 'start_date'
         group_by_list << start_date
       when "month"
-        start_date = SqlGenerator.beginning_of_month_from_datetime('start_time')
+        start_date = SqlGenerator.beginning_of_month_from_datetime('start_time', {:fact_table => fact_table})
         group_by_list << start_date
         column_aliases[start_date] = 'start_date'
       when nil
@@ -131,9 +132,9 @@ module InstanceMethods
       base.class_eval do
         define_method(key) {
           begin 
-          self.send(value.to_s.gsub(/_id$/, "")).send(
-            Dimension.business_index_aliases[key]
-        )
+            self.send(value.to_s.gsub(/_id$/, "")).send(
+              Dimension.business_index_aliases[key]
+            )
           rescue 
             nil
           end
@@ -164,6 +165,30 @@ module InstanceMethods
       })
       super(translated_params)
     end
+  end
+
+  def where_conditions_from_params(filters)
+    fact_table = self.class.to_s.underscore.pluralize
+      filters = filters.split(",")
+    conds = []
+    hash = {}
+    for i in 0..filters.size/2 - 1
+      if !hash.keys.include?(filters.first)
+        hash[filters.shift] = [filters.shift]
+      else
+        hash[filters.shift] << filters.shift
+      end
+    end
+
+    conds << "#{fact_table}.start_time >= #{ActiveRecord::Base.quote_value(Time.parse(hash.delete("start_time").to_s).strftime(TIME_FORMAT))}"
+    conds << "#{fact_table}.end_time <= #{ActiveRecord::Base.quote_value(Time.parse(hash.delete("end_time").to_s).strftime(TIME_FORMAT))}"
+
+    hash.each { |dim,vals|
+      pk_name = Dimension.business_index_dictionary[dim]
+      s = " IN(" + vals.map { |v| Dimension.find_by_business_index(dim, v).id }.join(",") + ")"
+      conds << pk_name.to_s + s
+    }
+    conds
   end
 
   def is_fact? ; true ; end

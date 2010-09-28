@@ -58,6 +58,8 @@ class FactAggregation
     
     cache = BusinessIndexLookupCache.new
 
+    debugger
+
     row_hash = {}
     column_sets = []
     for fact in @observations
