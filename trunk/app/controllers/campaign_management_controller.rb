@@ -69,7 +69,7 @@ class CampaignManagementController < ApplicationController
   def prepare_form
     @partners = Partner.find(:all, :order => 'name')
     @ad_inventory_sources = AdInventorySource.all(:order => 'name')
-    @creatives = Creative.all(:order => 'name')
+    @creatives = Creative.all(:order => 'description')
     @creative_sizes = CreativeSize.all(:order => 'common_name')
     @creative = Creative.new
     @new_creatives ||= []

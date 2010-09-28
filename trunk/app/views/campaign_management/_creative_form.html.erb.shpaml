@@ -10,7 +10,7 @@ div class=dimension_input
   label for="creative_name" | Name:
   >br
   
-  = f.text_field('name', :size => 5)
+  = f.text_field('description', :size => 5)
 
 div class=dimension_input
   label for="creative_media_type" | Media type:
