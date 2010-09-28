@@ -4,9 +4,6 @@ class BusinessIndexLookupCache
   end
   
   def resolve_code(id_column, id, business_index_name)
-    if id.nil?
-      return 'all'
-    end
     @cache[business_index_name] ||= {}
     unless value = @cache[business_index_name][id]
       class_name = id_column.to_s.sub(/_id$/, '').classify
