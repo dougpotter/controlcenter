@@ -10,6 +10,8 @@ module LandingPagesHelper
     ['Click Count', 'click_count'],
     ['Impression Count', 'impression_count'],
     ['Conversion Count', 'conversion_count'],
+    ['Unique Click Count', 'unique_click_count'],
+    ['Unique Impression Count', 'unique_impression_count'],
     ['Unique Conversion Count', 'unique_conversion_count'],
     ['Unique Remote Placement Count', 'unique_remote_placement_count'],
     ['Unique View-Through Conversions', 'unique_view_through_conversion_count'],
