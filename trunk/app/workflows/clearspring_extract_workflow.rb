@@ -196,7 +196,10 @@ class ClearspringExtractWorkflow < Workflow::Base
     # and non-locked runs. Status files are only created for once runs
     # (which are also locked).
     if options[:once]
-      create_data_provider_file(file_url, DataProviderFile::EXTRACTED)
+      create_data_provider_file(file_url) do |file|
+        file.status = DataProviderFile::EXTRACTED
+        file.extracted_at = Time.now
+      end
     end
     
     unless params[:keep_downloaded]
@@ -471,10 +474,10 @@ class ClearspringExtractWorkflow < Workflow::Base
     return !file.nil?
   end
   
-  def create_data_provider_file(file_url, status)
+  def create_data_provider_file(file_url)
     # Locked and lock-free runs should not be combined, since lock-free run may
-    # overwrite data of the locked run and leave it in an inconsistent state and
-    # the locked run would report success.
+    # overwrite data of the locked run and leave it in an inconsistent state
+    # and the locked run would report success.
     #
     # Due to verification and also rerunning extraction however we must allow
     # updating status on existing files.
@@ -482,15 +485,20 @@ class ClearspringExtractWorkflow < Workflow::Base
     DataProviderFile.transaction do
       file = channel.data_provider_files.find_by_url(file_url)
       if file
-        file.status = status
-        file.save!
+        if block_given?
+          yield file
+          file.save!
+        end
       else
         begin
-          file = DataProviderFile.create!(
+          file = DataProviderFile.new(
             :url => file_url,
-            :data_provider_channel => channel,
-            :status => status
+            :data_provider_channel => channel
           )
+          if block_given?
+            yield file
+          end
+          file.save!
         rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
           # see if someone else created the file concurrently
           file = channel.data_provider_files.find_by_url(file_url)
@@ -499,7 +507,9 @@ class ClearspringExtractWorkflow < Workflow::Base
           end
           # XXX what are the actual use cases that would generate conflicts?
           # what should we do in these cases?
-          file.status = status
+          if block_given?
+            yield file
+          end
           file.save!
         end
       end
@@ -540,11 +550,17 @@ class ClearspringExtractWorkflow < Workflow::Base
     # if it does not already exist.
     DataProviderFile.transaction do
       file = channel.data_provider_files.find_by_url(file_url)
-      unless file
+      if file
+        if file.discovered_at.nil?
+          file.discovered_at = Time.now
+          file.save!
+        end
+      else
         file = DataProviderFile.create!(
           :url => file_url,
           :data_provider_channel => channel,
-          :status => DataProviderFile::DISCOVERED
+          :status => DataProviderFile::DISCOVERED,
+          :discovered_at => Time.now
         )
       end
     end

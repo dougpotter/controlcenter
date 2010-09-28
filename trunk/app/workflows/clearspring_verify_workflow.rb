@@ -94,7 +94,10 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
           end
           if ok
             if params[:record]
-              create_data_provider_file(url, DataProviderFile::VERIFIED)
+              create_data_provider_file(url) do |file|
+                file.status = DataProviderFile::VERIFIED
+                file.verified_at = Time.now
+              end
             end
             have << bucket_path
           else
@@ -232,6 +235,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
       )
       if file
         file.status = DataProviderFile::BOGUS
+        file.verified_at = nil
         file.save!
       end
     end
