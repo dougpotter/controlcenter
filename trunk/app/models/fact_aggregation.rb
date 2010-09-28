@@ -66,7 +66,8 @@ class FactAggregation
         dim_array = options[:dimensions].collect { |dim|
           id_column = Dimension.business_index_dictionary[dim]
           if id_column
-            if (id = fact.send(id_column)) != 0 && (id = fact.send(id_column)) != nil
+            id = fact.send(id_column)
+            if id != 0 && !id.nil?
               cache.resolve_code(id_column, id, dim)
             else
               'all'
