@@ -1,0 +1,33 @@
+h1 | Campaigns
+
+div id=graph_selector_panel
+  h2 | Narrow by:
+  >br
+  
+  = form_remote_tag :url => {:action => 'filter_list'}
+    = render :partial => 'index_filter_fields'
+
+    div class=dimension_input
+      = submit_tag('Go')
+    
+    div style='clear:both;'
+      >span
+  </form>
+  
+  div class=dimension_input
+    ul
+      % for campaign in @campaigns
+        li
+          = link_to "#{campaign.campaign_code} #{campaign.description}", edit_campaign_path(campaign)
+
+    div style='clear:both;'
+      >br
+
+    p
+      = link_to 'New campaign', new_campaign_path
+
+    div style='clear:both;'
+      >br
+
+div style='clear:both;'
+  >span

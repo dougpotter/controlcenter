@@ -29,18 +29,23 @@ class FactAggregation
       %w{ day }
     when "week" then
       %w{ week }
+    when "month" then
+      %w{ month }
     else
       []
     end
     
-    # TODO: DRY!!! (See lib/fact_behaviors.rb)
+    # Note: FactBehaviors' job is to alias the expressions to
+    # correct column names
     frequency_attribute_set = case options[:frequency]
     when "hour" then
-      [ "DATE(start_time)", "HOUR(start_time)" ]
+      [ 'date', 'hour' ]
     when "day" then
-      [ "DATE(start_time)" ]
+      [ 'date' ]
     when "week" then
-      [ "DATE_SUB(DATE(start_time), INTERVAL (DAYOFWEEK(start_time) - 1) DAY)" ]
+      [ 'start_date' ]
+    when "month" then
+      [ 'start_date' ]
     else
       []
     end
@@ -50,17 +55,30 @@ class FactAggregation
       options[:dimensions] + frequency_name_set + options[:facts] :
       @observations[0].attributes.keys
     )
+    
+    cache = BusinessIndexLookupCache.new
+
     row_hash = {}
     column_sets = []
     for fact in @observations
-      fact_value = fact.attributes["SUM(#{fact.class.name.to_s.underscore})"]
+      fact_value = fact.attributes['sum']
       if options[:dimensions] && options[:facts]
-        dim_array = options[:dimensions].collect { |dim| fact.send(dim) } +
-          frequency_attribute_set.collect { |attrib| fact.attributes[attrib] }
+        dim_array = options[:dimensions].collect { |dim|
+          id_column = Dimension.business_index_dictionary[dim]
+          if id_column
+            id = fact.send(id_column)
+            if id != 0 && !id.nil?
+              cache.resolve_code(id_column, id, dim)
+            else
+              'all'
+            end
+          else
+            fact.send(dim)
+          end
+        } +
+          frequency_attribute_set.collect { |attrib| fact.send(attrib) }
         row_hash[dim_array] ||= []
-        options[:facts].each_with_index do |fact_name, idx|
-          row_hash[dim_array][idx] ||= fact.attributes["SUM(#{fact_name.to_s})"]
-        end
+        row_hash[dim_array][options[:facts].index(fact.class.to_s.underscore)] ||= fact.attributes['sum']
       else
         column_sets << fact.attributes.values
       end

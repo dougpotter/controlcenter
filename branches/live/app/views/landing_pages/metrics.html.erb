@@ -1,0 +1,18 @@
+<div id="campaign_management_graph_container">
+  <div id="campaign_management_graph">
+  </div>
+</div>
+
+<div id="graph_selector_panel">
+  <h2>Custom Report</h2>
+  <br />
+
+  <form id="report_form">
+    <%= render :partial => 'form' %>
+  </form>
+</div>
+<div style="clear:both;"></div>
+
+<% javascript_tag do %>
+  <%= render :partial => "metrics.js" %>
+<% end %>

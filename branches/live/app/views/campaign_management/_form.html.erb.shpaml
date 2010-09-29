@@ -1,0 +1,88 @@
+= error_messages_for :campaign
+= error_messages_for :new_partner
+
+div class=dimension_input
+  label for="campaign_campaign_code" | Campaign code:
+  >br
+  
+  = text_field('campaign', 'campaign_code', :size => 5)
+
+div class=dimension_input
+  label for="campaign_description" | Description:
+  >br
+  
+  = text_field('campaign', 'description')
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  label for="campaign_start_time" | Start date:
+  >br
+  
+  = date_select('campaign', 'start_time')
+
+div class=dimension_input
+  label for="campaign_end_time" | End date:
+  >br
+  
+  = date_select('campaign', 'end_time')
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  label for="campaign_partner_id" | Partner:
+  >br
+  
+  = select('campaign', 'partner_id', new_partner_option + options_from_collection_for_select(@partners, :id, :name, @campaign.partner_id))
+
+div class=dimension_input
+  label for='' | New partner name:
+  >br
+  
+  = text_field('new_partner', 'name', :size => 10)
+
+div class=dimension_input
+  label for='' | New partner code:
+  >br
+  
+  = text_field('new_partner', 'partner_code', :size => 5)
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  label for="campaign_end_time" | AIS:
+  >br
+  
+  = select_tag('campaign[ad_inventory_source_ids]', options_from_collection_for_select(@ad_inventory_sources, :id, :name, @campaign.ad_inventory_sources.map { |ais| ais.id }), :multiple => true)
+
+div style='clear:both;'
+  >br
+
+h2 | Creatives:
+
+div class=dimension_input
+  label for="campaign_end_time" | Use existing creative(s):
+  >br
+  
+  % for creative in @creatives
+    div class=dimension_input
+      = check_box_tag "use_creatives[#{creative.id}]", 1, @campaign.creatives.include?(creative)
+      label for="use_creatives_<%= creative.id %>"
+        = creative.creative_code
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  label for="campaign_end_time" | Create new creative(s):
+  >br
+  
+  % for creative in @new_creatives
+    % fields_for('creative[]', creative) do |creative_form|
+      = render :partial => 'creative_form', :locals => {:f => creative_form, :object => creative}
+  
+  % fields_for('creative[]', @creative) do |creative_form|
+    = render :partial => 'creative_form', :locals => {:f => creative_form}

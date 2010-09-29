@@ -179,7 +179,7 @@ label {
 .param_selector_row a:hover { color: #75439A; }
 .param_selector_row a:active { color: #75439A; }
 
-.bilevel_input {
+.bilevel_input, .dimension_input {
   float: left;
   padding: 0px 5px 5px 0px;
 }
@@ -192,4 +192,28 @@ label {
 #beacon_report_graph_links a {
   font-size: 10px;
   font-family: monospace;
+}
+
+.extraction-status .none {
+  background-color: #ffc600;
+}
+
+.extraction-status .discovered {
+  background-color: #35bcc2;
+}
+
+.extraction-status .extracting {
+  background-color: #f8dfad;
+}
+
+.extraction-status .extracted {
+  background-color: #aa93a3;
+}
+
+.extraction-status .verified {
+  background-color: #ffffff;
+}
+
+.extraction-status .bogus {
+  background-color: #ce3200;
 }

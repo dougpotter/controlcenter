@@ -1,0 +1,14 @@
+h1 | Edit Campaign
+
+div id=graph_selector_panel
+  % form_for @campaign, :url => campaign_path(:method => 'put') do |f|
+    = render :partial => 'form', :locals => {:f => f}
+
+    div style='clear:both;'
+      >span
+
+    div class=dimension_input
+      = submit_tag('Save')
+
+div style='clear:both;'
+  >span

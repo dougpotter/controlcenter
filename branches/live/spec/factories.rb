@@ -23,10 +23,11 @@ Factory.define :creative_size do |c|
 end
 
 Factory.define :creative do |c|
-  c.name "creative name"
+  c.description "creative description"
   c.media_type "media type"
   c.creative_size_id {Factory(:creative_size).id}
   c.sequence(:creative_code) { |n| "294v#{n}" }
+  c.file_name "filename.ext"
 end
 
 Factory.define :ad_inventory_source do |f|
@@ -41,6 +42,10 @@ end
 Factory.define :audience do |a|
   a.description "description"
   a.sequence(:audience_code) { |n| "AC#{n}99" }
+end
+
+Factory.define :media_purchase_method do |m|
+  m.sequence(:mpm_code) { |n| "23k#{n}" }
 end
 
 Factory.define :impression_count do |i|
@@ -69,10 +74,95 @@ Factory.define :click_count do |c|
   c.click_count 1900
 end
 
+Factory.define :conversion_count do |c|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  c.start_time rounded_time
+  c.end_time rounded_time + 60.minutes
+  c.duration_in_minutes 60
+  c.campaign_id {Factory(:campaign).id}
+  c.conversion_count 2000
+end
+
+Factory.define :unique_conversion_count do |u|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  u.start_time rounded_time
+  u.end_time rounded_time + 60.minutes
+  u.duration_in_minutes 60
+  u.campaign_id {Factory(:campaign).id}
+  u.unique_conversion_count 1500
+end
+
+Factory.define :unique_remote_placement_count do |u|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  u.start_time rounded_time
+  u.end_time rounded_time + 60.minutes
+  u.duration_in_minutes 60
+  u.audience_id {Factory(:audience).id}
+  u.unique_remote_placement_count 1000
+end
+
+Factory.define :unique_view_through_conversion_count do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.campaign_id {Factory(:campaign).id}
+  f.creative_id {Factory(:creative).id}
+  f.ad_inventory_source_id {Factory(:ad_inventory_source).id}
+  f.audience_id {Factory(:audience).id}
+  f.unique_view_through_conversion_count 1200
+end
+
 Factory.define :remote_placement do |r|
   r.campaign_id {Factory(:campaign).id}
   r.audience_id {Factory(:audience).id}
   r.remote_placement_count 1900
+end
+
+Factory.define :media_cost do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.partner_id {Factory(:partner).id}
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.media_cost 98989
+end
+
+Factory.define :unique_click_count do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.partner_id {Factory(:partner).id}
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.unique_click_count 1000
+end
+
+Factory.define :unique_impression_count do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.partner_id {Factory(:partner).id}
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.unique_impression_count 1005
 end
 
 Factory.define :country do |c|

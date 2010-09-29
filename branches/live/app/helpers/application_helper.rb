@@ -6,8 +6,8 @@ module ApplicationHelper
     ""
   end
 
-  def currently_beacon_reports?
-    %w{beacon_reports}.include? controller.controller_name
+  def currently_metric_reports?
+    %w{landing_pages}.include? controller.controller_name
   end
-  
+
 end

@@ -22,7 +22,7 @@ describe Campaign do
   it "should require a parent partner" do
     lambda {
       Factory.create(:campaign, :partner_id => 100)
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.should raise_error(ActiveRecord::ActiveRecordError)
   end
 
   it "should require non null description (validations test)" do

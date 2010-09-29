@@ -1,0 +1,86 @@
+div class=dimension_input
+  label for="start_day" | Start:
+  >br
+  
+  = check_box_tag "start_date_group", '1'
+  label for='start_date_group' | Group By?
+  >br
+  
+  = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'start_year', :id => 'start_year')
+  = select_month(Date.current, {}, :name => 'start_month', :id => 'start_month')
+  = select_day(Date.current, {}, :name => 'start_day', :id => 'start_day')
+
+div class=dimension_input
+  label for="end_day" | End:
+  >br
+  
+  = check_box_tag "end_date_group", '1'
+  label for='end_date_group' | Group By?
+  >br
+  
+  = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'end_year', :id => 'end_year')
+  = select_month(Date.current, {}, :name => 'end_month', :id => 'end_month')
+  = select_day(Date.current, {}, :name => 'end_day', :id => 'end_day')
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  label | Canned ranges:
+  
+  = link_to_function('Last 7 days', 'ReportPage.setDateRangeToLastSevenDays()')
+  = link_to_function('Last 30 days', 'ReportPage.setDateRangeToLastThirtyDays()')
+  = link_to_function('All time', 'ReportPage.setDateRangeToAllTime()')
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  label for=frequency | Frequency:
+  >br
+  
+  = select_tag('frequency', options_for_frequency_select)
+
+div class=dimension_input
+  label for=metric | Metric:
+  >br
+  
+  = select_tag('metrics', options_for_metric_select, :multiple => true)
+
+div style='clear:both;'
+  >br
+
+% for label, name, form_tag_name in dimensions
+  div class="dimension_input"
+    label for="<%= form_tag_name %>_select"
+      = label + ':'
+    >br
+    
+    = check_box_tag "#{form_tag_name}_group", '1', false, :class => 'group-box'
+    label for='<%= form_tag_name %>_group' | Group By?
+    >br
+    
+    = check_box_tag "#{form_tag_name}_summarize", '1', false, :class => 'summarize-box'
+    label for='<%= form_tag_name %>_summarize' | Summarize?
+    >br
+    
+    label for='<%= form_tag_name %>' | Filter By:
+    >br
+    
+    = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"), :multiple => true)
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  Format:
+  = radio_button_tag 'format', 'csv', :checked => 'checked'
+  label for=format_csv | CSV
+  = radio_button_tag 'format', 'html'
+  label for=format_html | HTML
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input
+  = submit_tag('Go')

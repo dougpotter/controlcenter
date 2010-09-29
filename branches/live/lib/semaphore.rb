@@ -227,8 +227,9 @@ module Semaphore
       end
       
       def recalculate_usage(id)
+        quoted_usage = Resource.connection.quote_column_name('usage')
         update_all(
-          ["usage = (select count(*) from #{Allocation.quoted_table_name} where semaphore_resource_id = #{Resource.quoted_table_name}.id and state=?)", Allocation::ALLOCATED],
+          ["#{quoted_usage} = (select count(*) from #{Allocation.quoted_table_name} where semaphore_resource_id = #{Resource.quoted_table_name}.id and state=?)", Allocation::ALLOCATED],
           ['id = ?', id]
         )
       end

@@ -1,20 +1,30 @@
 class FactsController < ApplicationController
+  TIME_FORMAT = "%Y-%m-%d %H:%M:%S".freeze
+
   # skip auth before :create should be deleted for production
   skip_before_filter :verify_authenticity_token, :only => [:create, :update, :index]
-  FACTS = ["impression_count", "click_count"]
+
+  # Takes url conforming to spec and returns fact aggregation report
   def index
-    # Returns object of type FactAggregation
-    # Example URL:
-    # /metrics.csv?metrics=click_count&dimensions=campaign_code,start_time
-    # &frequency=hour&start_time=2010-08-25%2000:00:00
-    # &end_time=2010-08-30%2000:00:00
-    @fact_aggregation = Fact.aggregate({
+
+    # parse params hash 
+    @fact_aggregation = FactAggregation.new
+    options = {
       :include => params[:metrics].split(","),
+      :where => params[:filters],
       :group_by => params[:dimensions].split(","),
-      :where => where_conditions_from_params,
       :frequency => params[:frequency],
-      :tz_offset => params[:time_zone_offset]
-    })
+      :summarize => params[:summarize] ? params[:summarize].split(",") : [],
+      :tz_offset => params[:tz_offset]
+    }
+    # aggregate facts
+    begin
+      Fact.aggregate(@fact_aggregation, options)
+    rescue
+      render :text => nil, :status => 422
+      return 
+    end
+
 
     respond_to do |format|
       format.html
@@ -40,7 +50,7 @@ class FactsController < ApplicationController
         render :text => nil, :status => 422
       end
     end
-    
+
     render :text => nil, :status => 200
   end
 
@@ -57,10 +67,10 @@ class FactsController < ApplicationController
             fact_class.scalar_fact => (
               all_facts[0].send(fact_class.scalar_fact) + 
               params[fact_class.scalar_fact].to_f
-            )
+          )
           })
         end
-        
+
         unless all_facts[0].update_attributes(params)
           render :text => nil, :status => 422
           return
@@ -70,7 +80,7 @@ class FactsController < ApplicationController
         return
       end
     end
-    
+
     render :text => nil, :status => 200
   end
 
@@ -83,12 +93,5 @@ class FactsController < ApplicationController
       end
     end
     fact_classes
-  end
-
-  def where_conditions_from_params
-    s = []
-    s << "start_time >= \"#{Time.parse(params[:start_time]).strftime("%Y-%m-%d %H:%M:%S")}\""
-    s << "end_time <= \"#{Time.parse(params[:end_time]).strftime("%Y-%m-%d %H:%M:%S")}\""
-    s.join(" AND ")
   end
 end
