@@ -17,11 +17,14 @@ module AdditiveFactBehaviors
     # filles fact aggregation (fa) with appropriate results based on a parsed
     # params hash (options)
     def aggregate(fa, options = {})
-      group_by_list = keyize_indices(options[:group_by])
-      column_aliases = {}
-      parse_frequency_for_grouping(options[:fact].pluralize, options[:frequency], group_by_list, column_aliases)
       metric = options[:fact]
       fact = Object.const_get(metric.classify)
+      fact_table = fact.to_s.underscore.pluralize
+      group_by_list = keyize_indices(options[:group_by]).map do |idx|
+        "#{fact_table}.#{idx}"
+      end
+      column_aliases = {}
+      parse_frequency_for_grouping(options[:fact].pluralize, options[:frequency], group_by_list, column_aliases)
       columns = group_by_list.map do |expr|
         if aliased = column_aliases[expr]
           "#{expr} as #{aliased}"
@@ -39,12 +42,12 @@ module AdditiveFactBehaviors
           table = WHICH_TABLE[dim.singularize.concat("_id")]
           from_clause += " JOIN #{table} on #{metric.pluralize}.#{table.singularize.concat("_id")} = #{table}.id"
 
-          col_index_for_replacement = columns.index(table.singularize.concat("_id").to_sym)
-          col_replacement = "#{table}.id as \"#{table.singularize.concat("_id")}\""
+          col_index_for_replacement = columns.index(fact_table + "." + dim.singularize.concat("_id"))
+          col_replacement = "#{table}.#{dim.singularize.concat("_id")} as \"#{dim.singularize.concat("_id")}\""
           columns[col_index_for_replacement] = col_replacement
 
-          grp_index_for_replacement = group_by_list.index(table.singularize.concat("_id").to_sym)
-          grp_replacement = "#{table.singularize.concat("_id")}"
+          grp_index_for_replacement = group_by_list.index(fact_table + "." + dim.singularize.concat("_id"))
+          grp_replacement = "#{dim.singularize.concat("_id")}"
           group_by_list[grp_index_for_replacement] = grp_replacement
         end
       end

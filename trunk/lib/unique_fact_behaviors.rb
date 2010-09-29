@@ -14,15 +14,23 @@ module UniqueFactBehaviors
   module ClassMethods
 
     def aggregate(fa, options = {})
-
-      if !options[:group_by].include?("start_time") 
-        if !options[:group_by].include?("end_time")
+      # ensure that we're grouping on at least one time attribute
+      if !options[:group_by].include?("start_time") && !options[:group_by].include?("end_time")
           raise RuntimeError, "unique metrics must be grouped on either start or end time"
-        end
       end
 
       metric = options[:fact]
       fact = Object.const_get(metric.classify)
+
+      # check to see if we're grouping on valid dimensions
+      valid_dimensions = fact.new.attributes.keys
+      for dim in options[:group_by]
+        if !valid_dimensions.include?(Dimension.keyize_indices(dim)[0].to_s) && dim != 'end_time' && dim != 'start_time'
+          #raise RuntimeError, "cannot group #{fact.to_s} by #{dim}"
+          render :text => nil, :status => 422
+        end
+      end
+
       where_list = fact.new.where_conditions_from_params(options[:where])
       group_by_list = keyize_indices(options[:group_by])
       column_aliases = {}
