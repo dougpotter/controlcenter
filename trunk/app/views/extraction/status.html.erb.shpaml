@@ -23,7 +23,8 @@ table class=extraction-status
   tr
     th | Status
     th | Count
-  % for status, count in @counts_by_status
+  % for status in @counts_by_status.keys.sort
+    % count = @counts_by_status[status]
     tr class="<%= status_to_css_class(status) %>"
       td
         = status
