@@ -18,7 +18,13 @@ class FactsController < ApplicationController
       :tz_offset => params[:tz_offset]
     }
     # aggregate facts
-    Fact.aggregate(@fact_aggregation, options)
+    begin
+      Fact.aggregate(@fact_aggregation, options)
+    rescue
+      render :text => nil, :status => 422
+      return 
+    end
+
 
     respond_to do |format|
       format.html

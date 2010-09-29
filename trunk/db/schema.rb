@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100924164020) do
+ActiveRecord::Schema.define(:version => 20100928153207) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -118,10 +118,11 @@ ActiveRecord::Schema.define(:version => 20100924164020) do
   end
 
   create_table "creatives", :force => true do |t|
-    t.string  "name"
+    t.string  "description"
     t.string  "media_type"
     t.integer "creative_size_id", :null => false
     t.string  "creative_code",    :null => false
+    t.string  "file_name"
   end
 
   add_index "creatives", ["creative_code"], :name => "index_creatives_on_creative_code", :unique => true
@@ -153,9 +154,12 @@ ActiveRecord::Schema.define(:version => 20100924164020) do
   add_index "data_provider_channels", ["data_provider_id"], :name => "data_provider_channels_data_provider_id_fk"
 
   create_table "data_provider_files", :force => true do |t|
-    t.integer "data_provider_channel_id", :null => false
-    t.string  "url",                      :null => false
-    t.integer "status",                   :null => false
+    t.integer  "data_provider_channel_id", :null => false
+    t.string   "url",                      :null => false
+    t.integer  "status",                   :null => false
+    t.datetime "discovered_at"
+    t.datetime "extracted_at"
+    t.datetime "verified_at"
   end
 
   add_index "data_provider_files", ["data_provider_channel_id"], :name => "data_provider_files_data_provider_channel_id_fk"

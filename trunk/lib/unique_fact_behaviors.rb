@@ -26,8 +26,7 @@ module UniqueFactBehaviors
       valid_dimensions = fact.new.attributes.keys
       for dim in options[:group_by]
         if !valid_dimensions.include?(Dimension.keyize_indices(dim)[0].to_s) && dim != 'end_time' && dim != 'start_time'
-          #raise RuntimeError, "cannot group #{fact.to_s} by #{dim}"
-          render :text => nil, :status => 422
+          raise RuntimeError, "cannot group #{fact.to_s} by #{dim}"
         end
       end
 
