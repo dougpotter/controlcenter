@@ -18,6 +18,7 @@ set :use_sudo, false
 # Rails environment. Used by application setup tasks and migrate tasks.
 set :rails_env, "production"
 set :rake, "rake"
+set :thin_config, "/etc/thin/#{application}.yml"
 
 # Target directory for the application on the web and app servers.
 set(:deploy_to) { "/var/www/apps/#{ENV["XGCC_DEPLOY_DIR"] || application}" }
@@ -190,7 +191,7 @@ namespace :deploy do
       web.disable
       symlink
       migrate
-      restart_web
+      web.restart
     end
     web.enable
 
@@ -218,15 +219,27 @@ namespace :deploy do
     run "cd #{current_release}; #{rake} RAILS_ENV=#{rails_env} gems:install"
   end
 
-  task :restart_web do
-    run "thin restart -C /etc/thin/#{application}.yml"
-  end
-
   # Monkey patch for deploy migrate to run only on migration czar, cut some flexibility
   task :migrate, :roles => :app, :only => {:migration_czar => true} do
     run "cd #{current_release}; #{rake} RAILS_ENV=#{rails_env} db:migrate"
   end
 
+  namespace :web do
+    desc 'Start thins'
+    task :start do
+      run "thin start -C #{thin_config}"
+    end
+    
+    desc 'Stop thins'
+    task :stop do
+      run "thin stop -C #{thin_config}"
+    end
+    
+    desc 'Restart thins'
+    task :restart do
+      run "thin restart -C #{thin_config}"
+    end
+  end
 end
 
 
