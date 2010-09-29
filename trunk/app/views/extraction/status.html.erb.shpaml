@@ -5,12 +5,12 @@ p
 
 h2 | Files
 
-table
+table class=extraction-status
   tr
     th | Url
     th | Status
   % for file in @files
-    tr
+    tr class="<%= status_to_css_class(file.status) %>"
       td
         = file.url
       td
@@ -19,12 +19,12 @@ table
 a name=summary
   h2 | Counts by status
 
-table
+table class=extraction-status
   tr
     th | Status
     th | Count
   % for status, count in @counts_by_status
-    tr
+    tr class="<%= status_to_css_class(status) %>"
       td
         = status
       td
