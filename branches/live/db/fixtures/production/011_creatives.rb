@@ -162,5 +162,145 @@ Creative.seed_many(:creative_code, [
   :creative_code => "16122:300v5",
   :creative_size => CreativeSize.find_by_height_and_width(300,250),
   :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "UCCO" ] ] )
+},
+{
+  :description => "august creatives for wisc",
+  :media_type => "static gif",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 300,
+    :width => 250
+  }),
+  :creative_code => "300-g-wisc",
+  :file_name => "300x250.gif"
+},
+{
+  :description => "august creatives for wisc",
+  :media_type => "flash",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 300,
+    :width => 250
+  }),
+  :creative_code => "300-f-wisc-1",
+  :file_name => "300x250_1.swf"
+},
+{
+  :description => "august creatives for wisc",
+  :media_type => "flash",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 300,
+    :width => 250
+  }),
+  :creative_code => "300-f-wisc-2",
+  :file_name => "300x250_2.swf"
+},
+{
+  :description => "august creatives for wisc",
+  :media_type => "flash",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 300,
+    :width => 250
+  }),
+  :creative_code => "300-f-wisc-3",
+  :file_name => "300x250_3.swf"
+},
+{
+  :description => "august creatives for wisc",
+  :media_type => "static gif",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 728,
+    :width => 90
+  }),
+  :creative_code => "728-g-wisc",
+  :file_name => "728x90.gif"
+},
+{
+  :description => "august creatives for wisc",
+  :media_type => "flash",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 728,
+    :width => 90
+  }),
+  :creative_code => "728-f-wisc-1",
+  :file_name => "728x90_1.swf"
+},
+{
+  :description => "august creatives for wisc",
+  :media_type => "flash",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 728,
+    :width => 90
+  }),
+  :creative_code => "728-f-wisc-2",
+  :file_name => "728x90_2.swf"
+},
+{
+  :description => "august creatives for wisc",
+  :media_type => "flash",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 728,
+    :width => 90
+  }),
+  :creative_code => "728-f-wisc-3",
+  :file_name => "728x90_3.swf"
+},
+{
+  :description => "sept creatives for wisc",
+  :media_type => "static gif",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 728,
+    :width => 90
+  }),
+  :creative_code => "728-g-wav-r",
+  :file_name => "728x90-WAV-red.gif"
+},
+{
+  :description => "sept creatives for wisc",
+  :media_type => "static gif",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 728,
+    :width => 90
+  }),
+  :creative_code => "728-g-wav-b",
+  :file_name => "728x90-WAV-blue.gif"
+},
+{
+  :description => "sept creatives for wisc",
+  :media_type => "static gif",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 300,
+    :width => 250
+  }),
+  :creative_code => "300-g-wav-r",
+  :file_name => "300x250-WAV-red.gif"
+},
+{
+  :description => "sept creatives for wisc",
+  :media_type => "static gif",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 300,
+    :width => 250
+  }),
+  :creative_code => "300-g-wav-b",
+  :file_name => "300x250-WAV-blue.gif"
+},
+{
+  :description => "sept creatives for wisc",
+  :media_type => "static gif",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 160,
+    :width => 600
+  }),
+  :creative_code => "160-g-wav-r",
+  :file_name => "160x600-WAV-red.gif"
+},
+{
+  :description => "sept creatives for wisc",
+  :media_type => "static gif",
+  :creative_size => CreativeSize.find(:first, :conditions => {
+    :height => 160,
+    :width => 600
+  }),
+  :creative_code => "160-g-wav-b",
+  :file_name => "160x600-WAV-blue.gif"
 }
 ])
