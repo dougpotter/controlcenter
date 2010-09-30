@@ -1,3 +1,4 @@
+app/views/**/*.html.erb
 config/appwall.yml
 config/appwall.yml.production
 config/aws.yml
