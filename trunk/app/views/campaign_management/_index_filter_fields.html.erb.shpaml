@@ -24,9 +24,9 @@ div class=dimension_input
   >br
   
   Between
-  = date_select('campaign', 'start_time_not_before')
+  = select_datetime(@start_time_not_before, :order => [:year, :month, :day], :discard_minute => true, :discard_second => true, :prefix => 'start_time_not_before')
   and
-  = date_select('campaign', 'start_time_not_after')
+  = select_datetime(@start_time_not_after, :order => [:year, :month, :day], :discard_minute => true, :discard_second => true, :prefix => 'start_time_not_after')
 
   div style='clear:both;'
     >br
@@ -36,9 +36,9 @@ div class=dimension_input
   >br
   
   Between
-  = date_select('campaign', 'end_time_not_before')
+  = select_datetime(@end_time_not_before, :order => [:year, :month, :day], :discard_minute => true, :discard_second => true, :prefix => 'end_time_not_before')
   and
-  = date_select('campaign', 'end_time_not_after')
+  = select_datetime(@end_time_not_after, :order => [:year, :month, :day], :discard_minute => true, :discard_second => true, :prefix => 'end_time_not_after')
 
   div style='clear:both;'
     >br

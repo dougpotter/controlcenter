@@ -14,14 +14,35 @@ class CampaignManagementController < ApplicationController
   
   def filter_list
     scope = Campaign
+    
     if !(value = params[:ad_inventory_source_id]).blank?
       @ad_inventory_source_id = value.to_i
       scope = scope.scoped(:include => :ad_inventory_sources, :conditions => ['ad_inventory_sources.id=?', @ad_inventory_source_id])
     end
+    
     if !(value = params[:partner_id]).blank?
       @partner_id = value.to_i
       scope = scope.scoped(:conditions => ["partner_id=?", @partner_id])
     end
+    
+    %w(start_time end_time).each do |endpoint|
+      %w(not_before not_after).each do |crit|
+        var = "#{endpoint}_#{crit}"
+        value = params[var]
+        unless value.blank?
+          value = Time.local(value[:year], value[:month], value[:day], value[:hour])
+          instance_variable_set("@#{var}", value)
+          
+          if crit == 'not_before'
+            op = '>='
+          else
+            op = '<='
+          end
+          scope = scope.scoped(:conditions => ["#{Campaign.quote_identifier(endpoint)} #{op} ?", value])
+        end
+      end
+    end
+    
     @campaigns = scope.scoped(:order => 'campaign_code').all
     
     unless request.xhr?
@@ -76,6 +97,10 @@ class CampaignManagementController < ApplicationController
   def prepare_index
     @partners = Partner.all(:order => :name)
     @ad_inventory_sources = AdInventorySource.all(:order => :ais_code)
+    @start_time_not_before ||= (Time.current.beginning_of_month).beginning_of_day
+    @start_time_not_after ||= (Time.current + 1.day).beginning_of_day
+    @end_time_not_before ||= (Time.current - 1.week).beginning_of_day
+    @end_time_not_after ||= (Time.current + 1.year).beginning_of_day
   end
   
   def prepare_form
