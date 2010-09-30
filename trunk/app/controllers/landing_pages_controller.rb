@@ -37,8 +37,8 @@ class LandingPagesController < ApplicationController
   # For best results arithmetic should be done on integer values with
   # explicit conversion from/to time objects.
   def report
-    start_date = REPORT_TZ.local(params[:start_year], params[:start_month], params[:start_day])
-    end_date = REPORT_TZ.local(params[:end_year], params[:end_month], params[:end_day])
+    start_date = REPORT_TZ.local(params[:start_year], params[:start_month], params[:start_day], params[:start_hour])
+    end_date = REPORT_TZ.local(params[:end_year], params[:end_month], params[:end_day], params[:end_hour])
     frequency = params[:frequency]
     metrics = params[:metrics] || []
     group = {}

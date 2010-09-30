@@ -9,6 +9,7 @@ div class=dimension_input
   = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'start_year', :id => 'start_year')
   = select_month(Date.current, {}, :name => 'start_month', :id => 'start_month')
   = select_day(Date.current, {}, :name => 'start_day', :id => 'start_day')
+  = select_hour(nil, {:prompt => 'All'}, :name => 'start_hour', :id => 'start_hour')
 
 div class=dimension_input
   label for="end_day" | End:
@@ -21,6 +22,7 @@ div class=dimension_input
   = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'end_year', :id => 'end_year')
   = select_month(Date.current, {}, :name => 'end_month', :id => 'end_month')
   = select_day(Date.current, {}, :name => 'end_day', :id => 'end_day')
+  = select_hour(nil, {:prompt => 'All'}, :name => 'end_hour', :id => 'end_hour')
 
 div style='clear:both;'
   >br
