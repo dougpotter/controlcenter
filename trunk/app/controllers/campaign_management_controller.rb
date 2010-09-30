@@ -9,19 +9,26 @@ class CampaignManagementController < ApplicationController
   end
   
   def index
-    @campaigns = Campaign.all(:order => 'campaign_code')
-    @partners = Partner.all(:order => :name)
-    @ad_inventory_sources = AdInventorySource.all(:order => :ais_code)
+    filter_list
   end
   
   def filter_list
     scope = Campaign
-    %w(partner_id ad_inventory_source_id).each do |column|
-      if value = params[column]
-        scope = scope.scoped(:conditions => ["#{Campaign.quote_identifier(column)}=?", value])
-      end
+    if !(value = params[:ad_inventory_source_id]).blank?
+      @ad_inventory_source_id = value.to_i
+      scope = scope.scoped(:include => :ad_inventory_sources, :conditions => ['ad_inventory_sources.id=?', @ad_inventory_source_id])
     end
-    @campaigns = scope.all(:order => 'campaign_code')
+    if !(value = params[:partner_id]).blank?
+      @partner_id = value.to_i
+      scope = scope.scoped(:conditions => ["partner_id=?", @partner_id])
+    end
+    @campaigns = scope.scoped(:order => 'campaign_code').all
+    
+    unless request.xhr?
+      prepare_index
+    end
+    
+    render :action => 'index'
   end
   
   def show
@@ -65,6 +72,11 @@ class CampaignManagementController < ApplicationController
   end
   
   private
+  
+  def prepare_index
+    @partners = Partner.all(:order => :name)
+    @ad_inventory_sources = AdInventorySource.all(:order => :ais_code)
+  end
   
   def prepare_form
     @partners = Partner.find(:all, :order => 'name')
