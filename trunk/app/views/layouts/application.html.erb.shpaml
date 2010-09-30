@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+html xmlns="http://www.w3.org/1999/xhtml"
+  head
+    >meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+    title
+      = yield(:title) || "XGRAPH Control Center"
+    
+    = stylesheet_link_tag ["reset", "application"], :cache => "all"
+    = javascript_include_tag [ "swfobject", "mootools-1.2.4-core", "mootools-1.2.4.4-more", "application"], :cache => "all"
+  
+    >link rel="shortcut icon" href="<%= image_path "favicon.ico" %>"
+  
+  body
+    #outer-wrap
+      #wrapper
+        #header
+
+          .logo
+            = link_to image_tag("logo.png", :border => 0), root_url
+
+          ul.nav
+            %= content_tag(:li, link_to("Metric Reporting", metrics_home_url), :class => current_if(:metric_reports))
+
+        div#main
+          <%# %>
+
+        #content
+          = yield(:content) || yield
+
+        #footer
+          p
+            &copy; 2010 XGRAPH INC. ALL RIGHTS RESERVED
