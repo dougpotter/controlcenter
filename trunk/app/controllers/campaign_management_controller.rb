@@ -45,11 +45,12 @@ class CampaignManagementController < ApplicationController
     
     @campaigns = scope.scoped(:order => 'campaign_code').all
     
-    unless request.xhr?
+    if request.xhr?
+      render :partial => 'campaign_list'
+    else
       prepare_index
+      render :action => 'index'
     end
-    
-    render :action => 'index'
   end
   
   def show

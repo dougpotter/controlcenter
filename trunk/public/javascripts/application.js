@@ -72,3 +72,15 @@ var ReportPage = {
     form.addEvent('click:relay(input[@class="summarize-box"])', summarizeClick);
   }
 };
+
+var CampaignPage = {
+  initialize: function() {
+    var form = $('filter_form');
+    var campaignList = $('campaign_list');
+    var updateList = function(event) {
+      new Form.Request(form, campaignList, {resetForm: false}).send();
+      event.stop();
+    };
+    form.addEvent('change:relay(select)', updateList);
+  }
+};
