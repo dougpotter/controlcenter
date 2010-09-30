@@ -30,4 +30,10 @@ class Campaign < ActiveRecord::Base
 
   acts_as_dimension
   business_index :campaign_code, :aka => "cid"
+  
+  def campaign_code_and_description
+    out = campaign_code
+    out += " - #{description}" unless description.blank?
+    out
+  end
 end

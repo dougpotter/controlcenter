@@ -18,7 +18,7 @@ div id=graph_selector_panel
     ul
       % for campaign in @campaigns
         li
-          = link_to "#{campaign.campaign_code} #{campaign.description}", edit_campaign_path(campaign)
+          = link_to campaign.campaign_code_and_description, edit_campaign_path(campaign)
 
     div style='clear:both;'
       >br
