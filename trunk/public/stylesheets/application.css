@@ -138,19 +138,6 @@ li#sub-menu a:hover {
 	text-decoration: underline;
 }
 
-#beacon_report_graph_container {
-  float: left;
-  margin-bottom: 100px;
-}
-
-#beacon_report_graph {
-  width: 550px;
-  border: 1px solid #75439A;
-  padding: 5px;
-  margin-bottom: 5px;
-  min-height: 300px;
-}
-
 #graph_selector_panel {
   float: left;
   padding: 5px;
@@ -187,11 +174,6 @@ label {
 #graph_selector_submit_wrapper {
   padding-top: 15px;
   float: right;
-}
-
-#beacon_report_graph_links a {
-  font-size: 10px;
-  font-family: monospace;
 }
 
 .extraction-status .none {

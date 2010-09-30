@@ -40,9 +40,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect "/metrics", :controller => "facts", :action => "update", 
     :conditions => { :method => :put }
   
-  map.resources :beacon_reports
   map.resources :campaigns, :controller => 'campaign_management', :as => 'campaign_management'
-  map.resources :beacon_report_graphs
   
   map.extraction_status '/extraction/status/:date',
     :controller => 'extraction', :action => 'status'
