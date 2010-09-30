@@ -1,5 +1,6 @@
 = error_messages_for :campaign
 = error_messages_for :new_partner
+<script src="/javascripts/creative_list.js" type="text/javascript"></script>
 
 div class=dimension_input
   label for="campaign_campaign_code" | Campaign code:
@@ -35,7 +36,7 @@ div class=dimension_input
   label for="campaign_partner_id" | Partner:
   >br
   
-  = select('campaign', 'partner_id', new_partner_option + options_from_collection_for_select(@partners, :id, :name, @campaign.partner_id))
+  = select('campaign', 'partner_id', new_partner_option + options_from_collection_for_select(@partners, :id, :name, @campaign.partner_id), {}, { :onchange => "alert_partner();" })
 
 div class=dimension_input
   label for='' | New partner name:
@@ -66,12 +67,8 @@ h2 | Creatives:
 div class=dimension_input
   label for="campaign_end_time" | Use existing creative(s):
   >br
-  
-  % for creative in @creatives
-    div class=dimension_input
-      = check_box_tag "use_creatives[#{creative.id}]", 1, @campaign.creatives.include?(creative)
-      label for="use_creatives_<%= creative.id %>"
-        = creative.creative_code
+
+<div id=creatives ></div>
 
 div style='clear:both;'
   >br
@@ -86,3 +83,4 @@ div class=dimension_input
   
   % fields_for('creative[]', @creative) do |creative_form|
     = render :partial => 'creative_form', :locals => {:f => creative_form}
+

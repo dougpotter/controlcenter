@@ -1,0 +1,5 @@
+% for creative in @relevant_creatives
+  div class=dimension_input
+    = check_box_tag "use_creatives[#{creative.creative_code}]", 1
+      label for="use_creatives_<%= creative.id %>"
+        = creative.creative_code
