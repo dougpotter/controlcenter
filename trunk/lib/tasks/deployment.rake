@@ -1,5 +1,5 @@
 namespace :compile do
   task :stylesheets => :environment do
-    Sass::Plugin.update_stylesheets
+    Sass::Plugin.force_update_stylesheets
   end
 end
