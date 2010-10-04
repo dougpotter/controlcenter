@@ -111,6 +111,16 @@ class CampaignManagementController < ApplicationController
     @creative_sizes = CreativeSize.all(:order => 'common_name')
     @creative = Creative.new
     @new_creatives ||= []
+    @new_partner ||= Partner.new
+    
+    unless request.post?
+      if @new_partner && @new_partner.new_record?
+        @new_partner.partner_code ||= Partner.generate_partner_code
+      end
+      if @campaign.new_record?
+        @campaign.campaign_code ||= Campaign.generate_campaign_code
+      end
+    end
   end
   
   def update_campaign_objects

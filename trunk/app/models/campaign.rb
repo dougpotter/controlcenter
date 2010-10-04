@@ -36,4 +36,15 @@ class Campaign < ActiveRecord::Base
     out += " - #{description}" unless description.blank?
     out
   end
+  
+  class << self
+    def generate_campaign_code
+      CodeGenerator.generate_unique_code(
+        self,
+        :campaign_code,
+        :length => 4,
+        :alphabet => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+      )
+    end
+  end
 end

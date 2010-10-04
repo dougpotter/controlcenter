@@ -22,4 +22,17 @@ class Partner < ActiveRecord::Base
 
   acts_as_dimension
   business_index :partner_code, :aka => "pid"
+  
+  class << self
+    def generate_partner_code
+      CodeGenerator.generate_unique_code(
+        self,
+        :partner_code,
+        :length => 5,
+        :alphabet => '1234567890',
+        :transform => lambda { |code| code.to_i },
+        :reject_if => lambda { |code| code.to_s.length != 5 }
+      )
+    end
+  end
 end
