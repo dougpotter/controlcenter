@@ -1,0 +1,15 @@
+h2 | Extraction status
+
+table class=extraction-status
+  tr
+    th | Date
+    % for status in valid_statuses
+      th
+        = status_name(status)
+  % for day_data in @data
+    tr
+      td
+        = link_to(day_data.date.strftime('%Y-%m-%d'), extraction_status_path(day_data.date.strftime('%Y%m%d')))
+      % for status in valid_statuses
+        td class="<%= day_data.counts[status] ? status_to_css_class(status) : '' %>"
+          = day_data.counts[status] || 0

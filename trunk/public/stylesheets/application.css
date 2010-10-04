@@ -176,6 +176,10 @@ label {
   float: right;
 }
 
+.extraction-status th, .extraction-status td {
+  padding: 4px;
+}
+
 .extraction-status .none {
   background-color: #ffc600;
 }
