@@ -18,7 +18,7 @@ set :use_sudo, false
 # Rails environment. Used by application setup tasks and migrate tasks.
 set :rails_env, "production"
 set :rake, "rake"
-set :thin_config, "/etc/thin/#{application}.yml"
+set(:thin_config) { "/etc/thin/#{application}.yml" }
 
 # Target directory for the application on the web and app servers.
 set(:deploy_to) { "/var/www/apps/#{ENV["XGCC_DEPLOY_DIR"] || application}" }
