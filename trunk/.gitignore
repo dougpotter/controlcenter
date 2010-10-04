@@ -16,8 +16,10 @@ config/cap_mailer_settings.rb
 db/development_structure.sql
 doc/debug.rtf
 log/*.log
+public/compiled/stylesheets/*.css
 tmp/cache/*
 tmp/pids/*
+tmp/sass-cache/*
 tmp/sessions/*
 tmp/sockets/*
 tmp/test/*

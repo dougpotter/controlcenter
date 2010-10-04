@@ -1,1 +1,2 @@
 require 'active_record_extensions'
+require 'compiled_stylesheets_asset_tag_helper_fix'

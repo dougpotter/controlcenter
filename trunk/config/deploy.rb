@@ -175,8 +175,19 @@ end
 after "deploy:update_code", "deploy:compile"
 
 namespace :deploy do
-  task :compile do
-    run "cd #{release_path} && rake RAILS_ENV=#{rails_env} shpaml:compile"
+  namespace :compile do
+    task :default do
+      shpaml
+      stylesheets
+    end
+    
+    task :shpaml do
+      run "cd #{release_path} && rake RAILS_ENV=#{rails_env} shpaml:compile"
+    end
+    
+    task :stylesheets do
+      run "cd #{release_path} && rake RAILS_ENV=#{rails_env} compile:stylesheets"
+    end
   end
 end
 
