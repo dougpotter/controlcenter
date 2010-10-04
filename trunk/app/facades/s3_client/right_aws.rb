@@ -21,6 +21,7 @@ class S3Client::RightAws < S3Client::Base
     end
     right_aws_options[:port] = AwsConfiguration.s3_port if AwsConfiguration.s3_port
     right_aws_options[:protocol] = AwsConfiguration.s3_protocol if AwsConfiguration.s3_protocol
+    Rightscale::HttpConnection.params[:ca_file] = AwsConfiguration.ca_file if AwsConfiguration.ca_file
     @s3 = RightAws::S3Interface.new(
       AwsConfiguration.access_key_id,
       AwsConfiguration.secret_access_key,
