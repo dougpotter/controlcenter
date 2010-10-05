@@ -12,8 +12,8 @@ method: 'get',
 url: "<%= update_form_url %>",
 data: text,
 onSuccess: function(response) { 
-$('report_form').set('text', ''); 
-$('report_form').adopt(response);
+$('dimension_selection_panel').set('text', ''); 
+$('dimension_selection_panel').adopt(response);
 }
 }).send();
       });

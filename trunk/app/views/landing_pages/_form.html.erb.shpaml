@@ -52,6 +52,8 @@ div class=dimension_input
 div style='clear:both;'
   >br
 
+<div id="dimension_selection_panel">
+
 % for label, name, form_tag_name in dimensions
   div class="dimension_input"
     label for="<%= form_tag_name %>"
@@ -70,6 +72,8 @@ div style='clear:both;'
     >br
     
     = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"), :multiple => true)
+
+</div>
 
 div style='clear:both;'
   >br
