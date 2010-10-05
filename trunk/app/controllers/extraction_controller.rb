@@ -2,7 +2,9 @@ require 'ostruct'
 
 class ExtractionController < ApplicationController
   def index
-    end_date = Time.now.utc.beginning_of_day
+    # put the end date a little into the future to guarantee that we are
+    # seeing all currently available files
+    end_date = Time.now.utc.beginning_of_day + 2.days
     lookback_days = 14
     start_date = end_date - lookback_days.days
     @data = (0..lookback_days).map do |day|
