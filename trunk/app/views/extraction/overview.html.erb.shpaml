@@ -1,3 +1,7 @@
+p
+  = link_to 'Previous', extraction_overview_path(*@previous_date)
+  = link_to 'Next', extraction_overview_path(*@next_date)
+
 h2 | Extraction status
 
 table class=extraction-status

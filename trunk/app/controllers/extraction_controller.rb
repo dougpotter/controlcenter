@@ -7,6 +7,36 @@ class ExtractionController < ApplicationController
     end_date = Time.now.utc.beginning_of_day + 2.days
     lookback_days = 14
     start_date = end_date - lookback_days.days
+    
+    do_overview(start_date, end_date)
+  end
+  
+  def details
+    date = params[:date]
+    @files = DataProviderFile.all(
+      :conditions => ['url like ?', "%#{date}%"],
+      :order => 'url'
+    )
+    @counts_by_status = @files.inject({}) do |counts, file|
+      counts[file.status] = (counts[file.status] || 0) + 1
+      counts
+    end
+    
+    @date = Time.parse(date)
+    @previous_day = (@date - 1.day).strftime('%Y%m%d')
+    @next_day = (@date + 1.day).strftime('%Y%m%d')
+  end
+  
+  def overview
+    start_date = Time.utc(params[:year], params[:month])
+    end_date = (start_date + 35.days).beginning_of_month - 1.day
+    do_overview(start_date, end_date)
+  end
+  
+  private
+  
+  def do_overview(start_date, end_date)
+    lookback_days = (end_date - start_date) / 1.day
     @data = (0..lookback_days).map do |day|
       date = start_date + day.days
       date_str = date.strftime('%Y%m%d')
@@ -27,21 +57,12 @@ class ExtractionController < ApplicationController
       day_data.counts = counts_map
       day_data
     end
-  end
-  
-  def status
-    date = params[:date]
-    @files = DataProviderFile.all(
-      :conditions => ['url like ?', "%#{date}%"],
-      :order => 'url'
-    )
-    @counts_by_status = @files.inject({}) do |counts, file|
-      counts[file.status] = (counts[file.status] || 0) + 1
-      counts
-    end
     
-    @date = Time.parse(date)
-    @previous_day = (@date - 1.day).strftime('%Y%m%d')
-    @next_day = (@date + 1.day).strftime('%Y%m%d')
+    previous_date = start_date - 1.day
+    @previous_date = [previous_date.year, previous_date.month]
+    next_date = end_date + 1.day
+    @next_date = [next_date.year, next_date.month]
+    
+    render :action => 'overview'
   end
 end
