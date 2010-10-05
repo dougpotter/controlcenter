@@ -58,7 +58,7 @@ namespace :workflows do
       # to determine which times we should be checking.
       time = now - 8.hours
       date = time.strftime('%Y%m%d')
-      hour = time.strftime('%H')
+      hour = time.hour
       
       settings = ClearspringExtractWorkflow::Configuration.new
       channels = DataProviderChannel.hourly.all(:order => 'name')
