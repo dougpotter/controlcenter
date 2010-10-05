@@ -24,6 +24,11 @@ module HttpClient
   class NetworkTimeout < NetworkError
   end
   
+  # Keep-alive timeout is technically not an error, but for simplicity
+  # we are going to handle it as timeout with the usual retry logic
+  class KeepAliveTimeout < NetworkTimeout
+  end
+  
   class UnsupportedServer < BaseError
   end
 end

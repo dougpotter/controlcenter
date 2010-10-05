@@ -284,8 +284,10 @@ class ClearspringExtractWorkflow < Workflow::Base
   
   def upload(local_path)
     with_process_status(:action => "uploading #{File.basename(local_path)}") do
-      retry_aws_errors(@network_error_retry_options) do
-        @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
+      retry_network_errors(@network_error_retry_options) do
+        retry_aws_errors(@network_error_retry_options) do
+          @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
+        end
       end
     end
   end
