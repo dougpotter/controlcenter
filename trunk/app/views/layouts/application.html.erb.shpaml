@@ -20,7 +20,8 @@ html xmlns="http://www.w3.org/1999/xhtml"
             = link_to image_tag("logo.png", :border => 0), root_url
 
           ul.nav
-            %= content_tag(:li, link_to("Metric Reporting", metrics_home_url), :class => current_if(:metric_reports))
+            = content_tag(:li, link_to("Metric Reporting", metrics_home_path), :class => current_if(:metric_reports))
+            = content_tag(:li, link_to("Extraction Status", extraction_index_path), :class => current_if(:extraction_status))
 
         div#main
           <%# %>

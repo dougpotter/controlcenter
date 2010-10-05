@@ -11,6 +11,9 @@ class ExtractionController < ApplicationController
       date = start_date + day.days
       date_str = date.strftime('%Y%m%d')
       day_data = OpenStruct.new(:date => date)
+      # XXX if we had date/hour fields in data provider files
+      # these queries could have been collapsed into one
+      # and made more efficient via index usage
       counts = DataProviderFile.find_by_sql(<<-SQL)
         select status, count(*) as count
         from data_provider_files
