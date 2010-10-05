@@ -13,7 +13,7 @@ table class=extraction-status
     % count = @counts_by_status[status]
     tr class="<%= status_to_css_class(status) %>"
       td
-        = status
+        = status_name(status)
       td
         = count
 
@@ -28,7 +28,7 @@ table class=extraction-status
       td
         = file.url
       td
-        = file.status
+        = status_name(file.status)
 
 p
   = link_to 'Previous day', url_for(:date => @previous_day)
