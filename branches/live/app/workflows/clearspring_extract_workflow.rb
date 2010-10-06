@@ -42,6 +42,7 @@ class ClearspringExtractWorkflow < Workflow::Base
         :verify => config.verify,
         :record => config.record,
         :trust_recorded => config.trust_recorded,
+        :quiet => config.quiet,
         :check_sizes => config.check_sizes,
         :check_sizes_strictly => config.check_sizes_strictly,
         :check_sizes_exactly => config.check_sizes_exactly,

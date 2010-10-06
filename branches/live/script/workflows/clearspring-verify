@@ -216,7 +216,7 @@ params = {
 %w(
   check_listing check_consistency check_our_existence check_their_existence
   check_sizes check_sizes_strictly check_sizes_exactly check_content
-  hours debug debug_output_path http_client
+  hours debug debug_output_path quiet http_client
 ).each do |key|
   key = key.to_sym
   params[key] = options[key]
