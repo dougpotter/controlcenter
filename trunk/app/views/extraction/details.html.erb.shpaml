@@ -13,13 +13,21 @@ table class=extraction-status
     % count = @counts_by_status[status]
     tr class="<%= status_to_css_class(status) %>"
       td
-        = status_name(status)
+        = link_to_function status_name(status), "ReportPage.showFilesWithStatus('#{status_to_css_class(status)}')"
       td
         = count
+  tr
+    td
+      % if !@counts_by_status.empty?
+        = link_to_function 'All', 'ReportPage.showAllFiles()'
+      % else
+        All
+    td
+      = @counts_by_status.size
 
 h2 | Files
 
-table class=extraction-status
+table id=file_table class=extraction-status
   tr
     th | Url
     th | Status
