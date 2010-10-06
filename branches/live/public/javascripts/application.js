@@ -70,5 +70,36 @@ var ReportPage = {
     var form = $('report_form');
     form.addEvent('click:relay(input[@class="group-box"])', groupClick);
     form.addEvent('click:relay(input[@class="summarize-box"])', summarizeClick);
+  },
+  
+  showFilesWithStatus: function(status) {
+    var rows = $$('#file_table tr');
+    for (var i = 1; i < rows.length; ++i) {
+      var row = rows[i];
+      if (row.hasClass(status)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+  },
+  
+  showAllFiles: function() {
+    var rows = $$('#file_table tr');
+    for (var i = 1; i < rows.length; ++i) {
+      rows[i].style.display = '';
+    }
+  }
+};
+
+var CampaignPage = {
+  initialize: function() {
+    var form = $('filter_form');
+    var campaignList = $('campaign_list');
+    var updateList = function(event) {
+      new Form.Request(form, campaignList, {resetForm: false}).send();
+      event.stop();
+    };
+    form.addEvent('change:relay(select)', updateList);
   }
 };

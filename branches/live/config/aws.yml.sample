@@ -9,3 +9,4 @@ development:
   #s3_port: 443
   # http or https, default is https
   #s3_protocol: https
+  #ca_file: /path/to/cert.pem

@@ -10,4 +10,7 @@ module ApplicationHelper
     %w{landing_pages}.include? controller.controller_name
   end
 
+  def currently_extraction_status?
+    %w(extraction).include?(controller.controller_name)
+  end
 end

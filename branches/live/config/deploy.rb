@@ -18,7 +18,7 @@ set :use_sudo, false
 # Rails environment. Used by application setup tasks and migrate tasks.
 set :rails_env, "production"
 set :rake, "rake"
-set :thin_config, "/etc/thin/#{application}.yml"
+set(:thin_config) { "/etc/thin/#{application}.yml" }
 
 # Target directory for the application on the web and app servers.
 set(:deploy_to) { "/var/www/apps/#{ENV["XGCC_DEPLOY_DIR"] || application}" }
@@ -175,8 +175,19 @@ end
 after "deploy:update_code", "deploy:compile"
 
 namespace :deploy do
-  task :compile do
-    run "cd #{release_path} && rake RAILS_ENV=#{rails_env} shpaml:compile"
+  namespace :compile do
+    task :default do
+      shpaml
+      stylesheets
+    end
+    
+    task :shpaml do
+      run "cd #{release_path} && rake RAILS_ENV=#{rails_env} shpaml:compile"
+    end
+    
+    task :stylesheets do
+      run "cd #{release_path} && rake RAILS_ENV=#{rails_env} compile:stylesheets"
+    end
   end
 end
 

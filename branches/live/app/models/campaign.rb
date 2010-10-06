@@ -30,4 +30,21 @@ class Campaign < ActiveRecord::Base
 
   acts_as_dimension
   business_index :campaign_code, :aka => "cid"
+  
+  def campaign_code_and_description
+    out = campaign_code
+    out += " - #{description}" unless description.blank?
+    out
+  end
+  
+  class << self
+    def generate_campaign_code
+      CodeGenerator.generate_unique_code(
+        self,
+        :campaign_code,
+        :length => 4,
+        :alphabet => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+      )
+    end
+  end
 end

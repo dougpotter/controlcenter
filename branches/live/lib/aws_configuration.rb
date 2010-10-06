@@ -14,6 +14,9 @@ module AwsConfiguration
     
     # http or https (default is https)
     attr_accessor :s3_protocol
+    
+    # path to pem file with certificates
+    attr_accessor :ca_file
   end
   
   self.access_key_id = nil
@@ -21,4 +24,5 @@ module AwsConfiguration
   self.s3_host = 's3.amazonaws.com'
   self.s3_port = 443
   self.s3_protocol = 'https'
+  self.ca_file = nil
 end

@@ -9,6 +9,7 @@ div class=dimension_input
   = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'start_year', :id => 'start_year')
   = select_month(Date.current, {}, :name => 'start_month', :id => 'start_month')
   = select_day(Date.current, {}, :name => 'start_day', :id => 'start_day')
+  = select_hour(nil, {:prompt => 'All'}, :name => 'start_hour', :id => 'start_hour')
 
 div class=dimension_input
   label for="end_day" | End:
@@ -21,6 +22,7 @@ div class=dimension_input
   = select_year(Date.current, {:start_year => 2008, :end_year => 2011}, :name => 'end_year', :id => 'end_year')
   = select_month(Date.current, {}, :name => 'end_month', :id => 'end_month')
   = select_day(Date.current, {}, :name => 'end_day', :id => 'end_day')
+  = select_hour(nil, {:prompt => 'All'}, :name => 'end_hour', :id => 'end_hour')
 
 div style='clear:both;'
   >br
@@ -42,7 +44,7 @@ div class=dimension_input
   = select_tag('frequency', options_for_frequency_select)
 
 div class=dimension_input
-  label for=metric | Metric:
+  label for=metrics | Metric:
   >br
   
   = select_tag('metrics', options_for_metric_select, :multiple => true)
@@ -50,9 +52,11 @@ div class=dimension_input
 div style='clear:both;'
   >br
 
+<div id="dimension_selection_panel">
+
 % for label, name, form_tag_name in dimensions
   div class="dimension_input"
-    label for="<%= form_tag_name %>_select"
+    label for="<%= form_tag_name %>"
       = label + ':'
     >br
     
@@ -68,6 +72,8 @@ div style='clear:both;'
     >br
     
     = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"), :multiple => true)
+
+</div>
 
 div style='clear:both;'
   >br

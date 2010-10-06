@@ -21,6 +21,7 @@ class S3Client::RightAws < S3Client::Base
     end
     right_aws_options[:port] = AwsConfiguration.s3_port if AwsConfiguration.s3_port
     right_aws_options[:protocol] = AwsConfiguration.s3_protocol if AwsConfiguration.s3_protocol
+    Rightscale::HttpConnection.params[:ca_file] = AwsConfiguration.ca_file if AwsConfiguration.ca_file
     @s3 = RightAws::S3Interface.new(
       AwsConfiguration.access_key_id,
       AwsConfiguration.secret_access_key,
@@ -114,7 +115,27 @@ class S3Client::RightAws < S3Client::Base
   
   def exception_map
     mapper = lambda do |exc, url|
-      if exc.http_code
+      if http_code = exc.http_code
+        if (http_code = http_code.to_i) == 400
+          code, message = exc.message.split(': ', 2)
+          if code == 'RequestTimeout'
+            if message.downcase.index('idle connections')
+              # Keep-alive timeout:
+              # RequestTimeout: Your socket connection to the server was not read from or written to within the timeout period. Idle connections will be closed.
+              raise HttpClient::KeepAliveTimeout.new(
+                exc.message,
+                :code => http_code,
+                :url => url
+              )
+            else
+              raise HttpClient::NetworkTimeout.new(
+                exc.message,
+                :code => http_code,
+                :url => url
+              )
+            end
+          end
+        end
         convert_and_raise(exc, HttpClient::HttpError, url, :code => exc.http_code)
       end
     end

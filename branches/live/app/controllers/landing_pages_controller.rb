@@ -37,8 +37,8 @@ class LandingPagesController < ApplicationController
   # For best results arithmetic should be done on integer values with
   # explicit conversion from/to time objects.
   def report
-    start_date = REPORT_TZ.local(params[:start_year], params[:start_month], params[:start_day])
-    end_date = REPORT_TZ.local(params[:end_year], params[:end_month], params[:end_day])
+    start_date = REPORT_TZ.local(params[:start_year], params[:start_month], params[:start_day], params[:start_hour])
+    end_date = REPORT_TZ.local(params[:end_year], params[:end_month], params[:end_day], params[:end_hour])
     frequency = params[:frequency]
     metrics = params[:metrics] || []
     group = {}
@@ -93,9 +93,22 @@ class LandingPagesController < ApplicationController
   end
 
   def update_form
-    @partner = params[:partner_select].to_i
-    @campaigns = Campaign.find(:all, :conditions => {:partner_id => @partner})
-    @partners = Partner.find(:all)
-    render :partial => 'form'
+    @campaigns = []
+    for partner_code in params[:partner_code]
+      @campaigns << Partner.find(:first, :conditions => {:partner_code => partner_code}).campaigns
+    end
+    @campaigns.flatten!
+    @creatives = []
+    for campaign in @campaigns
+      @creatives << campaign.creatives
+    end
+    @creatives.flatten!
+    debugger
+    @partners = Partner.find(:all, :order => :name)
+    @ad_inventory_sources = AdInventorySource.all(:order => :ais_code)
+    @audiences = Audience.all(:order => :audience_code)
+    @media_purchase_methods = MediaPurchaseMethod.all(:order => :mpm_code)
+    @checkboxes = params.reject { |key,val| val != "1" }
+    render :partial => 'dimension_selection_panel.html.erb'
   end
 end

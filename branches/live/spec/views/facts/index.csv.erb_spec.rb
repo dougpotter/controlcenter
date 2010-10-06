@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fastercsv'
 
 describe "/facts/index.csv" do
   # A basic functionality test.

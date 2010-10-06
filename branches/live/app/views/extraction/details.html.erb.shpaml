@@ -1,6 +1,7 @@
 p
   = link_to 'Previous day', url_for(:date => @previous_day)
   = link_to 'Next day', url_for(:date => @next_day)
+  = link_to 'Month overview', extraction_overview_path(@date.year, @date.month)
 
 a name=summary
   h2 | Counts by status
@@ -13,13 +14,21 @@ table class=extraction-status
     % count = @counts_by_status[status]
     tr class="<%= status_to_css_class(status) %>"
       td
-        = status
+        = link_to_function status_name(status), "ReportPage.showFilesWithStatus('#{status_to_css_class(status)}')"
       td
         = count
+  tr
+    td
+      % if !@counts_by_status.empty?
+        = link_to_function 'All', 'ReportPage.showAllFiles()'
+      % else
+        All
+    td
+      = @counts_by_status.size
 
 h2 | Files
 
-table class=extraction-status
+table id=file_table class=extraction-status
   tr
     th | Url
     th | Status
@@ -28,7 +37,7 @@ table class=extraction-status
       td
         = file.url
       td
-        = file.status
+        = status_name(file.status)
 
 p
   = link_to 'Previous day', url_for(:date => @previous_day)

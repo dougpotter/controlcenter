@@ -47,6 +47,9 @@ parser = OptionParser.new do |opts|
   opts.on('-t', '--[no-]trust-recorded', 'Report that files in verified status are verified without verifying them') do |value|
     options[:trust_recorded] = value
   end
+  opts.on('-q', '--[no-]quiet', 'Do not print verification results (use with -r)') do |value|
+    options[:quiet] = value
+  end
   
   opts.separator ''
   opts.separator 'Action options: (by default, check everything except for --check-content)'
@@ -160,7 +163,7 @@ class ClearspringVerifyWorkflowRunner < WorkflowRunner
       params = settings.merge(ext_params).to_hash
       %w(
         check_sizes check_sizes_strictly check_sizes_exactly check_content
-        record trust_recorded
+        record trust_recorded quiet
       ).each do |key|
         key = key.to_sym
         params[key] = ext_params[key]

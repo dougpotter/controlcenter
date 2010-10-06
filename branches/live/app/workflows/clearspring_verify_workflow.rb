@@ -151,23 +151,25 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
   end
   
   def report_correspondence(have, missing, partial)
+    return if params[:quiet]
     have.each do |bucket_path|
       puts "Have #{bucket_path}"
     end
     missing.each do |bucket_path|
-      STDERR.puts "Missing #{bucket_path}"
+      puts "Missing #{bucket_path}"
     end
     partial.each do |bucket_path|
-      STDERR.puts "Partial #{bucket_path}: extracted size #{bucket_path.extracted_size}, source size #{bucket_path.source_size}"
+      puts "Partial #{bucket_path}: extracted size #{bucket_path.extracted_size}, source size #{bucket_path.source_size}"
     end
   end
   
   def report_existence(have, missing)
+    return if params[:quiet]
     have.each do |options|
       puts "Have #{date_with_hour(options)}"
     end
     missing.each do |options|
-      STDERR.puts "Missing #{date_with_hour(options)}"
+      puts "Missing #{date_with_hour(options)}"
     end
   end
   
