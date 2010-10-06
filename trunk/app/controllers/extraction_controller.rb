@@ -58,10 +58,8 @@ class ExtractionController < ApplicationController
       day_data
     end
     
-    previous_date = start_date - 1.day
-    @previous_date = [previous_date.year, previous_date.month]
-    next_date = end_date + 1.day
-    @next_date = [next_date.year, next_date.month]
+    @previous_date = start_date - 1.day
+    @next_date = end_date + 1.day
     
     render :action => 'overview'
   end
