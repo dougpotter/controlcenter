@@ -112,34 +112,6 @@ class ClearspringExtractWorkflow < Workflow::Base
     @s3_client = create_s3_client(@params)
   end
   
-  def run
-    files = list_data_source_files
-    # if :once option was given, #extract will raise a workflow error
-    # for files that are being extracted elsewhere or that have been already extracted.
-    # #run is called to do both discovery and extraction, and should extract all
-    # extractable files. therefore we catch and ignore extraction in progress
-    # and file already extracted workflow errors
-    files.each do |file|
-      begin
-        extract(file)
-      rescue Workflow::FileExtractionInProgress, Workflow::FileAlreadyExtracted
-        # igrore
-      end
-    end
-  end
-  
-  def discover
-    list_data_source_files
-  end
-  
-  def extract(file_url)
-    if params[:lock]
-      extract_with_locking(file_url)
-    else
-      extract_without_locking(file_url)
-    end
-  end
-  
   def should_download_url?(url)
     File.basename(url).starts_with?(prefix_to_download)
   end
@@ -172,7 +144,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     end
   end
   
-  def extract_without_locking(file_url, options={})
+  def perform_extraction(file_url)
     validate_file_url_for_extraction!(file_url)
     local_path = download(file_url)
     split_paths = split(local_path)
@@ -192,7 +164,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     # See the comment in create_data_provider_file regarding mixing locked
     # and non-locked runs. Status files are only created for once runs
     # (which are also locked).
-    if options[:once]
+    if params[:once]
       create_data_provider_file(file_url) do |file|
         file.status = DataProviderFile::EXTRACTED
         file.extracted_at = Time.now
@@ -204,12 +176,6 @@ class ClearspringExtractWorkflow < Workflow::Base
         debug_print("Remove #{local_path}")
       end
       FileUtils.rm(local_path)
-    end
-  end
-  
-  def extract_with_locking(file_url)
-    lock(file_url) do
-      extract_without_locking(file_url, :once => params[:once])
     end
   end
   
@@ -297,110 +263,6 @@ class ClearspringExtractWorkflow < Workflow::Base
     end
   end
   
-  def lock(remote_url)
-    options = {
-      :name => remote_url,
-      :location => 'clearspring',
-      :capacity => 1,
-      :timeout => 30.minutes,
-      :wait => false,
-      :create_resource => true,
-    }
-    
-    if params[:debug]
-      debug_callback = lambda do |message|
-        debug_print "#{message} for #{remote_url}"
-      end
-      
-      options[:debug_callback] = debug_callback
-    end
-    
-    # ok_to_extract? needs to be in a critical section for each file,
-    # otherwise two processes may check e.g. local caches simultaneously
-    # and both decide to process the same file.
-    #
-    # yield is is the critical section because local caches are created
-    # by extraction process. if we used special marker files then
-    # extraction could be brought outside of the critical section.
-    Semaphore::Arbitrator.instance.lock(options) do
-      unless fully_uploaded?(remote_url)
-        raise Workflow::FileNotReady, "File is not ready to be extracted: #{remote_url}"
-      end
-      if ok_to_extract?(remote_url)
-        yield
-      else
-        if params[:debug]
-          debug_print "File is already extracted: #{remote_url}"
-        end
-        raise Workflow::FileAlreadyExtracted, "File is already extracted: #{remote_url}"
-      end
-    end
-  rescue Semaphore::ResourceBusy
-    # someone else is processing the file, do nothing
-    if params[:debug]
-      debug_print "Lock is busy for #{remote_url}"
-    end
-    # raise the exception so that driver code can exit the process
-    # with appropriate exit code
-    raise Workflow::FileExtractionInProgress, "File is being extracted: #{remote_url}"
-  end
-  
-  # Required options:
-  # :retry_count
-  # :sleep_time
-  # :exception_class or :exception_classes
-  # Optional options:
-  # :extra_callback
-  def retry_errors(options)
-    if options[:exception_class] && options[:exception_classes]
-      raise ArgumentError, "Cannot specify both :exception_class and :exception_classes"
-    end
-    exception_classes = options[:exception_classes] || [options[:exception_class]]
-    extra_callback = options[:extra_callback]
-    0.upto(options[:retry_count]) do |index|
-      begin
-        return yield
-      rescue Exception => e
-        unless exception_classes.detect { |klass| e.is_a?(klass) }
-          raise
-        end
-        if params[:debug]
-          debug_print "Retrying after exception: #{e} (#{e.class}) at #{e.backtrace.first}"
-        end
-        
-        if index == options[:retry_count]
-          raise
-        else
-          if extra_callback
-            extra_callback.call(e)
-          end
-          sleep(options[:sleep_time])
-        end
-      end
-    end
-  end
-  
-  def retry_network_errors(options)
-    default_options = {:exception_class => HttpClient::NetworkError}
-    retry_errors(default_options.update(options)) do
-      yield
-    end
-  end
-  
-  def retry_aws_errors(options)
-    callback = lambda do |exception|
-      http_code = exception.http_code.to_i
-      if http_code < 500 || http_code >= 600
-        # only retry 5xx errors
-        raise
-      end
-    end
-    default_options = {:exception_class => S3Client::HttpError, :extra_callback => callback}
-    retry_errors(default_options.update(options)) do
-      yield
-    end
-  end
-  
   # -----
   
   def build_data_source_url
@@ -473,95 +335,8 @@ class ClearspringExtractWorkflow < Workflow::Base
     return !file.nil?
   end
   
-  def create_data_provider_file(file_url)
-    # Locked and lock-free runs should not be combined, since lock-free run may
-    # overwrite data of the locked run and leave it in an inconsistent state
-    # and the locked run would report success.
-    #
-    # Due to verification and also rerunning extraction however we must allow
-    # updating status on existing files.
-    
-    DataProviderFile.transaction do
-      file = channel.data_provider_files.find_by_url(file_url)
-      if file
-        if block_given?
-          yield file
-          file.save!
-        end
-      else
-        begin
-          file = DataProviderFile.new(
-            :url => file_url,
-            :data_provider_channel => channel
-          )
-          if block_given?
-            yield file
-          end
-          file.save!
-        rescue ActiveRecord::RecordInvalid, ActiveRecord::StatementInvalid
-          # see if someone else created the file concurrently
-          file = channel.data_provider_files.find_by_url(file_url)
-          unless file
-            raise
-          end
-          # XXX what are the actual use cases that would generate conflicts?
-          # what should we do in these cases?
-          if block_given?
-            yield file
-          end
-          file.save!
-        end
-      end
-    end
-  end
-  
-  # Raises DataProviderNotFound if clearspring data provider does not exist
-  def get_data_provider!
-    unless @data_provider
-      @data_provider = DataProvider.find_by_name('Clearspring', :include => :data_provider_channels)
-      unless @data_provider
-        raise Workflow::DataProviderNotFound, "Clearspring data provider does not exist - is db seeded?"
-      end
-    end
-    @data_provider
-  end
-  
-  # Raises DataProviderChannelNotFound if the channel does not exist
-  def get_channel!(channel_name)
-    data_provider = get_data_provider!
-    channel = data_provider.data_provider_channels.detect do |channel|
-      channel.name == channel_name
-    end
-    unless channel
-      raise Workflow::DataProviderChannelNotFound, "Clearspring data provider channel not found: #{channel_name} - is db seeded?"
-    end
-    channel
-  end
-  
   # readiness heuristic - to be written
   def fully_uploaded?(file_url)
     true
-  end
-  
-  def note_data_provider_file_discovered(file_url)
-    # discovered is the initial status. we never want to change status
-    # from another status to discovered. here, only create a file object
-    # if it does not already exist.
-    DataProviderFile.transaction do
-      file = channel.data_provider_files.find_by_url(file_url)
-      if file
-        if file.discovered_at.nil?
-          file.discovered_at = Time.now
-          file.save!
-        end
-      else
-        file = DataProviderFile.create!(
-          :url => file_url,
-          :data_provider_channel => channel,
-          :status => DataProviderFile::DISCOVERED,
-          :discovered_at => Time.now
-        )
-      end
-    end
   end
 end
