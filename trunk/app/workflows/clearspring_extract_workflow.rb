@@ -2,10 +2,6 @@ require 'fileutils'
 require_dependency 'semaphore'
 
 class ClearspringExtractWorkflow < Workflow::Base
-  class WorkflowError < StandardError; end
-  class DataProviderNotFound < WorkflowError; end
-  class DataProviderChannelNotFound < WorkflowError; end
-  
   class << self
     def default_config_path
       YamlConfiguration.absolutize('workflows/clearspring')
@@ -524,7 +520,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     unless @data_provider
       @data_provider = DataProvider.find_by_name('Clearspring', :include => :data_provider_channels)
       unless @data_provider
-        raise DataProviderNotFound, "Clearspring data provider does not exist - is db seeded?"
+        raise Workflow::DataProviderNotFound, "Clearspring data provider does not exist - is db seeded?"
       end
     end
     @data_provider
@@ -537,7 +533,7 @@ class ClearspringExtractWorkflow < Workflow::Base
       channel.name == channel_name
     end
     unless channel
-      raise DataProviderChannelNotFound, "Clearspring data provider channel not found: #{channel_name} - is db seeded?"
+      raise Workflow::DataProviderChannelNotFound, "Clearspring data provider channel not found: #{channel_name} - is db seeded?"
     end
     channel
   end

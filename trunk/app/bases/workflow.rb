@@ -24,6 +24,10 @@ module Workflow
   # Split verification was requested and failed
   class SplitVerificationFailed < WorkflowError; end
   
+  class DataProviderNotFound < WorkflowError; end
+  
+  class DataProviderChannelNotFound < WorkflowError; end
+  
   module UserInputParsing
     def parse_hours_specification(hours)
       hours = hours.split(',').map do |hour|
@@ -65,6 +69,43 @@ module Workflow
   
   self.default_logger = Logger.new(STDOUT)
   
+  # In the Old Days, extraction processes were invoked with two basic
+  # arguments: the data source (clearspring/akamai/etc.) and date.
+  # The data source was given implicitly as the name of the script to run.
+  # Extraction resolution was fixed to one day, and the default day was
+  # yesterday.
+  #
+  # Current extraction processes take two additional arguments: hour and
+  # channel. Data sources which are updated hourly may be extracted with
+  # hourly granularity, allowing for the lag between data becoming available
+  # and getting extracted to be reduced from ~2 days in the worst case to
+  # several hours. Data sources which are divisible into meaningful disjoint
+  # parts spatially expose multiple channels which may be extracted
+  # concurrently, further reducing the lag between data availability and
+  # extraction.
+  #
+  # Extraction process has two basic operations: discover and extract. The
+  # discover operation lists files available in the data source and creates
+  # data provider file objects in our database corresponding to found files.
+  # The extract operation actually fetches the files (if necessary) and
+  # uploads them to our permanent storage (s3). The separation allows for
+  # extraction of individual files which were either missed or incorrectly
+  # extracted on an earlier run and prevents losing track of files that existed
+  # in the data source at some point but were deleted before they could be
+  # extracted. A run shortcut is also provided which discovers and extracts all
+  # discovered files.
+  #
+  # Extraction process for each data source has two complementary processes:
+  # verification and cleanup. Verification process performs a separate pass
+  # on extracted data and checks it against the data source with configurable
+  # degree of strictness. It is intended to run a fair amount of time after
+  # extraction completes to catch issues like files being made available
+  # past our extraction lookback period, extracting files which are being
+  # appended to, etc.
+  #
+  # Cleanup process removes old and/or temporary files created by other
+  # procesess and/or the data source itself, in case of data source uploading
+  # files to us (as opposed to us downloading files from data source).
   class Base
     attr_accessor :logger
     
