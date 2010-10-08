@@ -153,6 +153,29 @@ def stop_profiling
   printer.print(File.open('profile-output.html', 'w'), :min_percent => 1)
 end
 
+def with_optional_profiling(enable_profiling)
+  if enable_profiling
+    start_profiling
+    
+    begin
+      status = yield
+    ensure
+      begin
+        stop_profiling
+      rescue Exception => e
+        status = ConsoleUi.handle_unhandled_exception(e)
+      end
+    end
+  else
+    begin
+      status = yield
+    rescue Exception => e
+      status = ConsoleUi.handle_unhandled_exception(e)
+    end
+  end
+  status
+end
+
 if options[:system_timer]
   require 'force_system_timer'
 end
@@ -172,24 +195,8 @@ end
 
 runner = ClearspringExtractWorkflowRunner.new
 
-if options[:profile]
-  start_profiling
-  
-  begin
-    status = runner.run(settings.merge(params).to_hash)
-  ensure
-    begin
-      stop_profiling
-    rescue Exception => e
-      status = ConsoleUi.handle_unhandled_exception(e)
-    end
-  end
-else
-  begin
-    status = runner.run(settings.merge(params).to_hash)
-  rescue Exception => e
-    status = ConsoleUi.handle_unhandled_exception(e)
-  end
+status = with_optional_profiling(options[:profile]) do
+  runner.run(settings.merge(params).to_hash)
 end
 
 exit(status)
