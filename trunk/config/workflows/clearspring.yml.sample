@@ -1,8 +1,8 @@
 development: &common
-  clearspring_http_username: 'xgraph'
-  clearspring_http_password: ''
-  clearspring_net_io_timeout: 60
-  clearspring_root_url: 'https://dex.clearspring.com/data/xgraph/v2'
+  http_username: 'xgraph'
+  http_password: ''
+  net_io_timeout: 60
+  data_source_root: 'https://dex.clearspring.com/data/xgraph/v2'
   download_root_dir: '/home/etltest/data'
   temp_root_dir: '/tmp'
   s3_bucket: xgw

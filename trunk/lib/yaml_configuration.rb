@@ -1,5 +1,4 @@
 require 'yaml'
-require 'ostruct'
 
 class YamlConfiguration
   class SettingsMissing < StandardError; end
@@ -18,7 +17,7 @@ class YamlConfiguration
         if settings.nil?
           raise SettingsMissing, "Missing settings for #{RAILS_ENV} environment"
         end
-        OpenStruct.new(settings)
+        HashWithIndifferentAccess.new(settings)
       end
     end
   end

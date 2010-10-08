@@ -16,33 +16,7 @@ class ClearspringExtractWorkflow < Workflow::Base
     # :config_path
     def initialize(options={})
       config_path = options[:config_path] || ClearspringExtractWorkflow.default_config_path
-      config = YamlConfiguration.load(config_path)
-      @config_params = {
-        :data_source_path => config.clearspring_root_url,
-        :download_root_dir => config.download_root_dir,
-        :gzip_root_dir => config.temp_root_dir,
-        :http_username => config.clearspring_http_username,
-        :http_password => config.clearspring_http_password,
-        :net_io_timeout => config.clearspring_net_io_timeout,
-        :s3_bucket => config.s3_bucket,
-        :clearspring_pid => config.clearspring_pid,
-        # options
-        :http_client => config.http_client,
-        :system_timer => config.force_system_timer,
-        :lock => config.lock,
-        :once => config.once,
-        :debug => config.debug,
-        :debug_output_path => config.debug_output_path,
-        :keep_downloaded => config.keep_downloaded,
-        :keep_temporary => config.keep_temporary,
-        :verify => config.verify,
-        :record => config.record,
-        :trust_recorded => config.trust_recorded,
-        :quiet => config.quiet,
-        :check_sizes => config.check_sizes,
-        :check_sizes_strictly => config.check_sizes_strictly,
-        :check_sizes_exactly => config.check_sizes_exactly,
-      }
+      @config_params = YamlConfiguration.load(config_path)
       postprocess_params
     end
     
@@ -266,7 +240,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   # -----
   
   def build_data_source_url
-    "#{params[:data_source_path]}/#{channel.name}"
+    "#{params[:data_source_root]}/#{channel.name}"
   end
   
   def build_absolute_url(remote_url, file)
@@ -293,7 +267,7 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def url_to_relative_data_source_path(remote_url)
-    absolute_to_relative_path(params[:data_source_path], remote_url)
+    absolute_to_relative_path(params[:data_source_root], remote_url)
   end
   
   def build_local_path(remote_relative_path)
