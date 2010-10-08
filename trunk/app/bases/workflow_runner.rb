@@ -1,4 +1,6 @@
 class WorkflowRunner
+  include WorkflowProfiling
+  
   attr_reader :logger
   
   def run(params)
