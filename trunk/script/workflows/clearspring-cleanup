@@ -109,5 +109,5 @@ if options[:downloaded]
 end
 
 if options[:temporary]
-  cleanup(params[:gzip_root_dir], options[:temporary_age], params)
+  cleanup(params[:temp_root_dir], options[:temporary_age], params)
 end

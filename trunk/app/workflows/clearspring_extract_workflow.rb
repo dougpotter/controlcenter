@@ -136,12 +136,12 @@ class ClearspringExtractWorkflow < Workflow::Base
     name, ext = $1, $2
     filename_format = "#{name.sub('%', '%%')}.%03d#{ext}"
     
-    local_path = File.join(params[:gzip_root_dir], filename_format)
+    local_path = File.join(params[:temp_root_dir], filename_format)
     FileUtils.mkdir_p(File.dirname(local_path))
     
     @gzip_transformer.transform(
       input_path,
-      params[:gzip_root_dir],
+      params[:temp_root_dir],
       filename_format
     )
   end
