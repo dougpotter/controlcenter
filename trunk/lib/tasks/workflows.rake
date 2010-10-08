@@ -6,7 +6,7 @@ namespace :workflows do
       # apparently Time.zone does not exist here
       now = Time.now.utc
       
-      settings = ClearspringExtractWorkflow::Configuration.new
+      settings = ClearspringExtractWorkflow.configuration
       channels = DataProviderChannel.all(:order => 'name')
       channels.each do |channel|
         # add one hour to the hours to extract hours in the past.
@@ -41,7 +41,7 @@ namespace :workflows do
       yesterday = now - 1.day
       date = yesterday.strftime('%Y%m%d')
       
-      settings = ClearspringExtractWorkflow::Configuration.new
+      settings = ClearspringExtractWorkflow.configuration
       channels = DataProviderChannel.all(:order => 'name')
       channels.each do |channel|
         options = settings.merge(:date => date, :channel => channel)
@@ -60,7 +60,7 @@ namespace :workflows do
       date = time.strftime('%Y%m%d')
       hour = time.hour
       
-      settings = ClearspringExtractWorkflow::Configuration.new
+      settings = ClearspringExtractWorkflow.configuration
       channels = DataProviderChannel.hourly.all(:order => 'name')
       channels.each do |channel|
         options = settings.merge(:date => date, :hour => hour, :channel => channel)

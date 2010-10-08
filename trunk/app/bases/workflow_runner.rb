@@ -11,7 +11,8 @@ class WorkflowRunner
       log_marker("#{self.class.name} run started at #{Time.now}")
     end
     
-    params = {:logger => @logger}.update(params)
+    default_params = HashWithIndifferentAccess.new(:logger => @logger)
+    params = default_params.update(params)
     perform(params)
     log_marker("#{self.class.name} run finished successfully at #{Time.now}")
     0

@@ -142,7 +142,7 @@ def debug
   debugger
 end
 
-$settings = ClearspringExtractWorkflow::Configuration.new(options)
+$settings = ClearspringExtractWorkflow.configuration(options)
 $settings.update(options)
 
 def settings; $settings end
