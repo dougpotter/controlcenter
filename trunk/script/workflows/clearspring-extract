@@ -155,9 +155,10 @@ params = {
 end
 
 runner = ClearspringExtractWorkflowRunner.new
+params = settings.merge(params).to_hash
 
 status = runner.with_optional_profiling(options[:profile]) do
-  runner.run(settings.merge(params).to_hash)
+  runner.run(params)
 end
 
 exit(status)
