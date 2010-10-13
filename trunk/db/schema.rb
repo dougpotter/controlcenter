@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100928153207) do
+ActiveRecord::Schema.define(:version => 20101008210458) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -96,6 +96,24 @@ ActiveRecord::Schema.define(:version => 20100928153207) do
   add_index "click_counts", ["geography_id"], :name => "click_counts_geography_id_fk"
   add_index "click_counts", ["media_purchase_method_id"], :name => "click_counts_media_purchase_method_id_fk"
 
+  create_table "click_through_rates", :force => true do |t|
+    t.integer  "campaign_id"
+    t.integer  "ad_inventory_source_id"
+    t.integer  "media_purchase_method_id"
+    t.integer  "audience_id"
+    t.integer  "creative_id"
+    t.datetime "start_time",               :null => false
+    t.datetime "end_time",                 :null => false
+    t.integer  "duration_in_minutes",      :null => false
+    t.float    "click_through_rate",       :null => false
+  end
+
+  add_index "click_through_rates", ["ad_inventory_source_id"], :name => "click_through_rates_ad_inventory_source_id_fk"
+  add_index "click_through_rates", ["audience_id"], :name => "click_through_rates_audience_id_fk"
+  add_index "click_through_rates", ["campaign_id", "ad_inventory_source_id", "media_purchase_method_id", "audience_id", "creative_id", "start_time", "end_time", "duration_in_minutes"], :name => "click_through_rates_required_columns", :unique => true
+  add_index "click_through_rates", ["creative_id"], :name => "click_through_rates_creative_id_fk"
+  add_index "click_through_rates", ["media_purchase_method_id"], :name => "click_through_rates_media_purchase_method_id_fk"
+
   create_table "conversion_counts", :force => true do |t|
     t.integer  "campaign_id",         :null => false
     t.datetime "start_time",          :null => false
@@ -167,6 +185,60 @@ ActiveRecord::Schema.define(:version => 20100928153207) do
   create_table "data_providers", :force => true do |t|
     t.string "name", :null => false
   end
+
+  create_table "ecpas", :force => true do |t|
+    t.integer  "campaign_id"
+    t.integer  "ad_inventory_source_id"
+    t.integer  "media_purchase_method_id"
+    t.integer  "audience_id"
+    t.integer  "creative_id"
+    t.datetime "start_time",               :null => false
+    t.datetime "end_time",                 :null => false
+    t.integer  "duration_in_minutes",      :null => false
+    t.float    "ecpa",                     :null => false
+  end
+
+  add_index "ecpas", ["ad_inventory_source_id"], :name => "ecpas_ad_inventory_source_id_fk"
+  add_index "ecpas", ["audience_id"], :name => "ecpas_audience_id_fk"
+  add_index "ecpas", ["campaign_id", "ad_inventory_source_id", "media_purchase_method_id", "audience_id", "creative_id"], :name => "ecpas_required_columns", :unique => true
+  add_index "ecpas", ["creative_id"], :name => "ecpas_creative_id_fk"
+  add_index "ecpas", ["media_purchase_method_id"], :name => "ecpas_media_purchase_method_id_fk"
+
+  create_table "ecpcs", :force => true do |t|
+    t.integer  "campaign_id"
+    t.integer  "ad_inventory_source_id"
+    t.integer  "media_purchase_method_id"
+    t.integer  "audience_id"
+    t.integer  "creative_id"
+    t.datetime "start_time",               :null => false
+    t.datetime "end_time",                 :null => false
+    t.integer  "duration_in_minutes",      :null => false
+    t.float    "ecpc",                     :null => false
+  end
+
+  add_index "ecpcs", ["ad_inventory_source_id"], :name => "ecpcs_ad_inventory_source_id_fk"
+  add_index "ecpcs", ["audience_id"], :name => "ecpcs_audience_id_fk"
+  add_index "ecpcs", ["campaign_id", "ad_inventory_source_id", "media_purchase_method_id", "audience_id", "creative_id"], :name => "ecpcs_required_columns", :unique => true
+  add_index "ecpcs", ["creative_id"], :name => "ecpcs_creative_id_fk"
+  add_index "ecpcs", ["media_purchase_method_id"], :name => "ecpcs_media_purchase_method_id_fk"
+
+  create_table "ecpms", :force => true do |t|
+    t.integer  "campaign_id"
+    t.integer  "ad_inventory_source_id"
+    t.integer  "media_purchase_method_id"
+    t.integer  "audience_id"
+    t.integer  "creative_id"
+    t.datetime "start_time",               :null => false
+    t.datetime "end_time",                 :null => false
+    t.integer  "duration_in_minutes",      :null => false
+    t.float    "ecpm",                     :null => false
+  end
+
+  add_index "ecpms", ["ad_inventory_source_id"], :name => "ecpms_ad_inventory_source_id_fk"
+  add_index "ecpms", ["audience_id"], :name => "ecpms_audience_id_fk"
+  add_index "ecpms", ["campaign_id", "ad_inventory_source_id", "media_purchase_method_id", "audience_id", "creative_id", "start_time", "end_time", "duration_in_minutes"], :name => "ecpms_required_columns", :unique => true
+  add_index "ecpms", ["creative_id"], :name => "ecpms_creative_id_fk"
+  add_index "ecpms", ["media_purchase_method_id"], :name => "ecpms_media_purchase_method_id_fk"
 
   create_table "geographies", :force => true do |t|
     t.integer "country_id", :null => false
@@ -410,6 +482,12 @@ ActiveRecord::Schema.define(:version => 20100928153207) do
   add_foreign_key "click_counts", "geographies", :name => "click_counts_geography_id_fk"
   add_foreign_key "click_counts", "media_purchase_methods", :name => "click_counts_media_purchase_method_id_fk"
 
+  add_foreign_key "click_through_rates", "ad_inventory_sources", :name => "click_through_rates_ad_inventory_source_id_fk"
+  add_foreign_key "click_through_rates", "audiences", :name => "click_through_rates_audience_id_fk"
+  add_foreign_key "click_through_rates", "campaigns", :name => "click_through_rates_campaign_id_fk"
+  add_foreign_key "click_through_rates", "creatives", :name => "click_through_rates_creative_id_fk"
+  add_foreign_key "click_through_rates", "media_purchase_methods", :name => "click_through_rates_media_purchase_method_id_fk"
+
   add_foreign_key "conversion_counts", "campaigns", :name => "conversion_counts_campaign_id_fk"
 
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
@@ -420,6 +498,24 @@ ActiveRecord::Schema.define(:version => 20100928153207) do
   add_foreign_key "data_provider_channels", "data_providers", :name => "data_provider_channels_data_provider_id_fk"
 
   add_foreign_key "data_provider_files", "data_provider_channels", :name => "data_provider_files_data_provider_channel_id_fk"
+
+  add_foreign_key "ecpas", "ad_inventory_sources", :name => "ecpas_ad_inventory_source_id_fk"
+  add_foreign_key "ecpas", "audiences", :name => "ecpas_audience_id_fk"
+  add_foreign_key "ecpas", "campaigns", :name => "ecpas_campaign_id_fk"
+  add_foreign_key "ecpas", "creatives", :name => "ecpas_creative_id_fk"
+  add_foreign_key "ecpas", "media_purchase_methods", :name => "ecpas_media_purchase_method_id_fk"
+
+  add_foreign_key "ecpcs", "ad_inventory_sources", :name => "ecpcs_ad_inventory_source_id_fk"
+  add_foreign_key "ecpcs", "audiences", :name => "ecpcs_audience_id_fk"
+  add_foreign_key "ecpcs", "campaigns", :name => "ecpcs_campaign_id_fk"
+  add_foreign_key "ecpcs", "creatives", :name => "ecpcs_creative_id_fk"
+  add_foreign_key "ecpcs", "media_purchase_methods", :name => "ecpcs_media_purchase_method_id_fk"
+
+  add_foreign_key "ecpms", "ad_inventory_sources", :name => "ecpms_ad_inventory_source_id_fk"
+  add_foreign_key "ecpms", "audiences", :name => "ecpms_audience_id_fk"
+  add_foreign_key "ecpms", "campaigns", :name => "ecpms_campaign_id_fk"
+  add_foreign_key "ecpms", "creatives", :name => "ecpms_creative_id_fk"
+  add_foreign_key "ecpms", "media_purchase_methods", :name => "ecpms_media_purchase_method_id_fk"
 
   add_foreign_key "geographies", "countries", :name => "geographies_country_id_fk"
   add_foreign_key "geographies", "msas", :name => "geographies_msa_id_fk"
