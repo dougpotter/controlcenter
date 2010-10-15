@@ -24,7 +24,7 @@ table class=extraction-status
       % else
         All
     td
-      = @counts_by_status.size
+      = @counts_by_status.inject(0) { |size, element| size + element.last }
 
 h2 | Files
 
