@@ -171,7 +171,8 @@ Creative.seed_many(:creative_code, [
     :width => 250
   }),
   :creative_code => "300-g-wisc",
-  :file_name => "300x250.gif"
+  :file_name => "300x250.gif",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "august creatives for wisc",
@@ -181,7 +182,8 @@ Creative.seed_many(:creative_code, [
     :width => 250
   }),
   :creative_code => "300-f-wisc-1",
-  :file_name => "300x250_1.swf"
+  :file_name => "300x250_1.swf",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "august creatives for wisc",
@@ -191,7 +193,8 @@ Creative.seed_many(:creative_code, [
     :width => 250
   }),
   :creative_code => "300-f-wisc-2",
-  :file_name => "300x250_2.swf"
+  :file_name => "300x250_2.swf",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "august creatives for wisc",
@@ -201,7 +204,8 @@ Creative.seed_many(:creative_code, [
     :width => 250
   }),
   :creative_code => "300-f-wisc-3",
-  :file_name => "300x250_3.swf"
+  :file_name => "300x250_3.swf",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "august creatives for wisc",
@@ -211,7 +215,8 @@ Creative.seed_many(:creative_code, [
     :width => 90
   }),
   :creative_code => "728-g-wisc",
-  :file_name => "728x90.gif"
+  :file_name => "728x90.gif",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "august creatives for wisc",
@@ -221,7 +226,8 @@ Creative.seed_many(:creative_code, [
     :width => 90
   }),
   :creative_code => "728-f-wisc-1",
-  :file_name => "728x90_1.swf"
+  :file_name => "728x90_1.swf",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "august creatives for wisc",
@@ -231,7 +237,8 @@ Creative.seed_many(:creative_code, [
     :width => 90
   }),
   :creative_code => "728-f-wisc-2",
-  :file_name => "728x90_2.swf"
+  :file_name => "728x90_2.swf",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "august creatives for wisc",
@@ -241,7 +248,8 @@ Creative.seed_many(:creative_code, [
     :width => 90
   }),
   :creative_code => "728-f-wisc-3",
-  :file_name => "728x90_3.swf"
+  :file_name => "728x90_3.swf",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "sept creatives for wisc",
@@ -251,7 +259,8 @@ Creative.seed_many(:creative_code, [
     :width => 90
   }),
   :creative_code => "728-g-wav-r",
-  :file_name => "728x90-WAV-red.gif"
+  :file_name => "728x90-WAV-red.gif",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "sept creatives for wisc",
@@ -261,7 +270,8 @@ Creative.seed_many(:creative_code, [
     :width => 90
   }),
   :creative_code => "728-g-wav-b",
-  :file_name => "728x90-WAV-blue.gif"
+  :file_name => "728x90-WAV-blue.gif",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "sept creatives for wisc",
@@ -271,7 +281,8 @@ Creative.seed_many(:creative_code, [
     :width => 250
   }),
   :creative_code => "300-g-wav-r",
-  :file_name => "300x250-WAV-red.gif"
+  :file_name => "300x250-WAV-red.gif",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "sept creatives for wisc",
@@ -281,7 +292,8 @@ Creative.seed_many(:creative_code, [
     :width => 250
   }),
   :creative_code => "300-g-wav-b",
-  :file_name => "300x250-WAV-blue.gif"
+  :file_name => "300x250-WAV-blue.gif",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "sept creatives for wisc",
@@ -291,7 +303,8 @@ Creative.seed_many(:creative_code, [
     :width => 600
   }),
   :creative_code => "160-g-wav-r",
-  :file_name => "160x600-WAV-red.gif"
+  :file_name => "160x600-WAV-red.gif",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 },
 {
   :description => "sept creatives for wisc",
@@ -301,6 +314,7 @@ Creative.seed_many(:creative_code, [
     :width => 600
   }),
   :creative_code => "160-g-wav-b",
-  :file_name => "160x600-WAV-blue.gif"
+  :file_name => "160x600-WAV-blue.gif",
+  :campaigns => Campaign.find(:all, :conditions => ["campaign_code IN (?)", [ "EUYZ" ] ] )
 }
 ])
