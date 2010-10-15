@@ -93,7 +93,7 @@ class AkamaiExtractWorkflow < Workflow::ExtractBase
   # -----
   
   def should_download_url?(path)
-    true
+    File.basename(path) =~ regexp_to_download
   end
   
   # -----
@@ -117,6 +117,23 @@ class AkamaiExtractWorkflow < Workflow::ExtractBase
   def build_s3_path(local_path)
     filename = File.basename(local_path)
     "#{build_s3_prefix}/#{filename}"
+  end
+  
+  def regexp_to_download
+    if hour
+      # with hour, for hourly updated channels we want files of
+      # that hour only, but for daily updated channels we want all files
+      # if hour is zero
+      if hour == 0
+        /#{date}(?:0000-2400|0000-0100)/
+      else
+        /#{date}#{'%02d' % hour}00-#{'%02d' % (hour + 1)}00/
+      end
+    else
+      # without hour, we want to get all files for extraction date
+      # regardless of channel update frequency
+      /#{date}\d{4}-\d{4}/
+    end
   end
   
   # -----
