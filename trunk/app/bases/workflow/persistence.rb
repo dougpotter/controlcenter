@@ -1,4 +1,6 @@
 module Workflow
+  # Some of the methods are used only for verification, but include everything
+  # here since I like this layout more.
   module Persistence
     def create_data_provider_file(file_url)
       # Locked and lock-free runs should not be combined, since lock-free run may
@@ -73,6 +75,31 @@ module Workflow
         ]
       )
       return !file.nil?
+    end
+  end
+  
+  def mark_data_provider_file_bogus(file_url)
+    # we only want to mark previously verified files as bogus; if a file
+    # was not verified, we're not going to change its status.
+    # if no record exists for a file, we are not going to create one here
+    # either
+    DataProviderFile.transaction do
+      # we don't want to mark bogus files that are being extracted,
+      # or files that we have not yet attempted to extract.
+      # we want to mark bogus files which have been extracted, this is easy.
+      # we also want to mark bogus files that have been verified, because
+      # we have different verification levels and stricter levels may
+      # reject files that less strict levels claimed were correctly extracted.
+      file = channel.data_provider_files.first(
+        :conditions => ['url = ? and status in (?)',
+        file_url,
+        [DataProviderFile::EXTRACTED, DataProviderFile::VERIFIED]]
+      )
+      if file
+        file.status = DataProviderFile::BOGUS
+        file.verified_at = nil
+        file.save!
+      end
     end
   end
 end
