@@ -18,25 +18,21 @@ module UniqueFactBehaviors
       if !options[:group_by].include?("start_time") && !options[:group_by].include?("end_time")
           raise RuntimeError, "unique metrics must be grouped on either start or end time"
       end
-
-      metric = options[:fact]
-      fact = Object.const_get(metric.classify)
-
       # check to see if we're grouping on valid dimensions
-      valid_dimensions = fact.new.attributes.keys
+      valid_dimensions = self.new.attributes.keys
       for dim in options[:group_by]
         if !valid_dimensions.include?(Dimension.keyize_indices(dim)[0].to_s) && dim != 'end_time' && dim != 'start_time'
-          raise RuntimeError, "cannot group #{fact.to_s} by #{dim}"
+          raise RuntimeError, "cannot group #{self.to_s} by #{dim}"
         end
       end
-
-      where_list = fact.new.where_conditions_from_params(options[:where])
+      
+      table_name = self.to_s.underscore.pluralize
+      where_list = self.new.where_conditions_from_params(options[:where])
       group_by_list = keyize_indices(options[:group_by])
       column_aliases = {}
-      parse_frequency_for_grouping(options[:fact].pluralize, options[:frequency], group_by_list, column_aliases)
+      parse_frequency_for_grouping(table_name, options[:frequency], group_by_list, column_aliases)
       parse_frequency_for_filtering(options[:frequency], where_list)
       parse_summarize(options[:summarize], where_list)
-
       columns = group_by_list.map do |expr|
         if aliased = column_aliases[expr]
           "#{expr} as #{aliased}"
@@ -44,10 +40,9 @@ module UniqueFactBehaviors
           expr
         end
       end.join(', ')
-
-      fa.add(fact.find_by_sql(
-        "SELECT #{columns}, SUM(#{metric}) as sum
-        FROM #{metric.pluralize}
+      fa.add(self.find_by_sql(
+        "SELECT #{columns}, SUM(#{table_name.singularize}) as sum
+        FROM #{table_name}
         WHERE #{where_list.join(" AND ")}
         GROUP BY #{group_by_list.join(", ")}"
       ))

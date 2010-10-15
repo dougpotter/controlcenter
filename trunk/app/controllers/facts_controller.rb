@@ -30,6 +30,7 @@ class FactsController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do 
+        require 'fastercsv'
         @csv_rows = @fact_aggregation.to_csv({
           :facts => params[:metrics].split(","),
           :dimensions => params[:dimensions].split(","),
