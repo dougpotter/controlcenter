@@ -16,18 +16,7 @@ module FactBehaviors
     # fills fact aggregation object with appropriate facts according to parsed
     # params hash (options) 
     def aggregate(fa, options = {})
-      for metric in options[:include]
-        options[:fact] = metric
-        fact = Object.const_get(metric.classify)
-        if fact.is_additive?
-          AdditiveFact.aggregate(fa, options)
-        else
-          UniqueFact.aggregate(fa, options)
-        end
-      end 
-
-      fa.adjust_time_zone(options[:tz_offset])
-      return fa
+      raise "aggregate not implemented in FactBehaviors"
     end
 
     # fills group_by_list and column_aliases with appropriate SQL given the

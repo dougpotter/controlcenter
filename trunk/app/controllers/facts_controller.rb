@@ -10,7 +10,6 @@ class FactsController < ApplicationController
     # parse params hash 
     @fact_aggregation = FactAggregation.new
     options = {
-      :include => params[:metrics].split(","),
       :where => params[:filters],
       :group_by => params[:dimensions].split(","),
       :frequency => params[:frequency],
@@ -19,7 +18,9 @@ class FactsController < ApplicationController
     }
     # aggregate facts
     begin
-      Fact.aggregate(@fact_aggregation, options)
+      params[:metrics].split(",").each do |metric|
+        ActiveRecord.const_get(metric.classify).aggregate(@fact_aggregation, options)
+      end
     rescue
       render :text => nil, :status => 422
       return 
