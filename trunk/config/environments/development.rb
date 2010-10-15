@@ -18,3 +18,5 @@ config.action_controller.perform_caching             = false
 config.action_mailer.raise_delivery_errors = false
 
 ::Sass::Plugin.options[:debug_info] = true
+
+config.middleware.use 'Shpaml::DevelopmentMiddleware'
