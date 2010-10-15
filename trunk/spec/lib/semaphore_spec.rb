@@ -108,4 +108,28 @@ describe Semaphore::Arbitrator do
     resource.reload
     resource.usage.should == 0
   end
+  
+  # Regression test for ticket #784. We allow releasing allocations that
+  # have been reclaimed (in this case a process took an unexpectedly long
+  # time to run but finished). We however cannot decrement resource usage
+  # when releasing the resource because it was already decremented
+  # when the allocation had been reclaimed.
+  it "should not decrement resource usage when releasing reclaimed allocations" do
+    resource = Factory.create(:singular_semaphore_resource,
+      :name => 'test resource',
+      # usage/capacity of 0 or 1 are bad choices because of clamping
+      # to 0:infinity that we do; go with 2
+      :usage => 2,
+      :capacity => 2
+    )
+    allocation = Factory.create(:semaphore_allocation,
+      :resource => resource,
+      :state => Semaphore::Allocation::RECLAIMED
+    )
+    
+    @arbitrator.release(allocation)
+    
+    resource.reload
+    resource.usage.should == 2
+  end
 end

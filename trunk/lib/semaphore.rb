@@ -76,9 +76,15 @@ module Semaphore
           raise AllocationStateWrong, "Allocation is in wrong state: #{allocation.state}"
         end
         
+        # do not decrement resource usage if allocation had been reclaimed
+        should_decrement = allocation.state == Allocation::ALLOCATED
+        
         allocation.state = Allocation::RELEASED
         allocation.save!
-        Resource.alter_usage(allocation.resource.id, -1)
+        
+        if should_decrement
+          Resource.alter_usage(allocation.resource.id, -1)
+        end
       end
       
       true
