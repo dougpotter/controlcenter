@@ -6,10 +6,18 @@ module WorkflowInvocation
     if options[:discover] && options[:extract]
       raise OptionParser::ParseError, "--discover and --extract cannot be specified simultaneously"
     end
-    
-    check_date(options)
   end
   module_function :check_extraction_options
+  
+  def check_verification_options(options)
+    unless options[:check_listing] || options[:check_consistency] ||
+      options[:check_our_existence] || options[:check_their_existence]
+    then
+      options[:check_listing] = options[:check_consistency] =
+        options[:check_our_existence] = options[:check_their_existence] = true
+    end
+  end
+  module_function :check_verification_options
   
   def check_date(options)
     if date = options[:date]

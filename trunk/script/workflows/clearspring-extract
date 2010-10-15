@@ -96,6 +96,7 @@ require File.join(File.dirname(__FILE__), '../../config/boot')
 require File.join(File.dirname(__FILE__), '../../config/environment')
 
 WorkflowInvocation.check_extraction_options(options)
+WorkflowInvocation.check_date(options)
 WorkflowInvocation.check_hours(options)
 data_provider = WorkflowInvocation.lookup_data_provider('Clearspring')
 selected_channels = WorkflowInvocation.parse_source_specification(data_provider, options[:source])

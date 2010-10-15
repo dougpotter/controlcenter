@@ -105,24 +105,11 @@ parser = OptionParser.new do |opts|
   end
 end.parse!
 
-if date = options[:date]
-  unless date =~ /\A\d{8}\Z/
-    raise OptionParser::ParseError, "Invalid date value: #{date}"
-  end
-else
-  date = Time.now.strftime('%Y%m%d')
-end
-
-unless options[:check_listing] || options[:check_consistency] ||
-  options[:check_our_existence] || options[:check_their_existence]
-then
-  options[:check_listing] = options[:check_consistency] =
-    options[:check_our_existence] = options[:check_their_existence] = true
-end
-
 require File.join(File.dirname(__FILE__), '../../config/boot')
 require File.join(File.dirname(__FILE__), '../../config/environment')
 
+WorkflowInvocation.check_verification_options(options)
+WorkflowInvocation.check_date(options)
 WorkflowInvocation.check_hours(options)
 data_provider = WorkflowInvocation.lookup_data_provider('Clearspring')
 selected_channels = WorkflowInvocation.parse_source_specification(data_provider, options[:source])
