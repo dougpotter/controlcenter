@@ -92,34 +92,13 @@ parser = OptionParser.new do |opts|
   end
 end.parse!
 
-if options[:discover] && options[:extract]
-  raise OptionParser::ParseError, "--discover and --extract cannot be specified simultaneously"
-end
-
-if date = options[:date]
-  unless date =~ /\A\d{8}\Z/
-    raise OptionParser::ParseError, "Invalid date value: #{date}"
-  end
-else
-  date = Time.now.strftime('%Y%m%d')
-end
-
 require File.join(File.dirname(__FILE__), '../../config/boot')
 require File.join(File.dirname(__FILE__), '../../config/environment')
 
-data_provider = DataProvider.find_by_name('Clearspring')
-unless data_provider
-  raise "Clearspring data provider not found, is databases seeded?"
-end
-selected_channels = Workflow.parse_source_specification(data_provider, options[:source])
-
-if options[:hours]
-  begin
-    options[:hours] = Workflow.parse_hours_specification(options[:hours])
-  rescue ArgumentError => e
-    raise OptionParser::ParseError, e.message
-  end
-end
+WorkflowInvocation.check_extraction_options(options)
+WorkflowInvocation.check_hours(options)
+data_provider = WorkflowInvocation.lookup_data_provider('Clearspring')
+selected_channels = WorkflowInvocation.parse_source_specification(data_provider, options[:source])
 
 def debug
   require 'ruby-debug'
@@ -143,7 +122,7 @@ end
 
 params = {
   :selected_channels => selected_channels,
-  :date => date,
+  :date => options[:date],
 }
 
 %w(

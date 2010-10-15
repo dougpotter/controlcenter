@@ -24,42 +24,7 @@ module Workflow
   # Split verification was requested and failed
   class SplitVerificationFailed < WorkflowError; end
   
-  module UserInputParsing
-    def parse_hours_specification(hours)
-      hours = hours.split(',').map do |hour|
-        hour = hour.strip
-        unless hour =~ /^\d\d?/
-          raise ArgumentError, "Invalid hour value: #{hour}"
-        end
-        hour = hour.to_i
-        if hour < 0 || hour > 23
-          raise ArgumentError, "Hour value out of range: #{hour}"
-        end
-        hour
-      end
-    end
-    
-    def parse_source_specification(data_provider, source)
-      if source
-        if source.empty?
-          raise OptionParser::ParseError, "Source is empty"
-        end
-        # need to check find_by_* arguments for being blank or empty
-        channel = data_provider.data_provider_channels.find_by_name(source)
-        if channel
-          selected_channels = [channel]
-        else
-          raise OptionParser::ParseError, "Invalid source value: #{source}"
-        end
-      else
-        selected_channels = data_provider.data_provider_channels.all
-      end
-    end
-  end
-  
   class << self
-    include UserInputParsing
-    
     attr_accessor :default_logger
   end
   
