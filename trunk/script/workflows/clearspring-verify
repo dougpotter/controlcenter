@@ -132,11 +132,6 @@ def debug
   debugger
 end
 
-$settings = ClearspringExtractWorkflow.configuration(options)
-$settings.update(options)
-
-def settings; $settings end
-
 class ClearspringVerifyWorkflowRunner < StandardVerifyWorkflowRunner
   def initialize
     super('clearspring', ClearspringVerifyWorkflow)
@@ -163,8 +158,12 @@ end
 
 runner = ClearspringVerifyWorkflowRunner.new
 
+settings = ClearspringExtractWorkflow.configuration(options)
+settings.update(options)
+params = settings.merge(params).to_hash
+
 begin
-  status = runner.run(settings.merge(params).to_hash)
+  status = runner.run(params)
 rescue Exception => e
   status = ConsoleUi.handle_unhandled_exception(e)
 end

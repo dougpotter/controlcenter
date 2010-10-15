@@ -11,8 +11,7 @@ class StandardExtractWorkflowRunner < StandardWorkflowRunner
       end.flatten!
     end
     workflows = versions.map do |version_params|
-      params = settings.merge(ext_params).to_hash
-      params.update(version_params)
+      params = ext_params.merge(version_params)
       params[:update_process_status] = true
       @workflow_class.new(params)
     end

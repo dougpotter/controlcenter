@@ -11,15 +11,7 @@ class StandardVerifyWorkflowRunner < StandardWorkflowRunner
       end.flatten!
     end
     workflows = versions.map do |version_params|
-      params = settings.merge(ext_params).to_hash
-      %w(
-        check_sizes check_sizes_strictly check_sizes_exactly check_content
-        record trust_recorded quiet
-      ).each do |key|
-        key = key.to_sym
-        params[key] = ext_params[key]
-      end
-      params.update(version_params)
+      params = ext_params.merge(version_params)
       params[:update_process_status] = false
       params[:logger] = ext_params[:logger]
       @workflow_class.new(params)
