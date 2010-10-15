@@ -13,9 +13,6 @@ class ClearspringExtractWorkflow < Workflow::Base
     end
   end
   
-  attr_reader :params
-  private :params
-  
   def channel
     params[:channel]
   end
@@ -42,12 +39,6 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   private
-  
-  def initialize_params(params)
-    @params = params
-    @network_error_retry_options = {:retry_count => 10, :sleep_time => 10}
-    @update_process_status = params[:update_process_status]
-  end
   
   def list_data_source_files
     with_process_status(:action => 'listing files') do

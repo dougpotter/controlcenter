@@ -1,0 +1,131 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: script/workflows/akamai-extract [options]"
+  
+  opts.separator ''
+  opts.separator 'Data source options:'
+  
+  opts.on('-C', '--channel CHANNEL', 'Extract from specified CHANNEL only (channel=PID, default is to extract all channels)') do |source|
+    options[:source] = source
+  end
+  opts.on('-D', '--date DATE', 'Extract for specified DATE (by default today)') do |date|
+    options[:date] = date
+  end
+  opts.on('-H', '--hour HOUR', 'Extract for specified HOUR (by default all hours; 24-hour format: 00-23; multiple hours can be specified separated by commas)') do |hours|
+    options[:hours] = hours
+  end
+  
+  opts.separator ''
+  opts.separator 'Configuration options:'
+  
+  opts.on('-e', '--environment RAILS_ENV', 'Specify rails environment (development/production/test') do |env|
+    ENV['RAILS_ENV'] = env
+  end
+  opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/akamai.yml is used)') do |path|
+    options[:config_path] = path
+  end
+  opts.on('--s3-client CLIENT', 'Use specified s3 client CLIENT (valid values: right_aws (default), spawn_curl') do |client|
+    options[:s3_client] = client
+  end
+  opts.on('--[no-]system-timer', 'Force the use of SystemTimer instead of Timeout') do |value|
+    options[:system_timer] = value
+  end
+  
+  opts.separator ''
+  opts.separator 'Behavior modifying options:'
+  
+  opts.on('-l', '--[no-]lock', 'Use locking and quit without doing anything if resources are busy') do |value|
+    options[:lock] = value
+  end
+  opts.on('-o', '--[no-]once', 'Extract each file only if it had not been previously extracted (requires and implies --lock)') do |value|
+    options[:once] = options[:lock] = value
+  end
+  opts.on('-r', '--[no-]record', 'Record discovered files in database') do |value|
+    options[:record] = value
+  end
+  
+  opts.separator ''
+  opts.separator 'Action options: (by default, discover and extract discovered files)'
+  
+  opts.on('-A', '--discover-channels', 'Discover channels only') do
+    options[:discover_channels] = true
+  end
+  opts.on('-I', '--discover', 'Discover files only') do
+    options[:discover] = true
+  end
+  opts.on('-E', '--extract URL', 'Extract file in URL') do |url|
+    options[:extract] = url
+  end
+  
+  opts.separator ''
+  opts.separator 'Debugging options:'
+  
+  opts.on('-p', '--[no-]profile', 'Profile script') do |value|
+    options[:profile] = value
+  end
+  opts.on('-d', '--[no-]debug', 'Enable debugging output') do |value|
+    options[:debug] = value
+  end
+  opts.on('--debug-output PATH', 'Store debug output into a file instead of printing it to standard output') do |path|
+    options[:debug_output_path] = path
+  end
+  
+  opts.separator ''
+  opts.separator 'Informational options:'
+  
+  opts.on('-h', '--help', 'Display this help text') do
+    puts opts
+    exit
+  end
+end.parse!
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
+
+WorkflowInvocation.check_extraction_options(options)
+WorkflowInvocation.check_hours(options)
+data_provider = WorkflowInvocation.lookup_data_provider('Akamai')
+selected_channels = WorkflowInvocation.parse_source_specification(data_provider, options[:source])
+
+def debug
+  require 'ruby-debug'
+  debugger
+end
+
+class AkamaiExtractWorkflowRunner < StandardExtractWorkflowRunner
+  def initialize
+    super('akamai', AkamaiExtractWorkflow)
+  end
+  
+  def perform(ext_params)
+    if ext_params[:discover_channels]
+      @workflow_class.new(ext_params).discover_channels
+    else
+      super
+    end
+  end
+end
+
+if options[:system_timer]
+  require 'force_system_timer'
+end
+
+params = {
+  :selected_channels => selected_channels,
+  :date => options[:date],
+}
+
+runner = AkamaiExtractWorkflowRunner.new
+settings = AkamaiExtractWorkflow.configuration(options)
+settings.update(options)
+params = settings.merge(params).to_hash
+
+status = runner.with_optional_profiling(options[:profile]) do
+  runner.run(params)
+end
+
+exit(status)

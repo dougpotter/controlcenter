@@ -298,12 +298,19 @@ module Workflow
     include ErrorHandling
     
     attr_accessor :logger
+    attr_reader :params
     
     def initialize(options={})
       @logger = options[:logger] || Workflow.default_logger
     end
     
     private
+    
+    def initialize_params(params)
+      @params = params
+      @network_error_retry_options = {:retry_count => 10, :sleep_time => 10}
+      @update_process_status = params[:update_process_status]
+    end
     
     def create_http_client(params)
       if params[:http_client]

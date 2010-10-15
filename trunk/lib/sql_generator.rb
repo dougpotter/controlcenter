@@ -15,6 +15,10 @@ module SqlGenerator
     def beginning_of_month_from_datetime(expr, options)
       "DATE_SUB(DATE(#{options[:fact_table]}.#{expr}), INTERVAL (DAYOFMONTH(#{options[:fact_table]}.#{expr}) - 1) DAY)"
     end
+    
+    def cast_to_int(expr)
+      "convert((#{expr}), signed integer)"
+    end
   end
   
   class PostgreSQL
@@ -34,6 +38,10 @@ module SqlGenerator
     def beginning_of_month_from_datetime(expr, options)
       # Note: on postgres first day of the month is 1
       "(#{options[:fact_table]}.#{expr})::date - date_part('day', (#{options[:fact_table]}.#{expr})::date)::integer + 1"
+    end
+    
+    def cast_to_int(expr)
+      "(#{expr})::integer"
     end
   end
   
