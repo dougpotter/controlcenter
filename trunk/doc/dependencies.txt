@@ -1,0 +1,33 @@
+General:
+
+ - rack 1.1.0 for rails 2.3.8
+ - pg for using postgres
+
+Control center:
+
+ - fastercsv for generating csv output in reporting
+ - haml for compiling sass stylesheets
+
+Extraction:
+
+ - An http client library
+   - curb and httpclient are supported
+   - using timeouts with curb requires local patch
+   - other http client libraries have frontends implemented for them but due to
+     various issues are not guaranteed to work
+ - right_aws for s3 communication
+ - nokogiri for parsing file listings
+
+Testing:
+
+ - factory_girl for fixtures
+ - rspec for running tests, and rspec-rails
+   - We run rails 2 thus we need rspec 1.x
+   - rspec 1.3.0 is required by assertions in some tests
+   - rspec-rails 1.3.0 does not work
+   - use rspec 1.3.0 and rspec-rails 1.2.9
+
+FakeS3:
+
+ - sinatra
+ - daemons to run it as daemon
