@@ -252,6 +252,17 @@ module Workflow
         end
       end
     end
+    
+    def already_extracted?(source_url)
+      file = channel.data_provider_files.find(:first,
+        :conditions => [
+          'data_provider_files.url=? and status not in (?)',
+          source_url,
+          [DataProviderFile::DISCOVERED, DataProviderFile::BOGUS]
+        ]
+      )
+      return !file.nil?
+    end
   end
   
   # In the Old Days, extraction processes were invoked with two basic
@@ -404,6 +415,16 @@ module Workflow
           file.status = DataProviderFile::EXTRACTED
           file.extracted_at = Time.now.utc
         end
+      end
+    end
+    
+    # returns true if remote_url is not currently being extracted,
+    # and had not been successfully extracted in the past.
+    def ok_to_extract?(remote_url)
+      if params[:once] and already_extracted?(remote_url)
+        false
+      else
+        true
       end
     end
     

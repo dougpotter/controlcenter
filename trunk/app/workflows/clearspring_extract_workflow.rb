@@ -184,27 +184,6 @@ class ClearspringExtractWorkflow < Workflow::ExtractBase
     "#{build_s3_prefix}/#{filename}"
   end
   
-  # returns true if remote_url is not currently being extracted,
-  # and had not been successfully extracted in the past.
-  def ok_to_extract?(remote_url)
-    if params[:once] and already_extracted?(remote_url)
-      false
-    else
-      true
-    end
-  end
-  
-  def already_extracted?(file_url)
-    file = channel.data_provider_files.find(:first,
-      :conditions => [
-        'data_provider_files.url=? and status not in (?)',
-        file_url,
-        [DataProviderFile::DISCOVERED, DataProviderFile::BOGUS]
-      ]
-    )
-    return !file.nil?
-  end
-  
   # readiness heuristic - to be written
   def fully_uploaded?(file_url)
     true

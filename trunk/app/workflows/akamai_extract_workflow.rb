@@ -125,4 +125,9 @@ class AkamaiExtractWorkflow < Workflow::ExtractBase
   def useful_directory_entries(dir)
     Dir.entries(dir).reject { |entry| entry == '.' || entry == '..' }
   end
+  
+  # readiness heuristic - to be written
+  def fully_uploaded?(file_url)
+    true
+  end
 end
