@@ -30,4 +30,5 @@ Testing:
 FakeS3:
 
  - sinatra
+ - builder
  - daemons to run it as daemon
