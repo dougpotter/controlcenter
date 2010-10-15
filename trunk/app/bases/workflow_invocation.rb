@@ -17,7 +17,7 @@ module WorkflowInvocation
         raise OptionParser::ParseError, "Invalid date value: #{date}"
       end
     else
-      date = Time.now.strftime('%Y%m%d')
+      options[:date] = Time.now.strftime('%Y%m%d')
     end
   end
   module_function :check_date

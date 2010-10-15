@@ -1,7 +1,7 @@
 require 'fileutils'
 require_dependency 'semaphore'
 
-class ClearspringExtractWorkflow < Workflow::Base
+class ClearspringExtractWorkflow < Workflow::ExtractBase
   class << self
     def default_config_path
       YamlConfiguration.absolutize('workflows/clearspring')
@@ -11,18 +11,6 @@ class ClearspringExtractWorkflow < Workflow::Base
       default_options = {:config_path => default_config_path}
       Workflow::Configuration.new(default_options.update(options))
     end
-  end
-  
-  def channel
-    params[:channel]
-  end
-  
-  def date
-    params[:date]
-  end
-  
-  def hour
-    params[:hour]
   end
   
   def initialize(params)
@@ -49,11 +37,7 @@ class ClearspringExtractWorkflow < Workflow::Base
       files = @parser.parse_any_httpd_file_list(page_text)
       absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
       
-      if params[:record]
-        absolute_file_urls.each do |url|
-          note_data_provider_file_discovered(url)
-        end
-      end
+      possibly_record_source_urls_discovered(absolute_file_urls)
       
       absolute_file_urls.reject! { |url| !should_download_url?(url) }
       absolute_file_urls
@@ -61,11 +45,11 @@ class ClearspringExtractWorkflow < Workflow::Base
   end
   
   def perform_extraction(file_url)
-    validate_file_url_for_extraction!(file_url)
+    validate_source_url_for_extraction!(file_url)
     local_path = download(file_url)
     split_paths = split(local_path)
     split_paths.each do |path|
-      upload(path)
+      upload(path, s3_bucket, build_s3_path(path))
     end
     
     unless params[:keep_temporary]
@@ -77,15 +61,7 @@ class ClearspringExtractWorkflow < Workflow::Base
       end
     end
     
-    # See the comment in create_data_provider_file regarding mixing locked
-    # and non-locked runs. Status files are only created for once runs
-    # (which are also locked).
-    if params[:once]
-      create_data_provider_file(file_url) do |file|
-        file.status = DataProviderFile::EXTRACTED
-        file.extracted_at = Time.now
-      end
-    end
+    possibly_record_source_url_extracted(file_url)
     
     unless params[:keep_downloaded]
       if params[:debug]
@@ -161,24 +137,6 @@ class ClearspringExtractWorkflow < Workflow::Base
     md5.hexdigest
   end
   
-  def upload(local_path)
-    with_process_status(:action => "uploading #{File.basename(local_path)}") do
-      retry_network_errors(@network_error_retry_options) do
-        retry_aws_errors(@network_error_retry_options) do
-          @s3_client.put_file(s3_bucket, build_s3_path(local_path), local_path)
-        end
-      end
-    end
-  end
-  
-  # -----
-  
-  def validate_file_url_for_extraction!(url)
-    unless should_download_url?(url)
-      raise Workflow::FileSpecMismatch, "Url does not match download parameters: #{url}"
-    end
-  end
-  
   # -----
   
   def build_data_source_url
@@ -214,10 +172,6 @@ class ClearspringExtractWorkflow < Workflow::Base
   
   def build_local_path(remote_relative_path)
     File.join(params[:download_root_dir], remote_relative_path)
-  end
-  
-  def s3_bucket
-    params[:s3_bucket]
   end
   
   def build_s3_prefix
