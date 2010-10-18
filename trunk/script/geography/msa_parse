@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 # Rreads and parses msa data taken from the U.S. Census Bureau website:
 # http://www.census.gov/population/www/metroareas/metrodef.html
 # (stored in db/geographies.txt).  This is 2008 data.
