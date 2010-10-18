@@ -9,7 +9,7 @@ class AkamaiVerifyWorkflow < Workflow::VerifyBase
   
   private
   
-  # There is on splitting being done for akamai logs, so this is a simple
+  # There is no splitting being done for akamai logs, so this is a simple
   # equality check.
   def bucket_paths_under(our_paths, their_path)
     our_paths.select { |path| path == their_path }
