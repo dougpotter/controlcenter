@@ -55,9 +55,7 @@ module Workflow
     def check_correspondence(data_source_urls, our_paths)
       have, missing, partial = [], [], []
       data_source_urls.each do |url|
-        remote_relative_path = url_to_relative_data_source_path(url)
-        local_path = build_local_path(remote_relative_path)
-        bucket_path = build_s3_path(local_path)
+        bucket_path = data_provider_url_to_bucket_path(url)
         
         ok = false
         if params[:trust_recorded]

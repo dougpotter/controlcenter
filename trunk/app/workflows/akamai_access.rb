@@ -58,6 +58,15 @@ module AkamaiAccess
     end
   end
   
+  def url_to_relative_data_source_path(data_provider_path)
+    absolute_to_relative_path(source_dir_base, data_provider_path)
+  end
+  
+  def data_provider_url_to_bucket_path(data_provider_path)
+    local_path = url_to_relative_data_source_path(data_provider_path)
+    build_s3_path(local_path)
+  end
+  
   # -----
   
   # Like Dir#entries but returns only useful entries

@@ -7,6 +7,14 @@ class AkamaiVerifyWorkflow < Workflow::VerifyBase
     @s3_client = create_s3_client(@params)
   end
   
+  private
+  
+  # There is on splitting being done for akamai logs, so this is a simple
+  # equality check.
+  def bucket_paths_under(our_paths, their_path)
+    our_paths.select { |path| path == their_path }
+  end
+  
   # See comment in Workflow::VerifyBase for how preesnce verification works.
   def compute_criteria_to_check
     if params[:hour]

@@ -50,6 +50,12 @@ module ClearspringAccess
     File.join(params[:download_root_dir], remote_relative_path)
   end
   
+  def data_provider_url_to_bucket_path(data_provider_url)
+    remote_relative_path = url_to_relative_data_source_path(data_provider_url)
+    local_path = build_local_path(remote_relative_path)
+    build_s3_path(local_path)
+  end
+  
   def build_s3_prefix
     # date is required, it should always be given to workflow
     "#{params[:clearspring_pid]}/v2/raw-#{channel.name}/#{params[:date]}"
