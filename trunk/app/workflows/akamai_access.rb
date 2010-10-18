@@ -12,6 +12,14 @@ module AkamaiAccess
     absolute_paths
   end
   
+  def get_source_size(path)
+    if params[:debug]
+      debug_print "Stat #{path}"
+    end
+    
+    File.stat(path).size
+  end
+  
   # -----
   
   def should_download_url?(path)

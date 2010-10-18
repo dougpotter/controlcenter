@@ -21,6 +21,10 @@ module ClearspringAccess
     end
   end
   
+  def get_source_size(url)
+    @http_client.get_url_content_length(url)
+  end
+  
   # -----
   
   def build_data_source_url

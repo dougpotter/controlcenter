@@ -70,7 +70,7 @@ module Workflow
           extracted_paths = bucket_paths_under(our_paths, bucket_path)
           if ok = !extracted_paths.empty?
             if params[:check_sizes]
-              source_size = @http_client.get_url_content_length(url)
+              source_size = get_source_size(url)
               items = list_bucket_items
               extracted_items = extracted_paths.map do |path|
                 items.detect { |item| item.path == path }
