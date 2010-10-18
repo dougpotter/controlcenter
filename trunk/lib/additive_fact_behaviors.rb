@@ -12,7 +12,6 @@ module AdditiveFactBehaviors
   end
 
   module ClassMethods
-    WHICH_TABLE = {"partner_id" => "campaigns"}
 
     # filles fact aggregation (fa) with appropriate results based on a parsed
     # params hash (options)
@@ -31,24 +30,13 @@ module AdditiveFactBehaviors
         end
       end
       where_clause = self.new.where_conditions_from_params(options[:where])
+      
+      # ammend from_clause, columns, and group_by_list to account for selected
+      # dimensions which do not appear in fact table (and therefore necessitate
+      # a join)
+      from_clause = ""
+      handle_joined_dimensions(from_clause, columns, group_by_list, options[:group_by])
 
-
-      # construct join clause with appropate joins
-      from_clause = "#{fact_table}"
-      if foreign_dimensions = join_tables?(options[:group_by], self)
-        for dim in foreign_dimensions
-          table = WHICH_TABLE[dim.singularize.concat("_id")]
-          from_clause += " JOIN #{table} on #{fact_table}.#{table.singularize.concat("_id")} = #{table}.id"
-
-          col_index_for_replacement = columns.index(fact_table + "." + dim.singularize.concat("_id"))
-          col_replacement = "#{table}.#{dim.singularize.concat("_id")} as \"#{dim.singularize.concat("_id")}\""
-          columns[col_index_for_replacement] = col_replacement
-
-          grp_index_for_replacement = group_by_list.index(fact_table + "." + dim.singularize.concat("_id"))
-          grp_replacement = "#{dim.singularize.concat("_id")}"
-          group_by_list[grp_index_for_replacement] = grp_replacement
-        end
-      end
       
       # standard query
       fa.add(self.find_by_sql(
@@ -75,23 +63,6 @@ module AdditiveFactBehaviors
       end
 
       fa.adjust_time_zone(options[:tz_offset])
-    end
-
-    def join_tables?(group_by, fact)
-      fact_table_columns = fact.new.attributes.keys
-      join_tables = []
-      for dim in group_by
-        pk = Dimension.keyize_indices(dim).to_s
-        if !fact_table_columns.include?(pk)
-          join_tables << pk[0..-4].pluralize
-        end
-      end
-
-      if join_tables.size > 0
-        return join_tables
-      else
-        return nil
-      end
     end
 
 
