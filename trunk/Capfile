@@ -5,6 +5,10 @@ load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 # =============================================================================
 
 if ENV['XGCC_NO_CAP_MAILER'].nil? || !%w(1 yes true).include?(ENV['XGCC_NO_CAP_MAILER'].downcase)
+  # Since we vendor rails, there may be no rails installed system-wide,
+  # thus we have to manually add action mailer lib path to $:
+  $: << 'vendor/rails/actionmailer/lib'
+  
   require 'vendor/plugins/capistrano_mailer/lib/capistrano_mailer'
 end
 
