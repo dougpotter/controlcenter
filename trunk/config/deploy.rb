@@ -133,7 +133,10 @@ define_configuration_tasks(:aws, %w(aws.yml))
 # WORKFLOWS CONFIGURATION
 # =============================================================================
 
-define_configuration_tasks(:workflows, %w(workflows/clearspring.yml))
+define_configuration_tasks(:workflows, %w(
+  workflows/akamai.yml
+  workflows/clearspring.yml
+))
 
 # =============================================================================
 # SCHEDULE CONFIGURATION
