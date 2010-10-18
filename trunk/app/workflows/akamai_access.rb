@@ -62,6 +62,6 @@ module AkamaiAccess
   
   # Like Dir#entries but returns only useful entries
   def useful_directory_entries(dir)
-    Dir.entries(dir).reject { |entry| entry == '.' || entry == '..' }
+    Dir.entries(dir).reject { |entry| entry == '.' || entry == '..' }.sort
   end
 end
