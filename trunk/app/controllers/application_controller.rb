@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   def render_csv(filename = nil)
     # Set filename to ultimately requested file by default, and force appending
     # of .csv
-    filename ||= CGI::escape(request.path).gsub(/^.*\//, "")
+    filename ||= CGI::escape(request.path.gsub(/^.*\//, ""))
     filename += '.csv' unless filename =~ /\.csv$/
     
     # String#index returns nil if no match is found
