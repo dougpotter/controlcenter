@@ -12,9 +12,10 @@ class ApplicationController < ActionController::Base
 
   # Create headers necessary for proper CSV file generation
   # Grabbed from http://stackoverflow.com/questions/94502/
-  def render_csv(filename = nil)
+  def render_csv(options={})
     # Set filename to ultimately requested file by default, and force appending
     # of .csv
+    filename = options[:filename]
     filename ||= CGI::escape(request.path.gsub(/^.*\//, ""))
     filename += '.csv' unless filename =~ /\.csv$/
     
@@ -29,8 +30,25 @@ class ApplicationController < ActionController::Base
       headers["Content-Type"] ||= 'text/csv'
       headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" 
     end
-
-    render :layout => false
+    
+    if block_given?
+      require 'fastercsv'
+      text = FasterCSV.generate do |csv|
+        yield csv
+      end
+      render :text => text
+    elsif data = options[:data]
+      require 'fastercsv'
+      text = FasterCSV.generate do |csv|
+        data.each do |line|
+          csv << line
+        end
+      end
+      render :text => text
+    else
+      render :layout => false
+    end
+    
   end
 
   private

@@ -4,6 +4,8 @@ require 'fastercsv'
 describe "/facts/index.csv" do
   # A basic functionality test.
   it "should produce a valid csv file" do
+    pending "View no longer exists"
+    
     assigns[:csv_rows] = [
       ['date', 'count'],
       ['2010-01-01', '42'],
