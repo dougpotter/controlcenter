@@ -78,7 +78,7 @@ module WorkflowInvocation
         raise OptionParser::ParseError, "Invalid source value: #{source}"
       end
     else
-      selected_channels = data_provider.data_provider_channels.all
+      selected_channels = data_provider.data_provider_channels.all(:order => 'name')
     end
   end
   module_function :parse_source_specification
