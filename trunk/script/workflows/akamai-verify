@@ -1,0 +1,141 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: script/workflows/akamai-verify [options]"
+  
+  opts.separator ''
+  opts.separator 'Data source options:'
+  
+  opts.on('-C', '--channel CHANNEL', 'Verify files from specified CHANNEL only (search-hashed-int/search-hashed-us/share-int/share-us/view-int/view-us, default is to verify all channels)') do |source|
+    options[:source] = source
+  end
+  opts.on('-D', '--date DATE', 'Verify files with specified DATE (by default today)') do |date|
+    options[:date] = date
+  end
+  opts.on('-H', '--hour HOUR', 'Verify files with specified HOUR (by default all hours; 24-hour format: 00-23; multiple hours can be specified separated by commas)') do |hours|
+    options[:hours] = hours
+  end
+  
+  opts.separator ''
+  opts.separator 'Configuration options:'
+  
+  opts.on('-e', '--environment RAILS_ENV', 'Specify rails environment (development/production/test') do |env|
+    ENV['RAILS_ENV'] = env
+  end
+  opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/akamai.yml is used)') do |path|
+    options[:config_path] = path
+  end
+  opts.on('--s3-client CLIENT', 'Use specified s3 client CLIENT (valid values: right_aws (default), spawn_curl') do |client|
+    options[:s3_client] = client
+  end
+  opts.on('--[no-]system-timer', 'Force the use of SystemTimer instead of Timeout') do |value|
+    options[:system_timer] = value
+  end
+  
+  opts.separator ''
+  opts.separator 'Behavior modifying options:'
+  
+  opts.on('-r', '--[no-]record', 'Record successfully verified files in database') do |value|
+    options[:record] = value
+  end
+  opts.on('-t', '--[no-]trust-recorded', 'Report that files in verified status are verified without verifying them') do |value|
+    options[:trust_recorded] = value
+  end
+  opts.on('-q', '--[no-]quiet', 'Do not print verification results (use with -r)') do |value|
+    options[:quiet] = value
+  end
+  
+  opts.separator ''
+  opts.separator 'Action options: (by default, check everything except for --check-content)'
+  
+  opts.on('--check-correspondence', 'Check whether each file in data source has one or more corresponding files in our storage') do
+    options[:check_listing] = true
+  end
+  opts.on('--check-their-existence', 'Checks whether data source appears to have the expected assortment of files') do
+    options[:check_their_existence] = true
+  end
+  opts.on('--check-our-existence', 'Checks whether our storage appears to have the expected assortment of files') do
+    options[:check_our_existence] = true
+  end
+  opts.on('--check-existence', 'Shortcut for --check-their-existence and --check-our-existence together') do
+    options[:check_their_existence] = true
+    options[:check_our_existence] = true
+  end
+  opts.on('--check-consistency', 'Smarter union of --check-correspondence and --check-existence: checks whether expected files exist and whether we retrieved all of them') do
+    options[:check_consistency] = true
+  end
+  opts.on('--check-sizes', 'Use with --check-correspondence or --check-consistency; in addition to matching files require that data source and our storage file sizes are similar (allow differences due to different compression levels) - currently equivalent to --check-sizes-exactly') do
+    options[:check_sizes] = true
+    options[:check_sizes_exactly] = true
+  end
+  opts.on('--check-sizes-exactly', 'Like --check-sizes, but require data source and the sum of our storage sizes to be exactly the same (assuming source files were split)') do
+    options[:check_sizes] = true
+    options[:check_sizes_exactly] = true
+  end
+  opts.on('--check-content', "In addition to matching files, require that data source and our storage files' content is identical. Warning: performs extreme amount of network I/O since it has to download both data source and our storage copies of all affected files!") do
+    options[:check_content] = true
+    raise NotImplementedError, "Content check is not yet implemented"
+  end
+  
+  opts.separator ''
+  opts.separator 'Debugging options:'
+  
+  opts.on('-d', '--[no-]debug', 'Enable debugging output') do |value|
+    options[:debug] = value
+  end
+  opts.on('--debug-output PATH', 'Store debug output into a file instead of printing it to standard output') do |path|
+    options[:debug_output_path] = path
+  end
+  
+  opts.separator ''
+  opts.separator 'Informational options:'
+  
+  opts.on('-h', '--help', 'Display this help text') do
+    puts opts
+    exit
+  end
+end.parse!
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
+
+WorkflowInvocation.check_verification_options(options)
+WorkflowInvocation.check_date(options)
+WorkflowInvocation.check_hours(options)
+data_provider = WorkflowInvocation.lookup_data_provider('Akamai')
+selected_channels = WorkflowInvocation.parse_source_specification(data_provider, options[:source])
+
+def debug
+  require 'ruby-debug'
+  debugger
+end
+
+class AkamaiVerifyWorkflowRunner < StandardVerifyWorkflowRunner
+  def initialize
+    super('akamai', AkamaiVerifyWorkflow)
+  end
+end
+
+if options[:system_timer]
+  require 'force_system_timer'
+end
+
+params = {
+  :selected_channels => selected_channels,
+  :date => options[:date],
+}
+
+runner = AkamaiVerifyWorkflowRunner.new
+settings = AkamaiExtractWorkflow.configuration(options)
+settings.update(options)
+params = settings.merge(params).to_hash
+
+begin
+  status = runner.run(params)
+rescue Exception => e
+  status = ConsoleUi.handle_unhandled_exception(e)
+end
+exit(status)

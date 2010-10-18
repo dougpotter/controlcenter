@@ -1,29 +1,5 @@
 module Workflow
   module Locking
-    def self.included(base)
-      base.class_eval do
-        alias_method_chain :extract, :optional_locking
-      end
-    end
-    
-    def extract_with_optional_locking(file_url)
-      if params[:lock]
-        extract_with_locking(file_url)
-      else
-        extract_without_locking(file_url)
-      end
-    end
-    
-    def extract_with_locking(file_url)
-      lock(file_url) do
-        extract_without_locking(file_url)
-      end
-    end
-    
-    def extract_without_locking(file_url)
-      perform_extraction(file_url)
-    end
-    
     def lock(remote_url)
       options = {
         :name => remote_url,

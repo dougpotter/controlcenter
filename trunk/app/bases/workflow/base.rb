@@ -37,13 +37,23 @@ module Workflow
   # procesess and/or the data source itself, in case of data source uploading
   # files to us (as opposed to us downloading files from data source).
   class Base
-    include EntryPoints
     include Locking
     include Persistence
+    include ConditionalPersistence
     include ErrorHandling
     
     attr_accessor :logger
     attr_reader :params
+    
+    class << self
+      def expose_params(*keys)
+        keys.each do |key|
+          define_method(key) do
+            params[key]
+          end
+        end
+      end
+    end
     
     def initialize(options={})
       @logger = options[:logger] || Workflow.default_logger

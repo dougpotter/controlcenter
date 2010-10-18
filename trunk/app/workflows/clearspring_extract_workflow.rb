@@ -2,6 +2,8 @@ require 'fileutils'
 require_dependency 'semaphore'
 
 class ClearspringExtractWorkflow < Workflow::ExtractBase
+  include ClearspringAccess
+  
   class << self
     def default_config_path
       YamlConfiguration.absolutize('workflows/clearspring')
@@ -22,27 +24,7 @@ class ClearspringExtractWorkflow < Workflow::ExtractBase
     @s3_client = create_s3_client(@params)
   end
   
-  def should_download_url?(url)
-    File.basename(url).starts_with?(prefix_to_download)
-  end
-  
   private
-  
-  def list_data_source_files
-    with_process_status(:action => 'listing files') do
-      url = build_data_source_url
-      page_text = retry_network_errors(@network_error_retry_options) do
-        @http_client.fetch(url + '/')
-      end
-      files = @parser.parse_any_httpd_file_list(page_text)
-      absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
-      
-      possibly_record_source_urls_discovered(absolute_file_urls)
-      
-      absolute_file_urls.reject! { |url| !should_download_url?(url) }
-      absolute_file_urls
-    end
-  end
   
   def perform_extraction(file_url)
     validate_source_url_for_extraction!(file_url)
@@ -138,51 +120,6 @@ class ClearspringExtractWorkflow < Workflow::ExtractBase
   end
   
   # -----
-  
-  def build_data_source_url
-    "#{params[:data_source_root]}/#{channel.name}"
-  end
-  
-  def build_absolute_url(remote_url, file)
-    File.join(remote_url, file)
-  end
-  
-  def prefix_to_download
-    basename_prefix(
-      :channel_name => channel.name,
-      :date => params[:date], :hour => params[:hour]
-    )
-  end
-  
-  def basename_prefix(options)
-    "#{options[:channel_name]}.#{date_with_hour(options)}"
-  end
-  
-  def date_with_hour(options)
-    str = options[:date].to_s
-    if options[:hour]
-      str += sprintf('-%02d00', options[:hour])
-    end
-    str
-  end
-  
-  def url_to_relative_data_source_path(remote_url)
-    absolute_to_relative_path(params[:data_source_root], remote_url)
-  end
-  
-  def build_local_path(remote_relative_path)
-    File.join(params[:download_root_dir], remote_relative_path)
-  end
-  
-  def build_s3_prefix
-    # date is required, it should always be given to workflow
-    "#{params[:clearspring_pid]}/v2/raw-#{channel.name}/#{params[:date]}"
-  end
-  
-  def build_s3_path(local_path)
-    filename = File.basename(local_path)
-    "#{build_s3_prefix}/#{filename}"
-  end
   
   # readiness heuristic - to be written
   def fully_uploaded?(file_url)

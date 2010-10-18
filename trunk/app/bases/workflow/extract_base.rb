@@ -1,57 +1,11 @@
 module Workflow
   # Contains methods common to extract workflows.
   class ExtractBase < Base
-    def channel
-      params[:channel]
-    end
+    include EntryPoints::Extract
     
-    def date
-      params[:date]
-    end
-    
-    def hour
-      params[:hour]
-    end
-    
-    def s3_bucket
-      params[:s3_bucket]
-    end
+    expose_params :channel, :date, :hour, :s3_bucket
     
     private
-    
-    # Record source urls as discovered if :record option was given to workflow.
-    def possibly_record_source_urls_discovered(urls)
-      if params[:record]
-        urls.each do |url|
-          note_data_provider_file_discovered(url)
-        end
-      end
-    end
-    
-    # Record source url as extracted if :once option was given to workflow.
-    def possibly_record_source_url_extracted(url)
-      # See the comment in create_data_provider_file regarding mixing locked
-      # and non-locked runs. Status files are only created for once runs
-      # (which are also locked).
-      if params[:once]
-        create_data_provider_file(url) do |file|
-          file.status = DataProviderFile::EXTRACTED
-          file.extracted_at = Time.now.utc
-        end
-      end
-    end
-    
-    # returns true if remote_url is not currently being extracted,
-    # and had not been successfully extracted in the past.
-    def ok_to_extract?(remote_url)
-      if params[:once] and already_extracted?(remote_url)
-        false
-      else
-        true
-      end
-    end
-    
-    # -----
     
     def validate_source_url_for_extraction!(url)
       unless should_download_url?(url)
