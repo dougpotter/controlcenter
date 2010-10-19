@@ -43,7 +43,11 @@ module ClearspringAccess
   end
   
   def basename_prefix(options)
-    "#{options[:channel_name]}.#{date_with_hour(options)}"
+    "#{options[:channel_name]}.#{clearspring_date_with_hour(options)}"
+  end
+  
+  def clearspring_date_with_hour(options)
+    date_with_hour(options.merge(:separator => '-'))
   end
   
   def url_to_relative_data_source_path(remote_url)
@@ -58,6 +62,22 @@ module ClearspringAccess
     remote_relative_path = url_to_relative_data_source_path(data_provider_url)
     local_path = build_local_path(remote_relative_path)
     build_s3_path(local_path)
+  end
+  
+  def date_and_hour_from_path(path)
+    name = File.basename(path)
+    date_and_hour_from_name(name)
+  end
+  
+  # name should be a file basename.
+  def date_and_hour_from_name(name)
+    regexp = /\.(\d{8})-(\d\d)00\./
+    unless regexp =~ name
+      raise ArgumentError, "File name does not conform to expected format: #{name}"
+    end
+    date, hour = $1, $2
+    hour = hour.to_i
+    [date, hour]
   end
   
   def build_s3_prefix

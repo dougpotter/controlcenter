@@ -74,40 +74,32 @@ end
   end
 end
 
-require 'find'
-require 'fileutils'
-
-def cleanup(dir, age, options={})
-  threshold = Time.now - age
-  Find.find(dir) do |path|
-    if %w(.svn .git).include?(File.basename(path))
-      Find.prune
+class ClearspringCleanupWorkflowRunner < StandardWorkflowRunner
+  def initialize
+    super('clearspring', ClearspringCleanupWorkflow)
+  end
+  
+  def perform(params)
+    workflow = @workflow_class.new(params)
+    
+    if params[:downloaded]
+      workflow.cleanup(params[:download_root_dir], params[:downloaded_age], params)
     end
-    
-    next unless FileTest.file?(path)
-    
-    mtime = File.stat(path).mtime
-    if mtime < threshold
-      if options[:debug]
-        debug_print("Remove #{path}")
-      end
-      
-      FileUtils.rm(path)
+
+    if params[:temporary]
+      workflow.cleanup(params[:temp_root_dir], params[:temporary_age], params)
     end
   end
 end
 
-def debug_print(msg)
-  Workflow.default_logger.debug('clearspring-cleanup') { msg }
-end
-
+runner = ClearspringCleanupWorkflowRunner.new
 settings = ClearspringExtractWorkflow.configuration(options)
+settings.update(options)
 params = settings.to_hash
 
-if options[:downloaded]
-  cleanup(params[:download_root_dir], options[:downloaded_age], params)
+begin
+  status = runner.run(params)
+rescue Exception => e
+  status = ConsoleUi.handle_unhandled_exception(e)
 end
-
-if options[:temporary]
-  cleanup(params[:temp_root_dir], options[:temporary_age], params)
-end
+exit(status)

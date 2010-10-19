@@ -113,6 +113,15 @@ module Workflow
       relative_path
     end
     
+    def date_with_hour(options)
+      str = options[:date].to_s
+      if options[:hour]
+        separator = options[:separator]
+        str += sprintf('%s%02d00', separator, options[:hour])
+      end
+      str
+    end
+    
     # ------
     
     def debug_print(msg)

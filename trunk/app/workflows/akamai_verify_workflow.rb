@@ -46,16 +46,10 @@ class AkamaiVerifyWorkflow < Workflow::VerifyBase
   #
   # Because of the preceding paragraph, criteria must always include hour.
   def existence_check_fn(criteria, against)
-    regexp = /(\d{8})(\d\d)00-(\d\d)00/
-    name = File.basename(against)
-    unless regexp =~ name
-      raise ArgumentError, "File name does not conform to expected format: #{name}"
-    end
-    date, start_hour, end_hour = $1, $2, $3
+    date, start_hour, end_hour = date_and_hours_from_path(against)
     if date != criteria[:date]
       return false
     end
-    start_hour, end_hour = start_hour.to_i, end_hour.to_i
     required_hour = criteria[:hour]
     start_hour <= required_hour && end_hour >= required_hour + 1
   end

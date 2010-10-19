@@ -171,19 +171,15 @@ module Workflow
     def report_existence(have, missing)
       return if params[:quiet]
       have.each do |options|
-        puts "Have #{channel.name} #{date_with_hour(options)}"
+        puts "Have #{channel.name} #{human_date_with_hour(options)}"
       end
       missing.each do |options|
-        puts "Missing #{channel.name} #{date_with_hour(options)}"
+        puts "Missing #{channel.name} #{human_date_with_hour(options)}"
       end
     end
     
-    def date_with_hour(options)
-      str = options[:date].to_s
-      if options[:hour]
-        str += sprintf('-%02d00', options[:hour])
-      end
-      str
+    def human_date_with_hour(options)
+      date_with_hour(options.merge(:separator => '-'))
     end
   end
 end

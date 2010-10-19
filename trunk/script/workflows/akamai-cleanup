@@ -56,34 +56,25 @@ else
   options[:age] = default_age
 end
 
-require 'find'
-require 'fileutils'
-
-def cleanup(dir, age, options={})
-  threshold = Time.now - age
-  Find.find(dir) do |path|
-    if %w(.svn .git).include?(File.basename(path))
-      Find.prune
-    end
-    
-    next unless FileTest.file?(path)
-    
-    mtime = File.stat(path).mtime
-    if mtime < threshold
-      if options[:debug]
-        debug_print("Remove #{path}")
-      end
-      
-      FileUtils.rm(path)
-    end
+class AkamaiCleanupWorkflowRunner < StandardWorkflowRunner
+  def initialize
+    super('akamai', AkamaiCleanupWorkflow)
+  end
+  
+  def perform(params)
+    workflow = @workflow_class.new(params)
+    workflow.cleanup(params[:source_dir], params[:age], params)
   end
 end
 
-def debug_print(msg)
-  Workflow.default_logger.debug('akamai-cleanup') { msg }
-end
-
+runner = AkamaiCleanupWorkflowRunner.new
 settings = AkamaiExtractWorkflow.configuration(options)
+settings.update(options)
 params = settings.to_hash
 
-cleanup(params[:source_dir], options[:age], params)
+begin
+  status = runner.run(params)
+rescue Exception => e
+  status = ConsoleUi.handle_unhandled_exception(e)
+end
+exit(status)

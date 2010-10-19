@@ -75,6 +75,22 @@ module AkamaiAccess
     build_s3_path(local_path)
   end
   
+  def date_and_hours_from_path(path)
+    name = File.basename(path)
+    date_and_hours_from_name(name)
+  end
+  
+  # name should be a file basename.
+  def date_and_hours_from_name(name)
+    regexp = /(\d{8})(\d\d)00-(\d\d)00/
+    unless regexp =~ name
+      raise ArgumentError, "File name does not conform to expected format: #{name}"
+    end
+    date, start_hour, end_hour = $1, $2, $3
+    start_hour, end_hour = start_hour.to_i, end_hour.to_i
+    [date, start_hour, end_hour]
+  end
+  
   # -----
   
   # Like Dir#entries but returns only useful entries
