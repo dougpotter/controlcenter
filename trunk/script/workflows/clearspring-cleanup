@@ -101,8 +101,8 @@ def debug_print(msg)
   Workflow.default_logger.debug('clearspring-cleanup') { msg }
 end
 
-settings = ClearspringExtractWorkflow::Configuration.new(options)
-params = settings.merge_user_options(options)
+settings = ClearspringExtractWorkflow.configuration(options)
+params = settings.to_hash
 
 if options[:downloaded]
   cleanup(params[:download_root_dir], options[:downloaded_age], params)
