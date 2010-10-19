@@ -19,21 +19,27 @@ class AkamaiExtractWorkflow < Workflow::ExtractBase
   end
   
   def discover_channels
-    entries = useful_directory_entries(source_dir_base)
-    # XXX should we raise an exception when an entry is not an integer?
-    pids = entries.map { |entry| entry.to_i }.reject { |pid| pid <= 0 }
+    channel_parent_subdirs.each do |subdir|
+      path = channel_parent_path(subdir)
+      if File.exist?(path)
+        discover_channels_in_subdir(subdir, path)
+      end
+    end
+  end
+  
+  def discover_channels_in_subdir(subdir, path)
+    entries = useful_directory_entries(path)
     
-    if pids.empty?
-      # XXX should we raise an exception here?
-      # when would logs be legitimately empty?
+    if entries.empty?
+      # Not all subdirectories have channels. For example, logs-by-host
+      # is only used by QA environment, and QA does not have any other logs.
       return
     end
     
-    # Postgres cannot test X in (Y) if X is a string and Y is an integer;
-    # channel names are strings.
-    # Also, int in ints test ought to be quicker than string in strings.
-    # Convert name to int then.
-    name_as_int = SqlGenerator.cast_to_int('name')
+    channel_names = entries.map do |entry|
+      File.join(subdir, entry)
+    end
+    
     # XXX assuming this exists
     # XXX should we move the name elsewhere?
     # Note: we do not want to invoke channels on provider which is global,
@@ -42,24 +48,24 @@ class AkamaiExtractWorkflow < Workflow::ExtractBase
     provider = DataProvider.find_by_name('Akamai')
     # XXX need to select names only
     channels = provider.data_provider_channels.all(
-      :conditions => ["#{name_as_int} in (?)", pids]
+      :conditions => ["name in (?)", channel_names]
     )
-    existing_pids = channels.map { |channel| channel.name.to_i }
+    existing_names = channels.map { |channel| channel.name }
     
-    new_pids = pids.reject do |pid|
+    new_names = channel_names.reject do |name|
       # XXX building a hash may be quicker
-      existing_pids.include?(pid)
+      existing_names.include?(name)
     end
     
-    unless new_pids.empty?
+    unless new_names.empty?
       DataProviderChannel.transaction do
-        new_pids.each do |pid|
+        new_names.each do |name|
           if params[:debug]
-            debug_print("Add #{pid}")
+            debug_print("Add #{name}")
           end
           
           channel = provider.data_provider_channels.build(
-            :name => pid,
+            :name => name,
             # TODO revise lookback hours as appropriate
             :lookback_from_hour => 1,
             :lookback_to_hour => 0

@@ -28,19 +28,23 @@ module AkamaiAccess
   
   # -----
   
-  def source_dir_base
-    @source_dir ||= File.join(params[:source_dir], 'logs-by-pid')
+  def channel_parent_subdirs
+    %w(logs-by-pid logs-by-type logs-by-host)
+  end
+  
+  def channel_parent_path(subdir)
+    File.join(params[:source_dir], subdir)
   end
   
   # -----
   
+  # Channel name should be of form subdir/basename
   def source_dir_for_channel
-    File.join(source_dir_base, channel.name)
+    File.join(params[:source_dir], channel.name)
   end
   
   def build_s3_prefix
     # date is required, it should always be given to workflow.
-    # channel name is pid.
     "#{channel.name}/raw/#{params[:date]}"
   end
   
@@ -67,7 +71,7 @@ module AkamaiAccess
   end
   
   def url_to_relative_data_source_path(data_provider_path)
-    absolute_to_relative_path(source_dir_base, data_provider_path)
+    absolute_to_relative_path(params[:source_dir], data_provider_path)
   end
   
   def data_provider_url_to_bucket_path(data_provider_path)
