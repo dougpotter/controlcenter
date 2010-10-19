@@ -7,7 +7,8 @@ namespace :workflows do
       now = Time.now.utc
       
       settings = ClearspringExtractWorkflow.configuration
-      channels = DataProviderChannel.all(:order => 'name')
+      data_provider = DataProvider.find_by_name('Clearspring')
+      channels = data_provider.channels.all(:order => 'name')
       channels.each do |channel|
         # add one hour to the hours to extract hours in the past.
         # example: if it is now 4:05, a lookback of 0 corresponds to
@@ -42,7 +43,8 @@ namespace :workflows do
       date = yesterday.strftime('%Y%m%d')
       
       settings = ClearspringExtractWorkflow.configuration
-      channels = DataProviderChannel.all(:order => 'name')
+      data_provider = DataProvider.find_by_name('Clearspring')
+      channels = data_provider.channels.all(:order => 'name')
       channels.each do |channel|
         options = settings.merge(:date => date, :channel => channel)
         workflow = ClearspringVerifyWorkflow.new(options.to_hash)
@@ -61,7 +63,8 @@ namespace :workflows do
       hour = time.hour
       
       settings = ClearspringExtractWorkflow.configuration
-      channels = DataProviderChannel.hourly.all(:order => 'name')
+      data_provider = DataProvider.find_by_name('Clearspring')
+      channels = data_provider.channels.all(:order => 'name')
       channels.each do |channel|
         options = settings.merge(:date => date, :hour => hour, :channel => channel)
         workflow = ClearspringVerifyWorkflow.new(options.to_hash)
