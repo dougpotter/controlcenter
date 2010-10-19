@@ -37,5 +37,6 @@ Audience.seed_many(:audience_code, [
   { :audience_code => "X60T" },
   { :audience_code => "2F25" },
   { :audience_code => "5H7N" },
+  { :audience_code => "IHKH" },
   { :audience_code => "ZT4R" }
 ])
