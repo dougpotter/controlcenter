@@ -126,8 +126,4 @@ settings = ClearspringExtractWorkflow.configuration(options)
 settings.update(options)
 params = settings.merge(params).to_hash
 
-status = runner.with_optional_profiling(options[:profile]) do
-  runner.run(params)
-end
-
-exit(status)
+runner.exec(params)

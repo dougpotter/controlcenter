@@ -25,6 +25,14 @@ class WorkflowRunner
     rv
   end
   
+  def exec(params)
+    status = with_optional_profiling(params[:profile]) do
+      run(params)
+    end
+    
+    exit(status)
+  end
+  
   private
   
   def create_logger(options)

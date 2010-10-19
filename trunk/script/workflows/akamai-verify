@@ -133,9 +133,4 @@ settings = AkamaiExtractWorkflow.configuration(options)
 settings.update(options)
 params = settings.merge(params).to_hash
 
-begin
-  status = runner.run(params)
-rescue Exception => e
-  status = ConsoleUi.handle_unhandled_exception(e)
-end
-exit(status)
+runner.exec(params)
