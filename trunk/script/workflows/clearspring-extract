@@ -112,16 +112,14 @@ class ClearspringExtractWorkflowRunner < StandardExtractWorkflowRunner
   end
 end
 
-if options[:system_timer]
-  require 'force_system_timer'
-end
+runner = ClearspringExtractWorkflowRunner.new
+runner.prepare(options)
 
 params = {
   :selected_channels => selected_channels,
   :date => options[:date],
 }
 
-runner = ClearspringExtractWorkflowRunner.new
 settings = ClearspringExtractWorkflow.configuration(options)
 settings.update(options)
 params = settings.merge(params).to_hash

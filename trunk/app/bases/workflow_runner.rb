@@ -25,6 +25,12 @@ class WorkflowRunner
     rv
   end
   
+  def prepare(params)
+    if params[:system_timer]
+      require 'force_system_timer'
+    end
+  end
+  
   def exec(params)
     status = with_optional_profiling(params[:profile]) do
       run(params)
