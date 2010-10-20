@@ -45,8 +45,14 @@ module Workflow
     end
     
     def note_data_provider_file_discovered(file_url)
-      # discovered is the initial status. we never want to change status
-      # from another status to discovered. here, only create a file object
+      # Determine label date and hour from file name.
+      # Currently we only do this for discovered files because the only
+      # consumer of that information, presently, is extraction of files
+      # that are uploaded/made available late compared to their label time.
+      date, hour = determine_label_date_hour_from_data_provider_file(file_url)
+      
+      # Discovered is the initial status. We never want to change status
+      # from another status to discovered. Here, only create a file object
       # if it does not already exist.
       DataProviderFile.transaction do
         file = channel.data_provider_files.find_by_url(file_url)
@@ -60,6 +66,8 @@ module Workflow
             :url => file_url,
             :data_provider_channel => channel,
             :status => DataProviderFile::DISCOVERED,
+            :label_date => date,
+            :label_hour => hour,
             :discovered_at => Time.now
           )
         end

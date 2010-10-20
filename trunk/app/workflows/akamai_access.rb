@@ -79,6 +79,12 @@ module AkamaiAccess
     build_s3_path(local_path)
   end
   
+  def determine_label_date_hour_from_data_provider_file(path)
+    date, start_hour, end_hour = date_and_hours_from_path(path)
+    # Use end hour for now - pretty arbitrary choice at the moment.
+    [date, end_hour]
+  end
+  
   def date_and_hours_from_path(path)
     name = File.basename(path)
     date_and_hours_from_name(name)

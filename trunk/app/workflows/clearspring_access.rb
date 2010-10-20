@@ -69,6 +69,11 @@ module ClearspringAccess
     date_and_hour_from_name(name)
   end
   
+  def determine_label_date_hour_from_data_provider_file(path)
+    # alias does not work here because we are in a module
+    date_and_hour_from_path(path)
+  end
+  
   # name should be a file basename.
   def date_and_hour_from_name(name)
     regexp = /\.(\d{8})-(\d\d)00\./
