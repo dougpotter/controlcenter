@@ -1,4 +1,4 @@
-module WorkflowShortcuts
+module Workflow::Shortcuts
   def extract(options)
     # extraction always works in UTC
     # apparently Time.zone does not exist here

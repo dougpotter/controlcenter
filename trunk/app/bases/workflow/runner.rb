@@ -1,5 +1,5 @@
-class WorkflowRunner
-  include WorkflowProfiling
+class Workflow::Runner
+  include Workflow::Profiling
   
   attr_reader :logger
   

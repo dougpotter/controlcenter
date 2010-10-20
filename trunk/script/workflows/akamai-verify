@@ -102,11 +102,11 @@ end.parse!
 require File.join(File.dirname(__FILE__), '../../config/boot')
 require File.join(File.dirname(__FILE__), '../../config/environment')
 
-WorkflowInvocation.check_verification_options(options)
-WorkflowInvocation.check_date(options)
-WorkflowInvocation.check_hours(options)
-data_provider = WorkflowInvocation.lookup_data_provider('Akamai')
-selected_channels = WorkflowInvocation.parse_source_specification(data_provider, options[:source])
+Workflow::Invocation.check_verification_options(options)
+Workflow::Invocation.check_date(options)
+Workflow::Invocation.check_hours(options)
+data_provider = Workflow::Invocation.lookup_data_provider('Akamai')
+selected_channels = Workflow::Invocation.parse_source_specification(data_provider, options[:source])
 
 def debug
   require 'ruby-debug'

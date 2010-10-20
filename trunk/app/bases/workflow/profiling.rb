@@ -1,4 +1,4 @@
-module WorkflowProfiling
+module Workflow::Profiling
   def start_profiling
     # delay loading ruby-prof until profiling is actually needed
     begin

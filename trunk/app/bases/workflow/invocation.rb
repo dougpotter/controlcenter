@@ -1,7 +1,7 @@
 # should be required already but since we use exceptions require it here also
 require 'optparse'
 
-module WorkflowInvocation
+module Workflow::Invocation
   def check_extraction_options(options)
     if options[:discover] && options[:extract]
       raise OptionParser::ParseError, "--discover and --extract cannot be specified simultaneously"
