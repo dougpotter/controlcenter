@@ -83,11 +83,11 @@ class ClearspringCleanupWorkflowRunner < StandardWorkflowRunner
     workflow = @workflow_class.new(params)
     
     if params[:downloaded]
-      workflow.cleanup(params[:download_root_dir], params[:downloaded_age], params)
+      workflow.cleanup(params[:download_root_dir], params.merge(:age => params[:downloaded_age]))
     end
 
     if params[:temporary]
-      workflow.cleanup(params[:temp_root_dir], params[:temporary_age], params)
+      workflow.cleanup(params[:temp_root_dir], params.merge(:age => params[:temporary_age]))
     end
   end
 end
