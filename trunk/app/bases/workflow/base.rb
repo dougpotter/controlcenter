@@ -76,6 +76,7 @@ module Workflow
       http_client_class.new(
         :http_username => params[:http_username],
         :http_password => params[:http_password],
+        :ca_file => params[:ca_file],
         :timeout => params[:net_io_timeout],
         :debug => params[:debug],
         :logger => self.logger

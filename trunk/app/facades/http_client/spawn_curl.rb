@@ -15,6 +15,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
   #   :command => ['/usr/bin/env', 'curl']
   # :http_username
   # :http_password
+  # :ca_file
   # :timeout
   # :debug
   # :logger
@@ -22,6 +23,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
     super(options)
     @command = options[:command] || %w(/usr/bin/env curl)
     @http_username, @http_password = options[:http_username], options[:http_password]
+    @ca_file = options[:ca_file]
     @timeout = options[:timeout]
     @debug = options[:debug]
   end
@@ -99,6 +101,10 @@ class HttpClient::SpawnCurl < HttpClient::Base
       cmd << '-s'
     end
     cmd << '-f'
+    if @ca_file
+      cmd << '--cacert'
+      cmd << @ca_file
+    end
     cmd
   end
   

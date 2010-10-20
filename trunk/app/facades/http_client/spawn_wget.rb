@@ -14,6 +14,7 @@ class HttpClient::SpawnWget < HttpClient::Base
   #   :command => ['/usr/bin/env', 'wget']
   # :http_username
   # :http_password
+  # :ca_file
   # :timeout
   # :debug
   # :logger
@@ -21,6 +22,7 @@ class HttpClient::SpawnWget < HttpClient::Base
     super(options)
     @command = options[:command] || %w(/usr/bin/env wget)
     @http_username, @http_password = options[:http_username], options[:http_password]
+    @ca_file = options[:ca_file]
     @timeout = options[:timeout]
     @debug = options[:debug]
   end
@@ -96,7 +98,12 @@ class HttpClient::SpawnWget < HttpClient::Base
     unless @debug
       cmd << '-q'
     end
-    cmd << '--no-check-certificate'
+    if @ca_file
+      cmd << '--ca-certificate'
+      cmd << @ca_file
+    else
+      cmd << '--no-check-certificate'
+    end
     cmd
   end
 end
