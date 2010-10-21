@@ -30,6 +30,13 @@ namespace :workflows do
       )
     end
     
+    desc 'Extract already discovered clearspring data files that are uploaded way later than their labeled date'
+    task :extract_late => :environment do
+      Workflow::Shortcuts.extract_late(
+        :data_provider_name => 'Clearspring'
+      )
+    end
+    
     desc 'Verifies as much clearspring extraction as possible on a daily basis'
     task :verify_daily => :environment do
       Workflow::Shortcuts.verify_daily(
