@@ -39,5 +39,6 @@ Campaign.seed_many(:campaign_code, [
   { :campaign_code => "2F25", :partner_id => Partner.find_by_partner_code(21310).id  },
   { :campaign_code => "5H7N", :partner_id => Partner.find_by_partner_code(21310).id  },
   { :campaign_code => "IHKH", :partner_id => Partner.find_by_partner_code(16122).id  },
+  { :campaign_code => "2F2J", :partner_id => Partner.find_by_partner_code(21310).id  },
   { :campaign_code => "BY51", :partner_id => Partner.find_by_partner_code(16122).id  }
 ])
