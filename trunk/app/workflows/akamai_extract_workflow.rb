@@ -87,8 +87,9 @@ class AkamaiExtractWorkflow < Workflow::ExtractBase
   
   # -----
   
-  # readiness heuristic - to be written
-  def fully_uploaded?(file_url)
-    true
+  # Readiness heuristic - for now we consider a file to be fully uploaded
+  # if it was modified over 2 hours ago.
+  def fully_uploaded?(path)
+    get_source_time(path)
   end
 end

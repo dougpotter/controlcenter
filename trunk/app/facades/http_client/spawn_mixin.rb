@@ -1,3 +1,5 @@
+require_dependency 'subprocess'
+
 module HttpClient::SpawnMixin
   protected
   

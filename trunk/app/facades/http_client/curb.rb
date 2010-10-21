@@ -48,26 +48,48 @@ class HttpClient::Curb < HttpClient::Base
   end
   
   def get_url_content_length(url)
+    do_head(url)
+    
+    # curb is pretty pathetic - we have to parse headers ourselves.
+    # hack this
+    if /^content-length:\s+(\d+)/ =~ @curl.header_str.downcase
+      content_length = $1.to_i
+    else
+      raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
+    end
+    content_length
+  end
+  
+  def get_url_time(url)
+    do_head(url) do |curl|
+      curl.fetch_file_time = true
+    end
+    
+    if (file_time = @curl.file_time) == -1
+      raise HttpClient::UnsupportedServer, 'HEAD request did not obtain resource time'
+    end
+    
+    @epoch ||= Time.utc(1970, 1, 1)
+    @epoch + file_time
+  end
+  
+  private
+  
+  def do_head(url)
     retry_multi_bad_easy_handle do
       if @debug
         debug_print "Head #{url}"
       end
       
       @curl.head = true
-      execute(url)
       
-      # curb is pretty pathetic - we have to parse headers ourselves.
-      # hack this
-      if /^content-length:\s+(\d+)/ =~ @curl.header_str.downcase
-        content_length = $1.to_i
-      else
-        raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
-      end
-      content_length
+      # allow additional setup by callers
+      yield @curl if block_given?
+      
+      execute(url)
+      @curl
     end
   end
-  
-  private
   
   def retry_multi_bad_easy_handle
     retried = false

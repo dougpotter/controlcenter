@@ -1,3 +1,5 @@
+# We use Time.parse, which requires requiring time
+require 'time'
 require_dependency 'subprocess'
 
 class HttpClient::SpawnCurl < HttpClient::Base
@@ -53,15 +55,7 @@ class HttpClient::SpawnCurl < HttpClient::Base
   end
   
   def get_url_content_length(url)
-    if @debug
-      debug_print "Head #{url}"
-    end
-    
-    cmd = build_command('-I', url)
-    if @debug
-      debug_print "Curl: #{cmd.join(' ')}"
-    end
-    output = get_output(url, cmd)
+    output = do_head(url)
     if /^content-length:\s+(\d+)/ =~ output.downcase
       content_length = $1.to_i
     else
@@ -70,7 +64,29 @@ class HttpClient::SpawnCurl < HttpClient::Base
     content_length
   end
   
+  def get_url_time(url)
+    output = do_head(url)
+    if /^last-modified:\s+(.+)/ =~ output.downcase
+      time = Time.parse($1)
+    else
+      raise HttpClient::UnsupportedServer, "Last modified not found in returned headers"
+    end
+    time
+  end
+  
   private
+  
+  def do_head(url)
+    if @debug
+      debug_print "Head #{url}"
+    end
+    
+    cmd = build_command('-I', url)
+    if @debug
+      debug_print "Curl: #{cmd.join(' ')}"
+    end
+    get_output(url, cmd)
+  end
   
   def build_command(*args)
     cmd = common_command_options

@@ -1,6 +1,8 @@
 require 'right_http_connection'
 
 class HttpClient::RightAws < HttpClient::Base
+  include NetHttpMixin
+  
   # allowed options:
   # :http_username
   # :http_password
@@ -33,20 +35,6 @@ class HttpClient::RightAws < HttpClient::Base
       File.open(local_path, 'w') do |file|
         # right http connection breaks read_body
         file << resp.body
-      end
-    end
-  end
-  
-  def get_url_content_length(url)
-    if @debug
-      debug_print "Head #{url}"
-    end
-    
-    issue_request(url, :method => :head) do |resp|
-      if length = resp['content-length']
-        length.to_i
-      else
-        raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
       end
     end
   end

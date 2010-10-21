@@ -12,12 +12,20 @@ module AkamaiAccess
     absolute_paths
   end
   
-  def get_source_size(path)
+  def stat_source(path)
     if params[:debug]
       debug_print "Stat #{path}"
     end
     
-    File.stat(path).size
+    File.stat(path)
+  end
+  
+  def get_source_size(path)
+    stat_source(path).size
+  end
+  
+  def get_source_time(path)
+    stat_source(path).mtime
   end
   
   # -----
