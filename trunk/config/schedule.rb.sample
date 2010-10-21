@@ -30,6 +30,7 @@ end
 # is asking for race conditions. Run extraction 15 minutes before every hour.
 every 1.hour, :at => 45 do
   rake 'workflows:clearspring:extract_autorun'
+  rake 'workflows:clearspring:extract_late'
 end
 
 # 7 AM EST is 11 AM or noon UTC depending on DST
