@@ -79,7 +79,8 @@ module Workflow
         times.each do |date, hour|
           params = settings.merge(:date => date, :hour => hour, :channel => channel)
           files = channel.data_provider_files.all(
-            :conditions => ['label_date=? and label_hour=?', date, hour]
+            :conditions => ['label_date=? and label_hour=? and status=?',
+              date, hour, DataProviderFile::DISCOVERED]
           )
           workflow = workflow_class.new(params.to_hash)
           files.each do |file|
