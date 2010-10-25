@@ -20,6 +20,13 @@ namespace :workflows do
         :data_provider_name => 'Akamai'
       )
     end
+    
+    desc 'Removes old akamai files'
+    task :cleanup => :environment do
+      Workflow::Shortcuts.cleanup(
+        :data_provider_name => 'Akamai'
+      )
+    end
   end
   
   namespace :clearspring do

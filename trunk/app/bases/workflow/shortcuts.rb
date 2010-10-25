@@ -131,5 +131,14 @@ module Workflow
       end
     end
     module_function :verify_hourly
+    
+    def cleanup(options)
+      workflow_class = options[:workflow_class]
+      workflow_class ||= "#{options[:data_provider_name]}CleanupWorkflow".constantize
+      settings = workflow_class.configuration
+      workflow = workflow_class.new(settings)
+      workflow.cleanup
+    end
+    module_function :cleanup
   end
 end
