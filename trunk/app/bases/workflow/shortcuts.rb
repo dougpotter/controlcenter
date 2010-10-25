@@ -84,7 +84,7 @@ module Workflow
           )
           workflow = workflow_class.new(params.to_hash)
           files.each do |file|
-            workflow.extract(file.url)
+            workflow.extract_if_fully_uploaded(file.url)
           end
         end
       end

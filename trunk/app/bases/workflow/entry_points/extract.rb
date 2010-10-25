@@ -10,7 +10,7 @@ module Workflow
         # and file already extracted workflow errors
         files.each do |file|
           begin
-            extract(file)
+            extract_if_fully_uploaded(file)
           rescue Workflow::FileExtractionInProgress, Workflow::FileAlreadyExtracted
             # igrore
           end
@@ -19,6 +19,12 @@ module Workflow
       
       def discover
         list_data_source_files
+      end
+      
+      def extract_if_fully_uploaded(file_url)
+        if fully_uploaded?(file_url)
+          extract(file_url)
+        end
       end
       
       def extract(file_url)
