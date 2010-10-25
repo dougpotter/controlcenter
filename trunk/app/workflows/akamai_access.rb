@@ -61,19 +61,28 @@ module AkamaiAccess
     "#{build_s3_prefix}/#{filename}"
   end
   
+  # Builds a regular expression that matches all files that should be
+  # downloaded given workflow parameters, and no other files.
+  #
+  # If hour is given to workflow, the regular expression will match any
+  # file covering the hour. The reason for this is that channels which
+  # are updated daily are updated at different times in a day, so
+  # extracting for example only on hour 0 may cause up to a 23 hour delay
+  # if files happen to be uploaded in hour 1.
   def regexp_to_download
     if hour
-      # with hour, for hourly updated channels we want files of
+      # With hour, for hourly updated channels we want files of
       # that hour only, but for daily updated channels we want all files
-      # if hour is zero
-      if hour == 0
-        /#{date}(?:0000-2400|0000-0100)/
-      else
-        /#{date}#{'%02d' % hour}00-#{'%02d' % (hour + 1)}00/
-      end
+      # of the day. For channels that are updated every four hours
+      # we have to do a little more work.
+      daily_match = "#{date}0000-2400"
+      four_floor = (hour / 4).to_i * 4
+      four_match = "#{date}#{'%02d' % four_floor}00-#{'%02d' % (four_floor + 4)}00"
+      hourly_match = "#{date}#{'%02d' % hour}00-#{'%02d' % (hour + 1)}00"
+      /(#{daily_match})|(?:#{four_match})|(?:#{hourly_match})/
     else
-      # without hour, we want to get all files for extraction date
-      # regardless of channel update frequency
+      # Without hour, we want to get all files for extraction date
+      # regardless of channel update frequency.
       /#{date}\d{4}-\d{4}/
     end
   end
