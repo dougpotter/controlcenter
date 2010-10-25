@@ -58,7 +58,7 @@ end
 
 class AkamaiCleanupWorkflowRunner < StandardWorkflowRunner
   def initialize
-    super('akamai', AkamaiCleanupWorkflow)
+    super(AkamaiCleanupWorkflow)
   end
   
   def perform(params)

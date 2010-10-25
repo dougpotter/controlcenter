@@ -121,7 +121,7 @@ end
 
 class ClearspringVerifyWorkflowRunner < StandardVerifyWorkflowRunner
   def initialize
-    super('clearspring', ClearspringVerifyWorkflow)
+    super(ClearspringVerifyWorkflow)
   end
 end
 

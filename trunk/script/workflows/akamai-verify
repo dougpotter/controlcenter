@@ -115,7 +115,7 @@ end
 
 class AkamaiVerifyWorkflowRunner < StandardVerifyWorkflowRunner
   def initialize
-    super('akamai', AkamaiVerifyWorkflow)
+    super(AkamaiVerifyWorkflow)
   end
 end
 

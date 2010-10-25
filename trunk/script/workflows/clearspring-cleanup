@@ -76,7 +76,7 @@ end
 
 class ClearspringCleanupWorkflowRunner < StandardWorkflowRunner
   def initialize
-    super('clearspring', ClearspringCleanupWorkflow)
+    super(ClearspringCleanupWorkflow)
   end
   
   def perform(params)

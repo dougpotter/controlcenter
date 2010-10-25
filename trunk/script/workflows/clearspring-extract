@@ -108,7 +108,7 @@ end
 
 class ClearspringExtractWorkflowRunner < StandardExtractWorkflowRunner
   def initialize
-    super('clearspring', ClearspringExtractWorkflow)
+    super(ClearspringExtractWorkflow)
   end
 end
 

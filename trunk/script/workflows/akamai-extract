@@ -99,7 +99,7 @@ end
 
 class AkamaiExtractWorkflowRunner < StandardExtractWorkflowRunner
   def initialize
-    super('akamai', AkamaiExtractWorkflow)
+    super(AkamaiExtractWorkflow)
   end
   
   def perform(ext_params)
