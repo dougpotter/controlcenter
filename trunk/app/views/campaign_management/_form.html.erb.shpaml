@@ -33,6 +33,15 @@ div style='clear:both;'
   >br
 
 div class=dimension_input
+  label for="campaign_audience_code" | Audience(s):
+  >br
+ 
+  = select_tag('campaign[audience_ids]', options_from_collection_for_select(@audiences, :id, :audience_code), :multiple => true)
+
+div style='clear:both;'
+ >br 
+
+div class=dimension_input
   label for="campaign_partner_id" | Partner:
   >br
   

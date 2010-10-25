@@ -1,4 +1,13 @@
-h1 | Campaigns
+div id=graph_selector_panel
+  >br
+  = link_to 'New Campaign', new_campaign_path
+  = link_to 'New Audience', new_audience_path
+div style='clear:both;'
+  >br
+  >br
+
+
+h1 | Edit Campaign
 
 div id=graph_selector_panel
   h2 | Narrow by:
@@ -17,8 +26,6 @@ div id=graph_selector_panel
   #campaign_list
     = render :partial => 'campaign_list'
 
-  p
-    = link_to 'New campaign', new_campaign_path
 
   div style='clear:both;'
     >br

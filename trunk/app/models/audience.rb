@@ -21,9 +21,20 @@ class Audience < ActiveRecord::Base
 
   has_many :click_counts
   has_many :impression_counts
-  
+
   validates_presence_of :audience_code
 
   acts_as_dimension
   business_index :audience_code, :aka => "aid"
+
+  class << self
+    def generate_audience_code
+      CodeGenerator.generate_unique_code(
+        self,
+        :audience_code,
+        :length => 4,
+        :alphabet => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+      )   
+    end 
+  end
 end
