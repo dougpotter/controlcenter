@@ -1,6 +1,24 @@
 class AkamaiCleanupWorkflow < Workflow::CleanupBase
   include AkamaiAccess
   
+  def initialize(params)
+    super(params)
+    initialize_params(params)
+  end
+  
+  # Cleanup only known channels.
+  #
+  # We do not extract files from channels we do not know about, therefore
+  # removing files from such channels could be a very bad idea.
+  def cleanup
+    data_provider = Workflow::Invocation.lookup_data_provider('Akamai')
+    channels = data_provider.data_provider_channels.all(:order => 'name')
+    channels.each do |channel|
+      dir = File.join(params[:source_dir], channel.name)
+      cleanup_dir(dir, params.merge(:age => params[:age]))
+    end
+  end
+  
   private
   
   # Returns the timestamp of path for cleanup purposes. We take the end

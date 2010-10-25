@@ -4,6 +4,8 @@ require 'fileutils'
 module Workflow
   # Contains methods common to cleanup workflows.
   class CleanupBase < Base
+    private
+    
     # Deletes old files in directory dir.
     #
     # Options are as follows:
@@ -16,7 +18,7 @@ module Workflow
     #   labeled age.
     #   Pass 0 to disable this feature.
     #   If not given, :mtime_hold is taken to be 1/2 of :age.
-    def cleanup(dir, options)
+    def cleanup_dir(dir, options)
       unless age = options[:age]
         raise ArgumentError, ":age must be given in arguments"
       end

@@ -63,7 +63,7 @@ class AkamaiCleanupWorkflowRunner < StandardWorkflowRunner
   
   def perform(params)
     workflow = @workflow_class.new(params)
-    workflow.cleanup(params[:source_dir], params.merge(:age => params[:age]))
+    workflow.cleanup
   end
 end
 
