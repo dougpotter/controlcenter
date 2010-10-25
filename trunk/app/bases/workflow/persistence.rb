@@ -77,9 +77,9 @@ module Workflow
     def already_extracted?(source_url)
       file = channel.data_provider_files.find(:first,
         :conditions => [
-          'data_provider_files.url=? and status not in (?)',
+          'data_provider_files.url=? and status in (?)',
           source_url,
-          [DataProviderFile::DISCOVERED, DataProviderFile::BOGUS]
+          [DataProviderFile::EXTRACTED, DataProviderFile::VERIFIED]
         ]
       )
       return !file.nil?
