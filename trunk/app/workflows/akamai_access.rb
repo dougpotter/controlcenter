@@ -47,7 +47,7 @@ module AkamaiAccess
   # -----
   
   # Channel name should be of form subdir/basename
-  def source_dir_for_channel
+  def source_dir_for_channel(channel=self.channel)
     File.join(params[:source_dir], channel.name)
   end
   

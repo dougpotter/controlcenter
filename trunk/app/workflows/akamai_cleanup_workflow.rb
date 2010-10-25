@@ -14,7 +14,7 @@ class AkamaiCleanupWorkflow < Workflow::CleanupBase
     data_provider = Workflow::Invocation.lookup_data_provider('Akamai')
     channels = data_provider.data_provider_channels.all(:order => 'name')
     channels.each do |channel|
-      dir = File.join(params[:source_dir], channel.name)
+      dir = source_dir_for_channel(channel)
       cleanup_dir(dir, params.merge(:age => params[:age]))
     end
   end
