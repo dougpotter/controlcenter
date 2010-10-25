@@ -133,7 +133,7 @@ class CampaignManagementController < ApplicationController
     end
     
     if !params[:use_creatives].blank?
-      @creatives = Creative.find(:first, :conditions => {:creative_code => params[:use_creatives].keys})
+      @creatives = Creative.find(:all, :conditions => {:creative_code => params[:use_creatives].keys})
     else
       @creatives = []
     end
