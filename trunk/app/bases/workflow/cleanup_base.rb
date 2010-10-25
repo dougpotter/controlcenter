@@ -47,7 +47,7 @@ module Workflow
         next if file_time >= age_threshold
         
         if hold_threshold
-          mtime = determine_file_mtime(path)
+          mtime = determine_file_time(path)
           next if mtime >= hold_threshold
         end
         
