@@ -15,7 +15,7 @@ class AkamaiCleanupWorkflow < Workflow::CleanupBase
     channels = data_provider.data_provider_channels.all(:order => 'name')
     channels.each do |channel|
       dir = source_dir_for_channel(channel)
-      cleanup_dir(dir, params.merge(:age => params[:age]))
+      cleanup_dir(dir, params)
     end
   end
   
