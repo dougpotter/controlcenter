@@ -4,17 +4,6 @@ require_dependency 'semaphore'
 class ClearspringExtractWorkflow < Workflow::ExtractBase
   include ClearspringAccess
   
-  class << self
-    def default_config_path
-      YamlConfiguration.absolutize('workflows/clearspring')
-    end
-    
-    def configuration(options={})
-      default_options = {:config_path => default_config_path}
-      Workflow::Configuration.new(default_options.update(options))
-    end
-  end
-  
   def initialize(params)
     super(params)
     initialize_params(params)

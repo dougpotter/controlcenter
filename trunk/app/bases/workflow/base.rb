@@ -41,6 +41,7 @@ module Workflow
     include Persistence
     include ConditionalPersistence
     include ErrorHandling
+    include ConfigurationRetrieval
     
     attr_accessor :logger
     attr_reader :params

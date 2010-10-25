@@ -1,4 +1,14 @@
 module ClearspringAccess
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+  
+  module ClassMethods
+    def data_provider_name
+      'Clearspring'
+    end
+  end
+  
   def should_download_url?(url)
     File.basename(url).starts_with?(prefix_to_download)
   end

@@ -1,4 +1,14 @@
 module AkamaiAccess
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+  
+  module ClassMethods
+    def data_provider_name
+      'Akamai'
+    end
+  end
+  
   private
   
   def list_data_source_files

@@ -11,7 +11,7 @@ class AkamaiCleanupWorkflow < Workflow::CleanupBase
   # We do not extract files from channels we do not know about, therefore
   # removing files from such channels could be a very bad idea.
   def cleanup
-    data_provider = Workflow::Invocation.lookup_data_provider('Akamai')
+    data_provider = Workflow::Invocation.lookup_data_provider(self.class.data_provider_name)
     channels = data_provider.data_provider_channels.all(:order => 'name')
     channels.each do |channel|
       dir = source_dir_for_channel(channel)
