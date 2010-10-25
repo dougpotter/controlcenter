@@ -66,9 +66,9 @@ class AkamaiExtractWorkflow < Workflow::ExtractBase
           
           channel = provider.data_provider_channels.build(
             :name => name,
-            # TODO revise lookback hours as appropriate
-            :lookback_from_hour => 1,
-            :lookback_to_hour => 0
+            # Akamai channels may lag significantly behind their timestamp
+            :lookback_from_hour => 12,
+            :lookback_to_hour => 1
           )
           channel.save!
         end
