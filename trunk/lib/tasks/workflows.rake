@@ -14,6 +14,13 @@ namespace :workflows do
       )
     end
     
+    desc 'Extract already discovered akamai data files that are uploaded way later than their labeled date'
+    task :extract_late => :environment do
+      Workflow::Shortcuts.extract_late(
+        :data_provider_name => 'Akamai'
+      )
+    end
+    
     desc 'Verifies extraction of recently extracted akamai files'
     task :verify_hourly => :environment do
       Workflow::Shortcuts.verify_hourly(

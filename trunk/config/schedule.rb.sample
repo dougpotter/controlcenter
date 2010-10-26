@@ -25,6 +25,13 @@ every 1.hour do
   rake 'workflows:akamai:extract_autorun'
 end
 
+# Run a late extraction pass because it's easier to be proactive
+# than to manually extract missing data when things get uploaded
+# too late or missed.
+every 4.hours do
+  rake 'workflows:akamai:extract_late'
+end
+
 # Clearspring files seem to mostly materialize a couple minutes after each
 # hour mark, with some exceptions. Running extraction exactly on the hour
 # is asking for race conditions. Run extraction 15 minutes before every hour.
