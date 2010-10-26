@@ -49,7 +49,14 @@ module Workflow
       # Currently we only do this for discovered files because the only
       # consumer of that information, presently, is extraction of files
       # that are uploaded/made available late compared to their label time.
-      date, hour = determine_label_date_hour_from_data_provider_file(file_url)
+      begin
+        date, hour = determine_label_date_hour_from_data_provider_file(file_url)
+      rescue DataProviderFileBogus
+        # We were unable to determine date/hour from the file name.
+        # Record the file anyway so that it can be looked at by a human/
+        # when reviewing extraction status.
+        date = hour = nil
+      end
       
       # Discovered is the initial status. We never want to change status
       # from another status to discovered. Here, only create a file object

@@ -24,6 +24,10 @@ module Workflow
   # Split verification was requested and failed
   class SplitVerificationFailed < WorkflowError; end
   
+  # Detected a file in data provider channel which is not
+  # a valid data provider file for some reason
+  class DataProviderFileBogus < WorkflowError; end
+  
   class << self
     attr_accessor :default_logger
   end

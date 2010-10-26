@@ -114,6 +114,11 @@ module AkamaiAccess
       date, start_hour, end_hour = date_and_hours_from_path(path)
       # Use end hour for now - pretty arbitrary choice at the moment.
       [date, end_hour]
+    rescue ArgumentError => exc
+      new_message = "Failed to determine label date/hour range from data provider file: #{exc.message}"
+      converted_exc = Workflow::BogusDataProviderFile.new(new_message)
+      converted_exc.set_backtrace(exc.backtrace)
+      raise converted_exc
     end
     
     def date_and_hours_from_path(path)
