@@ -1,3 +1,5 @@
+require_dependency 'dimension_behaviors'
+
 # == Schema Information
 # Schema version: 20100819181021
 #
