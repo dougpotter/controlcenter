@@ -87,7 +87,7 @@ module ClearspringAccess
       date_and_hour_from_path(path)
     rescue ArgumentError => exc
       new_message = "Failed to determine label date/hour from data provider file: #{exc.message}"
-      converted_exc = Workflow::BogusDataProviderFile.new(new_message)
+      converted_exc = Workflow::DataProviderFileBogus.new(new_message)
       converted_exc.set_backtrace(exc.backtrace)
       raise converted_exc
     end
