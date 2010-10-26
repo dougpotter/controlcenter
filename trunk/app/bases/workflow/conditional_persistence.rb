@@ -27,7 +27,7 @@ module Workflow
     # returns true if url is not currently being extracted,
     # and had not been successfully extracted in the past.
     def ok_to_extract?(url)
-      if params[:once] and already_extracted?(url)
+      if params[:once] and data_provider_file_extracted?(url)
         false
       else
         true

@@ -74,12 +74,22 @@ module Workflow
       end
     end
     
-    def already_extracted?(source_url)
-      file = channel.data_provider_files.find(:first,
+    def data_provider_file_extracted?(source_url)
+      file = channel.data_provider_files.first(
         :conditions => [
           'data_provider_files.url=? and status in (?)',
           source_url,
           [DataProviderFile::EXTRACTED, DataProviderFile::VERIFIED]
+        ]
+      )
+      return !file.nil?
+    end
+    
+    def data_provider_file_verified?(source_url)
+      file = channel.data_provider_files.first(
+        :conditions => [
+          'data_provider_files.url=? and status=?',
+          source_url, DataProviderFile::VERIFIED
         ]
       )
       return !file.nil?

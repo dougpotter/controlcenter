@@ -12,6 +12,9 @@ parser = OptionParser.new do |opts|
   opts.on('-g', '--age AGE', 'Specify the age of uploaded files to clean up') do |age|
     options[:age] = age
   end
+  opts.on('-o', '--[no-]only-verified', 'Cleanup only successfully extracted and verified files') do |only_verified|
+    options[:only_verified] = only_verified
+  end
   
   opts.separator ''
   opts.separator 'Configuration options:'

@@ -51,6 +51,15 @@ module Workflow
           next if mtime >= hold_threshold
         end
         
+        if options[:only_verified]
+          unless data_provider_file_verified?(path)
+            if options[:debug]
+              debug_print("File not verified, not removing: #{path}")
+            end
+            next
+          end
+        end
+        
         if options[:debug]
           debug_print("Remove #{path}")
         end
