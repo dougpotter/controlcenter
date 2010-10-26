@@ -1,3 +1,5 @@
+require_dependency 'custom_validations'
+
 class UniqueViewThroughConversionCount < ActiveRecord::Base
   acts_as_unique_fact
 

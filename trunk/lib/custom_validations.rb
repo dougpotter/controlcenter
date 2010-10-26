@@ -85,3 +85,7 @@ module CustomValidations
     end 
   end
 end
+
+ActiveRecord::Base.class_eval do
+  include CustomValidations
+end
