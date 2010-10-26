@@ -28,6 +28,8 @@ end
 # Run a late extraction pass because it's easier to be proactive
 # than to manually extract missing data when things get uploaded
 # too late or missed.
+# Late extraction run catches infrequent condition of files being
+# made available late. No need to run it every hour.
 every 4.hours do
   rake 'workflows:akamai:extract_late'
 end
@@ -37,6 +39,11 @@ end
 # is asking for race conditions. Run extraction 15 minutes before every hour.
 every 1.hour, :at => 45 do
   rake 'workflows:clearspring:extract_autorun'
+end
+
+# Late extraction run catches infrequent condition of files being
+# made available late. No need to run it every hour.
+every 4.hour, :at => 45 do
   rake 'workflows:clearspring:extract_late'
 end
 
