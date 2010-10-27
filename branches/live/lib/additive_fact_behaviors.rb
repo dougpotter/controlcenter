@@ -12,19 +12,16 @@ module AdditiveFactBehaviors
   end
 
   module ClassMethods
-    WHICH_TABLE = {"partner_id" => "campaigns"}
 
     # filles fact aggregation (fa) with appropriate results based on a parsed
     # params hash (options)
     def aggregate(fa, options = {})
-      metric = options[:fact]
-      fact = Object.const_get(metric.classify)
-      fact_table = fact.to_s.underscore.pluralize
+      fact_table = self.to_s.underscore.pluralize
       group_by_list = keyize_indices(options[:group_by]).map do |idx|
         "#{fact_table}.#{idx}"
       end
       column_aliases = {}
-      parse_frequency_for_grouping(options[:fact].pluralize, options[:frequency], group_by_list, column_aliases)
+      parse_frequency_for_grouping(fact_table, options[:frequency], group_by_list, column_aliases)
       columns = group_by_list.map do |expr|
         if aliased = column_aliases[expr]
           "#{expr} as #{aliased}"
@@ -32,67 +29,40 @@ module AdditiveFactBehaviors
           expr
         end
       end
-      where_clause = fact.new.where_conditions_from_params(options[:where])
+      where_clause = self.new.where_conditions_from_params(options[:where])
+      
+      # ammend from_clause, columns, and group_by_list to account for selected
+      # dimensions which do not appear in fact table (and therefore necessitate
+      # a join)
+      from_clause = ""
+      handle_joined_dimensions(from_clause, columns, group_by_list, options[:group_by])
 
-
-      # construct join clause with appropate joins
-      from_clause = "#{metric.pluralize}"
-      if foreign_dimensions = join_tables?(options[:group_by], fact)
-        for dim in foreign_dimensions
-          table = WHICH_TABLE[dim.singularize.concat("_id")]
-          from_clause += " JOIN #{table} on #{metric.pluralize}.#{table.singularize.concat("_id")} = #{table}.id"
-
-          col_index_for_replacement = columns.index(fact_table + "." + dim.singularize.concat("_id"))
-          col_replacement = "#{table}.#{dim.singularize.concat("_id")} as \"#{dim.singularize.concat("_id")}\""
-          columns[col_index_for_replacement] = col_replacement
-
-          grp_index_for_replacement = group_by_list.index(fact_table + "." + dim.singularize.concat("_id"))
-          grp_replacement = "#{dim.singularize.concat("_id")}"
-          group_by_list[grp_index_for_replacement] = grp_replacement
-        end
-      end
-
+      
       # standard query
-      fa.add(fact.find_by_sql(
-        "SELECT #{columns.join(", ")}, SUM(#{metric}) as sum
+      fa.add(self.find_by_sql(
+        "SELECT #{columns.join(", ")}, SUM(#{fact_table.singularize}) as sum
           FROM #{from_clause}
           WHERE #{where_clause.join(" AND ")}
           GROUP BY #{group_by_list.join(", ")}"
       ))
-
+     
       if options[:all_total] == []
         return
       end
-      # summary query
+
+
       query_arr = parse_agg_dimensions(options[:summarize], columns, group_by_list)
       for query in query_arr
-        sql_string = "SELECT #{query[:cols].join(", ")}, #{query[:alls].join(", ")}, SUM(#{metric}) as sum
+        sql_string = "SELECT #{query[:cols].join(", ")}, #{query[:alls].join(", ")}, SUM(#{fact_table.singularize}) as sum
         FROM #{from_clause}
         WHERE #{where_clause.join(" AND ")}"
         if query[:group_by_columns] != []
           sql_string.concat(" GROUP BY #{query[:group_by_columns].join(", ")}")
         end
-        fa.add(fact.find_by_sql(sql_string))
+        fa.add(self.find_by_sql(sql_string))
       end
 
       fa.adjust_time_zone(options[:tz_offset])
-    end
-
-    def join_tables?(group_by, fact)
-      fact_table_columns = fact.new.attributes.keys
-      join_tables = []
-      for dim in group_by
-        pk = Dimension.keyize_indices(dim).to_s
-        if !fact_table_columns.include?(pk)
-          join_tables << pk[0..-4].pluralize
-        end
-      end
-
-      if join_tables.size > 0
-        return join_tables
-      else
-        return nil
-      end
     end
 
 

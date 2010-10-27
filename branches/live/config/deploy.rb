@@ -133,7 +133,10 @@ define_configuration_tasks(:aws, %w(aws.yml))
 # WORKFLOWS CONFIGURATION
 # =============================================================================
 
-define_configuration_tasks(:workflows, %w(workflows/clearspring.yml))
+define_configuration_tasks(:workflows, %w(
+  workflows/akamai.yml
+  workflows/clearspring.yml
+))
 
 # =============================================================================
 # SCHEDULE CONFIGURATION
@@ -335,7 +338,7 @@ after "deploy:symlink", "deploy:update_crontab"
 namespace :deploy do
   desc "Update the crontab file"
   task :update_crontab, :roles => :app, :only => {:migration_czar => true} do
-    run "cd #{release_path} && whenever --update-crontab #{application}"
+    run "cd #{current_path} && whenever --update-crontab #{application}"
   end
 end
 

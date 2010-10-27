@@ -1,4 +1,5 @@
-require_dependency 'subprocess'
+# We use Time.parse, which requires requiring time
+require 'time'
 
 # Note: wget is unsuitable for working with https connections because it does
 # not properly implement timeout functionality when ssl is involved.
@@ -14,6 +15,7 @@ class HttpClient::SpawnWget < HttpClient::Base
   #   :command => ['/usr/bin/env', 'wget']
   # :http_username
   # :http_password
+  # :ca_file
   # :timeout
   # :debug
   # :logger
@@ -21,6 +23,7 @@ class HttpClient::SpawnWget < HttpClient::Base
     super(options)
     @command = options[:command] || %w(/usr/bin/env wget)
     @http_username, @http_password = options[:http_username], options[:http_password]
+    @ca_file = options[:ca_file]
     @timeout = options[:timeout]
     @debug = options[:debug]
   end
@@ -50,6 +53,28 @@ class HttpClient::SpawnWget < HttpClient::Base
   end
   
   def get_url_content_length(url)
+    output = do_head(url)
+    if /^  content-length:\s+(\d+)/ =~ output.downcase
+      content_length = $1.to_i
+    else
+      raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
+    end
+    content_length
+  end
+  
+  def get_url_time(url)
+    output = do_head(url)
+    if /^  last-modified:\s+(.+)/ =~ output.downcase
+      time = Time.parse($1)
+    else
+      raise HttpClient::UnsupportedServer, "Last modified not found in returned headers"
+    end
+    time
+  end
+  
+  private
+  
+  def do_head(url)
     if @debug
       debug_print "Head #{url}"
     end
@@ -59,16 +84,8 @@ class HttpClient::SpawnWget < HttpClient::Base
     if @debug
       debug_print "Wget: #{cmd.join(' ')}"
     end
-    output = get_error(url, cmd)
-    if /^  content-length:\s+(\d+)/ =~ output.downcase
-      content_length = $1.to_i
-    else
-      raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
-    end
-    content_length
+    get_error(url, cmd)
   end
-  
-  private
   
   def build_command(*args)
     cmd = common_command_options
@@ -96,7 +113,12 @@ class HttpClient::SpawnWget < HttpClient::Base
     unless @debug
       cmd << '-q'
     end
-    cmd << '--no-check-certificate'
+    if @ca_file
+      cmd << '--ca-certificate'
+      cmd << @ca_file
+    else
+      cmd << '--no-check-certificate'
+    end
     cmd
   end
 end

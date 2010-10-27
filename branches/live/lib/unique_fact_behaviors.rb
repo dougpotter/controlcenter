@@ -18,22 +18,14 @@ module UniqueFactBehaviors
       if !options[:group_by].include?("start_time") && !options[:group_by].include?("end_time")
           raise RuntimeError, "unique metrics must be grouped on either start or end time"
       end
-
-      metric = options[:fact]
-      fact = Object.const_get(metric.classify)
-
-      # check to see if we're grouping on valid dimensions
-      valid_dimensions = fact.new.attributes.keys
-      for dim in options[:group_by]
-        if !valid_dimensions.include?(Dimension.keyize_indices(dim)[0].to_s) && dim != 'end_time' && dim != 'start_time'
-          raise RuntimeError, "cannot group #{fact.to_s} by #{dim}"
-        end
+      
+      fact_table = self.to_s.underscore.pluralize
+      where_list = self.new.where_conditions_from_params(options[:where])
+      group_by_list = keyize_indices(options[:group_by]).map do |idx|
+        "#{fact_table}.#{idx}"
       end
-
-      where_list = fact.new.where_conditions_from_params(options[:where])
-      group_by_list = keyize_indices(options[:group_by])
       column_aliases = {}
-      parse_frequency_for_grouping(options[:fact].pluralize, options[:frequency], group_by_list, column_aliases)
+      parse_frequency_for_grouping(fact_table, options[:frequency], group_by_list, column_aliases)
       parse_frequency_for_filtering(options[:frequency], where_list)
       parse_summarize(options[:summarize], where_list)
 
@@ -43,11 +35,14 @@ module UniqueFactBehaviors
         else
           expr
         end
-      end.join(', ')
+      end
+      # deal with joined dimensions
+      from_clause = ""
+      handle_joined_dimensions(from_clause, columns, group_by_list, options[:group_by])
 
-      fa.add(fact.find_by_sql(
-        "SELECT #{columns}, SUM(#{metric}) as sum
-        FROM #{metric.pluralize}
+      fa.add(self.find_by_sql(
+        "SELECT #{columns.join(", ")}, SUM(#{fact_table.singularize}) as sum
+        FROM #{from_clause}
         WHERE #{where_list.join(" AND ")}
         GROUP BY #{group_by_list.join(", ")}"
       ))

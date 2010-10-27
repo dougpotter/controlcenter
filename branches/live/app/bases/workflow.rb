@@ -24,106 +24,13 @@ module Workflow
   # Split verification was requested and failed
   class SplitVerificationFailed < WorkflowError; end
   
-  module UserInputParsing
-    def parse_hours_specification(hours)
-      hours = hours.split(',').map do |hour|
-        hour = hour.strip
-        unless hour =~ /^\d\d?/
-          raise ArgumentError, "Invalid hour value: #{hour}"
-        end
-        hour = hour.to_i
-        if hour < 0 || hour > 23
-          raise ArgumentError, "Hour value out of range: #{hour}"
-        end
-        hour
-      end
-    end
-    
-    def parse_source_specification(data_provider, source)
-      if source
-        if source.empty?
-          raise OptionParser::ParseError, "Source is empty"
-        end
-        # need to check find_by_* arguments for being blank or empty
-        channel = data_provider.data_provider_channels.find_by_name(source)
-        if channel
-          selected_channels = [channel]
-        else
-          raise OptionParser::ParseError, "Invalid source value: #{source}"
-        end
-      else
-        selected_channels = data_provider.data_provider_channels.all
-      end
-    end
-  end
+  # Detected a file in data provider channel which is not
+  # a valid data provider file for some reason
+  class DataProviderFileBogus < WorkflowError; end
   
   class << self
-    include UserInputParsing
-    
     attr_accessor :default_logger
   end
   
   self.default_logger = Logger.new(STDOUT)
-  
-  class Base
-    attr_accessor :logger
-    
-    def initialize(options={})
-      @logger = options[:logger] || Workflow.default_logger
-    end
-    
-    private
-    
-    def create_http_client(params)
-      if params[:http_client]
-        http_client_class = HttpClient.const_get(params[:http_client].camelize)
-      else
-        http_client_class = HttpClient::Curb
-      end
-      http_client_class.new(
-        :http_username => params[:http_username],
-        :http_password => params[:http_password],
-        :timeout => params[:net_io_timeout],
-        :debug => params[:debug],
-        :logger => self.logger
-      )
-    end
-    
-    def create_s3_client(params)
-      if params[:s3_client]
-        s3_client_class = S3Client.const_get(params[:s3_client].camelize)
-      else
-        s3_client_class = S3Client::RightAws
-      end
-      s3_client_class.new(:debug => @params[:debug], :logger => @logger)
-    end
-    
-    def with_process_status(options)
-      if @update_process_status
-        ProcessStatus.set(options) do
-          yield
-        end
-      else
-        yield
-      end
-    end
-    
-    def absolute_to_relative_path(root, absolute_path)
-      root_len, abs_len = root.length, absolute_path.length
-      if abs_len < root_len || absolute_path[0...root_len] != root
-        raise ArgumentError, "Absolute path #{absolute_path} is not under #{root}"
-      end
-      relative_path = absolute_path[root_len...abs_len]
-      if relative_path[0] == '/'
-        relative_path = relative_path[1...relative_path.length]
-      end
-      relative_path
-    end
-    
-    # ------
-    
-    def debug_print(msg)
-      logger.debug(self.class.name) { msg }
-    end
-  end
 end

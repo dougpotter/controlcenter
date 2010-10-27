@@ -1,3 +1,5 @@
+require_dependency 'custom_validations'
+
 class UniqueClickCount < ActiveRecord::Base
   acts_as_unique_fact
 

@@ -1,4 +1,6 @@
 require 'httpclient'
+# We use Time.parse, which requires requiring time
+require 'time'
 
 class HttpClient::Httpclient < HttpClient::Base
   # allowed options:
@@ -46,21 +48,35 @@ class HttpClient::Httpclient < HttpClient::Base
   end
   
   def get_url_content_length(url)
+    headers = do_head(url)
+    if length = headers['content-length'][0]
+      length.to_i
+    else
+      raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
+    end
+  end
+  
+  def get_url_time(url)
+    headers = do_head(url)
+    if time = headers['last-modified'][0]
+      Time.parse(time)
+    else
+      raise HttpClient::UnsupportedServer, "Last modified not found in returned headers"
+    end
+  end
+  
+  private
+  
+  def do_head(url)
     if @debug
       debug_print "Head #{url}"
     end
     
     map_exceptions(exception_map, url) do
       resp = @client.head(url)
-      if length = resp.header['content-length'][0]
-        length.to_i
-      else
-        raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
-      end
+      resp.header
     end
   end
-  
-  private
   
   def exception_map
     [

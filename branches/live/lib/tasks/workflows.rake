@@ -1,72 +1,68 @@
 namespace :workflows do
+  namespace :akamai do
+    desc 'Discover and extract recently uploaded akamai data files'
+    task :extract_autorun => :environment do
+      Workflow::Shortcuts.extract(
+        :data_provider_name => 'Akamai'
+      )
+    end
+    
+    desc 'Verifies as much akamai extraction as possible on a daily basis'
+    task :verify_daily => :environment do
+      Workflow::Shortcuts.verify_daily(
+        :data_provider_name => 'Akamai'
+      )
+    end
+    
+    desc 'Extract already discovered akamai data files that are uploaded way later than their labeled date'
+    task :extract_late => :environment do
+      Workflow::Shortcuts.extract_late(
+        :data_provider_name => 'Akamai'
+      )
+    end
+    
+    desc 'Verifies extraction of recently extracted akamai files'
+    task :verify_hourly => :environment do
+      Workflow::Shortcuts.verify_hourly(
+        :data_provider_name => 'Akamai'
+      )
+    end
+    
+    desc 'Removes old akamai files'
+    task :cleanup => :environment do
+      Workflow::Shortcuts.cleanup(
+        :data_provider_name => 'Akamai'
+      )
+    end
+  end
+  
   namespace :clearspring do
     desc 'Discover and extract recently made available clearspring data files'
     task :extract_autorun => :environment do
-      # extraction always works in UTC
-      # apparently Time.zone does not exist here
-      now = Time.now.utc
-      
-      settings = ClearspringExtractWorkflow::Configuration.new
-      channels = DataProviderChannel.all(:order => 'name')
-      channels.each do |channel|
-        # add one hour to the hours to extract hours in the past.
-        # example: if it is now 4:05, a lookback of 0 corresponds to
-        # 3:00-4:00 period, which starts at 1 less than current time.
-        #
-        # do the math here because time arithmetic is more expensive than
-        # simple integer arithmetic.
-        hours = (-channel.lookback_from_hour - 1)..(- channel.lookback_to_hour - 1)
-        
-        # assume files in the lookback range are completely uploaded,
-        # this is to be replaced by readiness heuristic later.
-        times = hours.map do |index|
-          # build time from lookback hour
-          time = now + index.hours
-          
-          # convert to date & hour pair for workflow
-          [time.strftime('%Y%m%d'), time.hour]
-        end
-        
-        times.each do |date, hour|
-          options = settings.merge(:date => date, :hour => hour, :channel => channel)
-          workflow = ClearspringExtractWorkflow.new(options.to_hash)
-          workflow.run
-        end
-      end
+      Workflow::Shortcuts.extract(
+        :data_provider_name => 'Clearspring'
+      )
     end
     
-    desc 'Verifies as much extraction as possible on a daily basis'
+    desc 'Extract already discovered clearspring data files that are uploaded way later than their labeled date'
+    task :extract_late => :environment do
+      Workflow::Shortcuts.extract_late(
+        :data_provider_name => 'Clearspring'
+      )
+    end
+    
+    desc 'Verifies as much clearspring extraction as possible on a daily basis'
     task :verify_daily => :environment do
-      now = Time.now.utc
-      yesterday = now - 1.day
-      date = yesterday.strftime('%Y%m%d')
-      
-      settings = ClearspringExtractWorkflow::Configuration.new
-      channels = DataProviderChannel.all(:order => 'name')
-      channels.each do |channel|
-        options = settings.merge(:date => date, :channel => channel)
-        workflow = ClearspringVerifyWorkflow.new(options.to_hash)
-        workflow.check_consistency
-      end
+      Workflow::Shortcuts.verify_daily(
+        :data_provider_name => 'Clearspring'
+      )
     end
     
-    desc 'Verifies extraction for hourly updated channels on an hourly basis'
+    desc 'Verifies extraction for hourly updated clearspring channels on an hourly basis'
     task :verify_hourly => :environment do
-      now = Time.now.utc
-      # need to go back based on how far back extract_autorun goes.
-      # XXX consider using lookback parameters from channels here
-      # to determine which times we should be checking.
-      time = now - 8.hours
-      date = time.strftime('%Y%m%d')
-      hour = time.hour
-      
-      settings = ClearspringExtractWorkflow::Configuration.new
-      channels = DataProviderChannel.hourly.all(:order => 'name')
-      channels.each do |channel|
-        options = settings.merge(:date => date, :hour => hour, :channel => channel)
-        workflow = ClearspringVerifyWorkflow.new(options.to_hash)
-        workflow.check_consistency
-      end
+      Workflow::Shortcuts.verify_hourly(
+        :data_provider_name => 'Clearspring'
+      )
     end
   end
 end

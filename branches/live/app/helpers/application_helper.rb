@@ -13,4 +13,8 @@ module ApplicationHelper
   def currently_extraction_status?
     %w(extraction).include?(controller.controller_name)
   end
+
+  def currently_campaign_management?
+    %w(campaign_management audiences).include?(controller.controller_name)
+  end
 end

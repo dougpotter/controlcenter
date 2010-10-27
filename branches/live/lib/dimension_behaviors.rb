@@ -132,3 +132,7 @@ module DimensionBehaviors
   end
 
 end
+
+ActiveRecord::Base.class_eval do
+  include DimensionBehaviors
+end

@@ -1,4 +1,6 @@
-class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
+class ClearspringVerifyWorkflow < Workflow::VerifyBase
+  include ClearspringAccess
+  
   def initialize(params)
     super(params)
     initialize_params(params)
@@ -7,179 +9,7 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     @s3_client = create_s3_client(@params)
   end
   
-  def check_listing
-    data_source_urls = list_data_source_files
-    our_paths = list_bucket_files
-    have, missing, partial = check_correspondence(data_source_urls, our_paths)
-    report_correspondence(have, missing, partial)
-    missing.empty? && partial.empty?
-  end
-  
-  def check_consistency
-    data_source_urls = list_data_source_files
-    have, missing = check_existence(data_source_urls)
-    report_existence(have, missing)
-    ok = missing.empty?
-    
-    our_paths = list_bucket_files
-    have, missing, partial = check_correspondence(data_source_urls, our_paths)
-    report_correspondence(have, missing, partial)
-    ok && missing.empty? && partial.empty?
-  end
-  
-  def check_our_existence
-    have, missing = find_our_files
-    report_existence(have, missing)
-    missing.empty?
-  end
-  
-  def check_their_existence
-    have, missing = find_their_files
-    report_existence(have, missing)
-    missing.empty?
-  end
-  
   private
-  
-  def find_their_files
-    data_source_urls = list_data_source_files
-    check_existence(data_source_urls)
-  end
-  
-  def find_our_files
-    bucket_paths = list_bucket_files
-    check_existence(bucket_paths)
-  end
-  
-  def check_correspondence(data_source_urls, our_paths)
-    have, missing, partial = [], [], []
-    data_source_urls.each do |url|
-      remote_relative_path = url_to_relative_data_source_path(url)
-      local_path = build_local_path(remote_relative_path)
-      bucket_path = build_s3_path(local_path)
-      
-      ok = false
-      if params[:trust_recorded]
-        data_provider_file = DataProviderFile.find_by_url(url)
-        if data_provider_file && data_provider_file.status == DataProviderFile::VERIFIED
-          have << bucket_path
-          ok = true
-        end
-      end
-      
-      if !ok
-        extracted_paths = bucket_paths_under(our_paths, bucket_path)
-        if ok = !extracted_paths.empty?
-          if params[:check_sizes]
-            source_size = @http_client.get_url_content_length(url)
-            items = list_bucket_items
-            extracted_items = extracted_paths.map do |path|
-              items.detect { |item| item.path == path }
-            end
-            extracted_size = extracted_items.inject(0) do |sum, item|
-              sum + item.size
-            end
-            if params[:check_sizes_exactly]
-              ok = extracted_size == source_size
-            else
-              difference = (1 - extracted_size.to_f/source_size).abs
-              if params[:check_sizes_strictly]
-                ok = difference < 0.1
-              else
-                ok = difference < 0.2
-              end
-            end
-          end
-          if ok && params[:check_content]
-          end
-          if ok
-            if params[:record]
-              create_data_provider_file(url) do |file|
-                file.status = DataProviderFile::VERIFIED
-                file.verified_at = Time.now
-              end
-            end
-            have << bucket_path
-          else
-            if params[:record]
-              mark_data_provider_file_bogus(url)
-            end
-            
-            bucket_path.instance_variable_set('@extracted_size', extracted_size)
-            bucket_path.instance_variable_set('@source_size', source_size)
-            
-            class << bucket_path
-              attr_reader :extracted_size, :source_size
-            end
-            
-            partial << bucket_path
-          end
-        else
-          if params[:record]
-            mark_data_provider_file_bogus(url)
-          end
-          missing << bucket_path
-        end
-      end
-    end
-    [have, missing, partial]
-  end
-  
-  def check_existence(items)
-    options_list, require_all = compute_prefixes_to_check
-    have, missing = [], []
-    if require_all
-      options_list.each do |options|
-        found = items.any? { |item| File.basename(item).starts_with?(options[:prefix]) }
-        if found
-          have << {:date => options[:date], :hour => options[:hour]}
-        else
-          missing << {:date => options[:date], :hour => options[:hour]}
-        end
-      end
-    else
-      found = options_list.any? do |options|
-        items.any? { |item| File.basename(item).starts_with?(options[:prefix]) }
-      end
-      if found
-        have << {:date => options_list.first[:date]}
-      else
-        missing << {:date => options_list.first[:date]}
-      end
-    end
-    [have, missing]
-  end
-  
-  def report_correspondence(have, missing, partial)
-    return if params[:quiet]
-    have.each do |bucket_path|
-      puts "Have #{bucket_path}"
-    end
-    missing.each do |bucket_path|
-      puts "Missing #{bucket_path}"
-    end
-    partial.each do |bucket_path|
-      puts "Partial #{bucket_path}: extracted size #{bucket_path.extracted_size}, source size #{bucket_path.source_size}"
-    end
-  end
-  
-  def report_existence(have, missing)
-    return if params[:quiet]
-    have.each do |options|
-      puts "Have #{date_with_hour(options)}"
-    end
-    missing.each do |options|
-      puts "Missing #{date_with_hour(options)}"
-    end
-  end
-  
-  def list_bucket_items
-    @s3_client.list_bucket_items(s3_bucket, build_s3_prefix)
-  end
-  
-  def list_bucket_files
-    @s3_client.list_bucket_files(s3_bucket, build_s3_prefix)
-  end
   
   # returns a subset of our_paths that corresponds to their_path.
   # due to gzip splitting our paths do not necessarily correspond exactly to
@@ -200,7 +30,8 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     end
   end
   
-  def compute_prefixes_to_check
+  # See comment in Workflow::VerifyBase for how preesnce verification works.
+  def compute_criteria_to_check
     if params[:hour]
       hours = [params[:hour]]
       require_all = true
@@ -218,28 +49,13 @@ class ClearspringVerifyWorkflow < ClearspringExtractWorkflow
     [options_list, require_all]
   end
   
-  def mark_data_provider_file_bogus(file_url)
-    # we only want to mark previously verified files as bogus; if a file
-    # was not verified, we're not going to change its status.
-    # if no record exists for a file, we are not going to create one here
-    # either
-    DataProviderFile.transaction do
-      # we don't want to mark bogus files that are being extracted,
-      # or files that we have not yet attempted to extract.
-      # we want to mark bogus files which have been extracted, this is easy.
-      # we also want to mark bogus files that have been verified, because
-      # we have different verification levels and stricter levels may
-      # reject files that less strict levels claimed were correctly extracted.
-      file = channel.data_provider_files.first(
-        :conditions => ['url = ? and status in (?)',
-        file_url,
-        [DataProviderFile::EXTRACTED, DataProviderFile::VERIFIED]]
-      )
-      if file
-        file.status = DataProviderFile::BOGUS
-        file.verified_at = nil
-        file.save!
-      end
-    end
+  # Returns true if against, which could be a local path or remote url,
+  # satisfies criteria, which are comprised of channel, date and hour
+  # as requested in invocation.
+  #
+  # This method is called for every criteria and url pair until each
+  # criteria is satisfied or we run out of urls.
+  def existence_check_fn(criteria, against)
+    File.basename(against).starts_with?(criteria[:prefix])
   end
 end

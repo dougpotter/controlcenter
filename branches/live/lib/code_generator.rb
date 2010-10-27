@@ -26,6 +26,7 @@ module CodeGenerator
     if options[:transform]
       code = options[:transform].call(code)
     end
+    return code
   end
   module_function :generate_code
   

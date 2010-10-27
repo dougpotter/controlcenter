@@ -21,60 +21,70 @@ module Semaphore
       location = options[:location]
       timeout = options[:timeout] || 1.hour
       
-      resource = Resource.identity(name, location).first
-      if resource.nil?
-        raise ResourceNotFound, "No resource matching name and location"
-      end
+      # transaction method returns nil instead of the result of yielded block,
+      # requiring us to scope allocation outside of the block
+      allocation = nil
       
-      if resource.usage >= resource.capacity
-        # try to reclaim abandoned allocations
-        allocations = Allocation.abandoned
-        unless allocations.empty?
-          Allocation.transaction do
-            Allocation.update_all(
+      # transaction should encompass all read queries
+      Allocation.transaction do
+        resource = Resource.identity(name, location).first
+        if resource.nil?
+          raise ResourceNotFound, "No resource matching name and location"
+        end
+        
+        if resource.usage >= resource.capacity
+          # try to reclaim abandoned allocations
+          allocations = resource.allocations.abandoned
+          unless allocations.empty?
+            num_updated = Allocation.update_all(
               ['state = ?', Allocation::RECLAIMED],
               ['id in (?)', allocations.map { |allocation| allocation.id }]
             )
-            Resource.recalculate_usage(resource.id)
+            Resource.alter_usage(resource.id, -num_updated)
+            # update our object for subsequent calculation
+            resource.usage -= num_updated
+            
+            # reload resource to account for concurrent modification,
+            # either by arbitrator or because capacity changed
+            resource.reload
+            
+            fail = resource.usage >= resource.capacity
+          else
+            fail = true
           end
           
-          # reload resource to account for concurrent modification,
-          # either by arbitrator or because capacity changed
-          resource.reload
-          
-          fail = resource.usage >= resource.capacity
-        else
-          fail = true
+          if fail
+            raise ResourceBusy, "Resource busy: #{name}#{location ? " at #{location}" : ''}"
+          end
         end
         
-        if fail
-          raise ResourceBusy, "Resource busy: #{name}#{location ? " at #{location}" : ''}"
-        end
-      end
-      
-      allocation = Allocation.new(:resource => resource, :expires_at => Time.zone.now + timeout)
-      Resource.transaction do
+        allocation = Allocation.new(:resource => resource, :expires_at => Time.zone.now + timeout)
         allocation.save!
         
         # don't use attribute assignment+save to avoid accidental overwrites
-        # usage is a reserved word on mysql, and thus must be quoted
-        quoted_usage = Resource.connection.quote_column_name('usage')
-        Resource.update_all("#{quoted_usage} = #{quoted_usage} + 1", ['id = ?', resource.id])
+        Resource.alter_usage(resource.id, 1)
       end
       
       allocation.id
     end
     
     def release(allocation_id)
-      allocation = Allocation.find(allocation_id)
-      if allocation.state != Allocation::ALLOCATED && allocation.state != Allocation::RECLAIMED
-        raise AllocationStateWrong, "Allocation is in wrong state: #{allocation.state}"
-      end
-      
-      allocation.state = Allocation::RELEASED
-      Resource.transaction do
+      # transaction should encompass all read queries
+      Allocation.transaction do
+        allocation = Allocation.find(allocation_id)
+        if allocation.state != Allocation::ALLOCATED && allocation.state != Allocation::RECLAIMED
+          raise AllocationStateWrong, "Allocation is in wrong state: #{allocation.state}"
+        end
+        
+        # do not decrement resource usage if allocation had been reclaimed
+        should_decrement = allocation.state == Allocation::ALLOCATED
+        
+        allocation.state = Allocation::RELEASED
         allocation.save!
-        Resource.decrement_usage(allocation.resource.id)
+        
+        if should_decrement
+          Resource.alter_usage(allocation.resource.id, -1)
+        end
       end
       
       true
@@ -83,13 +93,17 @@ module Semaphore
     def extend(allocation_id, options={})
       timeout = options[:timeout] || 1.hour
       
-      allocation = Allocation.find(allocation_id)
-      if allocation.state != Allocation::ALLOCATED
-        raise AllocationStateWrong, "Allocation is in wrong state: #{allocation.state}"
+      # need transaction here to guard against concurrent modification of
+      # the allocation
+      Allocation.transaction do
+        allocation = Allocation.find(allocation_id)
+        if allocation.state != Allocation::ALLOCATED
+          raise AllocationStateWrong, "Allocation is in wrong state: #{allocation.state}"
+        end
+        
+        allocation.expires_at = Time.zone.now + timeout
+        allocation.save!
       end
-      
-      allocation.expires_at = Time.zone.now + timeout
-      allocation.save!
       
       true
     end
@@ -152,7 +166,7 @@ module Semaphore
       end
       
       begin
-        yield
+        rv = yield
       ensure
         if options[:debug_callback]
           options[:debug_callback].call('Releasing lock')
@@ -160,6 +174,14 @@ module Semaphore
         
         release(allocation)
       end
+      rv
+    end
+    
+    def recalculate_usages
+      quoted_usage = Resource.connection.quote_column_name('usage')
+      Resource.update_all(
+        ["#{quoted_usage} = (select count(*) from #{Allocation.quoted_table_name} where semaphore_resource_id = #{Resource.quoted_table_name}.id and state=?)", Allocation::ALLOCATED]
+      )
     end
   end
   
@@ -220,10 +242,12 @@ module Semaphore
     
     class << self
       # note that this method accepts nil ids (which would be a no-op)
-      def decrement_usage(id)
+      def alter_usage(id, delta)
         # usage is a reserved word on mysql, and thus must be quoted
-        quoted_usage = connection.quote_column_name('usage')
-        update_all("#{quoted_usage} = (case when #{quoted_usage} > 1 then #{quoted_usage} - 1 else 0 end)", ['id = ?', id])
+        quoted_usage = quote_identifier('usage')
+        quoted_delta = quote_value(delta)
+        # XXX clamping usage to 0:infinity here may mask problems
+        update_all("#{quoted_usage} = (case when #{quoted_usage} + #{quoted_delta} > 0 then #{quoted_usage} + #{quoted_delta} else 0 end)", ['id = ?', id])
       end
       
       def recalculate_usage(id)
@@ -281,14 +305,14 @@ module Semaphore
       state == ALLOCATED && expires_at < Time.zone.now
     end
     
-    after_destroy :adjust_resource_usage
+    after_destroy :adjust_resource_usage_on_destruction
     
-    def adjust_resource_usage
+    def adjust_resource_usage_on_destruction
       if state == ALLOCATED
-        Resource.decrement_usage(semaphore_resource_id)
+        Resource.alter_usage(semaphore_resource_id, -1)
       end
     end
-    private :adjust_resource_usage
+    private :adjust_resource_usage_on_destruction
     
     validates_presence_of :resource
     validates_presence_of :created_at

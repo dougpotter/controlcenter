@@ -49,6 +49,8 @@ ActionController::Routing::Routes.draw do |map|
   map.extraction_details '/extraction/details/:date',
     :controller => 'extraction', :action => 'details'
 
+  map.resources :audiences
+
   # You can have the root of your site routed with map.root -- just remember to delete public/index.html.
   map.root :controller => "landing_pages",
            :action => "metrics"

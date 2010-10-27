@@ -2,6 +2,8 @@ require 'net/http'
 require 'uri'
 
 class HttpClient::NetHttp < HttpClient::Base
+  include NetHttpMixin
+  
   # allowed options:
   # :http_username
   # :http_password
@@ -35,20 +37,6 @@ class HttpClient::NetHttp < HttpClient::Base
         resp.read_body do |chunk|
           file << chunk
         end
-      end
-    end
-  end
-  
-  def get_url_content_length(url)
-    if @debug
-      debug_print "Head #{url}"
-    end
-    
-    issue_request(url, :method => :head) do |resp|
-      if length = resp['content-length']
-        length.to_i
-      else
-        raise HttpClient::UnsupportedServer, "Content length not found in returned headers"
       end
     end
   end

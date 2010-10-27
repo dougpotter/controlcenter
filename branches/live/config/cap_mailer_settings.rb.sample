@@ -2,7 +2,13 @@
 # Also, for GMail ActionMailer settings, see http://alexle.net/archives/278
 
 require 'vendor/plugins/capistrano_mailer/lib/cap_mailer'
-require 'vendor/plugins/action_mailer_tls/lib/smtp_tls'
+
+# smtp_tls is not needed on ruby 1.8.7+.
+# See http://forums.pragprog.com/forums/43/topics/541 and
+# http://github.com/openrain/action_mailer_tls.
+if RUBY_VERSION > '1.8' && RUBY_VERSION < '1.8.7'
+  require 'vendor/plugins/action_mailer_tls/lib/smtp_tls'
+end
 
 ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.smtp_settings = {

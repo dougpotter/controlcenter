@@ -1,3 +1,5 @@
+require_dependency 'dimension_behaviors'
+
 module FactBehaviors
   TIME_FORMAT = "%Y-%m-%d %H:%M:%S".freeze
 
@@ -11,23 +13,13 @@ module FactBehaviors
   end
 
   module ClassMethods
+    WHICH_TABLE = {"partner_id" => "campaigns"}
     # Class methods go here
 
     # fills fact aggregation object with appropriate facts according to parsed
     # params hash (options) 
     def aggregate(fa, options = {})
-      for metric in options[:include]
-        options[:fact] = metric
-        fact = Object.const_get(metric.classify)
-        if fact.is_additive?
-          AdditiveFact.aggregate(fa, options)
-        else
-          UniqueFact.aggregate(fa, options)
-        end
-      end 
-
-      fa.adjust_time_zone(options[:tz_offset])
-      return fa
+      raise "aggregate not implemented in FactBehaviors"
     end
 
     # fills group_by_list and column_aliases with appropriate SQL given the
@@ -111,6 +103,46 @@ module FactBehaviors
     Dimension.keyize_indices(business_indices)
   end
 
+  def handle_joined_dimensions(from_clause, columns, group_by_list, group_by)
+    fact_table = self.to_s.underscore.pluralize
+    from_clause.concat(self.to_s.underscore.pluralize)
+    if foreign_dimensions = join_tables(group_by) 
+      for dim in foreign_dimensions          
+        fk_column = dim.singularize.concat("_id")
+        # update from clause
+        table = WHICH_TABLE[fk_column]          
+        from_clause.concat(" JOIN #{table} on #{fact_table}.#{table.singularize.concat("_id")} = #{table}.id") 
+
+        # update select clause
+        col_index_for_replacement = columns.index(fact_table + "." + fk_column)          
+        col_replacement = "#{table}.#{fk_column} as \"#{fk_column}\""
+        columns[col_index_for_replacement] = col_replacement          
+        
+        # update group by clause
+        grp_index_for_replacement = group_by_list.index(fact_table + "." + fk_column)
+        grp_replacement = "#{fk_column}"
+        group_by_list[grp_index_for_replacement] = grp_replacement
+      end 
+    end
+  end
+
+  def join_tables(group_by)
+    fact_table_columns = self.new.attributes.keys
+    join_tables = []
+    for dim in group_by
+      pk = Dimension.keyize_indices(dim).to_s
+      if !fact_table_columns.include?(pk)
+        join_tables << pk[0..-4].pluralize
+      end 
+    end 
+
+    if join_tables.size > 0 
+      return join_tables
+    else
+      return nil 
+    end 
+  end
+
   def scalar_fact
     self.name.to_s.underscore.to_sym
   end
@@ -165,7 +197,7 @@ module InstanceMethods
 
   def where_conditions_from_params(filters)
     fact_table = self.class.to_s.underscore.pluralize
-      filters = filters.split(",")
+    filters = filters.split(",")
     conds = []
     hash = {}
     for i in 0..filters.size/2 - 1

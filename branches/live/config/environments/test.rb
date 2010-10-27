@@ -32,9 +32,9 @@ ENV['AUTOFEATURE'] = "true"
 ENV['RSPEC'] = "true"
 
 # Manage RubyGems
-config.gem "rspec", :lib => false, :version => ">= 1.2.0"
+config.gem "rspec", :lib => false, :version => ">= 1.3.0"
 config.gem "rspec-rails", :lib => false, :version => ">= 1.2.0"
 config.gem "factory_girl", :lib => false, :version => ">= 1.3.1"
 
-Sass::Plugin.options[:never_update] = true
-Sass::Plugin.options[:style] = :compressed
+::Sass::Plugin.options[:never_update] = true
+::Sass::Plugin.options[:style] = :compressed

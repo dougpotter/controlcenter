@@ -5,7 +5,11 @@ require File.expand_path(File.join(File.dirname(__FILE__),'..','config','environ
 require 'spec/autorun'
 require 'spec/rails'
 require 'factory_girl'
-require 'factories'
+
+# This is done by factory girl automatically if it is required during
+# rails boot (i.e., :lib => false is NOT given in config.gem).
+# See lib/factory_girl/rails2.rb in factory girl source.
+Factory.find_definitions
 
 # Uncomment the next line to use webrat's matchers
 #require 'webrat/integrations/rspec-rails'

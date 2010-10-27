@@ -165,6 +165,58 @@ Factory.define :unique_impression_count do |f|
   f.unique_impression_count 1005
 end
 
+Factory.define :click_through_rate do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.click_through_rate 1005
+end
+
+Factory.define :ecpm do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.ecpm 1005
+end
+
+Factory.define :ecpc do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.ecpc 1005
+end
+
+Factory.define :ecpa do |f|
+  t = Time.new
+  rounded_time = Time.local(t.year, t.month, t.day, t.hour, t.min/60*60)
+  f.start_time rounded_time
+  f.end_time rounded_time + 60.minutes
+  f.duration_in_minutes 60
+  f.campaign_id {Factory(:campaign).id}
+  f.media_purchase_method_id {Factory(:media_purchase_method).id}
+  f.audience_id {Factory(:audience).id}
+  f.creative_id {Factory(:creative).id}
+  f.ecpa 1005
+end
+
 Factory.define :country do |c|
   c.country_code "US"
   c.name "United States"

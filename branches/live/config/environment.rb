@@ -34,10 +34,17 @@ Rails::Initializer.run do |config|
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
   
-  config.gem "fastercsv", :lib => false
-  # http fetches in workflows use curb
-  config.gem "curb", :lib => false
-  config.gem "haml"
+  # Different machines need different sets of dependencies.
+  # Please refer to doc/dependencies.txt for a comprehensive treatment
+  # of dependencies for each component/use case.
+  # Do not add dependencies here unless they are truly required
+  # by all use cases.
+  
+  # Until we develop a plugin that loads haml on demand only when
+  # actually compiling stylesheets, we need to load haml here otherwise
+  # configuring sass in initializers and environment-specific files
+  # kills the app.
+  gem 'haml'
 
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
@@ -57,6 +64,4 @@ Rails::Initializer.run do |config|
   # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
-  
-  config.middleware.use 'Shpaml::DevelopmentMiddleware'
 end

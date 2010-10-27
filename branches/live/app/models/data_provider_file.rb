@@ -9,6 +9,22 @@
 #  status                   :integer(4)      not null
 #
 
+# Label date and hour are used in extraction phase.
+#
+# Every discovered data provider file is marked with a date and singular hour.
+# It is possible for files to be uploaded/made available a significant time
+# after their labeled time and/or the timestamp of their most recent content
+# entry. Such files are extracted by separate delayed extraction processes,
+# and these processes identify whether a file is of appropriate age for them
+# to handle it by looking at label date and hour.
+#
+# Some data providers include a time range in file name; others provide a
+# single time which may conceivably be in the beginning, end or middle of
+# the range. Our label date/hour should be consistent from one data provider
+# to another and represent the temporal coordinate of the file relative to
+# other files in the same data provider. It is important to meaningfully
+# group files by date since extraction has a concept of date and is invoked
+# for a particular date when catch-up extraction is performed.
 class DataProviderFile < ActiveRecord::Base
   # a file object created for discovered files starts off in discovered
   # status

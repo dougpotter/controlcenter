@@ -105,6 +105,7 @@ class CampaignManagementController < ApplicationController
   end
   
   def prepare_form
+    @audiences = Audience.find(:all, :order => 'audience_code')
     @partners = Partner.find(:all, :order => 'name')
     @ad_inventory_sources = AdInventorySource.all(:order => 'name')
     @creatives = Creative.all(:order => 'description')
@@ -125,14 +126,14 @@ class CampaignManagementController < ApplicationController
   
   def update_campaign_objects
     @campaign.attributes = params[:campaign]
-    
+
     if @campaign.partner.nil?
       @new_partner = Partner.new(params[:new_partner])
       @campaign.partner = @new_partner
     end
     
     if !params[:use_creatives].blank?
-      @creatives = Creative.find(params[:use_creatives].keys)
+      @creatives = Creative.find(:all, :conditions => {:creative_code => params[:use_creatives].keys})
     else
       @creatives = []
     end

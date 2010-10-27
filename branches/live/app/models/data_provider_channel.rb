@@ -22,7 +22,7 @@ class DataProviderChannel < ActiveRecord::Base
   validates_presence_of :name
   validates_uniqueness_of :name, :scope => :data_provider_id
   
-  validates_presence_of :lookback_from_hours, :lookback_to_hours
+  validates_presence_of :lookback_from_hour, :lookback_to_hour
   validate :validate_lookback_hours_order
   
   # Since we're talking about the past we can technically call either
@@ -33,9 +33,9 @@ class DataProviderChannel < ActiveRecord::Base
   # and it corresponds to earlier absolute time (12 hours before present).
   def validate_lookback_hours_order
     # validates_presence_of catches unspecified hours
-    if lookback_from_hours && lookback_to_hours
-      if lookback_from_hours <= lookback_to_hours
-        errors.add_to_base("Lookback from hours must be a larger (or equal) value than lookback to hours, corresponding to earlier (or equal) absolute time")
+    if lookback_from_hour && lookback_to_hour
+      if lookback_from_hour <= lookback_to_hour
+        errors.add_to_base("Lookback from hour must be a larger (or equal) value than lookback to hour, corresponding to earlier (or equal) absolute time")
       end
     end
   end

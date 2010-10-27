@@ -1,3 +1,5 @@
+require_dependency 'dimension_behaviors'
+
 # == Schema Information
 # Schema version: 20100819181021
 #
@@ -18,6 +20,7 @@ class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :geographies
   has_and_belongs_to_many :ad_inventory_sources
   has_and_belongs_to_many :creatives
+  has_and_belongs_to_many :audiences
   belongs_to :partner
   belongs_to :insertion_order
 
