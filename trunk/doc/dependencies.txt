@@ -7,6 +7,10 @@ Control center:
 
  - fastercsv for generating csv output in reporting
  - haml for compiling sass stylesheets
+ - whenever for scheduling
+   - whenever depends on activesupport, and now will install
+     activesupport 3.x if none exists. Install activesupport 2.3.x
+     manually before installing whenever.
 
 Extraction:
 
