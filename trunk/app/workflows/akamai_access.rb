@@ -72,11 +72,11 @@ module AkamaiAccess
       dirname = File.dirname(channel.name)
       basename = File.basename(channel.name)
       prefix = if dirname == 'logs-by-type'
-        "0000-#{basename}"
+        "0000-#{basename}/raw-#{basename}"
       else
-        basename
+        "#{basename}/raw"
       end
-      "#{prefix}/raw/#{params[:date]}"
+      "#{prefix}/#{params[:date]}"
     end
     
     def build_s3_path(local_path)
