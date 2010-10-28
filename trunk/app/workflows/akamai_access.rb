@@ -67,9 +67,16 @@ module AkamaiAccess
     
     def build_s3_prefix
       # date is required, it should always be given to workflow.
-      # XXX File.basename only handles logs-by-pid and possibly logs-by-host.
-      # logs-by-type have different convention for s3 file paths.
-      "#{File.basename(channel.name)}/raw/#{params[:date]}"
+      # XXX fragile stuff here
+      # XXX qa is lumped with partners
+      dirname = File.dirname(channel.name)
+      basename = File.basename(channel.name)
+      prefix = if diranme == 'logs-by-type'
+        "0000-#{basename}"
+      else
+        basename
+      end
+      "#{prefix}/raw/#{params[:date]}"
     end
     
     def build_s3_path(local_path)
