@@ -71,7 +71,7 @@ module AkamaiAccess
       # XXX qa is lumped with partners
       dirname = File.dirname(channel.name)
       basename = File.basename(channel.name)
-      prefix = if diranme == 'logs-by-type'
+      prefix = if dirname == 'logs-by-type'
         "0000-#{basename}"
       else
         basename
