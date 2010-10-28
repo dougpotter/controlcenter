@@ -60,11 +60,13 @@ module Workflow
           end
         end
         
-        if options[:debug]
+        if options[:debug] || options[:pretend]
           debug_print("Remove #{path}")
         end
         
-        FileUtils.rm(path)
+        unless options[:pretend]
+          FileUtils.rm(path)
+        end
       end
     end
     

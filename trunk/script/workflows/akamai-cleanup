@@ -12,9 +12,6 @@ parser = OptionParser.new do |opts|
   opts.on('-g', '--age AGE', 'Specify the age of uploaded files to clean up') do |age|
     options[:age] = age
   end
-  opts.on('-o', '--[no-]only-verified', 'Cleanup only successfully extracted and verified files') do |only_verified|
-    options[:only_verified] = only_verified
-  end
   
   opts.separator ''
   opts.separator 'Configuration options:'
@@ -24,6 +21,16 @@ parser = OptionParser.new do |opts|
   end
   opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/clearspring.yml is used)') do |path|
     options[:config_path] = path
+  end
+  
+  opts.separator ''
+  opts.separator 'Behavior modifying options:'
+  
+  opts.on('-p', '--[no-]pretend', 'Show what files would be removed, but do not remove them') do |pretend|
+    options[:pretend] = pretend
+  end
+  opts.on('-o', '--[no-]only-verified', 'Cleanup only successfully extracted and verified files') do |only_verified|
+    options[:only_verified] = only_verified
   end
   
   opts.separator ''
