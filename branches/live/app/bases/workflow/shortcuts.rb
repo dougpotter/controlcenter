@@ -77,7 +77,12 @@ module Workflow
         end
         
         times.each do |date, hour|
-          params = settings.merge(:date => date, :hour => hour, :channel => channel)
+          # Do not supply hour here.
+          # Akamai files are labeled with the last hour of their range,
+          # but for extraction purposes that is never acceptable.
+          # Since we specify which files to extract, we may skip the hour
+          # check in extraction.
+          params = settings.merge(:date => date, :channel => channel)
           files = channel.data_provider_files.all(
             :conditions => ['label_date=? and label_hour=? and status=?',
               date, hour, DataProviderFile::DISCOVERED]
