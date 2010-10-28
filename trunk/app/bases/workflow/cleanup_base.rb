@@ -4,6 +4,8 @@ require 'fileutils'
 module Workflow
   # Contains methods common to cleanup workflows.
   class CleanupBase < Base
+    expose_params :channel
+    
     private
     
     # Deletes old files in directory dir.
