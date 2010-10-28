@@ -33,6 +33,13 @@ parser = OptionParser.new do |opts|
   end
   
   opts.separator ''
+  opts.separator 'Behavior modifying options:'
+  
+  opts.on('-p', '--[no-]pretend', 'Show what files would be removed, but do not remove them') do |pretend|
+    options[:pretend] = pretend
+  end
+  
+  opts.separator ''
   opts.separator 'Debugging options:'
   
   opts.on('--[no-]debug', 'Enable debugging output') do |value|

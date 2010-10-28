@@ -18,7 +18,7 @@ table class=extraction-status
         td class="<%= day_data.counts[status] ? status_to_css_class(status) : '' %>"
           = day_data.counts[status] || 0
 
-% if !@bogus_files.empty?
+% if !@bogus_files.blank?
 
   h2 | Recently discovered files lacking label date/hour
 
@@ -30,4 +30,5 @@ table class=extraction-status
       tr
         td
           = file.url
+        td
           = file.discovered_at.strftime('%Y-%m-%d %H:%M:%S')
