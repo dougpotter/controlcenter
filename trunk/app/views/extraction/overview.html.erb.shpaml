@@ -30,4 +30,5 @@ table class=extraction-status
       tr
         td
           = file.url
+        td
           = file.discovered_at.strftime('%Y-%m-%d %H:%M:%S')
