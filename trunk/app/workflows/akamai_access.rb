@@ -55,14 +55,14 @@ module AkamaiAccess
     end
     
     def channel_parent_path(subdir)
-      File.join(params[:source_dir], subdir)
+      File.join(params[:data_source_root], subdir)
     end
     
     # -----
     
     # Channel name should be of form subdir/basename
     def source_dir_for_channel(channel=self.channel)
-      File.join(params[:source_dir], channel.name)
+      File.join(params[:data_source_root], channel.name)
     end
     
     def build_s3_prefix
@@ -104,7 +104,7 @@ module AkamaiAccess
     end
     
     def url_to_relative_data_source_path(data_provider_path)
-      absolute_to_relative_path(params[:source_dir], data_provider_path)
+      absolute_to_relative_path(params[:data_source_root], data_provider_path)
     end
     
     def data_provider_url_to_bucket_path(data_provider_path)
