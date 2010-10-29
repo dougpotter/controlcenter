@@ -33,18 +33,7 @@ class ClearspringCleanupWorkflow < Workflow::CleanupBase
   # XXX how does the timestamp in file name actually correspond to the data
   # in each data file?
   def determine_file_time(path)
-    begin
-      date, hour = date_and_hour_from_path(path)
-    rescue ArgumentError
-      if params[:debug]
-        debug_print("Unable to determine file time from path: #{path}")
-      end
-      # XXX this is a moderately evil hack to avoid removing files that
-      # do not look like they are part of ETL process.
-      # Return current time, assuming only files of some age are removed
-      # this file should be kept alone
-      return Time.now.utc
-    end
+    date, hour = date_and_hour_from_path(path)
     # here we assume file timestamps are in UTC
     year, month, day = date[0..3].to_i, date[4..5].to_i, date[6..7].to_i
     Time.utc(year, month, day, hour)
