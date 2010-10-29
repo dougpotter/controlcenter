@@ -15,6 +15,10 @@ class AkamaiCleanupWorkflow < Workflow::CleanupBase
     channels = data_provider.data_provider_channels.all(:order => 'name')
     channels.each do |channel|
       dir = source_dir_for_channel(channel)
+      # XXX ugly hack to get cleanup functional for initial release.
+      # What should happen is a separate workflow should be instantiated
+      # for every channel, like all other workflows work.
+      @params[:channel] = channel
       cleanup_dir(dir, params)
     end
   end
