@@ -15,6 +15,7 @@ class HttpClient::Curb < HttpClient::Base
   end
   
   def fetch(url)
+    reset
     retry_multi_bad_easy_handle do
       if @debug
         debug_print "Fetch #{url}"
@@ -26,6 +27,7 @@ class HttpClient::Curb < HttpClient::Base
   end
   
   def download(url, local_path)
+    reset
     retry_multi_bad_easy_handle do
       if @debug
         debug_print "Download #{url} -> #{local_path}"
@@ -48,6 +50,7 @@ class HttpClient::Curb < HttpClient::Base
   end
   
   def get_url_content_length(url)
+    reset
     do_head(url)
     
     # curb is pretty pathetic - we have to parse headers ourselves.
@@ -61,6 +64,7 @@ class HttpClient::Curb < HttpClient::Base
   end
   
   def get_url_time(url)
+    reset
     do_head(url) do |curl|
       curl.fetch_file_time = true
     end
@@ -113,6 +117,10 @@ class HttpClient::Curb < HttpClient::Base
   
   def create_curl
     @curl = Curl::Easy.new
+    setup_curl
+  end
+  
+  def setup_curl
     @curl.userpwd = "#{@options[:http_username]}:#{@options[:http_password]}"
     if @options[:timeout]
       # note: curl's timeout applies to the entire download operation
@@ -125,6 +133,11 @@ class HttpClient::Curb < HttpClient::Base
         raise NotImplementedError, "Your version of curb does not support low speed time/limit curl options"
       end
     end
+  end
+  
+  def reset
+    @curl.reset
+    setup_curl
   end
   
   def execute(url)
