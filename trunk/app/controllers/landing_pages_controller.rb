@@ -103,7 +103,7 @@ class LandingPagesController < ApplicationController
       @creatives << campaign.creatives
     end
     @creatives.flatten!
-    debugger
+
     @partners = Partner.find(:all, :order => :name)
     @ad_inventory_sources = AdInventorySource.all(:order => :ais_code)
     @audiences = Audience.all(:order => :audience_code)
