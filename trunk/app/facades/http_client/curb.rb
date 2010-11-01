@@ -10,8 +10,8 @@ class HttpClient::Curb < HttpClient::Base
   def initialize(options={})
     super(options)
     @options = options
-    create_curl
     @debug = options[:debug]
+    create_curl
   end
   
   def fetch(url)
@@ -121,6 +121,9 @@ class HttpClient::Curb < HttpClient::Base
   end
   
   def setup_curl
+    if @debug
+      @curl.verbose = true
+    end
     @curl.userpwd = "#{@options[:http_username]}:#{@options[:http_password]}"
     if @options[:timeout]
       # note: curl's timeout applies to the entire download operation
