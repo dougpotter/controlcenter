@@ -1,0 +1,7 @@
+h1 | Create New Audience
+>br
+
+% form_for @audience do |f|
+  = render :partial => 'form'
+  = submit_tag('Create Audience')
+
