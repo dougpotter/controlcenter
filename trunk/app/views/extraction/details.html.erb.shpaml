@@ -32,12 +32,18 @@ table id=file_table class=extraction-status
   tr
     th | Url
     th | Status
+    th | Label Date
+    th | Label Hour
   % for file in @files
     tr class="<%= status_to_css_class(file.status) %>"
       td
         = file.url
       td
         = status_name(file.status)
+      td
+        = file.label_date.strftime('%Y%m%d')
+      td
+        = file.label_hour
 
 p
   = link_to 'Previous day', url_for(:date => @previous_day)
