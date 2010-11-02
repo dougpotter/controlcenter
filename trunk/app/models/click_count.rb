@@ -1,5 +1,3 @@
-require_dependency 'custom_validations'
-
 # == Schema Information
 # Schema version: 20100819181021
 #

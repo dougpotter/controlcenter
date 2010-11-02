@@ -1,5 +1,3 @@
-require_dependency 'custom_validations'
-
 class UniqueImpressionCount < ActiveRecord::Base
   acts_as_unique_fact
 

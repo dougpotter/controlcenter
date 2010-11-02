@@ -1,5 +1,3 @@
-require_dependency 'dimension_behaviors'
-
 class FactAggregation 
   attr_accessor :fact_rows
   attr_accessor :fact_names

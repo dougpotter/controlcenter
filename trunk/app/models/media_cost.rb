@@ -1,5 +1,3 @@
-require_dependency 'custom_validations'
-
 class MediaCost < ActiveRecord::Base
   acts_as_additive_fact
 

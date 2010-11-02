@@ -1,5 +1,3 @@
-require_dependency 'custom_validations'
-
 class Ecpm < ActiveRecord::Base
   acts_as_unique_fact
 

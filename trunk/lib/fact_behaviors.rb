@@ -1,5 +1,3 @@
-require_dependency 'dimension_behaviors'
-
 module FactBehaviors
   TIME_FORMAT = "%Y-%m-%d %H:%M:%S".freeze
 
