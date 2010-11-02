@@ -44,8 +44,17 @@ module AkamaiAccess
     
     # -----
     
+    # Determines whether path is in requested date and/or hour
     def should_download_url?(path)
-      File.basename(path) =~ regexp_to_download
+      date, start_hour, end_hour = date_and_hours_from_path(path)
+      if hour
+        int_date = date.to_i * 24
+        params_hour = params[:date].to_i * 24 + params[:hour]
+        int_date + start_hour <= params_hour &&
+          int_date + end_hour > params_hour
+      else
+        date == params[:date]
+      end
     end
     
     # -----
@@ -82,32 +91,6 @@ module AkamaiAccess
     def build_s3_path(local_path)
       filename = File.basename(local_path)
       "#{build_s3_prefix}/#{filename}"
-    end
-    
-    # Builds a regular expression that matches all files that should be
-    # downloaded given workflow parameters, and no other files.
-    #
-    # If hour is given to workflow, the regular expression will match any
-    # file covering the hour. The reason for this is that channels which
-    # are updated daily are updated at different times in a day, so
-    # extracting for example only on hour 0 may cause up to a 23 hour delay
-    # if files happen to be uploaded in hour 1.
-    def regexp_to_download
-      if hour
-        # With hour, for hourly updated channels we want files of
-        # that hour only, but for daily updated channels we want all files
-        # of the day. For channels that are updated every four hours
-        # we have to do a little more work.
-        daily_match = "#{date}0000-2400"
-        four_floor = (hour / 4).to_i * 4
-        four_match = "#{date}#{'%02d' % four_floor}00-#{'%02d' % (four_floor + 4)}00"
-        hourly_match = "#{date}#{'%02d' % hour}00-#{'%02d' % (hour + 1)}00"
-        /(#{daily_match})|(?:#{four_match})|(?:#{hourly_match})/
-      else
-        # Without hour, we want to get all files for extraction date
-        # regardless of channel update frequency.
-        /#{date}\d{4}-\d{4}/
-      end
     end
     
     def url_to_relative_data_source_path(data_provider_path)
