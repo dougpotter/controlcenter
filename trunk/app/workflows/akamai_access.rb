@@ -46,7 +46,12 @@ module AkamaiAccess
     
     # Determines whether path is in requested date and/or hour
     def should_download_url?(path)
-      date, start_hour, end_hour = date_and_hours_from_path(path)
+      begin
+        date, start_hour, end_hour = date_and_hours_from_path(path)
+      rescue ArgumentError
+        # not an actual data file
+        return false
+      end
       if hour
         int_date = date.to_i * 24
         params_hour = params[:date].to_i * 24 + params[:hour]
