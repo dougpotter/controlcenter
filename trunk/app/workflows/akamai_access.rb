@@ -103,14 +103,25 @@ module AkamaiAccess
     end
     
     def determine_label_date_hour_from_data_provider_file(path)
-      date, start_hour, end_hour = date_and_hours_from_path(path)
-      # Use end hour for now - pretty arbitrary choice at the moment.
-      [date, end_hour]
-    rescue ArgumentError => exc
-      new_message = "Failed to determine label date/hour range from data provider file: #{exc.message}"
-      converted_exc = Workflow::DataProviderFileBogus.new(new_message)
-      converted_exc.set_backtrace(exc.backtrace)
-      raise converted_exc
+      begin
+        date, start_hour, end_hour = date_and_hours_from_path(path)
+      rescue ArgumentError => exc
+        new_message = "Failed to determine label date/hour range from data provider file: #{exc.message}"
+        converted_exc = Workflow::DataProviderFileBogus.new(new_message)
+        converted_exc.set_backtrace(exc.backtrace)
+        raise converted_exc
+      end
+      
+      # Akamai log files contain data up to the end hour, so use end hour.
+      hour = end_hour
+      
+      # Akamai end hour may be 24 which is not a valid hour. If hour=24,
+      # set hour=0 of the following day.
+      if hour == 24
+        date = next_day(date)
+        hour = 0
+      end
+      [date, hour]
     end
     
     def date_and_hours_from_path(path)
@@ -138,6 +149,16 @@ module AkamaiAccess
       end
       
       Dir.entries(dir).reject { |entry| entry == '.' || entry == '..' }.sort
+    end
+    
+    # -----
+    
+    def next_day(date)
+      (Date.parse(date) + 1.day).strftime('%Y%m%d')
+    end
+    
+    def previous_day(date)
+      (Date.parse(date) - 1.day).strftime('%Y%m%d')
     end
   end
 end
