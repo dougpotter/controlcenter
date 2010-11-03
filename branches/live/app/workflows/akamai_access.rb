@@ -44,8 +44,40 @@ module AkamaiAccess
     
     # -----
     
+    # Determines whether path is in requested date and/or hour.
     def should_download_url?(path)
-      File.basename(path) =~ regexp_to_download
+      begin
+        date, start_hour, end_hour = date_and_hours_from_path(path)
+      rescue ArgumentError
+        # not an actual data file
+        return false
+      end
+      
+      int_date = Time.parse(date).to_i / 3600
+      if hour
+        # point in range check
+        params_hour = Time.parse(params[:date]).to_i / 3600 + params[:hour]
+        
+        # note that later endpoint is the closed one
+        int_date + start_hour < params_hour &&
+          int_date + end_hour >= params_hour
+      else
+        # range in range check.
+        # note that akamai ranges are no bigger than one day,
+        # and without hour params range is exactly one day.
+        # we therefore may check if akamai range is within params range
+        # and not check the inverse.
+        file_start = int_date + start_hour
+        file_end = int_date + end_hour
+        params_start = Time.parse(params[:date]).to_i / 3600
+        params_end = params_start + 24
+        
+        # note that later endpoint is the closed one.
+        # note that we need to allow equality on both ends for e.g.
+        # the case when the file covers a full day
+        params_start <= file_start && params_end >= file_end ||
+          params_start <= file_end && params_end >= file_end
+      end
     end
     
     # -----
@@ -84,32 +116,6 @@ module AkamaiAccess
       "#{build_s3_prefix}/#{filename}"
     end
     
-    # Builds a regular expression that matches all files that should be
-    # downloaded given workflow parameters, and no other files.
-    #
-    # If hour is given to workflow, the regular expression will match any
-    # file covering the hour. The reason for this is that channels which
-    # are updated daily are updated at different times in a day, so
-    # extracting for example only on hour 0 may cause up to a 23 hour delay
-    # if files happen to be uploaded in hour 1.
-    def regexp_to_download
-      if hour
-        # With hour, for hourly updated channels we want files of
-        # that hour only, but for daily updated channels we want all files
-        # of the day. For channels that are updated every four hours
-        # we have to do a little more work.
-        daily_match = "#{date}0000-2400"
-        four_floor = (hour / 4).to_i * 4
-        four_match = "#{date}#{'%02d' % four_floor}00-#{'%02d' % (four_floor + 4)}00"
-        hourly_match = "#{date}#{'%02d' % hour}00-#{'%02d' % (hour + 1)}00"
-        /(#{daily_match})|(?:#{four_match})|(?:#{hourly_match})/
-      else
-        # Without hour, we want to get all files for extraction date
-        # regardless of channel update frequency.
-        /#{date}\d{4}-\d{4}/
-      end
-    end
-    
     def url_to_relative_data_source_path(data_provider_path)
       absolute_to_relative_path(params[:data_source_root], data_provider_path)
     end
@@ -120,14 +126,25 @@ module AkamaiAccess
     end
     
     def determine_label_date_hour_from_data_provider_file(path)
-      date, start_hour, end_hour = date_and_hours_from_path(path)
-      # Use end hour for now - pretty arbitrary choice at the moment.
-      [date, end_hour]
-    rescue ArgumentError => exc
-      new_message = "Failed to determine label date/hour range from data provider file: #{exc.message}"
-      converted_exc = Workflow::DataProviderFileBogus.new(new_message)
-      converted_exc.set_backtrace(exc.backtrace)
-      raise converted_exc
+      begin
+        date, start_hour, end_hour = date_and_hours_from_path(path)
+      rescue ArgumentError => exc
+        new_message = "Failed to determine label date/hour range from data provider file: #{exc.message}"
+        converted_exc = Workflow::DataProviderFileBogus.new(new_message)
+        converted_exc.set_backtrace(exc.backtrace)
+        raise converted_exc
+      end
+      
+      # Akamai log files contain data up to the end hour, so use end hour.
+      hour = end_hour
+      
+      # Akamai end hour may be 24 which is not a valid hour. If hour=24,
+      # set hour=0 of the following day.
+      if hour == 24
+        date = next_day(date)
+        hour = 0
+      end
+      [date, hour]
     end
     
     def date_and_hours_from_path(path)
@@ -155,6 +172,16 @@ module AkamaiAccess
       end
       
       Dir.entries(dir).reject { |entry| entry == '.' || entry == '..' }.sort
+    end
+    
+    # -----
+    
+    def next_day(date)
+      (Date.parse(date) + 1.day).strftime('%Y%m%d')
+    end
+    
+    def previous_day(date)
+      (Date.parse(date) - 1.day).strftime('%Y%m%d')
     end
   end
 end
