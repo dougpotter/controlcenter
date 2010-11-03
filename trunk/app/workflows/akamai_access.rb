@@ -43,7 +43,7 @@ module AkamaiAccess
     
     # -----
     
-    # Determines whether path is in requested date and/or hour
+    # Determines whether path is in requested date and/or hour.
     def should_download_url?(path)
       begin
         date, start_hour, end_hour = date_and_hours_from_path(path)
@@ -51,13 +51,31 @@ module AkamaiAccess
         # not an actual data file
         return false
       end
+      
+      int_date = Time.parse(date).to_i / 3600
       if hour
-        int_date = date.to_i * 24
-        params_hour = params[:date].to_i * 24 + params[:hour]
-        int_date + start_hour <= params_hour &&
-          int_date + end_hour > params_hour
+        # point in range check
+        params_hour = Time.parse(params[:date]).to_i / 3600 + params[:hour]
+        
+        # note that later endpoint is the closed one
+        int_date + start_hour < params_hour &&
+          int_date + end_hour >= params_hour
       else
-        date == params[:date]
+        # range in range check.
+        # note that akamai ranges are no bigger than one day,
+        # and without hour params range is exactly one day.
+        # we therefore may check if akamai range is within params range
+        # and not check the inverse.
+        file_start = int_date + start_hour
+        file_end = int_date + end_hour
+        params_start = Time.parse(params[:date]).to_i / 3600
+        params_end = params_start + 24
+        
+        # note that later endpoint is the closed one.
+        # note that we need to allow equality on both ends for e.g.
+        # the case when the file covers a full day
+        params_start <= file_start && params_end >= file_end ||
+          params_start <= file_end && params_end >= file_end
       end
     end
     
