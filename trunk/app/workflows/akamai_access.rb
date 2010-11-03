@@ -15,14 +15,13 @@ module AkamaiAccess
   module InstanceMethods
     private
     
-    def list_data_source_files
+    def list_all_data_source_files
       dir = source_dir_for_channel
       entries = useful_directory_entries(dir)
       absolute_paths = entries.map { |entry| File.join(dir, entry) }
       
       possibly_record_source_urls_discovered(absolute_paths)
       
-      absolute_paths.reject! { |path| !should_download_url?(path) }
       absolute_paths
     end
     

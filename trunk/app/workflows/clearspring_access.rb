@@ -19,7 +19,7 @@ module ClearspringAccess
     
     private
     
-    def list_data_source_files
+    def list_all_data_source_files
       with_process_status(:action => 'listing files') do
         url = build_data_source_url
         page_text = retry_network_errors(@network_error_retry_options) do
@@ -30,7 +30,6 @@ module ClearspringAccess
         
         possibly_record_source_urls_discovered(absolute_file_urls)
         
-        absolute_file_urls.reject! { |url| !should_download_url?(url) }
         absolute_file_urls
       end
     end

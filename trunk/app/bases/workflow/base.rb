@@ -126,6 +126,13 @@ module Workflow
     
     # ------
     
+    def list_data_source_files
+      absolute_file_urls = list_all_data_source_files
+      absolute_file_urls.reject { |url| !should_download_url?(url) }
+    end
+    
+    # ------
+    
     def debug_print(msg)
       logger.debug(self.class.name) { msg }
     end
