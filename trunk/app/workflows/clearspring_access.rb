@@ -91,6 +91,16 @@ module ClearspringAccess
       raise converted_exc
     end
     
+    def determine_name_date_from_data_provider_file(path)
+      date, hour = date_and_hour_from_path(path)
+      date
+    rescue ArgumentError => exc
+      new_message = "Failed to determine label date/hour from data provider file: #{exc.message}"
+      converted_exc = Workflow::DataProviderFileBogus.new(new_message)
+      converted_exc.set_backtrace(exc.backtrace)
+      raise converted_exc
+    end
+    
     # name should be a file basename.
     def date_and_hour_from_name(name)
       regexp = /\.(\d{8})-(\d\d)00\./
@@ -102,14 +112,16 @@ module ClearspringAccess
       [date, hour]
     end
     
-    def build_s3_prefix
-      # date is required, it should always be given to workflow
-      "#{params[:clearspring_pid]}/v2/raw-#{channel.name}/#{params[:date]}"
+    def build_s3_prefix(path)
+      prefix = "#{params[:clearspring_pid]}/v2/raw-#{channel.name}"
+      # XXX we could use basename here
+      date = determine_name_date_from_data_provider_file(path)
+      "#{prefix}/#{date}"
     end
     
     def build_s3_path(local_path)
       filename = File.basename(local_path)
-      "#{build_s3_prefix}/#{filename}"
+      "#{build_s3_prefix(local_path)}/#{filename}"
     end
   end
 end
