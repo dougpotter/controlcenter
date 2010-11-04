@@ -61,6 +61,8 @@ set :scm, :subversion
 # is required on each remote machine to populate subversion auth cache.
 set :scm_username, 'xgraph'
 set :scm_auth_cache, true
+# do not specify subversion username for local operations
+set :local_scm_username, nil
 
 set :deploy_via, :remote_cache
 
