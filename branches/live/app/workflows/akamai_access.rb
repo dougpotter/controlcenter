@@ -97,8 +97,7 @@ module AkamaiAccess
       File.join(params[:data_source_root], channel.name)
     end
     
-    def build_s3_prefix
-      # date is required, it should always be given to workflow.
+    def build_s3_prefix(path)
       # XXX fragile stuff here
       # XXX qa is lumped with partners
       dirname = File.dirname(channel.name)
@@ -108,12 +107,14 @@ module AkamaiAccess
       else
         "#{basename}/raw"
       end
-      "#{prefix}/#{params[:date]}"
+      # XXX we could use basename here
+      date = determine_name_date_from_data_provider_file(path)
+      "#{prefix}/#{date}"
     end
     
     def build_s3_path(local_path)
       filename = File.basename(local_path)
-      "#{build_s3_prefix}/#{filename}"
+      "#{build_s3_prefix(local_path)}/#{filename}"
     end
     
     def url_to_relative_data_source_path(data_provider_path)
@@ -145,6 +146,16 @@ module AkamaiAccess
         hour = 0
       end
       [date, hour]
+    end
+    
+    def determine_name_date_from_data_provider_file(path)
+      date, start_hour, end_hour = date_and_hours_from_path(path)
+      date
+    rescue ArgumentError => exc
+      new_message = "Failed to determine label date/hour range from data provider file: #{exc.message}"
+      converted_exc = Workflow::DataProviderFileBogus.new(new_message)
+      converted_exc.set_backtrace(exc.backtrace)
+      raise converted_exc
     end
     
     def date_and_hours_from_path(path)
