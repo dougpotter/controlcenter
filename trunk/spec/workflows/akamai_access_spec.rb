@@ -45,4 +45,26 @@ describe AkamaiAccess do
     start_hour.should == 0
     end_hour.should == 24
   end
+  
+  it 'should determine name date correctly when log file time range does not end on midnight' do
+    date = @wrapper.determine_name_date_from_data_provider_file('xgraph_f.201010302000-2100.0.log.gz')
+    date.should == '20101030'
+  end
+  
+  it 'should determine name date correctly when log file time range ends on midnight' do
+    date = @wrapper.determine_name_date_from_data_provider_file('xgraph_f.201010302000-2400.0.log.gz')
+    date.should == '20101030'
+  end
+  
+  it 'should determine label date and hour correctly when log file time range does not end on midnight' do
+    label_date, label_hour = @wrapper.determine_label_date_hour_from_data_provider_file('xgraph_f.201010302000-2100.0.log.gz')
+    label_date.should == '20101030'
+    label_hour.should == 21
+  end
+  
+  it 'should determine label date and hour correctly when log file time range ends on midnight' do
+    label_date, label_hour = @wrapper.determine_label_date_hour_from_data_provider_file('xgraph_f.201010302000-2400.0.log.gz')
+    label_date.should == '20101031'
+    label_hour.should == 0
+  end
 end
