@@ -31,11 +31,11 @@ module Workflow
     # -----
     
     def list_bucket_items
-      @s3_client.list_bucket_items(s3_bucket, build_s3_prefix)
+      @s3_client.list_bucket_items(s3_bucket, build_s3_dirname_for_params)
     end
     
     def list_bucket_files
-      @s3_client.list_bucket_files(s3_bucket, build_s3_prefix)
+      @s3_client.list_bucket_files(s3_bucket, build_s3_dirname_for_params)
     end
     
     # -----
