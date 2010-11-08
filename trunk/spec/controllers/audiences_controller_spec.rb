@@ -3,7 +3,9 @@ require 'spec_helper'
 describe AudiencesController, "create with a valid audience" do
 
   before(:each) do 
-    Audience.stub!(:new).and_return(@audience = mock_model(Audience, :save! => true, :valid? => true))
+    @audience = mock(:save => true, :valid? => true)
+    Audience.expects(:new).with("audience_code" => "ACODE").returns(@audience)
+    #Audience.stub!(:new).and_return(@audience = mock_model(Audience, :save! => true, :valid? => true))
   end
 
   def do_create
@@ -11,12 +13,11 @@ describe AudiencesController, "create with a valid audience" do
   end
 
   it "should create the Audience" do
-    Audience.should_receive(:new).with("audience_code" => "ACODE").and_return(@audience)
     do_create
   end
 
   it "should save the Audience" do
-    @audience.should_receive(:save!).and_return(true)
+    @audience.expects(:save).returns(true)
     do_create
   end
 
@@ -39,7 +40,10 @@ end
 describe AudiencesController, "create with an invalid audience" do
 
   before(:each) do
-    Audience.stub!(:new).and_return(@audience = mock_model(Audience, :save! => false, :valid? => false))
+    @audience = mock()
+    Audience.expects(:new).with("audience_code" => "").returns(@audience)
+    Audience.expects(:find).returns(@audiences = [mock(), mock()])
+    @audience.expects(:save).returns(false)
   end
 
   def do_create
@@ -47,13 +51,12 @@ describe AudiencesController, "create with an invalid audience" do
   end
 
   it "should create an audience" do
-    Audience.should_receive(:new).with("audience_code" => "").and_return(@audience)
     do_create
   end
 
   it "should be be redirect" do
     do_create
-    response.should be_redirect
+    response.should render_template('new')
   end
 
   it "should assign audience" do
