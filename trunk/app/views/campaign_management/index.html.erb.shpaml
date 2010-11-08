@@ -2,6 +2,7 @@ div id=graph_selector_panel
   >br
   = link_to 'New Campaign', new_campaign_path
   = link_to 'New Audience', new_audience_path
+  = link_to 'New Advertiser', new_partner_path
 div style='clear:both;'
   >br
   >br

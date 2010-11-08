@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101020135231) do
+ActiveRecord::Schema.define(:version => 20101103174235) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -182,6 +182,7 @@ ActiveRecord::Schema.define(:version => 20101020135231) do
     t.integer  "label_hour"
   end
 
+  add_index "data_provider_files", ["data_provider_channel_id", "url"], :name => "index_data_provider_files_on_data_provider_channel_id_and_url", :unique => true
   add_index "data_provider_files", ["data_provider_channel_id"], :name => "data_provider_files_data_provider_channel_id_fk"
 
   create_table "data_providers", :force => true do |t|

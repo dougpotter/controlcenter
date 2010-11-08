@@ -41,6 +41,7 @@ ActionController::Routing::Routes.draw do |map|
     :conditions => { :method => :put }
   
   map.resources :campaigns, :controller => 'campaign_management', :as => 'campaign_management'
+  map.resources :partners
   
   map.extraction_index '/extraction',
     :controller => 'extraction', :action => 'index'

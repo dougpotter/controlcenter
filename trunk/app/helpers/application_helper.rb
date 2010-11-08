@@ -15,6 +15,6 @@ module ApplicationHelper
   end
 
   def currently_campaign_management?
-    %w(campaign_management audiences).include?(controller.controller_name)
+    %w(campaign_management audiences partners ad_inventory_sources creatives).include?(controller.controller_name)
   end
 end
