@@ -141,7 +141,7 @@ module Workflow
       workflow_class = options[:workflow_class]
       workflow_class ||= "#{options[:data_provider_name]}CleanupWorkflow".constantize
       settings = workflow_class.configuration
-      workflow = workflow_class.new(settings)
+      workflow = workflow_class.new(settings.to_hash)
       workflow.cleanup
     end
     module_function :cleanup
