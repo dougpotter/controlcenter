@@ -23,6 +23,7 @@ class Audience < ActiveRecord::Base
   has_many :impression_counts
 
   validates_presence_of :audience_code
+  validates_uniqueness_of :audience_code
 
   acts_as_dimension
   business_index :audience_code, :aka => "aid"

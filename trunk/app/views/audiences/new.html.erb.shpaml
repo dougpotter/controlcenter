@@ -5,3 +5,12 @@ h1 | Create New Audience
   = render :partial => 'form'
   = submit_tag('Create Audience')
 
+>br
+>br
+>br
+h2 | Audience Codes Already in Use
+>br
+
+% for audience in @audiences
+  = "#{audience.audience_code.to_s} - #{audience.description}</br>"
+
