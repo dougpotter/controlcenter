@@ -1,0 +1,16 @@
+= error_messages_for :ais
+
+div class='dimension_input'
+  label for="ais_code" | AIS Code:
+  >br
+
+  = text_field('ad_inventory_source', 'ais_code')
+
+div class='dimension_input'
+  label for="name" | Name:
+  >br
+
+  = text_field('ad_inventory_source', 'name')
+
+div style='clear:both;'
+  >br

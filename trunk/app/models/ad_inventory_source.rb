@@ -18,6 +18,7 @@ class AdInventorySource < ActiveRecord::Base
   has_many :impression_counts
 
   validates_presence_of :ais_code
+  validates_uniqueness_of :ais_code
 
   acts_as_dimension
   business_index :ais_code, :aka => "ais"

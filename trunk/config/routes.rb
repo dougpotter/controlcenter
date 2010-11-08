@@ -41,7 +41,6 @@ ActionController::Routing::Routes.draw do |map|
     :conditions => { :method => :put }
   
   map.resources :campaigns, :controller => 'campaign_management', :as => 'campaign_management'
-  map.resources :partners
   
   map.extraction_index '/extraction',
     :controller => 'extraction', :action => 'index'
@@ -51,6 +50,9 @@ ActionController::Routing::Routes.draw do |map|
     :controller => 'extraction', :action => 'details'
 
   map.resources :audiences
+  map.resources :partners
+  map.resources :ad_inventory_sources
+  map.resources :creatives
 
   # You can have the root of your site routed with map.root -- just remember to delete public/index.html.
   map.root :controller => "landing_pages",

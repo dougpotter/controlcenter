@@ -3,6 +3,8 @@ div id=graph_selector_panel
   = link_to 'New Campaign', new_campaign_path
   = link_to 'New Audience', new_audience_path
   = link_to 'New Advertiser', new_partner_path
+  = link_to 'New AIS', new_ad_inventory_source_path
+  = link_to 'New Creative(s)', new_creative_path
 div style='clear:both;'
   >br
   >br
