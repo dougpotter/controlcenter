@@ -34,11 +34,13 @@ module Workflow
         hold_threshold = now - mtime_hold
       end
       
-      # if dir is a symlink, then on linux File.find(dir) only yields dir.
-      # Resolve symlinks manually here for dir.
-      dir = resolve_symlink(dir)
+      # If dir is a symlink, then on linux File.find(dir) only yields dir.
+      # Resolving symlinks is dangerous since then paths may not match the
+      # ones used in extraction for when :only_verified was given.
+      # The trick is to append a slash at the end of the path.
+      slashed_dir = dir.ends_with?('/') ? dir : dir + '/'
       
-      Find.find(dir) do |path|
+      Find.find(slashed_dir) do |path|
         if %w(.svn .git).include?(File.basename(path))
           Find.prune
         end
@@ -70,18 +72,6 @@ module Workflow
           FileUtils.rm(path)
         end
       end
-    end
-    
-    def resolve_symlink(dir)
-      while File.symlink?(dir)
-        target = File.readlink(dir)
-        if target.starts_with?('/')
-          dir = target
-        else
-          dir = File.join(File.dirname(dir), target)
-        end
-      end
-      dir
     end
   end
 end
