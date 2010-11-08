@@ -45,19 +45,7 @@ div class=dimension_input
   label for="campaign_partner_id" | Partner:
   >br
   
-  = select('campaign', 'partner_id', new_partner_option + options_from_collection_for_select(@partners, :id, :name, @campaign.partner_id), {}, { :onchange => "alert_partner();" })
-
-div class=dimension_input
-  label for='' | New partner name:
-  >br
-  
-  = text_field('new_partner', 'name', :size => 10)
-
-div class=dimension_input
-  label for='' | New partner code:
-  >br
-  
-  = text_field('new_partner', 'partner_code', :size => 5)
+  = select('campaign', 'partner_id', blank_partner_option + options_from_collection_for_select(@partners, :id, :name, @campaign.partner_id), {}, { :onchange => "alert_partner();" })
 
 div style='clear:both;'
   >br
