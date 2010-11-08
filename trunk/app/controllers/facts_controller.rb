@@ -48,10 +48,12 @@ class FactsController < ApplicationController
       fact = fact_class.new(params)
       unless fact.save!
         render :text => nil, :status => 422
+        return
       end
     end
 
     render :text => nil, :status => 200
+    return
   end
 
   def update
