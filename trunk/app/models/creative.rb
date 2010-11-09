@@ -24,5 +24,12 @@ class Creative < ActiveRecord::Base
 
   acts_as_dimension
   business_index :creative_code, :aka => "crid"
-
+  
+  def creative_code_and_name
+    if description == ""
+      creative_code
+    else
+      "#{creative_code} - #{description}"
+    end
+  end
 end

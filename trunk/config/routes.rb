@@ -33,6 +33,8 @@ ActionController::Routing::Routes.draw do |map|
   map.metrics_report '/home/metrics/report', :controller => 'landing_pages', :action => 'report'
   map.metrics_home "/home/metrics", :controller => "landing_pages", :action => "metrics" 
   map.update_form "/home/metrics/update_form", :controller => "landing_pages", :action => "update_form"
+
+  map.connect "/creatives/new_creative_line", :controller => "creatives", :action => "new_creative_line"
   
   # Facts are known on the outside as "metrics"
   map.resources :facts, :as => "metrics"

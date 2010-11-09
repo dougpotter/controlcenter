@@ -1,0 +1,31 @@
+= error_messages_for :creative
+
+div class=dimension_input
+  label for='creative_code' | Creative Code:
+  >br
+  = text_field('creative', 'creative_code')
+
+div class=dimension_input
+  label for='name' | Name:
+  >br
+  = text_field('creative', 'description')
+
+div class=dimension_input
+  label for='media_type' | Media Type:
+  >br
+  = text_field('creative', 'media_type')
+
+div class=dimension_input
+  label for='creative_size' | Creative Size:
+  >br
+  = collection_select('creative', 'creative_size', @creative_sizes, :id, :common_name)
+
+  >br
+div class=dimension_input
+  label for='creative_campaign' | Campaign:
+  >br
+  = collection_select('creative', 'campaigns', @campaigns, :id, :campaign_code_and_description)
+
+div style='clear:both;'
+  >br
+
