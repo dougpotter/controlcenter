@@ -2,6 +2,20 @@
 
 @import "extraction";
 
+a {
+  color: black;
+}
+
+a:hover {
+  color: #3c3d3f;
+  text-decoration: underline;
+}
+
+.horizontal_link_list#href {
+  color: red;
+  text-align: center;
+}
+
 body {
 	font-family: Arial, Helvetica, sans-serif;
 	margin-top: 0px;
@@ -176,4 +190,9 @@ label {
 #graph_selector_submit_wrapper {
   padding-top: 15px;
   float: right;
+}
+
+.raw_list {
+  font-size: 15px;
+  color: #3c3d3f;
 }
