@@ -31,9 +31,9 @@ describe AudiencesController, "create with a valid audience" do
     assigns(:audience).should == @audience
   end
 
-  it "should redirect to campaigns_path" do
+  it "should redirect to new audience path" do
     do_create
-    response.should redirect_to(campaigns_path)
+    response.should redirect_to(new_audience_path)
   end
 end
 

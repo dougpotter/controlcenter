@@ -15,7 +15,7 @@ class AudiencesController < ApplicationController
   def create
     @audience = Audience.new(params[:audience])
     if @audience.save
-      redirect_to campaigns_path
+      redirect_to :action => :new
     else
       @audiences = Audience.find(:all)
       render :action => :new
@@ -49,6 +49,6 @@ class AudiencesController < ApplicationController
     end
     @audiences.flatten!
     puts @audiences.size
-    render :partial => 'summary_table'
+    render :partial => 'layouts/edit_table', :locals => { :collection => @audiences, :header_names => ["Audience Code", "Description"], :fields => ["audience_code", "description"], :class_name => "audience_summary", :width => "500", :edit_path => edit_audience_path(1) }
   end
 end
