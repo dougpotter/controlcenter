@@ -11,4 +11,4 @@ h1 | Edit Existing Advertiser
 >br
 
 div id=summary_table
-  = render :partial => 'summary_table'
+  = render :partial => 'layouts/edit_table', :locals => { :collection => @partners, :header_names => ["Name", "Partner Code"], :fields => ["name", "partner_code"], :class_name => "partner_summary", :width => "500", :edit_path => edit_partner_path(1) }

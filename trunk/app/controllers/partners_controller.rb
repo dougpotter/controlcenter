@@ -18,4 +18,17 @@ class PartnersController < ApplicationController
     end
   end
 
+  def edit
+    @partner = Partner.find(params[:id])
+  end
+
+  def update
+    @partner = Partner.find(params[:id])
+    if @partner.update_attributes(params[:partner])
+      redirect_to :action => 'new'
+    else
+      render :action => 'edit', :id => @partner
+    end
+  end
+
 end
