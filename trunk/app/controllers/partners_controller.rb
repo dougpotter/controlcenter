@@ -5,6 +5,7 @@ class PartnersController < ApplicationController
   end
 
   def new
+    @partners = Partner.all
     @partner = Partner.new
   end
 
@@ -16,4 +17,5 @@ class PartnersController < ApplicationController
       render :action => :new
     end
   end
+
 end
