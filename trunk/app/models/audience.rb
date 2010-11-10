@@ -28,6 +28,10 @@ class Audience < ActiveRecord::Base
   acts_as_dimension
   business_index :audience_code, :aka => "aid"
 
+  def audience_code_and_description
+    "#{audience_code} - #{description}"
+  end
+
   class << self
     def generate_audience_code
       CodeGenerator.generate_unique_code(

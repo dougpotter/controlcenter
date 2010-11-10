@@ -1,0 +1,1 @@
+= table_generator(@audiences, ["Audience Code", "Description"], ["audience_code", "description"], "audience_summary", "500")
