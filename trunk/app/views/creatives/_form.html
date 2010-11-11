@@ -14,11 +14,11 @@
 
 <div class="dimension_input"><label for='creative_size'>Creative Size:</label>
 <br />
-<%= collection_select('creative', 'creative_size', @creative_sizes, :id, :common_name) %>
+<%= collection_select('creative', 'creative_size', @creative_sizes, :id, :common_name, :selected => @creative.creative_size_id) %>
 
 <br /></div>
 <div class="dimension_input"><label for='creative_campaign'>Campaign:</label>
 <br />
-<%= collection_select('creative', 'campaigns', @campaigns, :id, :campaign_code_and_description) %></div>
+<%= collection_select('creative', 'campaigns', @campaigns, :id, :campaign_code_and_description, :selected => @creative.campaigns.map {|c| c.id}) %></div>
 
 <div style='clear:both;'><br /></div>

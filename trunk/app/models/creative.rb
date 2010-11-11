@@ -24,6 +24,16 @@ class Creative < ActiveRecord::Base
 
   acts_as_dimension
   business_index :creative_code, :aka => "crid"
+
+  def size_name
+    creative_size.common_name
+  end
+
+  def campaign_descriptions
+    s = campaigns.map! { |c|
+      c.campaign_code_and_description
+    }.join("; ")
+  end
   
   def creative_code_and_name
     if description == ""

@@ -15,9 +15,10 @@ class CreativesController < ApplicationController
 
   def new
     @creative = Creative.new
-    @all_creatives = Creative.all
+    @creatives = Creative.all
     @campaigns = Campaign.all
     @creative_sizes = CreativeSize.all(:order => 'common_name')
+    @partners = Partner.all
   end
 
   def create
@@ -33,8 +34,37 @@ class CreativesController < ApplicationController
     end
   end
 
-  def new_creative_line
-    @creative_sizes = CreativeSize.all(:order => 'common_name')
-    render :partial => 'form'
+  def index_by_advertiser
+    @creatives = []
+    if params[:partner_id] == ""
+      @creatives = Creative.all
+    else
+      Campaign.find_all_by_partner_id(params[:partner_id]).each do |c|
+        @creatives << c.creatives
+      end
+    end
+
+    @creatives.flatten!
+
+    render :partial => 'layouts/edit_table', :locals => { :collection => @creatives, :header_names => ["Creative Code", "Name", "Media Type", "Creative Size", "Campaign"], :fields => ["creative_code", "description", "media_type", "size_name", "campaign_descriptions"], :width => "1100", :class_name => "creatives_summary", :edit_path => edit_creative_path(1) }
+  end
+
+  def edit
+    @creative = Creative.find(params[:id])
+    @creative_sizes = CreativeSize.all
+    @campaigns = Campaign.all
+  end
+
+  def update
+    @creative = Creative.find(params[:id])
+    @campaigns = Campaign.find(params[:creative].delete("campaigns")).to_a
+    @creative_size = CreativeSize.find(params[:creative].delete("creative_size"))
+    params[:creative][:campaigns] = @campaigns
+    params[:creative][:creative_size] = @creative_size
+    if @creative.update_attributes(params[:creative])
+      redirect_to :action => :new
+    else
+      render :action => :edit
+    end
   end
 end
