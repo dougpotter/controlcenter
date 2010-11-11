@@ -5,7 +5,7 @@
     table_str = ""
     table_str += "<table id=\"" + class_name + "\" class=\"" + class_name + "\" width=\"" + width.to_s + "\">\n" 
     table_str += "\t<thead>\n"    
-    table_str += "\t\t<tr>\n"
+    table_str += "\t\t<tr height=\"25\">\n"
     header_names.each do |name|
       table_str += "\t\t\t<th>"
       table_str += name
@@ -18,8 +18,10 @@
       table_str += "\t\t<tr>\n"
       fields.each do |name|
         table_str += "\t\t\t<td>\n"
-        table_str += link_to(col[name].to_s, edit_path.gsub('1', col.id.to_s))
-        table_str += "\t\t\t</td>\n"      end   
+        table_str += link_to(col.send(name), edit_path.gsub('1', col.id.to_s))
+        #table_str += link_to(col[name].to_s, edit_path.gsub('1', col.id.to_s))
+        table_str += "\t\t\t</td>\n"      
+      end   
       table_str += "\t\t</tr>\n"
     end   
     table_str += "\t</tbody>\n"
