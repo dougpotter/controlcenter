@@ -1,5 +1,5 @@
 = error_messages_for :audience
-<script src="/javascripts/filter_audience_by_partner.js" type="text/javascript"></script>
+<script src="/javascripts/filter_by_partner.js" type="text/javascript"></script>
 h1 | Create New Audience
 >br
 
