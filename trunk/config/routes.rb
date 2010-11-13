@@ -37,6 +37,8 @@ ActionController::Routing::Routes.draw do |map|
   map.connect "/creatives/new_creative_line", :controller => "creatives", :action => "new_creative_line"
 
   map.connect "/audiences/index_by_advertiser", :controller => "audiences", :action => "index_by_advertiser"
+
+  map.connect "/creatives/form_without_campaign", :controller => "creatives", :action => "form_without_campaign"
   
   # Facts are known on the outside as "metrics"
   map.resources :facts, :as => "metrics"

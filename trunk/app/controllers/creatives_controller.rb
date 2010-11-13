@@ -3,9 +3,16 @@ class CreativesController < ApplicationController
     partner_id = params[:partner_id]
 
     @relevant_creatives = Set.new
+    if partner_id != "" && !partner_id.nil?
+      for campaign in Partner.find(partner_id).campaigns
+        for creative in campaign.creatives
+          @relevant_creatives << creative
+        end
+      end
+    end
 
-    for campaign in Partner.find(partner_id).campaigns
-      for creative in campaign.creatives
+    for creative in Creative.find(:all, :include => :campaigns)
+      if creative.campaigns == []
         @relevant_creatives << creative
       end
     end
@@ -22,15 +29,32 @@ class CreativesController < ApplicationController
   end
 
   def create
-    @creative_size = CreativeSize.find(params[:creative].delete(:creative_size))
-    @campaign = Campaign.find(params[:creative].delete(:campaigns))
-    @creative = Creative.new(params[:creative])
-    @creative.creative_size = @creative_size
-    @creative.campaigns << @campaign
-    if @creative.save
-      redirect_to new_creative_path
+    @creative = Creative.new
+    @creative.creative_size_id = params[:creative].delete(:creative_size)
+
+    if !params[:creative][:campaigns].nil?
+      @creative.campaigns << Campaign.find(params[:creative].delete(:campaigns))
+    end
+
+    @creative.attributes = params[:creative]
+    
+    if request.referer == new_campaign_url
+      if @creative.save
+        @creative = Creative.new
+        @creative_sizes = CreativeSize.all(:order => 'common_name')
+        render :partial => 'form_without_campaign'
+        return
+      else 
+        render :text => ""
+        return
+      end
     else
-      render :action => :new
+      if @creative.save
+        redirect_to new_creative_path
+      else
+        render :action => :new
+        return
+      end
     end
   end
 
@@ -66,5 +90,11 @@ class CreativesController < ApplicationController
     else
       render :action => :edit
     end
+  end
+
+  def form_without_campaign
+    @creative = Creative.new
+    @creative_sizes = CreativeSize.all
+    render :partial => 'form_without_campaign'
   end
 end

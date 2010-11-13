@@ -1,0 +1,34 @@
+= error_messages_for :object => object
+
+lable for='creative' | Create New Creative
+
+% form_for @creative do |f|
+
+  div class=dimension_input
+    label for="creative_code" | Code:
+    >br 
+
+    = text_field 'creative', 'creative_code', { :size => 5 }
+
+  div class=dimension_input
+    label for="creative_name" | Name:
+    >br 
+
+    = text_field('creative', 'description', :size => 15)
+
+  div class=dimension_input
+    label for="creative_media_type" | Media type:
+    >br 
+
+    = text_field('creative', 'media_type', :size => 10)
+
+  div class=dimension_input
+    label for="creative_size_id" | Size:
+    >br 
+
+    = select('creative', 'creative_size', options_from_collection_for_select(@creative_sizes, :id, :common_name))
+  >br  
+  = submit_tag 'Save', :id => 'creative_submit'
+
+  div style='clear:both;'
+    >br
