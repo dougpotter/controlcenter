@@ -44,7 +44,7 @@ class CreativesController < ApplicationController
     @creative = Creative.new
     @creative.creative_size_id = params[:creative].delete(:creative_size)
 
-    if !params[:creative][:campaigns].nil?
+    if !params[:creative][:campaigns].nil? && params[:creative][:campaigns] != ""
       @creative.campaigns << Campaign.find(params[:creative].delete(:campaigns))
     end
 

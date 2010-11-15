@@ -22,4 +22,8 @@ module ApplicationHelper
   def all_option
     "<option value=''>All</option>"
   end
+
+  def none_option
+    "<option value=''>-</option>"
+  end
 end
