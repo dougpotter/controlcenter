@@ -1,23 +1,35 @@
 class CreativesController < ApplicationController
   def index
     partner_id = params[:partner_id]
+    campaign_code = params[:campaign_code]
 
-    @relevant_creatives = Set.new
+    @partner_creatives = Set.new
     if partner_id != "" && !partner_id.nil?
       for campaign in Partner.find(partner_id).campaigns
         for creative in campaign.creatives
-          @relevant_creatives << creative
+          @partner_creatives << creative
         end
       end
     end
 
-    for creative in Creative.find(:all, :include => :campaigns)
-      if creative.campaigns == []
-        @relevant_creatives << creative
+    @campaign_creatives = Set.new
+    if campaign_code != "" && !campaign_code.nil?
+      for creative in Campaign.find(:first, :conditions => {:campaign_code => campaign_code}).creatives
+        @campaign_creatives << creative
       end
     end
 
+    @partner_creatives -= @campaign_creatives
+    
+    @unassociated_creatives = Set.new
+    for creative in Creative.find(:all, :include => :campaigns)
+      if creative.campaigns == []
+        @unassociated_creatives << creative
+      end
+    end
+    
     render :partial => 'creative_list'
+    return
   end
 
   def new

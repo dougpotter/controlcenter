@@ -1,4 +1,16 @@
-<% for creative in @relevant_creatives %>
+<% if !@campaign_creatives.nil? %>
+<% for creative in @campaign_creatives.sort %>
+<div class="dimension_input">      <%= check_box_tag "use_creatives[#{creative.creative_code}]", 1, true %>
+<label for="use_creatives_<%= creative.id %>"><%= creative.creative_code %></label></div>
+<% end %>
+<% end %>
+<% if !@partner_creatives.nil? %>
+<% for creative in @partner_creatives %>
+<div class="dimension_input">      <%= check_box_tag "use_creatives[#{creative.creative_code}]", 1 %>
+<label for="use_creatives_<%= creative.id %>"><%= creative.creative_code %></label></div>
+<% end %>
+<% end %>
+<% for creative in @unassociated_creatives %>
 <div class="dimension_input">    <%= check_box_tag "use_creatives[#{creative.creative_code}]", 1 %>
 <label for="use_creatives_<%= creative.id %>"><%= creative.creative_code %></label></div>
 <% end %>

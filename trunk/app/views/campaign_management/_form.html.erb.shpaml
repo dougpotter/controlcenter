@@ -23,7 +23,7 @@ div id=left_pane
     label for="campaign_audience_code" | Audience(s):
     >br
    
-    = select_tag('campaign[audience_ids]', options_from_collection_for_select(@audiences, :id, :audience_code), :multiple => true)
+    = select_tag('campaign[audience_ids]', options_from_collection_for_select(@audiences, :id, :audience_code, @campaign.audiences.map { |a| a.id }), :multiple => true)
 
   div id=partner_ais
     div class=dimension_input, id=partner
@@ -67,7 +67,9 @@ div id=right_pane
   div style='clear:both;'
     >br
 
-  <div id=creatives ></div>
+  <div id="creatives"></div>
+
+  <div style='clear:both;'></div>
 
 
 

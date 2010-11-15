@@ -25,6 +25,10 @@ class Creative < ActiveRecord::Base
   acts_as_dimension
   business_index :creative_code, :aka => "crid"
 
+  def <=>(another_creative)
+    self.creative_code <=> another_creative.creative_code 
+  end
+
   def size_name
     creative_size.common_name
   end
