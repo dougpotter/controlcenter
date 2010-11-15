@@ -41,9 +41,6 @@ div id=left_pane
   div style='clear:both;'
     >br
 
-  div class=dimension_input
-      = submit_tag 'Create Campaign', :id => 'create_campaign'
-
 div id=right_pane
   div id=start_date
     div class=dimension_input

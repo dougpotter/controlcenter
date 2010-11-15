@@ -20,8 +20,10 @@ window.addEvent('domready', function(){
 });
 
 var newCreativeForm = function() {
+  var root_url_regex = /((.*?)\/){3}/
+  var new_creative_url = location.href.match(root_url_regex)[0] + "creatives/form_without_campaign"
   var req = new Request.HTML({
-    url: '../creatives/form_without_campaign',
+    url: new_creative_url,
     method: 'get',
     onSuccess: function(txt) {
       // inject new creative form

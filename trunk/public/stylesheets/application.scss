@@ -250,12 +250,12 @@ table tbody {
 }
 
 #new_creative_form {
-  padding-top: 120px;
+  position: absolute;
+  padding-top: 90px;
 }
 
-#create_campaign {
-  float: left;
-  margin-top: 30px;
+#campaign_submit {
+  position: absolute;
 }
 
 #creative_submit {
