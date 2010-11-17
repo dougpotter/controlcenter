@@ -34,7 +34,7 @@ class Creative < ActiveRecord::Base
   end
 
   def campaign_descriptions
-    s = campaigns.map! { |c|
+    s = campaigns.map { |c|
       c.campaign_code_and_description
     }.join("; ")
   end

@@ -24,5 +24,5 @@ label for='partner' | Narrow by Advertiser
 >br
 
 div id=summary_table
-  = render :partial => 'layouts/edit_table', :locals => { :collection => @creatives, :header_names => ["Creative Code", "Name", "Media Type", "Creative Size", "Campaign"], :fields => ["creative_code", "description", "media_type", "size_name", "campaign_descriptions"], :width => "1100", :class_name => "creatives_summary", :edit_path => edit_creative_path(1) }
+  = render :partial => 'layouts/edit_table', :locals => { :collection => @creatives, :header_names => ["Creative Code", "Name", "Media Type", "Creative Size", "Campaign"], :fields => ["creative_code", "description", "media_type", "size_name", "campaign_descriptions"], :width => "700", :class_name => "creatives_summary", :edit_path => edit_creative_path(1) }
 
