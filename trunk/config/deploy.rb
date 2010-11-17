@@ -54,11 +54,8 @@ set :scm, :subversion
 #set :scm_min_version, '1.6.0'
 
 # User specification.
-# Specifying scm_username affects both local and remote operations, thus
-# deploying human users must enter two sets of credentials on their machines.
-# On the other hand, capistrano does not recognize subversion username
-# prompts, so without specifying username here a manual login and checkout
-# is required on each remote machine to populate subversion auth cache.
+# Specifying scm_username by default affects both local and remote operations.
+# We reset local username via local_scm_username below.
 set :scm_username, 'xgraph'
 set :scm_auth_cache, true
 # do not specify subversion username for local operations
