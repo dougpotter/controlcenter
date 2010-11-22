@@ -222,8 +222,10 @@ namespace :deploy do
       symlink
       # Note that if we are using a single database for web application
       # instance and workflow instance, this will migrate the web application
-      # instance also
-      migrate
+      # instance also.
+      # Do not migrate as extraction instances no longer have general
+      # db access privileges.
+      #migrate
     end
   end
 
