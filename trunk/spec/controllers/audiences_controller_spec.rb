@@ -3,7 +3,7 @@ require 'spec_helper'
 describe AudiencesController, "create with a valid audience" do
 
   before(:each) do 
-    @audience = mock(:save => true, :valid? => true)
+    @audience = mock(:save => true)
     Audience.expects(:new).with("audience_code" => "ACODE").returns(@audience)
     #Audience.stub!(:new).and_return(@audience = mock_model(Audience, :save! => true, :valid? => true))
   end
@@ -17,7 +17,6 @@ describe AudiencesController, "create with a valid audience" do
   end
 
   it "should save the Audience" do
-    @audience.expects(:save).returns(true)
     do_create
   end
 
@@ -62,12 +61,5 @@ describe AudiencesController, "create with an invalid audience" do
   it "should assign audience" do
     do_create
     assigns(:audience).should == @audience
-  end
-
-  #TODO: write this test properly...not sure why it's failing, it appear to render
-  #the appropariate form upon creation of invalid audience 
-  it "should re-render the new form" do
-    #do_create
-    #response.should render_template("new")
   end
 end
