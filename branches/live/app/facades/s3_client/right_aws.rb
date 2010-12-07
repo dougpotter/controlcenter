@@ -12,6 +12,8 @@ require 'right_aws'
 require 'digest/md5'
 
 class S3Client::RightAws < S3Client::Base
+  CHUNK_SIZE = 65536
+  
   def initialize(options={})
     super(options)
     right_aws_options = {}
@@ -31,15 +33,21 @@ class S3Client::RightAws < S3Client::Base
   end
   
   def put_file(bucket, remote_path, local_path)
-    content = File.read(local_path)
-    md5 = Digest::MD5.hexdigest(content)
-    
-    if @debug
-      debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
-    end
-    
-    map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
-      @s3.store_object_and_verify(:bucket => bucket, :key => remote_path, :data => content, :md5 => md5)
+    File.open(local_path) do |f|
+      md5 = Digest::MD5.new
+      while chunk = f.read(CHUNK_SIZE)
+        md5.update(chunk)
+      end
+      f.rewind
+      md5 = md5.hexdigest
+      
+      if @debug
+        debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
+      end
+      
+      map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
+        @s3.store_object_and_verify(:bucket => bucket, :key => remote_path, :data => f, :md5 => md5)
+      end
     end
   end
   
