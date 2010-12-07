@@ -18,7 +18,9 @@ class CreativesController < ApplicationController
         @campaign_creatives << creative
       end
     end
-
+    
+    # remove duplicates (creatives associated with both the parter and a campaign
+    # for that partner)
     @partner_creatives -= @campaign_creatives
     
     @unassociated_creatives = Set.new
