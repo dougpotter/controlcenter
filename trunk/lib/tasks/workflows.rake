@@ -7,9 +7,9 @@ namespace :workflows do
       )
     end
     
-    desc 'Verifies as much akamai extraction as possible on a daily basis'
-    task :verify_daily => :environment do
-      Workflow::Shortcuts.verify_daily(
+    desc 'Verifies extraction of recently extracted akamai files'
+    task :verify_hourly => :environment do
+      Workflow::Shortcuts.verify_hourly(
         :data_provider_name => 'Akamai'
       )
     end
@@ -21,9 +21,23 @@ namespace :workflows do
       )
     end
     
-    desc 'Verifies extraction of recently extracted akamai files'
-    task :verify_hourly => :environment do
-      Workflow::Shortcuts.verify_hourly(
+    desc 'Verifies as much akamai extraction as possible on a daily basis'
+    task :verify_daily => :environment do
+      Workflow::Shortcuts.verify_daily(
+        :data_provider_name => 'Akamai'
+      )
+    end
+    
+    desc 'Fall-back akamai extraction pass'
+    task :extract_very_late => :environment do
+      Workflow::Shortcuts.extract_very_late(
+        :data_provider_name => 'Akamai'
+      )
+    end
+    
+    desc 'Fall-back akamai verification pass'
+    task :verify_late => :environment do
+      Workflow::Shortcuts.verify_late(
         :data_provider_name => 'Akamai'
       )
     end
@@ -44,6 +58,13 @@ namespace :workflows do
       )
     end
     
+    desc 'Verifies extraction for hourly updated clearspring channels on an hourly basis'
+    task :verify_hourly => :environment do
+      Workflow::Shortcuts.verify_hourly(
+        :data_provider_name => 'Clearspring'
+      )
+    end
+    
     desc 'Extract already discovered clearspring data files that are uploaded way later than their labeled date'
     task :extract_late => :environment do
       Workflow::Shortcuts.extract_late(
@@ -58,9 +79,16 @@ namespace :workflows do
       )
     end
     
-    desc 'Verifies extraction for hourly updated clearspring channels on an hourly basis'
-    task :verify_hourly => :environment do
-      Workflow::Shortcuts.verify_hourly(
+    desc 'Fallback clearspring extraction pass'
+    task :extract_very_late => :environment do
+      Workflow::Shortcuts.extract_very_late(
+        :data_provider_name => 'Clearspring'
+      )
+    end
+    
+    desc 'Fallback clearspring verification pass'
+    task :verify_late => :environment do
+      Workflow::Shortcuts.verify_late(
         :data_provider_name => 'Clearspring'
       )
     end
