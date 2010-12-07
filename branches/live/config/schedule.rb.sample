@@ -58,6 +58,18 @@ every 1.hour, :at => 15 do
   rake 'workflows:clearspring:verify_hourly'
 end
 
+# Very late extraction pass
+every 1.day, :at => %w(1:20am 1:20pm)  do
+  rake 'workflows:akamai:extract_very_late'
+  rake 'workflows:clearspring:extract_very_late'
+end
+
+# Verification for very late extraction pass
+every 1.day, :at => %w(4:10am 4:10pm) do
+  rake 'workflows:akamai:verify_late'
+  rake 'workflows:clearspring:verify_late'
+end
+
 # It is helpful to understand cron before editing this file:
 # http://en.wikipedia.org/wiki/Cron
 

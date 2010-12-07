@@ -1,22 +1,31 @@
 development: &common
+  data_source_root: 'https://dex.clearspring.com/data/xgraph/v2'
   http_username: 'xgraph'
   http_password: ''
-  net_io_timeout: 60
-  data_source_root: 'https://dex.clearspring.com/data/xgraph/v2'
   download_root_dir: '/home/etltest/data'
   temp_root_dir: '/tmp'
   s3_bucket: xgw
   clearspring_pid: 15530
   
+  late_lookback_from_hour: 72
+  late_lookback_to_hour: 12
+  very_late_lookback_from_day: 14
+  very_late_lookback_to_day: 2
+  
   # Options:
   #
-  # http_client: curb
-  # force_system_timer: true
-  # lock: true
-  # once: true
   # debug: true
+  # debug_output_path: /path/to/log-file-or-template.log
+  # force_system_timer: true
+  # http_client: curb
   # keep_downloaded: true
   # keep_temporary: true
+  # lock: true
+  # net_io_timeout: 60
+  # once: true
+  # quiet: true
+  # record: true
+  # trust_recorded: true
 
 production:
   <<: *common
