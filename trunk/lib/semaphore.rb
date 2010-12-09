@@ -27,9 +27,15 @@ module Semaphore
       
       # transaction should encompass all read queries
       Allocation.transaction do
+        if options[:debug_concurrency]
+          puts 'About to look up resource'
+        end
         resource = Resource.identity(name, location).first
         if resource.nil?
           raise ResourceNotFound, "No resource matching name and location"
+        end
+        if options[:debug_concurrency]
+          puts "Obtained resource (usage=#{resource.usage}, capacity=#{resource.capacity})"
         end
         
         if resource.usage >= resource.capacity
@@ -61,8 +67,25 @@ module Semaphore
         allocation = Allocation.new(:resource => resource, :expires_at => Time.zone.now + timeout)
         allocation.save!
         
+        if options[:debug_delay]
+          puts "Sleeping for 10 seconds"
+          sleep(10)
+        end
+        
         # don't use attribute assignment+save to avoid accidental overwrites
-        Resource.alter_usage(resource.id, 1)
+        if options[:debug_concurrency]
+          puts "About to alter resource usage"
+        end
+        if Resource.alter_usage(resource.id, 1, resource.usage) != 1
+          if options[:debug_concurrency]
+            puts "Concurrent resource modification detected, aborting"
+          end
+          # allocation shoud be destroyed via transaction abort
+          raise ResourceBusy, "Resource busy: #{name}#{location ? " at #{location}" : ''}"
+        end
+        if options[:debug_concurrency]
+          puts "Resource modified, we have the lock"
+        end
       end
       
       allocation.id
@@ -242,12 +265,17 @@ module Semaphore
     
     class << self
       # note that this method accepts nil ids (which would be a no-op)
-      def alter_usage(id, delta)
+      def alter_usage(id, delta, old_usage=nil)
         # usage is a reserved word on mysql, and thus must be quoted
         quoted_usage = quote_identifier('usage')
         quoted_delta = quote_value(delta)
         # XXX clamping usage to 0:infinity here may mask problems
-        update_all("#{quoted_usage} = (case when #{quoted_usage} + #{quoted_delta} > 0 then #{quoted_usage} + #{quoted_delta} else 0 end)", ['id = ?', id])
+        if old_usage
+          conditions = ["id = ? and #{quoted_usage}=?", id, old_usage]
+        else
+          conditions = ["id = ?", id]
+        end
+        update_all("#{quoted_usage} = (case when #{quoted_usage} + #{quoted_delta} > 0 then #{quoted_usage} + #{quoted_delta} else 0 end)", conditions)
       end
       
       def recalculate_usage(id)
