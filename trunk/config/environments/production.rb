@@ -27,5 +27,5 @@ config.action_view.cache_template_loading            = true
 # Enable threaded mode
 # config.threadsafe!
 
-::Sass::Plugin.options[:never_update] = true
-::Sass::Plugin.options[:style] = :compressed
+::LazySass.options[:never_update] = true
+::LazySass.options[:style] = :compressed
