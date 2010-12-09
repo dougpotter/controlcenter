@@ -41,7 +41,10 @@ module ClearspringAccess
     # -----
     
     def build_data_source_url
-      "#{params[:data_source_root]}/#{channel.name}"
+      unless data_source_root = params[:data_source_root]
+        raise ArgumentError, "data_source_root is not specified in params - data source url will not be usable"
+      end
+      "#{data_source_root}/#{channel.name}"
     end
     
     def build_absolute_url(remote_url, file)
