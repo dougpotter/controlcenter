@@ -1,0 +1,32 @@
+= Lazy Sass
+
+== Overview
+
+Lazy Sass is a Ruby on Rails plugin that delays loading of Sass::Plugin
+until it is needed, while permitting configuring Sass::Plugin in
+environment (config/environment/*.rb).
+
+== Usage
+
+Lazy Sass implements two operations: setting configuration and loading
+Sass::Plugin.
+
+=== Setting Configuration
+
+Any options set in LazySass.options will be forwarded to
+Sass::Plugin.options when Sass::Plugin is loaded (see the next section).
+
+== Loading Sass::Plugin
+
+Execute LazySass.load! to load Sass::Plugin and forward options set on
+LazySass to Sass::Plugin.
+
+It is important to use LazySass.load! instead of just requiring or referencing
+Sass so that any options set on LazySass are forwarded to Sass::Plugin.
+
+== License
+
+Lazy Sass is licensed under the MIT license.
+
+Please refer to LICENSE file in the source distribution for complete
+license text.
