@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101214173458) do
+ActiveRecord::Schema.define(:version => 20101214191334) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -136,7 +136,7 @@ ActiveRecord::Schema.define(:version => 20101214173458) do
   end
 
   create_table "creatives", :force => true do |t|
-    t.string   "description"
+    t.string   "name"
     t.string   "media_type"
     t.integer  "creative_size_id",   :null => false
     t.string   "creative_code",      :null => false
