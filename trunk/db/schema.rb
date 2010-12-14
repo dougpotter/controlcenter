@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101103174235) do
+ActiveRecord::Schema.define(:version => 20101214173458) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -136,11 +136,14 @@ ActiveRecord::Schema.define(:version => 20101103174235) do
   end
 
   create_table "creatives", :force => true do |t|
-    t.string  "description"
-    t.string  "media_type"
-    t.integer "creative_size_id", :null => false
-    t.string  "creative_code",    :null => false
-    t.string  "file_name"
+    t.string   "description"
+    t.string   "media_type"
+    t.integer  "creative_size_id",   :null => false
+    t.string   "creative_code",      :null => false
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
   end
 
   add_index "creatives", ["creative_code"], :name => "index_creatives_on_creative_code", :unique => true
