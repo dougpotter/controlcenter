@@ -23,11 +23,10 @@ Factory.define :creative_size do |c|
 end
 
 Factory.define :creative do |c|
-  c.description "creative description"
+  c.name "creative name"
   c.media_type "media type"
   c.creative_size_id {Factory(:creative_size).id}
   c.sequence(:creative_code) { |n| "294v#{n}" }
-  c.file_name "filename.ext"
 end
 
 Factory.define :ad_inventory_source do |f|
