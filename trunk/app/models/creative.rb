@@ -17,6 +17,7 @@ class Creative < ActiveRecord::Base
   has_many :click_counts
   has_many :impression_counts
   has_and_belongs_to_many :campaigns
+  has_attached_file :image
   
   validates_presence_of :creative_code, :creative_size_id
   validates_uniqueness_of :creative_code
