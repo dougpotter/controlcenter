@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101214191334) do
+ActiveRecord::Schema.define(:version => 20101214210308) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -149,21 +149,6 @@ ActiveRecord::Schema.define(:version => 20101214191334) do
   add_index "creatives", ["creative_code"], :name => "index_creatives_on_creative_code", :unique => true
   add_index "creatives", ["creative_size_id"], :name => "creatives_creative_size_id_fk"
 
-  create_table "custom_filters", :force => true do |t|
-    t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "custom_filters_line_items", :id => false, :force => true do |t|
-    t.integer "custom_filter_id",    :null => false
-    t.integer "insertion_orders_id", :null => false
-    t.integer "line_item_id",        :null => false
-  end
-
-  add_index "custom_filters_line_items", ["custom_filter_id"], :name => "custom_filters_line_items_custom_filter_id_fk"
-  add_index "custom_filters_line_items", ["line_item_id"], :name => "custom_filters_line_items_line_item_id_fk"
-
   create_table "data_provider_channels", :force => true do |t|
     t.integer "data_provider_id",   :null => false
     t.string  "name",               :null => false
@@ -292,13 +277,6 @@ ActiveRecord::Schema.define(:version => 20101214191334) do
   add_index "impression_counts", ["creative_id"], :name => "impression_counts_creative_id_fk"
   add_index "impression_counts", ["geography_id"], :name => "impression_counts_geography_id_fk"
   add_index "impression_counts", ["media_purchase_method_id"], :name => "impression_counts_media_purchase_method_id_fk"
-
-  create_table "insertion_orders", :force => true do |t|
-    t.string  "description"
-    t.integer "campaign_id"
-  end
-
-  add_index "insertion_orders", ["campaign_id"], :name => "insertion_orders_campaign_id_fk"
 
   create_table "line_items", :force => true do |t|
     t.integer "impressions"
@@ -518,9 +496,6 @@ ActiveRecord::Schema.define(:version => 20101214191334) do
 
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
 
-  add_foreign_key "custom_filters_line_items", "custom_filters", :name => "custom_filters_line_items_custom_filter_id_fk"
-  add_foreign_key "custom_filters_line_items", "line_items", :name => "custom_filters_line_items_line_item_id_fk"
-
   add_foreign_key "data_provider_channels", "data_providers", :name => "data_provider_channels_data_provider_id_fk"
 
   add_foreign_key "data_provider_files", "data_provider_channels", :name => "data_provider_files_data_provider_channel_id_fk"
@@ -556,8 +531,6 @@ ActiveRecord::Schema.define(:version => 20101214191334) do
   add_foreign_key "impression_counts", "creatives", :name => "impression_counts_creative_id_fk"
   add_foreign_key "impression_counts", "geographies", :name => "impression_counts_geography_id_fk"
   add_foreign_key "impression_counts", "media_purchase_methods", :name => "impression_counts_media_purchase_method_id_fk"
-
-  add_foreign_key "insertion_orders", "campaigns", :name => "insertion_orders_campaign_id_fk"
 
   add_foreign_key "media_costs", "audiences", :name => "media_costs_audience_id_fk"
   add_foreign_key "media_costs", "campaigns", :name => "media_costs_campaign_id_fk"
