@@ -6,7 +6,7 @@
 
 <div class="dimension_input"><label for='name'>Name:</label>
 <br />
-<%= text_field('creative', 'description') %></div>
+<%= text_field('creative', 'name') %></div>
 
 <div class="dimension_input"><label for='media_type'>Media Type:</label>
 <br />
@@ -20,5 +20,9 @@
 <div class="dimension_input"><label for='creative_campaign'>Campaign:</label>
 <br />
 <%= select('creative', 'campaigns', none_option + options_from_collection_for_select(@campaigns, :id, :campaign_code_and_description), :selected => @creative.campaigns.map {|c| c.id}) %></div>
+
+<div class="dimension_input"><label for='creative_image'>Image:</label>
+<br />
+<%= file_field :creative, :image  %></div>
 
 <div style='clear:both;'><br /></div>
