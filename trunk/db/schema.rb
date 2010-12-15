@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101214215151) do
+ActiveRecord::Schema.define(:version => 20101215205847) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(:version => 20101214215151) do
     t.integer  "partner_id"
     t.datetime "start_time"
     t.datetime "end_time"
-    t.integer  "line_item_id",  :default => 10, :null => false
+    t.integer  "line_item_id",  :default => 12, :null => false
   end
 
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
@@ -150,6 +150,14 @@ ActiveRecord::Schema.define(:version => 20101214215151) do
 
   add_index "creatives", ["creative_code"], :name => "index_creatives_on_creative_code", :unique => true
   add_index "creatives", ["creative_size_id"], :name => "creatives_creative_size_id_fk"
+
+  create_table "creatives_line_items", :id => false, :force => true do |t|
+    t.integer "creative_id",  :null => false
+    t.integer "line_item_id", :null => false
+  end
+
+  add_index "creatives_line_items", ["creative_id"], :name => "creatives_line_items_creative_id_fk"
+  add_index "creatives_line_items", ["line_item_id"], :name => "creatives_line_items_line_item_id_fk"
 
   create_table "data_provider_channels", :force => true do |t|
     t.integer "data_provider_id",   :null => false
@@ -502,6 +510,9 @@ ActiveRecord::Schema.define(:version => 20101214215151) do
   add_foreign_key "conversion_counts", "campaigns", :name => "conversion_counts_campaign_id_fk"
 
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
+
+  add_foreign_key "creatives_line_items", "creatives", :name => "creatives_line_items_creative_id_fk"
+  add_foreign_key "creatives_line_items", "line_items", :name => "creatives_line_items_line_item_id_fk"
 
   add_foreign_key "data_provider_channels", "data_providers", :name => "data_provider_channels_data_provider_id_fk"
 
