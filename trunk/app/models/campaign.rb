@@ -21,6 +21,7 @@ class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :audiences
   belongs_to :partner
   belongs_to :insertion_order
+  belongs_to :line_item
 
   has_many :click_counts
   has_many :impression_counts
