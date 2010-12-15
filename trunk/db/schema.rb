@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101214210308) do
+ActiveRecord::Schema.define(:version => 20101214215151) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -47,9 +47,11 @@ ActiveRecord::Schema.define(:version => 20101214210308) do
     t.integer  "partner_id"
     t.datetime "start_time"
     t.datetime "end_time"
+    t.integer  "line_item_id",  :default => 10, :null => false
   end
 
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
+  add_index "campaigns", ["line_item_id"], :name => "campaigns_line_item_id_fk"
   add_index "campaigns", ["partner_id"], :name => "campaigns_partner_id_fk"
 
   create_table "campaigns_creatives", :id => false, :force => true do |t|
@@ -279,11 +281,15 @@ ActiveRecord::Schema.define(:version => 20101214210308) do
   add_index "impression_counts", ["media_purchase_method_id"], :name => "impression_counts_media_purchase_method_id_fk"
 
   create_table "line_items", :force => true do |t|
-    t.integer "impressions"
-    t.float   "internal_pricing"
-    t.float   "external_pricing"
-    t.integer "insertion_order_id"
+    t.string   "line_item_code", :null => false
+    t.string   "name",           :null => false
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer  "partner_id",     :null => false
   end
+
+  add_index "line_items", ["line_item_code"], :name => "index_line_items_on_line_item_code", :unique => true
+  add_index "line_items", ["partner_id"], :name => "line_items_partner_id_fk"
 
   create_table "media_costs", :force => true do |t|
     t.integer  "partner_id",               :null => false
@@ -469,6 +475,7 @@ ActiveRecord::Schema.define(:version => 20101214210308) do
   add_foreign_key "audiences_campaigns", "audiences", :name => "audiences_campaigns_audience_id_fk"
   add_foreign_key "audiences_campaigns", "campaigns", :name => "audiences_campaigns_campaign_id_fk"
 
+  add_foreign_key "campaigns", "line_items", :name => "campaigns_line_item_id_fk"
   add_foreign_key "campaigns", "partners", :name => "campaigns_partner_id_fk"
 
   add_foreign_key "campaigns_creatives", "campaigns", :name => "campaigns_creatives_campaign_id_fk"
@@ -531,6 +538,8 @@ ActiveRecord::Schema.define(:version => 20101214210308) do
   add_foreign_key "impression_counts", "creatives", :name => "impression_counts_creative_id_fk"
   add_foreign_key "impression_counts", "geographies", :name => "impression_counts_geography_id_fk"
   add_foreign_key "impression_counts", "media_purchase_methods", :name => "impression_counts_media_purchase_method_id_fk"
+
+  add_foreign_key "line_items", "partners", :name => "line_items_partner_id_fk"
 
   add_foreign_key "media_costs", "audiences", :name => "media_costs_audience_id_fk"
   add_foreign_key "media_costs", "campaigns", :name => "media_costs_campaign_id_fk"

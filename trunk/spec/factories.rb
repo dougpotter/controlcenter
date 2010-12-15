@@ -4,6 +4,15 @@ Factory.define :campaign do |c|
   c.partner_id { Factory(:partner).id }
   c.start_time Time.now
   c.end_time Time.now + 3600
+  c.line_item_id { Factory(:line_item).id }
+end
+
+Factory.define :line_item do |c|
+  c.sequence(:line_item_code) { |n| "AB#{n}C" }
+  c.name "A Line Item"
+  c.start_time  Time.now
+  c.end_time Time.now + 3600
+  c.partner_id { Factory(:partner).id }
 end
 
 Factory.define :insertion_order do |i|
@@ -12,7 +21,7 @@ Factory.define :insertion_order do |i|
 end
 
 Factory.define :partner do |p|
-  p.name  "Webroot"
+  p.name "Webroot"
   p.sequence(:partner_code) { |n| 2019 + n }
 end
 
