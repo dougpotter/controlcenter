@@ -22,23 +22,13 @@ window.addEvent('domready', function(){
 });
 
 var newCreativeForm = function() {
+  var number_of_creatives = $$('.creative_form_without_line_item').length;
   var root_url_regex = /((.*?)\/){3}/;
-  var new_creative_url = location.href.match(root_url_regex)[0] + "creatives/form_without_campaign";
+  var new_creative_url = location.href.match(root_url_regex)[0] + "creatives/form_without_line_item?creative_number=" + number_of_creatives;
   var req = new Request.HTML({
     url: new_creative_url,
     method: 'get',
-    onSuccess: function(txt) {
-      // inject new creative form
-      $('new_creative_form').set('text', "");
-      $('new_creative_form').adopt(txt);
-      $('creative_submit').addEvent('click', function(event) {        
-        event.stop();        
-        $('new_creative').send();
-        var partner_id = $('campaign_partner_id').getSelected().getProperty('value');
-        var campaign_code = $('campaign_campaign_code').getProperty('value');
-        update_creative_list_req.send({data: "partner_id=" + partner_id + "&campaign_code=" + campaign_code});
-      }); 
-    }       
+    append: $('new_creatives')
   });   
   req.send();
 }

@@ -1,0 +1,29 @@
+= error_messages_for :line_item
+
+div class=dimension_input
+  label for="line_item_line_item_code" | Line Item Code:
+  >br
+  = text_field('line_item', 'line_item_code')
+
+div class=dimension_input
+  label for="line_item_name" | Line Item Name:
+  >br
+  = text_field('line_item', 'name')
+
+div class=dimension_input
+  label for="line_item_start_time" | Start Time:
+  >br
+  = date_select('line_item', 'start_time')
+
+div class=dimension_input
+  label for="line_item_end_time" | End Time:
+  >br
+  = date_select('line_item', 'end_time')
+
+div class=dimension_input
+  label for="line_item_partner_id" | Existing Advertiser:
+  >br
+  = select('line_item', 'partner_id', none_option + options_from_collection_for_select(@partners, 'id', 'name'))
+
+div style='clear:both;'
+  >br
