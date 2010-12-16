@@ -106,9 +106,10 @@ class CreativesController < ApplicationController
     end
   end
 
-  def form_without_campaign
+  def form_without_line_item
+    @num = params[:creative_number]
     @creative = Creative.new
     @creative_sizes = CreativeSize.all
-    render :partial => 'form_without_campaign'
+    render :partial => 'form_without_line_item', :locals => { :creative_number => @num }
   end
 end
