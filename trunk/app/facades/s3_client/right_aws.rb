@@ -62,6 +62,26 @@ class S3Client::RightAws < S3Client::Base
     entries.map { |entry| entry[:key] }
   end
   
+  # prefix is a "directory" name
+  def list_bucket_subdirs(bucket, prefix=nil)
+    # prefix must end with delimiter (slash) for s3 to return correct results
+    prefix = prefix + '/' if prefix && prefix[-1] != ?/
+    entries = list_bucket_subentries(bucket, prefix, '/')
+    # entries contain prefix; remove prefix for usability
+    # entries also contain the delimiter at the end; remove that too
+    prefix_length = if prefix
+      prefix.length
+    else
+      0
+    end
+    entries.map! do |entry|
+      entry[prefix_length..-2]
+    end
+    # note that amazon specifies that keys are listed in alphabetical order,
+    # i.e. they come to us sorted
+    entries
+  end
+  
   private
   
   def create_item(entry)
@@ -86,6 +106,14 @@ class S3Client::RightAws < S3Client::Base
       all_entries += response[:contents]
     end
     all_entries
+  end
+  
+  def list_bucket_subentries(bucket, prefix, delimiter)
+    all_subentries = []
+    @s3.incrementally_list_bucket(bucket, :prefix => prefix, :delimiter => delimiter) do |response|
+      all_subentries += response[:common_prefixes]
+    end
+    all_subentries
   end
   
   def exception_map
