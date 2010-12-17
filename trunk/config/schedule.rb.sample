@@ -19,6 +19,39 @@
 # This needs to be done in addition to commenting out the entry in remote
 # crontab.
 
+# It is helpful to understand cron before editing this file:
+# http://en.wikipedia.org/wiki/Cron
+
+# Example:
+#
+# set :output, "/path/to/my/cron_log.log"
+#
+# every 2.hours do
+#   command "/usr/bin/some_great_command"
+#   runner "MyModel.some_method"
+#   rake "some:great:rake:task"
+# end
+#
+# every 4.days do
+#   runner "AnotherModel.prune_old_records"
+# end
+
+# Learn more: http://github.com/javan/whenever
+
+# Note: every command/runner/rake declaration (like above) is turned into
+# a separate line in crontab. Thus, specifying multiple tasks to be done
+# in a single block at a single time will launch them concurrently and
+# independently from one another. The independence aspect of this behavior
+# may be desirable, but concurrence aspect should be carefully considered
+# as all tasks scheduled for the same time will be trying to load the
+# rails environment concurrently, likely placing significant CPU load on
+# the machine running them.
+
+# Below are sample entries for running various jobs in production.
+# Despite being in a single sample file they do not all go on one machine.
+# For example, akamai extraction happens on ftp.xgraph.net only and
+# clearspring extraction happens on a separate worklfow machine.
+
 # Akamai log files do not appear to be uploaded at a particular time
 # in an hour.
 every 1.hour do
@@ -69,31 +102,3 @@ every 1.day, :at => %w(4:10am 4:10pm) do
   rake 'workflows:akamai:verify_late'
   rake 'workflows:clearspring:verify_late'
 end
-
-# It is helpful to understand cron before editing this file:
-# http://en.wikipedia.org/wiki/Cron
-
-# Example:
-#
-# set :output, "/path/to/my/cron_log.log"
-#
-# every 2.hours do
-#   command "/usr/bin/some_great_command"
-#   runner "MyModel.some_method"
-#   rake "some:great:rake:task"
-# end
-#
-# every 4.days do
-#   runner "AnotherModel.prune_old_records"
-# end
-
-# Learn more: http://github.com/javan/whenever
-
-# Note: every command/runner/rake declaration (like above) is turned into
-# a separate line in crontab. Thus, specifying multiple tasks to be done
-# in a single block at a single time will launch them concurrently and
-# independently from one another. The independence aspect of this behavior
-# may be desirable, but concurrence aspect should be carefully considered
-# as all tasks scheduled for the same time will be trying to load the
-# rails environment concurrently, likely placing significant CPU load on
-# the machine running them.
