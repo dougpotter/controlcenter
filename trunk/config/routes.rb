@@ -54,6 +54,11 @@ ActionController::Routing::Routes.draw do |map|
     :controller => 'extraction', :action => 'overview'
   map.extraction_details '/extraction/details/:date',
     :controller => 'extraction', :action => 'details'
+  
+  map.appnexus_sync '/appnexus/sync',
+    :controller => 'appnexus', :action => 'index'
+  map.new_appnexus_sync '/appnexus/sync/new',
+    :controller => 'appnexus', :action => 'new'
 
   map.resources :audiences
   map.resources :partners

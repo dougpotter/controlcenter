@@ -19,6 +19,10 @@ module ApplicationHelper
     %w(campaign_management audiences partners ad_inventory_sources creatives).include?(controller.controller_name)
   end
 
+  def currently_appnexus?
+    %w(appnexus).include?(controller.controller_name)
+  end
+
   def all_option
     "<option value=''>All</option>"
   end
