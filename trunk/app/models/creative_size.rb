@@ -12,4 +12,8 @@
 class CreativeSize < ActiveRecord::Base
   has_many :creatives
   validates_uniqueness_of :height, :scope => [ :width ]
+
+  def height_width_string
+    "#{height.to_i} x #{width.to_i}"
+  end
 end

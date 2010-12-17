@@ -21,7 +21,7 @@ div id=creative_form_without_line_item class=creative_form_without_line_item
   div class=dimension_input
     label for='creative_size_id' | Creative Size:
     >br
-    = collection_select("creatives[#{creative_number}]", 'creative_size_id', @creative_sizes, :id, :common_name, :selected => @creative.creative_size_id)
+    = collection_select("creatives[#{creative_number}]", 'creative_size_id', @creative_sizes, :id, :height_width_string, :selected => @creative.creative_size_id)
 
     >br
 
