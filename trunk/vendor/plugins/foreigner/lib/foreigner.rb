@@ -19,7 +19,12 @@ module Foreigner
     end
     
     def configured_adapter
-      ActiveRecord::Base.connection.adapter_name.downcase
+      env = if defined?(Rails)
+        Rails.env
+      else
+        RAILS_ENV
+      end
+      ActiveRecord::Base.configurations[env]['adapter'].downcase
     end
     
     def on_load(&block)
