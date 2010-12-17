@@ -32,6 +32,24 @@ class S3Client::RightAws < S3Client::Base
     @debug = options[:debug]
   end
   
+  def get_file(bucket, remote_path, local_path)
+    if @debug
+      debug_print "S3get #{bucket}:#{remote_path} -> #{local_path}"
+    end
+    
+    File.open(local_path, 'w') do |f|
+      get_io(bucket, remote_path, f)
+    end
+  end
+  
+  def get_io(bucket, remote_path, io)
+    map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
+      @s3.get(bucket, remote_path) do |chunk|
+        io.write(chunk)
+      end
+    end
+  end
+  
   def put_file(bucket, remote_path, local_path)
     if @debug
       debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
