@@ -36,5 +36,9 @@ config.gem "rspec", :lib => false, :version => ">= 1.3.0"
 config.gem "rspec-rails", :lib => false, :version => ">= 1.2.0"
 config.gem "factory_girl", :lib => false, :version => ">= 1.3.1"
 
-::LazySass.options[:never_update] = true
-::LazySass.options[:style] = :compressed
+config.after_initialize do
+  DelayedLoad.configure :sass do
+    ::Sass::Plugin.options[:never_update] = true
+    ::Sass::Plugin.options[:style] = :compressed
+  end
+end

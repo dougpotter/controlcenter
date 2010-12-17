@@ -17,6 +17,10 @@ config.action_controller.perform_caching             = false
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
 
-::LazySass.options[:debug_info] = true
+config.after_initialize do
+  DelayedLoad.configure :sass do
+    ::Sass::Plugin.options[:debug_info] = true
+  end
+end
 
 config.middleware.use 'Shpaml::DevelopmentMiddleware'

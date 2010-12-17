@@ -1,6 +1,6 @@
 namespace :compile do
   task :stylesheets => :environment do
-    ::LazySass.load!
+    DelayedLoad.load_sass!
     ::Sass::Plugin.force_update_stylesheets
   end
 end
