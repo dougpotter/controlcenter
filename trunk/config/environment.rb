@@ -40,12 +40,6 @@ Rails::Initializer.run do |config|
   # Do not add dependencies here unless they are truly required
   # by all use cases.
   
-  # Until we develop a plugin that loads haml on demand only when
-  # actually compiling stylesheets, we need to load haml here otherwise
-  # configuring sass in initializers and environment-specific files
-  # kills the app.
-  gem 'haml'
-
   config.gem 'paperclip'
   
   # Only load the plugins named here, in the order given (default is alphabetical).
