@@ -18,7 +18,7 @@ class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :geographies
   has_and_belongs_to_many :ad_inventory_sources
   has_and_belongs_to_many :creatives
-  has_and_belongs_to_many :audiences
+  has_one :audience
   belongs_to :partner
   belongs_to :insertion_order
   belongs_to :line_item
@@ -26,7 +26,7 @@ class Campaign < ActiveRecord::Base
   has_many :click_counts
   has_many :impression_counts
 
-  validates_presence_of :description, :campaign_code
+  validates_presence_of :name, :campaign_code
   validates_uniqueness_of :campaign_code
   validates_presence_of :partner
 

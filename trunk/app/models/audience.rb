@@ -17,7 +17,7 @@
 class Audience < ActiveRecord::Base
   belongs_to :model
   belongs_to :seed_extraction
-  has_and_belongs_to_many :campaigns
+  belongs_to :campaign
 
   has_many :click_counts
   has_many :impression_counts

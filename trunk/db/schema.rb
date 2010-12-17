@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101217155653) do
+ActiveRecord::Schema.define(:version => 20101217164237) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -27,11 +27,13 @@ ActiveRecord::Schema.define(:version => 20101217155653) do
   add_index "ad_inventory_sources_campaigns", ["campaign_id"], :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   create_table "audiences", :force => true do |t|
-    t.string "description"
-    t.string "audience_code", :null => false
+    t.string  "description"
+    t.string  "audience_code", :null => false
+    t.integer "campaign_id"
   end
 
   add_index "audiences", ["audience_code"], :name => "index_audiences_on_audience_code", :unique => true
+  add_index "audiences", ["campaign_id"], :name => "audiences_campaign_id_fk"
 
   create_table "audiences_campaigns", :id => false, :force => true do |t|
     t.integer "audience_id", :null => false
@@ -47,7 +49,7 @@ ActiveRecord::Schema.define(:version => 20101217155653) do
     t.integer  "partner_id"
     t.datetime "start_time"
     t.datetime "end_time"
-    t.integer  "line_item_id",  :default => 12, :null => false
+    t.integer  "line_item_id",                  :null => false
   end
 
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
@@ -479,6 +481,8 @@ ActiveRecord::Schema.define(:version => 20101217155653) do
 
   add_foreign_key "ad_inventory_sources_campaigns", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
   add_foreign_key "ad_inventory_sources_campaigns", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
+
+  add_foreign_key "audiences", "campaigns", :name => "audiences_campaign_id_fk"
 
   add_foreign_key "audiences_campaigns", "audiences", :name => "audiences_campaigns_audience_id_fk"
   add_foreign_key "audiences_campaigns", "campaigns", :name => "audiences_campaigns_campaign_id_fk"
