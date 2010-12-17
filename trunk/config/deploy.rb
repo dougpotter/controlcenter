@@ -134,6 +134,7 @@ define_configuration_tasks(:aws, %w(aws.yml))
 
 define_configuration_tasks(:workflows, %w(
   workflows/akamai.yml
+  workflows/appnexus.yml
   workflows/clearspring.yml
 ))
 
