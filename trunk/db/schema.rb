@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101217164237) do
+ActiveRecord::Schema.define(:version => 20101217211625) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -35,21 +35,13 @@ ActiveRecord::Schema.define(:version => 20101217164237) do
   add_index "audiences", ["audience_code"], :name => "index_audiences_on_audience_code", :unique => true
   add_index "audiences", ["campaign_id"], :name => "audiences_campaign_id_fk"
 
-  create_table "audiences_campaigns", :id => false, :force => true do |t|
-    t.integer "audience_id", :null => false
-    t.integer "campaign_id", :null => false
-  end
-
-  add_index "audiences_campaigns", ["audience_id"], :name => "audiences_campaigns_audience_id_fk"
-  add_index "audiences_campaigns", ["campaign_id"], :name => "audiences_campaigns_campaign_id_fk"
-
   create_table "campaigns", :force => true do |t|
     t.string   "name",          :default => "", :null => false
     t.string   "campaign_code", :default => "", :null => false
     t.integer  "partner_id"
     t.datetime "start_time"
     t.datetime "end_time"
-    t.integer  "line_item_id",                  :null => false
+    t.integer  "line_item_id",  :default => 12, :null => false
   end
 
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
@@ -483,9 +475,6 @@ ActiveRecord::Schema.define(:version => 20101217164237) do
   add_foreign_key "ad_inventory_sources_campaigns", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   add_foreign_key "audiences", "campaigns", :name => "audiences_campaign_id_fk"
-
-  add_foreign_key "audiences_campaigns", "audiences", :name => "audiences_campaigns_audience_id_fk"
-  add_foreign_key "audiences_campaigns", "campaigns", :name => "audiences_campaigns_campaign_id_fk"
 
   add_foreign_key "campaigns", "line_items", :name => "campaigns_line_item_id_fk"
   add_foreign_key "campaigns", "partners", :name => "campaigns_partner_id_fk"
