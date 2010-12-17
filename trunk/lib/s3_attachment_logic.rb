@@ -11,10 +11,7 @@ module S3AttachmentLogic
       DelayedLoad.load_paperclip!
 
       has_attached_file attachment,
-        :storage => :s3,
-        :s3_credentials => "#{RAILS_ROOT}/config/aws.yml",
-        :bucket => bucket, 
-        :path => path
+        PaperclipConfiguration.build_options(bucket)
     end
   end
 end

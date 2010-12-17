@@ -42,3 +42,7 @@ config.after_initialize do
     ::Sass::Plugin.options[:style] = :compressed
   end
 end
+
+config.after_initialize do
+  PaperclipConfiguration.path_prefix = ":rails_root/tmp/test/public"
+end

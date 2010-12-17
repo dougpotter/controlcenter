@@ -33,3 +33,7 @@ config.after_initialize do
     ::Sass::Plugin.options[:style] = :compressed
   end
 end
+
+config.after_initialize do
+  PaperclipConfiguration.storage = :s3
+end
