@@ -93,4 +93,14 @@ namespace :workflows do
       )
     end
   end
+  
+  namespace :appnexus do
+    desc 'Advances appnexus workflows, if any exist that are in progress'
+    task :advance => :environment do
+      jobs = AppnexusSyncJob.processing.all(:order => 'created_at')
+      jobs.each do |job|
+        job.run
+      end
+    end
+  end
 end

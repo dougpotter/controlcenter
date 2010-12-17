@@ -15,6 +15,7 @@ class AppnexusController < ApplicationController
     if @job_parameters.valid?
       @job.parameters = @job_parameters.attributes
       @job.save!
+      @job.run
       redirect_to :action => 'index'
     else
       render :action => 'new'

@@ -65,6 +65,8 @@ class Job < ActiveRecord::Base
   class_inheritable_accessor :parameters_columns_hash
   self.parameters_columns_hash = {}
   
+  named_scope :processing, :conditions => ['status=?', PROCESSING]
+  
   def initialize(options={})
     default_options = {:parameters => {}, :state => {}, :status => CREATED}
     super(default_options.update(options))
