@@ -63,5 +63,16 @@ Rails::Initializer.run do |config|
     DelayedLoad.create :sass do
       require 'sass/plugin'
     end
+    
+    DelayedLoad.create :paperclip do
+      require 'paperclip'
+      
+      # Copied from paperclip's rails/init.rb since it is too much work
+      # to work out where that file is and properly load it at runtime.
+      # See also:
+      # http://www.practicalecommerce.com/blogs/post/438-The-Blurring-Line-Between-Plugins-and-Gems
+      require 'paperclip/railtie'
+      Paperclip::Railtie.insert
+    end
   end
 end

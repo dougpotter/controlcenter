@@ -8,7 +8,7 @@ module S3AttachmentLogic
 
   module ClassMethods
     def has_s3_attachment attachment, bucket, path
-      require 'paperclip'
+      DelayedLoad.load_paperclip!
 
       has_attached_file attachment,
         :storage => :s3,
