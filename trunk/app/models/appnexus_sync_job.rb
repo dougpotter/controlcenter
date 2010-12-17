@@ -15,19 +15,21 @@ class AppnexusSyncJob < Job
       if job_id = self.state[:emr_jobflow_id]
         begin
           workflow = AppnexusSyncWorkflow.new(self.parameters)
-          result = workflow.check_create_list(job_id)
-          case result[:success]
-          when true
-            workflow.upload_list(self.state[:appnexus_list_location])
-            self.status = COMPLETED
-            self.completed_at = Time.now.utc
-            save!
-          when false
-            self.status = FAILED
-            self.completed_at = Time.now.utc
-            save!
-          else
-            # nil, which means the list creation is still running
+          workflow.lock(self.id) do
+            result = workflow.check_create_list(job_id)
+            case result[:success]
+            when true
+              workflow.upload_list(self.state[:appnexus_list_location])
+              self.status = COMPLETED
+              self.completed_at = Time.now.utc
+              save!
+            when false
+              self.status = FAILED
+              self.completed_at = Time.now.utc
+              save!
+            else
+              # nil, which means the list creation is still running
+            end
           end
         rescue Interrupt, SystemExit
           raise

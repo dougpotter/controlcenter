@@ -3,6 +3,7 @@ common: &common
   list_create_ttl: 0
   list_create_instance_type: m1.large
   list_create_instance_count: 2
+  #debug: true
 
 development:
   <<: *common

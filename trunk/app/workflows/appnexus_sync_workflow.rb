@@ -148,6 +148,34 @@ class AppnexusSyncWorkflow
     Subprocess.get_output(cmd, :env => env)
   end
   
+  def lock(job_id)
+    options = {
+      :name => job_id.to_s,
+      :location => AppnexusSyncJob.name,
+      :capacity => 1,
+      :timeout => 30.minutes,
+      :wait => false,
+      :create_resource => true,
+    }
+    
+    if params[:debug]
+      debug_print("Obtaining lock to check job #{job_id}")
+    end
+    
+    Semaphore::Arbitrator.instance.lock(options) do
+      yield
+    end
+  rescue Semaphore::ResourceBusy
+    if params[:debug]
+      debug_print("Job #{job_id} busy")
+    end
+    
+    # will retry later
+  end
+  
+  # XXX are we exposing too much by making lock public?
+  public :lock
+  
   def find_files(bucket, prefix)
     s3_client.list_bucket_files(bucket, prefix)
   end
