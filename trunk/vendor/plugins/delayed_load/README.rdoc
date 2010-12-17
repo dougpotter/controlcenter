@@ -1,0 +1,109 @@
+= Delayed Load
+
+== Overview
+
+Delayed Load allows to cleanly delay loading of libraries,
+
+== Usage
+
+Please also see Important Caveat and Working Example sections below.
+
+1. Create an initializer:
+
+    DelayedLoad.create :foo do
+      require 'foo_library'
+      
+      Foo.some_option = :value
+    end
+
+2. Optionally, add more configuration:
+
+    DelayedLoad.configure :foo do
+      Foo.another_option = :value
+    end
+
+3. Perform all accumulated work:
+
+    DelayedLoad.load_foo!
+
+== Important Caveat
+
+All of the calls to DelayedLoad should be done from within
++after_initialize+ blocks. This is due to the order in which things are
+loaded by rails, which is as follows:
+
+1. <code>config/environment.rb</code>
+2. <code>config/environments/#{RAILS_ENV}.rb</code>
+3. <code>vendor/plugins/*/init.rb</code>
+4. <code>config/initializers/*.rb</code>
+5. +after_initialize+
+
+What the above order means is that it is impossible to use DelayedLoad
+*without* putting it in an +after_initialize+ block in either
+<code>config/environment.rb</code> or
+<code>config/environments/#{RAILS_ENV}.rb</code> as
+plugins are not yet loaded at that time; and furthermore, because
+DelayedLoad.configure must be done after DelayedLoad.create for
+a particular initializer, and DelayedLoad.create is done in
++after_initialize+, any configuration done in
+<code>config/initializers/*.rb</code> must also be put in
++after_initialize+ blocks.
+
+== Working Example
+
+In practice, the following code is typically required:
+
+=== config/environment.rb
+
+  Rails::Initializer.run do |config|
+    # Other config
+    # ...
+    
+    config.after_initialize do
+      # First, create an initializer called foo.
+      DelayedLoad.create :foo do
+        # Here we just require the library.
+        require 'foo_library'
+      end
+    end
+  end
+
+=== config/environment/production.rb
+
+  config.after_initialize do
+    # Perform configuration of foo after it is loaded.
+    DelayedLoad.configure :foo do
+      # Set an environment-specific option.
+      Foo.option = :value
+    end
+  end
+
+=== config/initializers/foo.rb
+
+  # Need to call out to Rails.configuration for after_initialize here.
+  Rails.configuration.after_initialize do
+    # Perform configuration of foo after it is loaded.
+    DelayedLoad.configure :sass do
+      # Set an option that is common to all environments here.
+      Foo.another_option = :value
+    end
+  end
+
+== Advanced Usage
+
+DelayedLoad.create may be called without a block. In such case it will
+create the initializer with no configuration. DelayedLoad.configure
+can then be called to add configuration, as follows:
+
+  DelayedLoad.create :foo
+  
+  # ...
+  
+  DelayedLoad.configure :foo do
+    Foo.option = :value
+  end
+
+== License
+
+Delayed Load is licensed under the MIT license, as described in included
+MIT-LICENSE file.
