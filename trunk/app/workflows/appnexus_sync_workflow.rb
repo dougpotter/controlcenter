@@ -89,7 +89,7 @@ class AppnexusSyncWorkflow
     end
     result = {:state => job_state}
     result[:success] = case job_state
-    when 'completed'
+    when 'completed', 'shutting_down'
       true
     when 'failed', 'terminated'
       false
