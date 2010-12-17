@@ -1,4 +1,6 @@
 class AppnexusSyncWorkflow
+  include Workflow::Logger
+  include Workflow::DebugPrint
   include Workflow::ConfigurationRetrieval
   
   def self.data_provider_name
@@ -8,6 +10,7 @@ class AppnexusSyncWorkflow
   attr_reader :params
   
   def initialize(parameters)
+    initialize_logger
     config = self.class.configuration
     config = config.to_hash.dup
     config.keys.each do |key|
