@@ -102,3 +102,8 @@ every 1.day, :at => %w(4:10am 4:10pm) do
   rake 'workflows:akamai:verify_late'
   rake 'workflows:clearspring:verify_late'
 end
+
+# Check and/or advance appnexus bulk uploading jobs every 10 minutes.
+every 10.minutes do
+  rake 'workflows:appnexus:advance'
+end
