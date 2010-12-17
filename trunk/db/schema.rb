@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101215205847) do
+ActiveRecord::Schema.define(:version => 20101217155653) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(:version => 20101215205847) do
   add_index "audiences_campaigns", ["campaign_id"], :name => "audiences_campaigns_campaign_id_fk"
 
   create_table "campaigns", :force => true do |t|
-    t.string   "description",   :default => "", :null => false
+    t.string   "name",          :default => "", :null => false
     t.string   "campaign_code", :default => "", :null => false
     t.integer  "partner_id"
     t.datetime "start_time"
