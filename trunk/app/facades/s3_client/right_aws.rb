@@ -33,21 +33,29 @@ class S3Client::RightAws < S3Client::Base
   end
   
   def put_file(bucket, remote_path, local_path)
+    if @debug
+      debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
+    end
+    
     File.open(local_path) do |f|
-      md5 = Digest::MD5.new
-      while chunk = f.read(CHUNK_SIZE)
-        md5.update(chunk)
-      end
-      f.rewind
-      md5 = md5.hexdigest
-      
-      if @debug
-        debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
-      end
-      
-      map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
-        @s3.store_object_and_verify(:bucket => bucket, :key => remote_path, :data => f, :md5 => md5)
-      end
+      put_io(bucket, remote_path, f)
+    end
+  end
+  
+  # Important note:
+  # io given must support #rewind, and will be read twice
+  # (read, rewound and read again) because we need to compute md5 hash
+  # of the contents before uploading it.
+  def put_io(bucket, remote_path, io)
+    md5 = Digest::MD5.new
+    while chunk = io.read(CHUNK_SIZE)
+      md5.update(chunk)
+    end
+    io.rewind
+    md5 = md5.hexdigest
+    
+    map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
+      @s3.store_object_and_verify(:bucket => bucket, :key => remote_path, :data => io, :md5 => md5)
     end
   end
   
