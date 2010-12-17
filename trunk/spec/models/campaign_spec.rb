@@ -25,19 +25,6 @@ describe Campaign do
     }.should raise_error(ActiveRecord::ActiveRecordError)
   end
 
-  it "should require non null description (validations test)" do
-    lambda {
-      Factory.create(:campaign, :description => nil)
-    }.should raise_error
-  end
-
-  it "should require non null description (db test)" do
-    lambda {
-      c = Factory.build(:campaign, :description => nil)
-      c.save_with_validation(false)
-    }.should raise_error(ActiveRecord::StatementInvalid)
-  end
-
   it "should require non null campaign code (validations test)" do
     lambda {
       Factory.create(:campaign, :campaign_code => nil)

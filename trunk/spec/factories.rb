@@ -1,5 +1,5 @@
 Factory.define :campaign do |c|
-  c.description  "A Campaign"
+  c.name "A Campaign"
   c.sequence(:campaign_code) { |n|  "2LR#{n}" }
   c.partner_id { Factory(:partner).id }
   c.start_time Time.now
