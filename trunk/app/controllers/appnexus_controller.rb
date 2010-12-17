@@ -20,4 +20,9 @@ class AppnexusController < ApplicationController
       render :action => 'new'
     end
   end
+  
+  def show
+    @job = AppnexusSyncJob.find(params[:id])
+    @job_parameters = AppnexusSyncParameters.new(@job.parameters)
+  end
 end
