@@ -30,4 +30,13 @@ module ApplicationHelper
   def none_option
     "<option value=''>-</option>"
   end
+  
+  def clear(how=:both, content=nil)
+    if content == :br
+      content = "<br />"
+    elsif content == :span
+      content = "<span />"
+    end
+    content_tag(:div, content, :style => "clear:#{how}")
+  end
 end

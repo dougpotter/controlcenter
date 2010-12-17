@@ -56,9 +56,11 @@ ActionController::Routing::Routes.draw do |map|
     :controller => 'extraction', :action => 'details'
   
   map.appnexus_sync '/appnexus/sync',
-    :controller => 'appnexus', :action => 'index'
+    :controller => 'appnexus', :action => 'index', :conditions => {:method => :get}
   map.new_appnexus_sync '/appnexus/sync/new',
     :controller => 'appnexus', :action => 'new'
+  map.create_appnexus_sync '/appnexus/sync',
+    :controller => 'appnexus', :action => 'create', :conditions => {:method => :post}
 
   map.resources :audiences
   map.resources :partners

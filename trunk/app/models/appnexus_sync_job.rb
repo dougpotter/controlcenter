@@ -1,0 +1,2 @@
+class AppnexusSyncJob < Job
+end
