@@ -7,9 +7,9 @@ module S3AttachmentLogic
   end
 
   module ClassMethods
-    require 'paperclip'
-
     def has_s3_attachment attachment, bucket, path
+      require 'paperclip'
+
       has_attached_file attachment,
         :storage => :s3,
         :s3_credentials => "#{RAILS_ROOT}/config/aws.yml",
