@@ -1,47 +1,54 @@
 class ChangeCampaignsAudiencesToOneToOneRelationship < ActiveRecord::Migration
 
-  # This migration adds a campaign_id column to the partners table and assignes
-  # all current audiences to thier 'first' (in active record terms) campaign
-  # to which they are already associated. If they are not associated with any
-  # campaigns, they are assigned to the campaing named "Unassigned" (which I 
-  # also create here). I drop the many-to-many join table audiences_campaigns
-  # in the next migration.
+  # This migration adds a campaign_id column to the partners table and attempts
+  # to set the campaign_id of each audience to the campaign tied to that
+  # audience in the current many-many audiences_campaigns table, if EXACTLY
+  # ONE such campaign exists.
+  #
+  # If any audience is attached to 0, or more than one, campaign (i.e., not 
+  # EXACTLY ONE campaign), an exception will be raised forcing user
+  # intervention.
+  
   
   def self.up
-    add_column :audiences, :campaign_id, :integer
-
-    Partner.create({:name => "Unclassified Partner", :partner_code => 9999999})
-    LineItem.create({ :line_item_code => 9999999, :name => "Unclassified Line Item", :partner_id => Partner.find(:first, :conditions => { :partner_code => 9999999 }).id })
-
-    c = Campaign.create({
-      :name => "Unassigned",
-      :campaign_code => "9999999",
-      :partner_id => Partner.find(:first, :conditions => {:partner_code => "9999999" }).id,
-      :line_item_id => LineItem.find(:first, :conditions => {:line_item_code => "9999999" }).id
-    })
-
-    if !c.save
-      remove_column :audiences, :campaign_id
-      exit
-    end
-
-    for audience in Audience.all
-      if audience.campaigns != []
-        audience.campaign_id = audience.campaigns.first.id.to_i
-      else
-        audience.campaign_id = c.id
+    # Raise exception and force user reconciliation if multiple campaigns are
+    # tied to any audience.
+    
+    audience_ids = select_values(
+      "SELECT DISTINCT id FROM audiences;").collect { |id| id.to_i }
+    
+    audience_ids.each do |audience_id|
+      num_campaigns = select_value(
+        "SELECT COUNT(*) FROM audiences_campaigns " +
+        "WHERE audience_id = #{quote(audience_id)};").to_i
+      
+      unless num_campaigns == 1
+        raise "Audience ID=#{audience_id} has #{num_campaigns} campaigns " +
+          "(1 expected). Please reconcile audiences_campaigns table."
       end
-      audience.save!
     end
+    
+    # Create campaign_id with uniqueness constraint to enforce "has_one"
+    # relationship
+    add_column :audiences, :campaign_id, :integer
+    add_index :audiences, :campaign_id, :unique => true
 
+    audience_ids.each do |audience_id|
+      campaign_id = select_value(
+        "SELECT campaign_id FROM audiences_campaigns " +
+        "WHERE audience_id = #{quote(audience_id)} LIMIT 1;").to_i
+      execute("UPDATE audiences SET campaign_id = #{quote(campaign_id)} " + 
+        "WHERE id = #{quote(audience_id)}")
+    end
+    
     add_foreign_key :audiences, :campaigns
 
   end
 
   def self.down
     remove_foreign_key :audiences, :campaigns
+    
+    remove_index :audiences, :column => :campaign_id
     remove_column :audiences, :campaign_id
-    c = Campaign.find(:first, :conditions => { :campaign_code => 9999999 })
-    c.delete
   end
 end
