@@ -1,3 +1,18 @@
+# == Schema Information
+# Schema version: 20101220202022
+#
+# Table name: appnexus_sync_parameters
+#
+#  partner_code         :string
+#  audience_code        :string
+#  s3_xguid_list_prefix :string
+#  appnexus_segment_id  :string
+#  lookup_start_date    :string
+#  lookup_end_date      :string
+#  instance_type        :string
+#  instance_count       :integer
+#
+
 class AppnexusSyncParameters < ActiveRecord::Base
   has_no_table
   

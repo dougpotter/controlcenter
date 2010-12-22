@@ -14,11 +14,6 @@ Factory.define :line_item do |c|
   c.partner_id { Factory(:partner).id }
 end
 
-Factory.define :insertion_order do |i|
-  i.description "An Insertion Order"
-  i.campaign_id { Factory(:campaign).id }
-end
-
 Factory.define :partner do |p|
   p.name "Webroot"
   p.sequence(:partner_code) { |n| 2019 + n }

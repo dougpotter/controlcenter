@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: ad_inventory_sources
 #

@@ -1,14 +1,14 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: campaigns
 #
 #  id            :integer(4)      not null, primary key
-#  description   :string(255)     default(""), not null
+#  name          :string(255)     default(""), not null
 #  campaign_code :string(255)     default(""), not null
-#  partner_id    :integer(4)
 #  start_time    :datetime
 #  end_time      :datetime
+#  line_item_id  :integer(4)      not null
 #
 
 require 'spec_helper'

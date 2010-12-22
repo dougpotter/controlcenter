@@ -1,3 +1,18 @@
+# == Schema Information
+# Schema version: 20101220202022
+#
+# Table name: jobs
+#
+#  id           :integer(4)      not null, primary key
+#  type         :string(255)     not null
+#  name         :string(255)     not null
+#  parameters   :text            not null
+#  created_at   :datetime        not null
+#  status       :integer(4)      not null
+#  state        :text            not null
+#  completed_at :datetime
+#
+
 # Persists information relating to background proceses, which we call jobs.
 #
 # The job table does not necessarily drive actual job execution;

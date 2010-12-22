@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100824223747
+# Schema version: 20101220202022
 #
 # Table name: regions
 #

@@ -1,11 +1,12 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: audiences
 #
 #  id            :integer(4)      not null, primary key
 #  description   :string(255)
 #  audience_code :string(255)     not null
+#  campaign_id   :integer(4)
 #
 
 # Audience is defined as a list of targetable individuals. It 
