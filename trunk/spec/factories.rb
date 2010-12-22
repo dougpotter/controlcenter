@@ -1,7 +1,6 @@
 Factory.define :campaign do |c|
   c.name "A Campaign"
   c.sequence(:campaign_code) { |n|  "2LR#{n}" }
-  c.partner_id { Factory(:partner).id }
   c.start_time Time.now
   c.end_time Time.now + 3600
   c.line_item_id { Factory(:line_item).id }
@@ -50,6 +49,7 @@ end
 Factory.define :audience do |a|
   a.description "description"
   a.sequence(:audience_code) { |n| "AC#{n}99" }
+  a.campaign_id { Factory(:campaign).id }
 end
 
 Factory.define :media_purchase_method do |m|

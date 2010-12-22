@@ -19,9 +19,9 @@ describe Campaign do
     Factory.create(:campaign)
   end
 
-  it "should require a parent partner" do
+  it "should require a parent line item" do
     lambda {
-      Factory.create(:campaign, :partner_id => 100)
+      Factory.create(:campaign, :line_item_id => 100)
     }.should raise_error(ActiveRecord::ActiveRecordError)
   end
 
