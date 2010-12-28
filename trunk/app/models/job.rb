@@ -86,4 +86,24 @@ class Job < ActiveRecord::Base
     default_options = {:parameters => {}, :state => {}, :status => CREATED}
     super(default_options.update(options))
   end
+  
+  private
+  
+  def append_diagnostics(text)
+    if diag = self.state[:diagnostics]
+      diag += "\n"
+    else
+      diag = ''
+    end
+    diag += text
+    self.state[:diagnostics] = diag
+  end
+  
+  def format_exception(exc)
+    text = "#{e.class}: #{e.message}"
+    exc.backtrace.each do |line|
+      text += "\n#{line}"
+    end
+    text
+  end
 end

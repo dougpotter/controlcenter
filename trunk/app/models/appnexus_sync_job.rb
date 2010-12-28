@@ -39,6 +39,8 @@ class AppnexusSyncJob < Job
               self.completed_at = Time.now.utc
               save!
             when false
+              msg = "Failing job because check_create_list returned false"
+              append_diagnostics(msg)
               self.status = FAILED
               self.completed_at = Time.now.utc
               save!
@@ -49,16 +51,7 @@ class AppnexusSyncJob < Job
         rescue Interrupt, SystemExit
           raise
         rescue Exception => e
-          if diag = self.state[:diagnostics]
-            diag += "\n"
-          else
-            diag = ''
-          end
-          diag += "#{e.class}: #{e.message}"
-          e.backtrace.each do |line|
-            diag += "\n#{line}"
-          end
-          self.state[:diagnostics] = diag
+          append_diagnostics(format_exception(e))
           self.status = FAILED
           self.completed_at = Time.now.utc
           save!
@@ -66,6 +59,8 @@ class AppnexusSyncJob < Job
       else
         # the job may not have failed, but we should not hide potential
         # failure and lacking jobflow id is a failure somewhere
+        msg = "Failing job due to missing state[:emr_jobflow_id]"
+        append_diagnostics(msg)
         self.status = FAILED
         self.completed_at = Time.now.utc
         save!
