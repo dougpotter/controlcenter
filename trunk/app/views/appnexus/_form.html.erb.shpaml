@@ -1,5 +1,10 @@
 = error_messages_for :job_parameters, :object_name => 'sync'
 
+p
+  These fields are required.
+
+>br
+
 div class=field_block
   = f.label 's3_xguid_list_prefix', 'S3 XGUID List bucket:prefix'
   = f.text_field 's3_xguid_list_prefix'
@@ -25,6 +30,12 @@ div class=field_block
 = clear :both, :br
 
 h3 | Advanced Options
+
+p
+  All of the following fields are optional.
+  Do not change them unless you know you need to.
+
+>br
 
 div class=field_block
   = f.label 'lookup_start_date', 'Lookup Start Date (yyyymmdd, by default use the one corresponding to most recent available end date)'
