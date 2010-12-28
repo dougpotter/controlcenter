@@ -256,6 +256,11 @@ namespace :deploy do
       run "thin restart -C #{thin_config}"
     end
   end
+  
+  desc "Alias for deploy:web:restart"
+  task :restart do
+    web.restart
+  end
 end
 
 
