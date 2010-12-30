@@ -16,7 +16,7 @@ module ApplicationHelper
   end
 
   def currently_campaign_management?
-    %w(campaign_management audiences partners ad_inventory_sources creatives).include?(controller.controller_name)
+    %w(campaign_management audiences partners ad_inventory_sources creatives campaigns).include?(controller.controller_name)
   end
 
   def currently_appnexus?
