@@ -30,7 +30,7 @@ div id=left_pane
       label for="campaign_partner_id" | Partner:
       >br
 
-      = select('campaign', 'partner_id', blank_partner_option + options_from_collection_for_select(@partners, :id, :name, @campaign.partner_id), {}, { :onchange => "alert_partner();" })
+      = select('campaign', 'partner_id', blank_partner_option + options_from_collection_for_select(@partners, :id, :name, @campaign.partner_id))
 
     div class=dimension_input, id=ais
       label for="campaign_end_time" | AIS:
