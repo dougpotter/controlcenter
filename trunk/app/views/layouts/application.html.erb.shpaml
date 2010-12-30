@@ -22,7 +22,7 @@ html xmlns="http://www.w3.org/1999/xhtml"
           ul.nav
             = content_tag(:li, link_to("Metric Reporting", metrics_home_path), :class => current_if(:metric_reports))
             = content_tag(:li, link_to("Extraction Status", extraction_index_path), :class => current_if(:extraction_status))
-            = content_tag(:li, link_to("Campaign Management", campaigns_path), :class => current_if(:campaign_management))
+            = content_tag(:li, link_to("Campaign Management", campaign_management_index_path), :class => current_if(:campaign_management))
             = content_tag(:li, link_to("AppNexus", appnexus_sync_index_path), :class => current_if(:appnexus))
 
         div#main
