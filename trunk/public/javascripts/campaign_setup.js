@@ -4,7 +4,7 @@ window.addEvent('domready', function() {
     // entry fields associated with that checkbox when the checkbox is clicked 
     // (fields appear when checkbox is checked and disappear when it is un-checked)
     function buildToggleEntryFunction(checkbox) {
-      var ais = checkbox.id.match(/.*_([^_]*)/)[1];
+      var ais = checkbox.value;
       var fields_class = "sync_rule_entry_boxes_" + ais;
       return function () {
         if (checkbox.checked) { 
