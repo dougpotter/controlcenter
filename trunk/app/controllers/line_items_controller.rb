@@ -9,9 +9,6 @@ class LineItemsController < ApplicationController
   def create
     @line_item = LineItem.new(params[:line_item])
     @creatives = params[:creatives]
-    for creative in @creatives.values
-      @line_item.creatives << Creative.new(creative)
-    end
     if @line_item.save
       redirect_to new_line_item_path
     end
