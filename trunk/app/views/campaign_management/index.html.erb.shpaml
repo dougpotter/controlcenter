@@ -1,6 +1,6 @@
 div id=graph_selector_panel
+    = link_to 'New Line Item', new_line_item_path
     = link_to 'New Campaign', new_campaign_path
-    = link_to 'Audience Management', new_audience_path
     = link_to 'Advertiser Management', new_partner_path
     = link_to 'AIS Management', new_ad_inventory_source_path
     = link_to 'Creative Management', new_creative_path
