@@ -32,7 +32,7 @@ class Campaign < ActiveRecord::Base
   
   def campaign_code_and_description
     out = campaign_code
-    out += " - #{description}" unless description.blank?
+    out += " - #{name}" unless name.blank?
     out
   end
 
