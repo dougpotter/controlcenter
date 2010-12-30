@@ -108,7 +108,7 @@ class CampaignManagementController < ApplicationController
     @audiences = Audience.find(:all, :order => 'audience_code')
     @partners = Partner.find(:all, :order => 'name')
     @ad_inventory_sources = AdInventorySource.all(:order => 'name')
-    @creatives = Creative.all(:order => 'description')
+    @creatives = Creative.all(:order => 'name')
     @creative_sizes = CreativeSize.all(:order => 'common_name')
     @creative = Creative.new
     @new_creatives ||= []

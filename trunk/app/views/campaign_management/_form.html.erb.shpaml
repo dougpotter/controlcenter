@@ -3,7 +3,7 @@
 <script src="/javascripts/creative_list.js" type="text/javascript"></script>
 
 div id=left_pane
-  div id=campaign_code_description
+  div id=campaign_code_name
     div class=dimension_input
       label for="campaign_campaign_code" | Campaign code:
       >br
@@ -11,10 +11,10 @@ div id=left_pane
       = text_field('campaign', 'campaign_code', :size => 5)
 
     div class=dimension_input
-      label for="campaign_description" | Description:
+      label for="campaign_name" | Description:
       >br
 
-      = text_field('campaign', 'description')
+      = text_field('campaign', 'name')
 
   div style='clear:both;'
     >br
@@ -23,7 +23,7 @@ div id=left_pane
     label for="campaign_audience_code" | Audience(s):
     >br
    
-    = select_tag('campaign[audience_ids]', options_from_collection_for_select(@audiences, :id, :audience_code, @campaign.audiences.map { |a| a.id }), :multiple => true)
+    = select_tag('campaign[audience_ids]', options_from_collection_for_select(@audiences, :id, :audience_code), :multiple => true)
 
   div id=partner_ais
     div class=dimension_input, id=partner
