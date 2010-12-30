@@ -19,7 +19,7 @@ module ClearspringAccess
     
     private
     
-    def list_data_source_files
+    def list_all_data_source_files
       with_process_status(:action => 'listing files') do
         url = build_data_source_url
         page_text = retry_network_errors(@network_error_retry_options) do
@@ -30,7 +30,6 @@ module ClearspringAccess
         
         possibly_record_source_urls_discovered(absolute_file_urls)
         
-        absolute_file_urls.reject! { |url| !should_download_url?(url) }
         absolute_file_urls
       end
     end
@@ -42,7 +41,10 @@ module ClearspringAccess
     # -----
     
     def build_data_source_url
-      "#{params[:data_source_root]}/#{channel.name}"
+      unless data_source_root = params[:data_source_root]
+        raise ArgumentError, "data_source_root is not specified in params - data source url will not be usable"
+      end
+      "#{data_source_root}/#{channel.name}"
     end
     
     def build_absolute_url(remote_url, file)

@@ -28,6 +28,8 @@ module Workflow
         ensure
           begin
             stop_profiling
+          rescue Interrupt, SystemExit
+            raise
           rescue Exception => e
             status = ConsoleUi.handle_unhandled_exception(e)
           end
@@ -35,6 +37,8 @@ module Workflow
       else
         begin
           status = yield
+        rescue Interrupt, SystemExit
+          raise
         rescue Exception => e
           status = ConsoleUi.handle_unhandled_exception(e)
         end

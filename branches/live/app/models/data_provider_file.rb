@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: data_provider_files
 #
@@ -7,6 +7,11 @@
 #  data_provider_channel_id :integer(4)      not null
 #  url                      :string(255)     not null
 #  status                   :integer(4)      not null
+#  discovered_at            :datetime
+#  extracted_at             :datetime
+#  verified_at              :datetime
+#  label_date               :date
+#  label_hour               :integer(4)
 #
 
 # Label date and hour are used in extraction phase.

@@ -15,6 +15,8 @@ module Workflow
       0.upto(options[:retry_count]) do |index|
         begin
           return yield
+        rescue Interrupt, SystemExit
+          raise
         rescue Exception => e
           unless exception_classes.detect { |klass| e.is_a?(klass) }
             raise

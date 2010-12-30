@@ -40,6 +40,8 @@ module Workflow
       # The trick is to append a slash at the end of the path.
       slashed_dir = dir.ends_with?('/') ? dir : dir + '/'
       
+      # Note that Find.find(slashed_dir) will find slashed_dir as the first result
+      # (with the trailing slash). We skip directories via FileTest.file?(path) below.
       Find.find(slashed_dir) do |path|
         if %w(.svn .git).include?(File.basename(path))
           Find.prune

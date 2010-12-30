@@ -1,14 +1,14 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: campaigns
 #
 #  id            :integer(4)      not null, primary key
-#  description   :string(255)     default(""), not null
+#  name          :string(255)     default(""), not null
 #  campaign_code :string(255)     default(""), not null
-#  partner_id    :integer(4)
 #  start_time    :datetime
 #  end_time      :datetime
+#  line_item_id  :integer(4)      not null
 #
 
 require 'spec_helper'
@@ -19,23 +19,10 @@ describe Campaign do
     Factory.create(:campaign)
   end
 
-  it "should require a parent partner" do
+  it "should require a parent line item" do
     lambda {
-      Factory.create(:campaign, :partner_id => 100)
+      Factory.create(:campaign, :line_item_id => 100)
     }.should raise_error(ActiveRecord::ActiveRecordError)
-  end
-
-  it "should require non null description (validations test)" do
-    lambda {
-      Factory.create(:campaign, :description => nil)
-    }.should raise_error
-  end
-
-  it "should require non null description (db test)" do
-    lambda {
-      c = Factory.build(:campaign, :description => nil)
-      c.save_with_validation(false)
-    }.should raise_error(ActiveRecord::StatementInvalid)
   end
 
   it "should require non null campaign code (validations test)" do

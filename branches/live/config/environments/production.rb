@@ -2,7 +2,7 @@
 
 # The production environment is meant for finished, "live" apps.
 # Code is not reloaded between requests
-config.cache_classes = true
+config.cache_classes = false
 
 # Full error reports are disabled and caching is turned on
 config.action_controller.consider_all_requests_local = false
@@ -27,5 +27,13 @@ config.action_view.cache_template_loading            = true
 # Enable threaded mode
 # config.threadsafe!
 
-::Sass::Plugin.options[:never_update] = true
-::Sass::Plugin.options[:style] = :compressed
+config.after_initialize do
+  DelayedLoad.configure :sass do
+    ::Sass::Plugin.options[:never_update] = true
+    ::Sass::Plugin.options[:style] = :compressed
+  end
+end
+
+config.after_initialize do
+  PaperclipConfiguration.storage = :s3
+end

@@ -1,6 +1,22 @@
 /* CSS Styles for XGraph */
 
 @import "extraction";
+@import "generic_form";
+@import "generic_ui";
+
+a {
+  color: black;
+}
+
+a:hover {
+  color: #3c3d3f;
+  text-decoration: underline;
+}
+
+.horizontal_link_list#href {
+  color: red;
+  text-align: center;
+}
 
 body {
 	font-family: Arial, Helvetica, sans-serif;
@@ -141,7 +157,7 @@ li#sub-menu a:hover {
 }
 
 #graph_selector_panel {
-  float: left;
+  width: 750px;
   padding: 5px;
 }
 
@@ -176,4 +192,75 @@ label {
 #graph_selector_submit_wrapper {
   padding-top: 15px;
   float: right;
+}
+
+.raw_list {
+  font-size: 15px;
+  color: #3c3d3f;
+}
+
+table tbody {
+  font-size: 13px;
+}
+
+#summary_table th {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+#left_pane {
+  float: left;
+  width: 330px;
+  padding: 10px;
+}
+
+#right_pane {
+  float: left;
+  width: 450px;
+}
+
+#audience {
+  float: left;
+}
+
+#partner {
+  padding-bottom: 15px;
+}
+
+#partner_ais {
+  float: left;
+  width: 100px;
+  padding-left: 25px;
+}
+
+#start_date {
+  float: left;
+}
+
+#end_date {
+  float: right;
+}
+
+#creative_section {
+  float: left;
+  padding-left: 70px;
+}
+
+#existing_creatives {
+  width: 420px;
+  height: 130px;
+}
+
+#new_creative_form {
+  position: absolute;
+  padding-top: 30px;
+}
+
+#campaign_submit {
+  position: absolute;
+}
+
+#creative_submit {
+  float: left;
+  margin-right: 300px;
 }

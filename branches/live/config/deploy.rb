@@ -54,13 +54,12 @@ set :scm, :subversion
 #set :scm_min_version, '1.6.0'
 
 # User specification.
-# Specifying scm_username affects both local and remote operations, thus
-# deploying human users must enter two sets of credentials on their machines.
-# On the other hand, capistrano does not recognize subversion username
-# prompts, so without specifying username here a manual login and checkout
-# is required on each remote machine to populate subversion auth cache.
+# Specifying scm_username by default affects both local and remote operations.
+# We reset local username via local_scm_username below.
 set :scm_username, 'xgraph'
 set :scm_auth_cache, true
+# do not specify subversion username for local operations
+set :local_scm_username, nil
 
 set :deploy_via, :remote_cache
 
@@ -135,6 +134,7 @@ define_configuration_tasks(:aws, %w(aws.yml))
 
 define_configuration_tasks(:workflows, %w(
   workflows/akamai.yml
+  workflows/appnexus.yml
   workflows/clearspring.yml
 ))
 
@@ -223,8 +223,10 @@ namespace :deploy do
       symlink
       # Note that if we are using a single database for web application
       # instance and workflow instance, this will migrate the web application
-      # instance also
-      migrate
+      # instance also.
+      # Do not migrate as extraction instances no longer have general
+      # db access privileges.
+      #migrate
     end
   end
 
@@ -253,6 +255,11 @@ namespace :deploy do
     task :restart do
       run "thin restart -C #{thin_config}"
     end
+  end
+  
+  desc "Alias for deploy:web:restart"
+  task :restart do
+    web.restart
   end
 end
 

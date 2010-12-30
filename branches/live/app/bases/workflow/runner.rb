@@ -19,8 +19,9 @@ module Workflow
       perform(params)
       log_marker("#{self.class.name} run finished successfully at #{Time.now}")
       0
+    rescue Interrupt, SystemExit
+      raise
     rescue Exception => exc
-      raise if Interrupt === exc || SystemExit === exc
       rv = handle_exception(exc)
       log_marker("#{self.class.name} run died at #{Time.now}")
       rv

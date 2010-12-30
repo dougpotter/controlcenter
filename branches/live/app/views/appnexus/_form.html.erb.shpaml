@@ -1,0 +1,62 @@
+= error_messages_for :job_parameters, :object_name => 'sync'
+
+p
+  These fields are required.
+
+>br
+
+div class=field_block
+  = f.label 's3_xguid_list_prefix', 'S3 XGUID List bucket:prefix'
+  = f.text_field 's3_xguid_list_prefix'
+
+= clear :both, :br
+
+div class=field_block
+  = f.label 'partner_code', 'Partner Code'
+  = f.text_field 'partner_code'
+
+= clear :both, :br
+
+div class=field_block
+  = f.label 'audience_code', 'Audience Code (e.g. 1U80-1)'
+  = f.text_field 'audience_code'
+
+= clear :both, :br
+
+div class=field_block
+  = f.label 'appnexus_segment_id', 'AppNexus Segment ID'
+  = f.text_field 'appnexus_segment_id'
+
+= clear :both, :br
+
+h3 | Advanced Options
+
+p
+  All of the following fields are optional.
+  Do not change them unless you know you need to.
+
+>br
+
+div class=field_block
+  = f.label 'lookup_start_date', 'Lookup Start Date (yyyymmdd, by default use the one corresponding to most recent available end date)'
+  = f.text_field 'lookup_start_date'
+
+= clear :both, :br
+
+div class=field_block
+  = f.label 'lookup_end_date', 'Lookup End Date (yyyymmdd, by default use most recent available)'
+  = f.text_field 'lookup_end_date'
+
+= clear :both, :br
+
+div class=field_block
+  = f.label 'instance_type', 'Instance Type'
+  = f.text_field 'instance_type'
+
+= clear :both, :br
+
+div class=field_block
+  = f.label 'instance_count', 'Instance Count'
+  = f.text_field 'instance_count'
+
+= clear :both, :br

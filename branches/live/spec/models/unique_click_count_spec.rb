@@ -1,3 +1,20 @@
+# == Schema Information
+# Schema version: 20101220202022
+#
+# Table name: unique_click_counts
+#
+#  id                       :integer(4)      not null, primary key
+#  partner_id               :integer(4)
+#  campaign_id              :integer(4)
+#  media_purchase_method_id :integer(4)
+#  audience_id              :integer(4)
+#  creative_id              :integer(4)
+#  start_time               :datetime        not null
+#  end_time                 :datetime        not null
+#  duration_in_minutes      :integer(4)      not null
+#  unique_click_count       :integer(4)      not null
+#
+
 require 'spec_helper'
 
 describe UniqueClickCount do

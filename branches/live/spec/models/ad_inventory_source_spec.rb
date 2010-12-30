@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: ad_inventory_sources
 #
@@ -40,7 +40,7 @@ describe AdInventorySource do
     lambda {
       Factory.create(:ad_inventory_source, :ais_code => "same")
       Factory.create(:ad_inventory_source, :ais_code => "same")
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "should rquire unique ais_code (db test)" do

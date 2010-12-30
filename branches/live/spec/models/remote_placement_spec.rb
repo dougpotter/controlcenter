@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: remote_placements
 #
@@ -10,6 +10,7 @@
 #  start_time             :datetime
 #  end_time               :datetime
 #  duration_in_minutes    :integer(4)
+#  id                     :integer(4)      not null, primary key
 #
 
 require 'spec_helper'

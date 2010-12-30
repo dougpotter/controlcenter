@@ -101,7 +101,7 @@ module DimensionBehaviors
         elsif options[:include] && 
             (options[:include].include?(param.to_sym) || 
             options[:include].include?(param.to_s))
-          key_attrs[param] = arg
+          key_attrs[param] = (DateTime.parse(arg) rescue arg)
         end
       end
       return key_attrs
@@ -131,8 +131,4 @@ module DimensionBehaviors
     # Instance methods go here
   end
 
-end
-
-ActiveRecord::Base.class_eval do
-  include DimensionBehaviors
 end

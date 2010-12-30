@@ -1,5 +1,3 @@
-require_dependency 'dimension_behaviors'
-
 module FactBehaviors
   TIME_FORMAT = "%Y-%m-%d %H:%M:%S".freeze
 
@@ -59,6 +57,8 @@ module FactBehaviors
     when String then
       begin
         is_fact?(const_get(sym_or_class_or_str.classify))
+      rescue Interrupt, SystemExit
+        raise
       rescue
         false
       end
@@ -163,6 +163,8 @@ module InstanceMethods
             self.send(value.to_s.gsub(/_id$/, "")).send(
               Dimension.business_index_aliases[key]
             )
+          rescue Interrupt, SystemExit
+            raise
           rescue 
             nil
           end

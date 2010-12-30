@@ -1,11 +1,14 @@
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: data_provider_channels
 #
-#  id               :integer(4)      not null, primary key
-#  data_provider_id :integer(4)      not null
-#  name             :string(255)     not null
+#  id                 :integer(4)      not null, primary key
+#  data_provider_id   :integer(4)      not null
+#  name               :string(255)     not null
+#  update_frequency   :integer(4)
+#  lookback_from_hour :integer(4)      not null
+#  lookback_to_hour   :integer(4)      not null
 #
 
 class DataProviderChannel < ActiveRecord::Base

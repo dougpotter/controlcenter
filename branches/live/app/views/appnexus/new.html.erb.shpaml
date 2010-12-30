@@ -1,0 +1,10 @@
+h1 | New Sync
+
+% form_for @job_parameters, :url => create_appnexus_sync_path do |f|
+  = render :partial => 'form', :locals => {:f => f}
+
+  = clear
+    
+  = submit_tag 'Create Sync'
+
+= clear

@@ -1,13 +1,12 @@
-require_dependency 'dimension_behaviors'
-
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: audiences
 #
 #  id            :integer(4)      not null, primary key
 #  description   :string(255)
 #  audience_code :string(255)     not null
+#  campaign_id   :integer(4)
 #
 
 # Audience is defined as a list of targetable individuals. It 
@@ -19,15 +18,20 @@ require_dependency 'dimension_behaviors'
 class Audience < ActiveRecord::Base
   belongs_to :model
   belongs_to :seed_extraction
-  has_and_belongs_to_many :campaigns
+  belongs_to :campaign
 
   has_many :click_counts
   has_many :impression_counts
 
   validates_presence_of :audience_code
+  validates_uniqueness_of :audience_code
 
   acts_as_dimension
   business_index :audience_code, :aka => "aid"
+
+  def audience_code_and_description
+    "#{audience_code} - #{description}"
+  end
 
   class << self
     def generate_audience_code

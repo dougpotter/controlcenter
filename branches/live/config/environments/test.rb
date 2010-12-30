@@ -4,7 +4,7 @@
 # test suite.  You never need to work with it otherwise.  Remember that
 # your test database is "scratch space" for the test suite and is wiped
 # and recreated between test runs.  Don't rely on the data there!
-config.cache_classes = true
+config.cache_classes = false
 
 # Log error messages when you accidentally call methods on nil.
 config.whiny_nils = true
@@ -36,5 +36,13 @@ config.gem "rspec", :lib => false, :version => ">= 1.3.0"
 config.gem "rspec-rails", :lib => false, :version => ">= 1.2.0"
 config.gem "factory_girl", :lib => false, :version => ">= 1.3.1"
 
-::Sass::Plugin.options[:never_update] = true
-::Sass::Plugin.options[:style] = :compressed
+config.after_initialize do
+  DelayedLoad.configure :sass do
+    ::Sass::Plugin.options[:never_update] = true
+    ::Sass::Plugin.options[:style] = :compressed
+  end
+end
+
+config.after_initialize do
+  PaperclipConfiguration.path_prefix = ":rails_root/tmp/test/public"
+end

@@ -21,6 +21,8 @@ class FactsController < ApplicationController
       params[:metrics].split(",").each do |metric|
         ActiveRecord.const_get(metric.classify).aggregate(@fact_aggregation, options)
       end
+    rescue Interrupt, SystemExit
+      raise
     rescue
       render :text => nil, :status => 422
       return 
@@ -48,10 +50,12 @@ class FactsController < ApplicationController
       fact = fact_class.new(params)
       unless fact.save!
         render :text => nil, :status => 422
+        return
       end
     end
 
     render :text => nil, :status => 200
+    return
   end
 
   def update

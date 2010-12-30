@@ -1,0 +1,29 @@
+common: &common
+  appnexus_member_id: 356
+  list_create_ttl: 0
+  list_create_instance_type: m1.large
+  list_create_instance_count: 2
+  #debug: true
+
+development:
+  <<: *common
+  sftp_host: qa.xgraph.net
+  sftp_username: apnsftp
+  #sftp_private_key_path: /path/to/key.pem
+  sftp_path: inbound
+  log_url: "s3n://xg-test-abulo/appnexus/logs"
+  code_url: "s3n://xg-test-abulo/appnexus/code/mapreduce.jar"
+  output_prefix: "xg-test-abulo:appnexus/audience-output"
+  lookup_prefix: "xg-test-abulo:appnexus/lookup"
+
+production:
+  <<: *common
+  # Actual XGraph production settings:
+  #sftp_host: dropbox.lax1.adnxs.net
+  #sftp_username: xgraph
+  #sftp_private_key_path: /path/to/key.pem
+  #sftp_path: inbound
+  #log_url: "s3n://xg-data-export/appnexus/logs"
+  #code_url: "s3n://xg-data-export/appnexus/code/mapreduce.jar"
+  #output_prefix: "xg-data-export:appnexus/audience-output"
+  #lookup_prefix: "xg-data-export:appnexus/lookup"

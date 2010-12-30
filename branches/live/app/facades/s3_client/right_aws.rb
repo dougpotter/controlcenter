@@ -32,22 +32,48 @@ class S3Client::RightAws < S3Client::Base
     @debug = options[:debug]
   end
   
+  def get_file(bucket, remote_path, local_path)
+    if @debug
+      debug_print "S3get #{bucket}:#{remote_path} -> #{local_path}"
+    end
+    
+    File.open(local_path, 'w') do |f|
+      get_io(bucket, remote_path, f)
+    end
+  end
+  
+  def get_io(bucket, remote_path, io)
+    map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
+      @s3.get(bucket, remote_path) do |chunk|
+        io.write(chunk)
+      end
+    end
+  end
+  
   def put_file(bucket, remote_path, local_path)
+    if @debug
+      debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
+    end
+    
     File.open(local_path) do |f|
-      md5 = Digest::MD5.new
-      while chunk = f.read(CHUNK_SIZE)
-        md5.update(chunk)
-      end
-      f.rewind
-      md5 = md5.hexdigest
-      
-      if @debug
-        debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
-      end
-      
-      map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
-        @s3.store_object_and_verify(:bucket => bucket, :key => remote_path, :data => f, :md5 => md5)
-      end
+      put_io(bucket, remote_path, f)
+    end
+  end
+  
+  # Important note:
+  # io given must support #rewind, and will be read twice
+  # (read, rewound and read again) because we need to compute md5 hash
+  # of the contents before uploading it.
+  def put_io(bucket, remote_path, io)
+    md5 = Digest::MD5.new
+    while chunk = io.read(CHUNK_SIZE)
+      md5.update(chunk)
+    end
+    io.rewind
+    md5 = md5.hexdigest
+    
+    map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
+      @s3.store_object_and_verify(:bucket => bucket, :key => remote_path, :data => io, :md5 => md5)
     end
   end
   
@@ -60,6 +86,26 @@ class S3Client::RightAws < S3Client::Base
   def list_bucket_files(bucket, prefix=nil)
     entries = list_bucket_entries(bucket, prefix)
     entries.map { |entry| entry[:key] }
+  end
+  
+  # prefix is a "directory" name
+  def list_bucket_subdirs(bucket, prefix=nil)
+    # prefix must end with delimiter (slash) for s3 to return correct results
+    prefix = prefix + '/' if prefix && prefix[-1] != ?/
+    entries = list_bucket_subentries(bucket, prefix, '/')
+    # entries contain prefix; remove prefix for usability
+    # entries also contain the delimiter at the end; remove that too
+    prefix_length = if prefix
+      prefix.length
+    else
+      0
+    end
+    entries.map! do |entry|
+      entry[prefix_length..-2]
+    end
+    # note that amazon specifies that keys are listed in alphabetical order,
+    # i.e. they come to us sorted
+    entries
   end
   
   private
@@ -80,45 +126,20 @@ class S3Client::RightAws < S3Client::Base
   end
   
   def list_bucket_entries(bucket, prefix)
-    max_keys = 1000
-    # not the most efficient data structure, but one which leads to less fail
     all_entries = []
-    while true
-      marker = all_entries.empty? ? nil : all_entries[-5][:key]
-      if @debug
-        debug_print "S3list #{bucket}:#{prefix} #{marker}+#{max_keys}"
-      end
-      entries = map_exceptions(exception_map, "#{bucket}:#{prefix}") do
-        @s3.list_bucket(bucket, :prefix => prefix, :max_keys => max_keys, :marker => marker)
-      end
-      break if entries.empty?
-      
-      if all_entries.empty?
-        all_entries = entries
-      else
-        old_size = all_entries.length
-        entries.each do |entry|
-          unless all_entries.detect do |existing_entry|
-            existing_entry[:key] == entry[:key]
-          end
-          then
-            all_entries << entry
-          end
-        end
-        new_size = all_entries.length
-        if new_size == entries.length
-          raise 'New and old entries are the exact same set'
-        end
-        if new_size - old_size == entries.length
-          # no overlap
-          raise 'No overlap between entries, probably someone is deleting a lot of entries'
-        end
-      end
-      
-      # right_aws does mix symbols and strings like this
-      break unless entries[0][:service]['is_truncated']
+    # apparently prefix is required
+    @s3.incrementally_list_bucket(bucket, :prefix => prefix) do |response|
+      all_entries += response[:contents]
     end
     all_entries
+  end
+  
+  def list_bucket_subentries(bucket, prefix, delimiter)
+    all_subentries = []
+    @s3.incrementally_list_bucket(bucket, :prefix => prefix, :delimiter => delimiter) do |response|
+      all_subentries += response[:common_prefixes]
+    end
+    all_subentries
   end
   
   def exception_map

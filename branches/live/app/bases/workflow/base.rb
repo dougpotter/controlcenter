@@ -37,13 +37,14 @@ module Workflow
   # procesess and/or the data source itself, in case of data source uploading
   # files to us (as opposed to us downloading files from data source).
   class Base
+    include Logger
+    include DebugPrint
     include Locking
     include Persistence
     include ConditionalPersistence
     include ErrorHandling
     include ConfigurationRetrieval
     
-    attr_accessor :logger
     attr_reader :params
     
     class << self
@@ -57,7 +58,7 @@ module Workflow
     end
     
     def initialize(options={})
-      @logger = options[:logger] || Workflow.default_logger
+      initialize_logger(options)
     end
     
     private
@@ -90,7 +91,7 @@ module Workflow
       else
         s3_client_class = S3Client::RightAws
       end
-      s3_client_class.new(:debug => @params[:debug], :logger => @logger)
+      s3_client_class.new(:debug => @params[:debug], :logger => self.logger)
     end
     
     def with_process_status(options)
@@ -126,8 +127,9 @@ module Workflow
     
     # ------
     
-    def debug_print(msg)
-      logger.debug(self.class.name) { msg }
+    def list_data_source_files
+      absolute_file_urls = list_all_data_source_files
+      absolute_file_urls.reject { |url| !should_download_url?(url) }
     end
   end
 end

@@ -1,0 +1,7 @@
+h1 | Edit Creative
+>br
+
+% form_for @creative do |f|
+  = render :partial => 'form'
+  = submit_tag 'Save Edits'
+

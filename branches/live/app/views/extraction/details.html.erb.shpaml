@@ -32,12 +32,27 @@ table id=file_table class=extraction-status
   tr
     th | Url
     th | Status
+    th | Label Date
+    th | Label Hour
+    th | Discovered At
+    th | Extracted At
+    th | Verified At
   % for file in @files
     tr class="<%= status_to_css_class(file.status) %>"
       td
         = file.url
       td
         = status_name(file.status)
+      td
+        = file.label_date.strftime('%Y%m%d')
+      td
+        = file.label_hour
+      td
+        = file.discovered_at.try(:strftime, '%Y%m%d %H:%M')
+      td
+        = file.extracted_at.try(:strftime, '%Y%m%d %H:%M')
+      td
+        = file.verified_at.try(:strftime, '%Y%m%d %H:%M')
 
 p
   = link_to 'Previous day', url_for(:date => @previous_day)

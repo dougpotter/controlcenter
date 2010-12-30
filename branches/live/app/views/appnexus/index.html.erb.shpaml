@@ -1,0 +1,25 @@
+h2 | AppNexus status
+
+p
+  = link_to 'New sync', new_appnexus_sync_path
+
+h3 | Existing jobs
+
+% if @jobs.empty?
+  p | None
+% else
+  table class=job-status
+    tr
+      th | Name
+      th | Created at
+      th | Status
+    % for job in @jobs
+      tr
+        td
+          = job.name
+        td
+          = job.created_at.to_s
+        td
+          = status_name(job.status)
+        td
+          = link_to 'Details', appnexus_sync_path(job.id)

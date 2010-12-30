@@ -1,7 +1,5 @@
-require_dependency 'dimension_behaviors'
-
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: ad_inventory_sources
 #
@@ -20,6 +18,7 @@ class AdInventorySource < ActiveRecord::Base
   has_many :impression_counts
 
   validates_presence_of :ais_code
+  validates_uniqueness_of :ais_code
 
   acts_as_dimension
   business_index :ais_code, :aka => "ais"

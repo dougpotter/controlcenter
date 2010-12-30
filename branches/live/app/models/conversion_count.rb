@@ -1,4 +1,15 @@
-require_dependency 'custom_validations'
+# == Schema Information
+# Schema version: 20101220202022
+#
+# Table name: conversion_counts
+#
+#  id                  :integer(4)      not null, primary key
+#  campaign_id         :integer(4)      not null
+#  start_time          :datetime        not null
+#  end_time            :datetime        not null
+#  duration_in_minutes :integer(4)      not null
+#  conversion_count    :integer(4)      not null
+#
 
 class ConversionCount < ActiveRecord::Base
   acts_as_additive_fact

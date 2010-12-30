@@ -1,19 +1,19 @@
-require_dependency 'custom_validations'
-
 # == Schema Information
-# Schema version: 20100819181021
+# Schema version: 20101220202022
 #
 # Table name: click_counts
 #
-#  campaign_id            :integer(4)      not null
-#  creative_id            :integer(4)      not null
-#  ad_inventory_source_id :integer(4)      not null
-#  geography_id           :integer(4)
-#  audience_id            :integer(4)      not null
-#  click_count            :integer(4)      not null
-#  start_time             :datetime
-#  end_time               :datetime
-#  duration_in_minutes    :integer(4)
+#  campaign_id              :integer(4)      not null
+#  creative_id              :integer(4)      not null
+#  ad_inventory_source_id   :integer(4)      not null
+#  geography_id             :integer(4)
+#  audience_id              :integer(4)      not null
+#  click_count              :integer(4)      not null
+#  start_time               :datetime
+#  end_time                 :datetime
+#  duration_in_minutes      :integer(4)
+#  id                       :integer(4)      not null, primary key
+#  media_purchase_method_id :integer(4)
 #
 
 # Click Count is defined as an additive metric which records the clicks

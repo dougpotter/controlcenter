@@ -70,7 +70,10 @@ module Subprocess
       end
       Process.wait(pid)
       if (status = $?.exitstatus) != 0
-        raise CommandFailed.new("Command failed with exit status #{status}: #{args.join(' ')}", :exitstatus => status)
+        if output
+          output = "\noutput:\n#{output}"
+        end
+        raise CommandFailed.new("Command failed with exit status #{status}: #{args.join(' ')}#{output}", :exitstatus => status)
       end
       output
     else

@@ -40,12 +40,6 @@ Rails::Initializer.run do |config|
   # Do not add dependencies here unless they are truly required
   # by all use cases.
   
-  # Until we develop a plugin that loads haml on demand only when
-  # actually compiling stylesheets, we need to load haml here otherwise
-  # configuring sass in initializers and environment-specific files
-  # kills the app.
-  gem 'haml'
-
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
   # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
@@ -64,4 +58,23 @@ Rails::Initializer.run do |config|
   # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
+  
+  config.after_initialize do
+    DelayedLoad.create :sass do
+      require 'sass/plugin'
+    end
+    
+    DelayedLoad.create :paperclip do
+      require 'paperclip'
+      
+      # Copied from paperclip's rails/init.rb since it is too much work
+      # to work out where that file is and properly load it at runtime.
+      # See also:
+      # http://www.practicalecommerce.com/blogs/post/438-The-Blurring-Line-Between-Plugins-and-Gems
+      require 'paperclip/railtie'
+      Paperclip::Railtie.insert
+    end
+    
+    require 'paperclip_configuration'
+  end
 end
