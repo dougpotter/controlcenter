@@ -36,6 +36,10 @@ class Campaign < ActiveRecord::Base
     out
   end
 
+  def partner
+    line_item.partner
+  end
+
   class << self
     def generate_campaign_code
       CodeGenerator.generate_unique_code(
