@@ -2,7 +2,11 @@
 
 % creative_number ||= 0
 
-div id=creative_form_without_line_item class=creative_form_without_line_item
+div id=creative_form_without_line_item<%="[#{creative_number}]"%> class=creative_form_without_line_item
+  <%= link_to_function "-", :class => "remove_creative_link" do |page|
+    page.call :removeCreativeForm, creative_number
+    end %>
+
   div class=dimension_input
     label for='creative_code' | Creative Code:
     >br
@@ -30,6 +34,6 @@ div id=creative_form_without_line_item class=creative_form_without_line_item
     >br
     = file_field "creatives[#{creative_number}]", "image"
 
-  div style='clear:both;'
+  div style='clear:both;height:0px;'
     >br
 
