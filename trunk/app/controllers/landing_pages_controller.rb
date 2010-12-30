@@ -12,6 +12,7 @@ class LandingPagesController < ApplicationController
     @ad_inventory_sources = AdInventorySource.all(:order => :ais_code)
     @audiences = Audience.all(:order => :audience_code)
     @media_purchase_methods = MediaPurchaseMethod.all(:order => :mpm_code)
+    @checkboxes = {}
   end
   
   # A note about time zones:
