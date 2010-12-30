@@ -264,3 +264,36 @@ table tbody {
   float: left;
   margin-right: 300px;
 }
+
+.sync_rule_checkbox_and_label label {
+  float: left;
+  font-size: 15px;
+  margin-top: 4px;
+  width: 30px;
+}
+
+.sync_rule_entry_boxes label {
+  min-width: 30px;
+}
+
+.sync_rule_ais {
+  float:left;
+  margin-left: 20px;
+  margin-top: 7px;
+}
+
+.sync_rule_checkbox_and_label {
+  width: 80px;
+}
+
+.sync_rules_on_campaign_setup {
+  visibility: visible;
+}
+
+.sync_rule_entry_boxes {
+  visibility: hidden;
+}
+
+#audience_source_section {
+  height: 36px;
+}
