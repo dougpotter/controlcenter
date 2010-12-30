@@ -35,6 +35,16 @@ class AudiencesController < ApplicationController
     end
   end
 
+  def audience_source_form
+    if params[:source] == 'Retargeting'
+      render :partial => 'form_for_retargeting_source'
+    elsif params[:source] == 'Ad-Hoc'
+      render :partial => 'form_for_ad_hoc_source'
+    else
+      render "invalid or absent audience type"
+    end
+  end
+
   def index_by_advertiser
     @audiences = []
     if params[:partner_id] == ""
