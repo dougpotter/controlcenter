@@ -6,11 +6,11 @@
 
 a {
   color: black;
+  text-decoration: none;
 }
 
 a:hover {
-  color: #3c3d3f;
-  text-decoration: underline;
+  color: #9d9fa2;
 }
 
 .horizontal_link_list#href {
@@ -296,4 +296,17 @@ table tbody {
 
 #audience_source_section {
   height: 36px;
+}
+
+
+.remove_creative_link {
+  float: left;
+  padding-top: 12px;
+  padding-right: 8px;
+  padding-left: 1px;
+  font-size: 21px;
+}
+
+.add_creative_link {
+  font-size: 18px;
 }
