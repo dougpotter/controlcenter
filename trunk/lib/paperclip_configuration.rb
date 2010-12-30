@@ -20,7 +20,7 @@ module PaperclipConfiguration
         }
       end
       if storage
-        options[storage] = storage
+        options[:storage] = storage
       end
       options
     end
