@@ -44,5 +44,5 @@ config.after_initialize do
 end
 
 config.after_initialize do
-  PaperclipConfiguration.path_prefix = ":rails_root/tmp/test/public"
+  PaperclipConfiguration.path_prefix = ":rails_root/tmp/test/attachments"
 end

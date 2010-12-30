@@ -24,3 +24,7 @@ config.after_initialize do
 end
 
 config.middleware.use 'Shpaml::DevelopmentMiddleware'
+
+config.after_initialize do
+  PaperclipConfiguration.path_prefix = ":rails_root/public/attachments"
+end
