@@ -1,7 +1,7 @@
 div class=dimension_input
   label for="campaign_line_item" | Line Item:
   >br 
-  = select('campaign', 'line_item', none_option + options_from_collection_for_select(@line_items, 'id', 'name'))
+  = select('campaign', 'line_item_id', none_option + options_from_collection_for_select(@line_items, 'id', 'name'))
 
 div class=dimension_input
   label for="audience_audience_type" | Audience Type:
