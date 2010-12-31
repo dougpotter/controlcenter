@@ -100,7 +100,7 @@ class Job < ActiveRecord::Base
   end
   
   def format_exception(exc)
-    text = "#{e.class}: #{e.message}"
+    text = "#{exc.class}: #{exc.message}"
     exc.backtrace.each do |line|
       text += "\n#{line}"
     end
