@@ -12,9 +12,9 @@ table class=extraction-status
     th | Count
   % for status in @counts_by_status.keys.sort
     % count = @counts_by_status[status]
-    tr class="<%= status_to_css_class(status) %>"
+    tr class="<%= extraction_status_to_css_class(status) %>"
       td
-        = link_to_function status_name(status), "ReportPage.showFilesWithStatus('#{status_to_css_class(status)}')"
+        = link_to_function extraction_status_name(status), "ReportPage.showFilesWithStatus('#{extraction_status_to_css_class(status)}')"
       td
         = count
   tr
@@ -38,11 +38,11 @@ table id=file_table class=extraction-status
     th | Extracted At
     th | Verified At
   % for file in @files
-    tr class="<%= status_to_css_class(file.status) %>"
+    tr class="<%= extraction_status_to_css_class(file.status) %>"
       td
         = file.url
       td
-        = status_name(file.status)
+        = extraction_status_name(file.status)
       td
         = file.label_date.strftime('%Y%m%d')
       td

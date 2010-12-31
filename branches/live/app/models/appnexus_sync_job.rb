@@ -14,13 +14,13 @@
 #
 
 class AppnexusSyncJob < Job
-  def run
+  def run(options={})
     case self.status
     when CREATED
       self.status = PROCESSING
       save!
       
-      workflow = AppnexusSyncWorkflow.new(self.parameters)
+      workflow = AppnexusSyncWorkflow.new(self.parameters.update(options))
       result = workflow.launch_create_list
       self.state[:emr_jobflow_id] = result[:emr_jobflow_id]
       self.state[:appnexus_list_location] = result[:appnexus_list_location]
