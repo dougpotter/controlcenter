@@ -20,6 +20,6 @@ h3 | Existing jobs
         td
           = job.created_at.to_s
         td
-          = status_name(job.status)
+          = appnexus_status_name(job.status)
         td
           = link_to 'Details', appnexus_sync_path(job.id)

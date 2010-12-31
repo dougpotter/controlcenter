@@ -29,7 +29,7 @@ table
   tr
     th | Status
     td
-      = status_name(@job.status)
+      = appnexus_status_name(@job.status)
   
   % if @job.completed_at
     tr
