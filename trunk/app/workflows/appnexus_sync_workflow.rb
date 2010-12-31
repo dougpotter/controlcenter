@@ -106,6 +106,9 @@ class AppnexusSyncWorkflow
     require 'digest/md5'
     bucket, prefix = appnexus_list_location.split(':', 2)
     files = find_files(bucket, prefix)
+    if files.empty?
+      raise "AppNexus list generation produced no output files"
+    end
     # should have a single file
     unless files.length == 1
       raise "Multiple files found: #{files.join(', ')}"
