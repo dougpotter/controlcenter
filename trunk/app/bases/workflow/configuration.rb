@@ -38,6 +38,11 @@ module Workflow
       @config_params.dup
     end
     
+    # only read method here
+    def [](key)
+      @config_params[key]
+    end
+    
     private
     
     def load(config_path)

@@ -48,7 +48,11 @@ class AppnexusSyncParameters < ActiveRecord::Base
   validates_numericality_of :instance_count
   
   def initialize(options={})
-    default_options = {:instance_type => 'm1.large', :instance_count => 2}
+    workflow_config = AppnexusSyncWorkflow.configuration
+    default_options = {
+      :instance_type => workflow_config[:list_create_instance_type],
+      :instance_count => workflow_config[:list_create_instance_count],
+    }
     super(default_options.update(options))
   end
 end
