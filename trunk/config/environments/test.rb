@@ -49,4 +49,5 @@ end
 
 config.after_initialize do
   ApplicationConfiguration.workflow_configuration_class_name = 'Workflow::ReloadableConfiguration'
+  ApplicationConfiguration.component_configuration_root = Rails.root.join('config/test')
 end

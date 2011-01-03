@@ -4,10 +4,9 @@ class YamlConfiguration
   class SettingsMissing < StandardError; end
   
   class << self
-    @@dir = "#{RAILS_ROOT}/config"
-    
     def absolutize(name)
-      File.join(@@dir, name + '.yml')
+      root = ApplicationConfiguration.component_configuration_root
+      File.join(root, name + '.yml')
     end
     
     def load(path)
