@@ -46,3 +46,7 @@ end
 config.after_initialize do
   PaperclipConfiguration.path_prefix = ":rails_root/tmp/test/attachments"
 end
+
+config.after_initialize do
+  ApplicationConfiguration.workflow_configuration_class_name = 'Workflow::ReloadableConfiguration'
+end

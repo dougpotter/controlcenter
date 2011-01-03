@@ -10,8 +10,7 @@ module Workflow
       unless config_path
         raise ArgumentError, ':config_path is required'
       end
-      @config_params = YamlConfiguration.load(config_path)
-      postprocess_params
+      load(config_path)
     end
     
     def dup
@@ -40,6 +39,11 @@ module Workflow
     end
     
     private
+    
+    def load(config_path)
+      @config_params = YamlConfiguration.load(config_path)
+      postprocess_params
+    end
     
     # XXX consider refactoring this
     def postprocess_params

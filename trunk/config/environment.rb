@@ -75,6 +75,7 @@ Rails::Initializer.run do |config|
       Paperclip::Railtie.insert
     end
     
+    require 'application_configuration'
     require 'paperclip_configuration'
   end
 end
