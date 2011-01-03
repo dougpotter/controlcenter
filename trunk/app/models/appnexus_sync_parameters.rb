@@ -24,6 +24,11 @@ class AppnexusSyncParameters < ActiveRecord::Base
   validates_presence_of :s3_xguid_list_prefix
   # subdir/filename
   validates_format_of :s3_xguid_list_prefix, :with => %r(\A[a-zA-Z0-9\-]+:[a-zA-Z0-9\-_./]+/[a-zA-Z0-9\-_.]+\Z)
+  validates_each :s3_xguid_list_prefix do |record, attr, value|
+    if value =~ %r|^https?://|
+      record.errors.add(:s3_xguid_list_prefix, 'Looks like a URL - it should be an S3 prefix instead')
+    end
+  end
   
   column :appnexus_segment_id, :string
   validates_presence_of :appnexus_segment_id
