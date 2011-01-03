@@ -19,7 +19,6 @@ class AppnexusSyncJob < Job
     when CREATED
       self.status = PROCESSING
       save!
-      
       workflow = AppnexusSyncWorkflow.new(self.parameters.update(options))
       result = workflow.launch_create_list
       self.state[:emr_jobflow_id] = result[:emr_jobflow_id]
@@ -65,6 +64,20 @@ class AppnexusSyncJob < Job
         self.completed_at = Time.now.utc
         save!
       end
+    end
+  end
+
+  def self.save_and_run name, params
+    @job = self.new
+    @job.name = name
+    @job_parameters = AppnexusSyncParameters.new(params)
+    if @job_parameters.valid?
+      @job.parameters = @job_parameters.attributes
+      @job.save!
+      @job.run
+      return true
+    else
+      return false
     end
   end
 end
