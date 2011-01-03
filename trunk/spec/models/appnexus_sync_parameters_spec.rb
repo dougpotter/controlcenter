@@ -49,4 +49,12 @@ describe AppnexusSyncParameters do
       parameters.valid?.should be_false
     end
   end
+  
+  describe "Defaults" do
+    it "should take instance type from configuration" do
+      parameters = AppnexusSyncParameters.new
+      # special value in test appnexus.yml configuration
+      parameters.instance_type.should == 'fake1.small'
+    end
+  end
 end
