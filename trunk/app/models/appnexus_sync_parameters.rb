@@ -49,10 +49,10 @@ class AppnexusSyncParameters < ActiveRecord::Base
   
   def initialize(options={})
     workflow_config = AppnexusSyncWorkflow.configuration
-    default_options = {
+    default_options = HashWithIndifferentAccess.new(
       :instance_type => workflow_config[:list_create_instance_type],
-      :instance_count => workflow_config[:list_create_instance_count],
-    }
+      :instance_count => workflow_config[:list_create_instance_count]
+    )
     super(default_options.update(options))
   end
 end
