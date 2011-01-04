@@ -2,12 +2,13 @@ require 'spec_helper'
 
 describe AppnexusSyncParameters do
   describe 'Validations' do
+    include AppnexusSyncParameterGenerationHelper
+    
     def valid_parameters
       parameters = AppnexusSyncParameters.new.tap do |p|
-        p.s3_xguid_list_prefix = 'xg-dev-test:/path/to/files'
-        p.appnexus_segment_id = 'TEST'
-        p.instance_type = 'm1.small'
-        p.instance_count = 2
+        valid_appnexus_sync_parameter_attributes.each do |key, value|
+          p.send("#{key}=", value)
+        end
       end
     end
     
