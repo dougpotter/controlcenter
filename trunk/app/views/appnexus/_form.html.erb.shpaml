@@ -9,6 +9,13 @@ div class=field_block
   = f.label 's3_xguid_list_prefix', 'S3 XGUID List bucket:prefix'
   = f.text_field 's3_xguid_list_prefix'
 
+p class=clear
+  = link_to_function 'Help', 'toggleHelp("prefix")'
+
+p id='help-prefix' style='display:none'
+  The prefix may be a complete path to a file or a path to virtual directory
+  in S3. Do not include a tailing slash if prefix is a file path.
+
 = clear :both, :br
 
 div class=field_block

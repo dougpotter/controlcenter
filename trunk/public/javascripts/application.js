@@ -103,3 +103,9 @@ var CampaignPage = {
     form.addEvent('change:relay(select)', updateList);
   }
 };
+
+function toggleHelp(helpKey) {
+  var helpId = 'help-' + helpKey;
+  var element = $(helpId);
+  element.toggle();
+}

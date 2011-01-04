@@ -7,7 +7,7 @@ html xmlns="http://www.w3.org/1999/xhtml"
       = yield(:title) || "XGRAPH Control Center"
     
     = stylesheet_link_tag ["reset", "application"], :cache => "all"
-    = javascript_include_tag [ "swfobject", "mootools-1.2.5-core-yc", "mootools-1.2.4.4-more", "application"], :cache => "all"
+    = javascript_include_tag [ "swfobject", "mootools-1.2.5-core-yc", "mootools-1.2.5.1-more-yc", "application"], :cache => "all"
   
     >link rel="shortcut icon" href="<%= image_path "favicon.ico" %>"
   
