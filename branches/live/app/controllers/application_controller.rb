@@ -4,7 +4,7 @@
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
-  
+
   before_filter :authenticate
 
   # Scrub sensitive parameters from your log
@@ -18,19 +18,19 @@ class ApplicationController < ActionController::Base
     filename = options[:filename]
     filename ||= CGI::escape(request.path.gsub(/^.*\//, ""))
     filename += '.csv' unless filename =~ /\.csv$/
-    
-    # String#index returns nil if no match is found
-    if request.env['HTTP_USER_AGENT'].index("MSIE")
-      headers['Pragma'] = 'public'
-      headers["Content-type"] = "text/plain" 
-      headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
-      headers['Content-Disposition'] = "attachment; filename=\"#{filename}\"" 
-      headers['Expires'] = "0" 
-    else
-      headers["Content-Type"] ||= 'text/csv'
-      headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" 
-    end
-    
+
+      # String#index returns nil if no match is found
+      if request.env['HTTP_USER_AGENT'].index("MSIE")
+        headers['Pragma'] = 'public'
+        headers["Content-type"] = "text/plain" 
+        headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
+        headers['Content-Disposition'] = "attachment; filename=\"#{filename}\"" 
+        headers['Expires'] = "0" 
+      else
+        headers["Content-Type"] ||= 'text/csv'
+        headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" 
+      end
+
     if block_given?
       require 'fastercsv'
       text = FasterCSV.generate do |csv|
@@ -48,11 +48,25 @@ class ApplicationController < ActionController::Base
     else
       render :layout => false
     end
-    
+
+  end
+
+  def create_and_run_apn_sync_job(name, parameters)
+    @job = AppnexusSyncJob.new
+    @job.name = name
+    @job_parameters = AppnexusSyncParameters.new(parameters)
+    if @job_parameters.valid?
+      @job.parameters = @job_parameters.attributes
+      @job.save!
+      @job.run
+      return true
+    else
+      return false
+    end
   end
 
   private
-  
+
   # Authenticate via HTTP Basic Authentication
   # See http://rails.nuvvo.com/lesson/6378
   # TODO: Replace with user database and permission system

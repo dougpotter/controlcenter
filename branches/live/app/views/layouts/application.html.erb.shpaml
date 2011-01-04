@@ -7,7 +7,7 @@ html xmlns="http://www.w3.org/1999/xhtml"
       = yield(:title) || "XGRAPH Control Center"
     
     = stylesheet_link_tag ["reset", "application"], :cache => "all"
-    = javascript_include_tag [ "swfobject", "mootools-1.2.5-core-yc", "mootools-1.2.4.4-more", "application"], :cache => "all"
+    = javascript_include_tag [ "swfobject", "mootools-1.2.5-core-yc", "mootools-1.2.5.1-more-yc", "application"], :cache => "all"
   
     >link rel="shortcut icon" href="<%= image_path "favicon.ico" %>"
   
@@ -22,7 +22,7 @@ html xmlns="http://www.w3.org/1999/xhtml"
           ul.nav
             = content_tag(:li, link_to("Metric Reporting", metrics_home_path), :class => current_if(:metric_reports))
             = content_tag(:li, link_to("Extraction Status", extraction_index_path), :class => current_if(:extraction_status))
-            = content_tag(:li, link_to("Campaign Management", campaigns_path), :class => current_if(:campaign_management))
+            = content_tag(:li, link_to("Campaign Management", campaign_management_index_path), :class => current_if(:campaign_management))
             = content_tag(:li, link_to("AppNexus", appnexus_sync_index_path), :class => current_if(:appnexus))
 
         div#main

@@ -4,14 +4,4 @@ h1 | New Line Item
 
 % form_for @line_item, :html => { :multipart => true } do |f|
   = render :partial => 'form'
-
-  h3 | Creatives
-
-  = render :partial => 'creatives/form_without_line_item'
-  <div id=new_creatives></div>
-  <%= button_to_function "Add Creative" do |page|
-    page.call :newCreativeForm
-    end %>
-  >br
-  >br
   = submit_tag 'Create Line Item'

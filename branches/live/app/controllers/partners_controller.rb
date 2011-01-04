@@ -12,7 +12,7 @@ class PartnersController < ApplicationController
   def create
     @partner = Partner.new(params[:partner])
     if @partner.save
-      redirect_to campaigns_path
+      redirect_to new_partner_path
     else
       render :action => :new
     end

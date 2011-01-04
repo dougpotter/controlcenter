@@ -14,7 +14,8 @@ module Workflow
       
       def configuration(options={})
         default_options = {:config_path => default_config_path}
-        Configuration.new(default_options.update(options))
+        config_cls = ApplicationConfiguration.workflow_configuration_class_name.constantize
+        config_cls.new(default_options.update(options))
       end
     end
   end

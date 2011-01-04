@@ -1,0 +1,9 @@
+test:
+  # parameters that must have specific values that tests rely on
+  list_create_instance_type: fake1.small
+  
+  # these parameters must be given for the code to work,
+  # we don't care what values they have
+  list_create_instance_count: 2
+  output_prefix: "test-output-bucket:"
+  lookup_prefix: "test-lookup-bucket:"

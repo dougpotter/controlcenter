@@ -19,7 +19,6 @@ class AppnexusSyncJob < Job
     when CREATED
       self.status = PROCESSING
       save!
-      
       workflow = AppnexusSyncWorkflow.new(self.parameters.update(options))
       result = workflow.launch_create_list
       self.state[:emr_jobflow_id] = result[:emr_jobflow_id]

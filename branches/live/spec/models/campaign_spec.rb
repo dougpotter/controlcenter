@@ -19,12 +19,6 @@ describe Campaign do
     Factory.create(:campaign)
   end
 
-  it "should require a parent line item" do
-    lambda {
-      Factory.create(:campaign, :line_item_id => 100)
-    }.should raise_error(ActiveRecord::ActiveRecordError)
-  end
-
   it "should require non null campaign code (validations test)" do
     lambda {
       Factory.create(:campaign, :campaign_code => nil)

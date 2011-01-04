@@ -24,6 +24,11 @@ class AppnexusSyncParameters < ActiveRecord::Base
   validates_presence_of :s3_xguid_list_prefix
   # subdir/filename
   validates_format_of :s3_xguid_list_prefix, :with => %r(\A[a-zA-Z0-9\-]+:[a-zA-Z0-9\-_./]+/[a-zA-Z0-9\-_.]+\Z)
+  validates_each :s3_xguid_list_prefix do |record, attr, value|
+    if value =~ %r|^https?://|
+      record.errors.add(:s3_xguid_list_prefix, 'Looks like a URL - it should be an S3 prefix instead')
+    end
+  end
   
   column :appnexus_segment_id, :string
   validates_presence_of :appnexus_segment_id
@@ -43,7 +48,11 @@ class AppnexusSyncParameters < ActiveRecord::Base
   validates_numericality_of :instance_count
   
   def initialize(options={})
-    default_options = {:instance_type => 'm1.large', :instance_count => 2}
+    workflow_config = AppnexusSyncWorkflow.configuration
+    default_options = HashWithIndifferentAccess.new(
+      :instance_type => workflow_config[:list_create_instance_type],
+      :instance_count => workflow_config[:list_create_instance_count]
+    )
     super(default_options.update(options))
   end
 end
