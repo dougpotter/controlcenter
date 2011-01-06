@@ -1,4 +1,7 @@
 class AppnexusSyncWorkflow
+  class InvalidLookupPrefix < StandardError
+  end
+  
   include Workflow::Logger
   include Workflow::DebugPrint
   include Workflow::ConfigurationRetrieval
@@ -138,7 +141,7 @@ class AppnexusSyncWorkflow
     output_url = "s3n://#{bucket}/#{appnexus_list_path}"
     bucket, path = params[:lookup_prefix].split(':', 2)
     entries = find_subdirs(bucket, path)
-    unless most_recent_lookup_subdir = entries[-1]
+    unless most_recent_lookup_subdir = choose_most_recent_ending_subdir(entries)
       raise "Were not able to find lookup directory"
     end
     lookup_url = "s3n://#{bucket}/#{path}/#{most_recent_lookup_subdir}/"
@@ -230,5 +233,26 @@ class AppnexusSyncWorkflow
   
   def s3_client
     @s3_client ||= S3Client::RightAws.new
+  end
+  
+  def choose_most_recent_ending_subdir(basenames)
+    endpoints = basenames.map do |basename|
+      if basename =~ /^(\d{8})-(\d{8})$/
+        $2
+      else
+        nil
+      end
+    end
+    latest_endpoint = latest_index = nil
+    endpoints.each_with_index do |endpoint, index|
+      if latest_endpoint.nil? || endpoint > latest_endpoint
+        latest_endpoint = endpoint
+        latest_index = index
+      end
+    end
+    if latest_endpoint.nil?
+      raise InvalidLookupPrefix, "None of the subdirs looked like lookup table subdirs"
+    end
+    basenames[latest_index]
   end
 end
