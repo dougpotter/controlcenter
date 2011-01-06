@@ -7,3 +7,4 @@ test:
   list_create_instance_count: 2
   output_prefix: "test-output-bucket:"
   lookup_prefix: "test-lookup-bucket:"
+  emr_command: ['doit']

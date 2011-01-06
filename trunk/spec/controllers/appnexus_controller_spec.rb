@@ -27,7 +27,9 @@ describe AppnexusController do
   # 2. User should be redirected back to index.
   # 3. A workflow should be launched
   it 'should create a sync when valid set of parameters is specified' do
-    mock_workflow
+    mock_workflow do |workflow_mock|
+      workflow_mock.expects(:launch_create_list).returns({})
+    end
     
     lambda do
       post 'create', :appnexus_sync_parameters => valid_appnexus_sync_parameter_attributes
@@ -36,12 +38,15 @@ describe AppnexusController do
   end
   
   it 'should persist passed parameters in job parameters' do
-    mock_workflow
+    mock_workflow do |workflow_mock|
+      workflow_mock.expects(:launch_create_list).returns({})
+    end
     
     # be safe with what type of keys is allowed
     attrs = HashWithIndifferentAccess.new(valid_appnexus_sync_parameter_attributes)
     
-    # apparently we have some restrictive validation on instance type
+    # apparently we have some restrictive validation on instance type -
+    # the value here can't have any dashes or underscores, for example
     attrs[:instance_type] = 'fake1.giveninspec'
     
     lambda do
@@ -56,11 +61,71 @@ describe AppnexusController do
     actual_attrs[:instance_type].should == 'fake1.giveninspec'
   end
   
+  # End-to-end test for issue #1121 - specifying lookup endpoints in UI
+  # should result in the created job using that lookup table
+  it 'should use passed lookup date endpoints for determining lookup url' do
+    # be safe with what type of keys is allowed
+    attrs = HashWithIndifferentAccess.new(valid_appnexus_sync_parameter_attributes)
+    # specify date range - take care to use unique values
+    attrs[:lookup_start_date] = '20100801'
+    attrs[:lookup_end_date] = '20100808'
+    
+    # this is ugly, but it's the price we pay for end-to-end testing
+    workflow_params = AppnexusSyncParameters.new(attrs).attributes
+    workflow_mock = AppnexusSyncWorkflow.new(attrs)
+    workflow_mock.stubs(:find_subdirs).raises(Exception, "find_subdirs should not be called when lookup endpoints were given")
+    workflow_mock.expects(:run).returns('Created job flow j-42')
+    AppnexusSyncWorkflow.expects(:new).with(workflow_params).returns(workflow_mock)
+    
+    lambda do
+      post 'create', :appnexus_sync_parameters => attrs
+      response.should redirect_to(appnexus_sync_index_path)
+    end.should change(AppnexusSyncJob, :count).by(1)
+    
+    job = AppnexusSyncJob.first(:order => 'created_at desc')
+    job.should_not be_nil
+    # be safe again
+    state = HashWithIndifferentAccess.new(job.state)
+    state[:lookup_location].should == 'test-lookup-bucket:/20100801-20100808/'
+  end
+  
+  # End-to-end test without specifying lookup endpoints, for completeness
+  it 'should persist chosen lookup url when endpoints are not given' do
+    # be safe with what type of keys is allowed
+    attrs = HashWithIndifferentAccess.new(valid_appnexus_sync_parameter_attributes)
+    # specify date range - take care to use unique values
+    attrs[:lookup_start_date].should be_nil
+    attrs[:lookup_end_date].should be_nil
+    
+    lookup_subdirs = %w(
+      20100802-20100820
+      20100803-20100804
+    )
+    
+    # this is ugly, but it's the price we pay for end-to-end testing
+    workflow_params = AppnexusSyncParameters.new(attrs).attributes
+    workflow_mock = AppnexusSyncWorkflow.new(attrs)
+    workflow_mock.expects(:find_subdirs).with('test-lookup-bucket', '').returns(lookup_subdirs)
+    workflow_mock.expects(:run).returns('Created job flow j-42')
+    AppnexusSyncWorkflow.expects(:new).with(workflow_params).returns(workflow_mock)
+    
+    lambda do
+      post 'create', :appnexus_sync_parameters => attrs
+      response.should redirect_to(appnexus_sync_index_path)
+    end.should change(AppnexusSyncJob, :count).by(1)
+    
+    job = AppnexusSyncJob.first(:order => 'created_at desc')
+    job.should_not be_nil
+    # be safe again
+    state = HashWithIndifferentAccess.new(job.state)
+    # should be the one with most recent end date
+    state[:lookup_location].should == 'test-lookup-bucket:/20100802-20100820/'
+  end
+  
   def mock_workflow
     # mock workflow to test the controller only
     workflow_mock = mock('mock workflow')
-    # these expectations are important to keep
-    workflow_mock.expects(:launch_create_list).returns({})
     AppnexusSyncWorkflow.expects(:new).returns(workflow_mock)
+    yield workflow_mock
   end
 end

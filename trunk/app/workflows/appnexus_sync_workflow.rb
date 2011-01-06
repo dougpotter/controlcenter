@@ -173,7 +173,7 @@ class AppnexusSyncWorkflow
   def run(cmd)
     cmd = cmd.map do |part|
       if part.nil?
-        raise "Command line has nil arguments - probably something is not specified correctly: #{cmd.inspect}"
+        raise ArgumentError, "Command line has nil arguments - probably something is not specified correctly: #{cmd.inspect}"
       end
       # this converts integers to strings
       part.to_s
