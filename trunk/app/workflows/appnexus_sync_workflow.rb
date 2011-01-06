@@ -111,8 +111,7 @@ class AppnexusSyncWorkflow
       raise "Multiple files found: #{files.join(', ')}"
     end
     get_file(bucket, files[0]) do |f|
-      unique = Digest::MD5.new.hexdigest(1.upto(5).to_a.map { rand.to_s[2..-1] }.join)
-      filename = "seg-#{params[:appnexus_member_id]}-#{unique}"
+      filename = determine_appnexus_filename(params)
       remote_path = params[:sftp_path]
       remote_path += '/' if remote_path && remote_path[-1] != ?/
       remote_path += filename
@@ -272,5 +271,11 @@ class AppnexusSyncWorkflow
       end
     end
     lookup_url = "s3n://#{bucket}/#{path}/#{subdir}/"
+  end
+  
+  def determine_appnexus_filename(params)
+    unique = Digest::MD5.new.hexdigest(1.upto(5).to_a.map { rand.to_s[2..-1] }.join)
+    unique = unique[0...10]
+    "seg-#{params[:appnexus_member_id]}-#{unique}"
   end
 end

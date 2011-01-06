@@ -89,6 +89,25 @@ describe AppnexusSyncWorkflow do
     end
   end
   
+  describe :determine_appnexus_filename do
+    before do
+      # there are no real use cases where workflow would be instantiated
+      # without specifying any parameters, thus parameters are required
+      @workflow = AppnexusSyncWorkflow.new({})
+    end
+    
+    it 'should comply with seq-[xgraph appnexus id]-[10-chars] format' do
+      filename = @workflow.__send__(:determine_appnexus_filename, sensible_parameters)
+      filename.should =~ /\Aseg-1337-\w{10}\Z/
+    end
+    
+    def sensible_parameters
+      {
+        :appnexus_member_id => 1337,
+      }
+    end
+  end
+  
   describe :launch_create_list do
     def sensible_default_parameters
       {
