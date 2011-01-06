@@ -59,8 +59,13 @@ class AppnexusSyncWorkflow
     
     # derive output location from s3 url
     appnexus_list_location = s3_url_to_location(emr_params[:output_url])
+    lookup_location = s3_url_to_location(emr_params[:lookup_url])
     
-    {:appnexus_list_location => appnexus_list_location, :emr_jobflow_id => job_id}
+    {
+      :appnexus_list_location => appnexus_list_location,
+      :lookup_location => lookup_location,
+      :emr_jobflow_id => job_id,
+    }
   end
   
   # Checks whether the map-reduce job to create appnexus list has finished.
@@ -139,12 +144,7 @@ class AppnexusSyncWorkflow
     hour_range = "#{'%02d' % hour}00-#{'%02d' % ((hour + 1) % 24)}00"
     appnexus_list_path = "#{path}/seg-data/all/#{params[:partner_code]}/aid-#{params[:audience_code]}/#{timestamp.strftime('%Y%m%d')}/#{hour_range}/"
     output_url = "s3n://#{bucket}/#{appnexus_list_path}"
-    bucket, path = params[:lookup_prefix].split(':', 2)
-    entries = find_subdirs(bucket, path)
-    unless most_recent_lookup_subdir = choose_most_recent_ending_subdir(entries)
-      raise "Were not able to find lookup directory"
-    end
-    lookup_url = "s3n://#{bucket}/#{path}/#{most_recent_lookup_subdir}/"
+    lookup_url = determine_lookup_url(params)
     
     # keep the keys arranged in the same order as arguments to emr command
     {
@@ -254,5 +254,23 @@ class AppnexusSyncWorkflow
       raise InvalidLookupPrefix, "None of the subdirs looked like lookup table subdirs"
     end
     basenames[latest_index]
+  end
+  
+  def determine_lookup_url(params)
+    bucket, path = params[:lookup_prefix].split(':', 2)
+    lookup_start_date = params[:lookup_start_date]
+    lookup_end_date = params[:lookup_end_date]
+    if lookup_start_date && lookup_end_date
+      subdir = "#{lookup_start_date}-#{lookup_end_date}"
+    elsif lookup_start_date || lookup_end_date
+      # only one endpoint specified - we do not currently allow this
+      raise ArgumentError, "Only one endpoint specified for lookup date range"
+    else
+      entries = find_subdirs(bucket, path)
+      unless subdir = choose_most_recent_ending_subdir(entries)
+        raise "Were not able to find lookup directory"
+      end
+    end
+    lookup_url = "s3n://#{bucket}/#{path}/#{subdir}/"
   end
 end

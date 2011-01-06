@@ -88,4 +88,52 @@ describe AppnexusSyncWorkflow do
       emr_parameters[:lookup_url].should_not =~ /20100520-20100527/
     end
   end
+  
+  describe :launch_create_list do
+    def sensible_default_parameters
+      {
+        # need emr_command since we use it to build command line to invoke.
+        # we stub run method, allowing the built command line to have nil
+        # arguments
+        :emr_command => ['doit'],
+        :s3_xguid_list_prefix => 'test:input/path',
+        :output_prefix => 'test:output/path',
+        :lookup_prefix => 'test:lookup/path',
+      }
+    end
+    
+    def sensible_lookup_subdirs
+      %w(
+        20100501-20100531
+        20100520-20100527
+      )
+    end
+    
+    it 'should return chosen lookup location' do
+      params = HashWithIndifferentAccess.new(sensible_default_parameters)
+      # here we do not supply lookup date range
+      params[:lookup_start_date].should be_nil
+      params[:lookup_end_date].should be_nil
+      
+      @workflow = AppnexusSyncWorkflow.new(params)
+      @workflow.expects(:find_subdirs).with('test', 'lookup/path').returns(sensible_lookup_subdirs)
+      @workflow.expects(:run).returns('Created job flow j-42')
+      output = @workflow.launch_create_list
+      output[:lookup_location].should_not be_nil
+    end
+    
+    it 'should use specified lookup location when given endpoints' do
+      params = HashWithIndifferentAccess.new(sensible_default_parameters)
+      # here we do supply lookup date range, and endpoints must be
+      # different from dates we use elsewhere
+      params[:lookup_start_date] = '20100201'
+      params[:lookup_end_date] = '20100203'
+      
+      @workflow = AppnexusSyncWorkflow.new(params)
+      @workflow.stubs(:find_subdirs).raises(Exception, "find_subdirs should not be called when lookup endpoints were given")
+      @workflow.expects(:run).returns('Created job flow j-42')
+      output = @workflow.launch_create_list
+      output[:lookup_location].should == 'test:lookup/path/20100201-20100203/'
+    end
+  end
 end
