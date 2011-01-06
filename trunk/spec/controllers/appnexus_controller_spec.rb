@@ -93,10 +93,26 @@ describe AppnexusController do
   it 'should persist chosen lookup url when endpoints are not given' do
     # be safe with what type of keys is allowed
     attrs = HashWithIndifferentAccess.new(valid_appnexus_sync_parameter_attributes)
-    # specify date range - take care to use unique values
     attrs[:lookup_start_date].should be_nil
     attrs[:lookup_end_date].should be_nil
     
+    test_without_specified_lookup_endpoints(attrs)
+  end
+  
+  # QA testing revealed that empty endpoints are treated as specified
+  # endpoints which is very wrong. Thus this test which is identical
+  # in outcome to the test for not given endpoints except the endpoints are
+  # specified as empty strings.
+  it 'should look up lookup urls when endpoints are given as empty strings' do
+    # be safe with what type of keys is allowed
+    attrs = HashWithIndifferentAccess.new(valid_appnexus_sync_parameter_attributes)
+    attrs[:lookup_start_date] = ''
+    attrs[:lookup_end_date] = ''
+    
+    test_without_specified_lookup_endpoints(attrs)
+  end
+  
+  def test_without_specified_lookup_endpoints(attrs)
     lookup_subdirs = %w(
       20100802-20100820
       20100803-20100804
@@ -104,7 +120,7 @@ describe AppnexusController do
     
     # this is ugly, but it's the price we pay for end-to-end testing
     workflow_params = AppnexusSyncParameters.new(attrs).attributes
-    workflow_mock = AppnexusSyncWorkflow.new(attrs)
+    workflow_mock = AppnexusSyncWorkflow.new(workflow_params)
     workflow_mock.expects(:find_subdirs).with('test-lookup-bucket', '').returns(lookup_subdirs)
     workflow_mock.expects(:run).returns('Created job flow j-42')
     AppnexusSyncWorkflow.expects(:new).with(workflow_params).returns(workflow_mock)

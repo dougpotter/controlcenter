@@ -34,10 +34,12 @@ class AppnexusSyncParameters < ActiveRecord::Base
   validates_presence_of :appnexus_segment_id
   
   column :lookup_start_date, :string
-  validates_format_of :lookup_start_date, :with => %r(\A\Z|\A\d{8}\Z), :allow_nil => true
+  validates_format_of :lookup_start_date, :with => %r(\A\d{8}\Z), :allow_nil => true
+  convert_blank_to_nil :lookup_start_date
   
   column :lookup_end_date, :string
-  validates_format_of :lookup_end_date, :with => %r(\A\Z|\A\d{8}\Z), :allow_nil => true
+  validates_format_of :lookup_end_date, :with => %r(\A\d{8}\Z), :allow_nil => true
+  convert_blank_to_nil :lookup_end_date
   
   column :instance_type, :string
   validates_presence_of :instance_type
