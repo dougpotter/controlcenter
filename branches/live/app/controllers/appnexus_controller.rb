@@ -9,7 +9,10 @@ class AppnexusController < ApplicationController
   end
   
   def create
-    if create_and_run_apn_sync_job('appnexus-list-generate', params[:appnexus_sync_parameters] || {})
+    if create_and_run_appnexus_sync_job(
+      'appnexus-list-generate',
+      params[:appnexus_sync_parameters] || {}
+    )
       redirect_to :action => 'index'
     else
       render :action => 'new'

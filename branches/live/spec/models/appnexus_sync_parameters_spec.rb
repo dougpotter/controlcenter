@@ -58,4 +58,51 @@ describe AppnexusSyncParameters do
       parameters.instance_type.should == 'fake1.small'
     end
   end
+  
+  describe 'Empty value treatment' do
+    it 'should store empty lookup endpoints as nil when using attribute methods' do
+      parameters = AppnexusSyncParameters.new
+      parameters.lookup_start_date = ''
+      parameters.lookup_start_date.should be_nil
+      
+      parameters.lookup_end_date = ''
+      parameters.lookup_end_date.should be_nil
+    end
+    
+    it 'should store empty lookup endpoints as nil when using bulk assignment' do
+      parameters = AppnexusSyncParameters.new
+      parameters.attributes = {
+        :lookup_start_date => '',
+        :lookup_end_date => '',
+      }
+      parameters.lookup_start_date.should be_nil
+      parameters.lookup_end_date.should be_nil
+    end
+    
+    it 'should store empty lookup endpoints as nil when using constructor arguments' do
+      parameters = AppnexusSyncParameters.new(
+        :lookup_start_date => '',
+        :lookup_end_date => ''
+      )
+      parameters.lookup_start_date.should be_nil
+      parameters.lookup_end_date.should be_nil
+    end
+    
+    it 'should return nil lookup endpoints in attributes' do
+      parameters = AppnexusSyncParameters.new
+      attrs = parameters.attributes
+      attrs[:lookup_start_date].should be_nil
+      attrs[:lookup_end_date].should be_nil
+    end
+    
+    it 'should return nil lookup endpoints in attributes after assignment' do
+      parameters = AppnexusSyncParameters.new
+      parameters.lookup_start_date = ''
+      parameters.lookup_end_date = ''
+      
+      attrs = parameters.attributes
+      attrs[:lookup_start_date].should be_nil
+      attrs[:lookup_end_date].should be_nil
+    end
+  end
 end

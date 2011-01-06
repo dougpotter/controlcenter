@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
 
   end
 
-  def create_and_run_apn_sync_job(name, parameters)
+  def create_and_run_appnexus_sync_job(name, parameters)
     @job = AppnexusSyncJob.new
     @job.name = name
     @job_parameters = AppnexusSyncParameters.new(parameters)

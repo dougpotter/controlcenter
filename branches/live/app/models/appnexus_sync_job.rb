@@ -23,6 +23,7 @@ class AppnexusSyncJob < Job
       result = workflow.launch_create_list
       self.state[:emr_jobflow_id] = result[:emr_jobflow_id]
       self.state[:appnexus_list_location] = result[:appnexus_list_location]
+      self.state[:lookup_location] = result[:lookup_location]
       save!
     when PROCESSING
       # we better have the jobflow id
