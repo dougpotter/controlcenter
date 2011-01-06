@@ -243,3 +243,9 @@ Factory.define :msa do |m|
   # Can't specify both region.msas and msa.regions
   #m.regions { [ Factory(:region) ] }
 end
+
+Factory.define :misfit_fact do |m|
+  m.anomaly "campaign_code:AB12"
+  m.fact_class "click_count"
+  m.fact_attributes { { :campaign_code => "AB12", :another_attribute => "value"} }
+end
