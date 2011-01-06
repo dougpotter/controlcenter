@@ -9,7 +9,7 @@ class AppnexusController < ApplicationController
   end
   
   def create
-    if create_and_run_appnexus_sync_job(
+    if create_and_run_apn_sync_job(
       'appnexus-list-generate',
       params[:appnexus_sync_parameters] || {}
     )
