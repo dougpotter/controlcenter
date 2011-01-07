@@ -46,7 +46,7 @@ class CampaignsController < ApplicationController
     # sync audience with ApN
     @aises_for_inclusion = params[:aises_for_sync]
     if @aises_for_inclusion.delete("ApN")
-      if !create_and_run_appnexus_sync_job('appnexus-list-generate', @sync_params)
+      if !create_and_run_apn_sync_job('appnexus-list-generate', @sync_params)
         render :text => "invalid appnexus sync job"
         return
       end
