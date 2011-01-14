@@ -19,4 +19,6 @@ class LineItem < ActiveRecord::Base
   belongs_to :partner
 
   validates_presence_of :partner_id
+
+  acts_as_dimension
 end
