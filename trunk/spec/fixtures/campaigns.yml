@@ -1,0 +1,13 @@
+campaign_one:
+  id: 1
+  name: first campaign
+  campaign_code: ABC1
+  line_item_id: 1
+  campaign_type: retargeting
+
+campaign_two:
+  id: 2
+  name: second campaign
+  campaign_code: A2C1
+  line_item_id: 1
+  campaign_type: search

@@ -1,0 +1,7 @@
+campaign_creative_one:
+  campaign_id: 1
+  creative_id: 1
+
+campaign_creative_two:
+  campaign_id: 2
+  creative_id: 1

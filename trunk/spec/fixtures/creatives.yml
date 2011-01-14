@@ -1,0 +1,7 @@
+creative_one:
+  id: 1
+  name: first creative
+  media_type: flash
+  creative_size_id: 1
+  creative_code: AA11
+  image_file_name: thefirstcreative.gif
