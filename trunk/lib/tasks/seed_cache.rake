@@ -1,60 +1,57 @@
 namespace :dimension_cache do
-  # seeds cache with dimension values in the format 
-  # key => dimension_name:dimension_value 
-  # value => true
-  # 
-  # for example
-  # key => campaign_code:UCCO
-  # value => true
-  #
-  # and seeds cache with dimension relationships in the format
-  # key => dimension_one:dimension_one_value:dimension_two:dimension_two_value
-  # value => true
-  #
-  # for example
-  # key => campaign_code:UCCO:creative_code:wvf-234
-  # value => true
-  #
-  # Notes:
-  # - dimension_cache:seed deletes any content already in the cache
+
   desc "Seed cache with dimension values and relationships"
   task :seed => [ :environment, :reset ] do
-    cache = Rails.cache
+    model_strings = Dir.glob("app/models/**").map { |f| f.match(/\/+([a-z_]+)\./)[1] }
 
-    known_dimensions = { "campaign" => "campaign_code", 
-      "partner" => "partner_code", 
-      "creative" => "creative_code", 
-      "ad_inventory_source" => "ais_code", 
-      "media_purchase_method" => "mpm_code",
-      "audience" => "audience_code" }
-
-    known_dimensions.each do |model_str,model_code|
-      model_class = ActiveRecord.const_get(model_str.classify)
-      known_values = model_class.all.map { |m| m.send(model_code) }
-      for value in known_values
-        cache.write(model_code.to_s + ":" + value.to_s, true)
+    for model_string in model_strings
+      # bypass all but ActiveRecord Dimensions
+      begin
+        model_class = ActiveRecord.const_get(model_string.classify)
+        next unless model_class.is_dimension? && model_class.superclass == ActiveRecord::Base
+      rescue NameError
+        next
       end
-    end
 
-    relationships = [ 
-      [ :campaign, :ad_inventory_sources ],
-      [ :campaign, :creatives ],
-      [ :campaign, :line_item ] ] 
-    codes = { 
-      :ad_inventory_sources => :ais_code,
-      :creatives => :creative_code,
-      :line_item => :line_item_code }
+      #seed dimension values
+      model_code = model_class.business_code
+      known_values = model_class.all.map { |m| m.business_code_value }
+      for value in known_values
+        CACHE.write(model_code.to_s + ":" + value.to_s, true)
+      end
 
-    for campaign in Campaign.all
-      campaign_code_value = campaign.campaign_code
-      dim_one_component = "campaign_code:" + campaign_code_value.to_s
-      relationships.each do |rel|
-        business_index_name = codes[rel[1]]
-        for relation in campaign.send(rel[1]).to_a
-          business_index_value = relation.send(business_index_name).to_s
-          dim_two_component = business_index_name.to_s + ":" + business_index_value.to_s
-          puts dim_one_component + ":" + dim_two_component
-          cache.write(dim_one_component + ":" + dim_two_component, true)
+      # seed dimension relationships
+      relationships = []
+      if relations = model_class.enforced_associations
+        for relation in relations
+          relationships << [ model_string, relation ]
+        end
+      end
+
+      # i use red and blue to avoid any connotation of order. the dimension
+      # code-value pairs are ordered alphabetically, by dimension code name, 
+      # just before being placed in the cache
+      if !relationships.empty?
+        for instance in model_class.all
+          dim_red_code_name = instance.business_code
+          dim_red_code_value = instance.business_code_value
+          dim_blue_code_name = ""
+          dim_blue_code_value = ""
+
+          relationships.each do |relationship|
+            for relation in instance.send(relationship[1]).to_a
+              dim_blue_code_name = relation.business_code
+              dim_blue_code_value = relation.business_code_value
+              dim_red_component = 
+                dim_red_code_name.to_s + ":" + dim_red_code_value.to_s
+              dim_blue_component = 
+                dim_blue_code_name.to_s + ":" + dim_blue_code_value.to_s
+              cache_string = 
+                [ dim_red_component, dim_blue_component ].sort.join(":")
+              puts cache_string
+              CACHE.write(cache_string, true)
+            end
+          end
         end
       end
     end
@@ -62,6 +59,6 @@ namespace :dimension_cache do
 
   desc "Delete contents of cache"
   task :reset => :environment  do
-    Rails.cache.reset
+    CACHE.reset
   end
 end
