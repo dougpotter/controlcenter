@@ -37,6 +37,7 @@ describe FactsController do
       response.should be_client_error
     end
     it "should fail validation given an unknown value" do
+      pending
       post 'create',
         :click_count => "1000",
         :start_time => Time.now.to_s, 
