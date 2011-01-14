@@ -16,10 +16,10 @@
 # time period.
 class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :geographies
-  has_and_belongs_to_many :ad_inventory_sources
-  has_and_belongs_to_many :creatives
+  has_and_belongs_to_many :ad_inventory_sources, :enforce => true
+  has_and_belongs_to_many :creatives, :enforce => true
   has_one :audience
-  belongs_to :line_item
+  belongs_to :line_item, :enforce => true
 
   has_many :click_counts
   has_many :impression_counts
@@ -29,7 +29,7 @@ class Campaign < ActiveRecord::Base
 
   acts_as_dimension
   business_index :campaign_code, :aka => "cid"
-  
+
   def campaign_code_and_description
     out = campaign_code
     out += " - #{name}" unless name.blank?
