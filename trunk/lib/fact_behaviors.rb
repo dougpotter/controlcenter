@@ -150,6 +150,7 @@ end
 
 module InstanceMethods
   def self.included( base )
+
     # Method statements go here; e.g.:
     #base.validates_presence_of :start_time
     if base.respond_to?(:validates_as_unique)
@@ -176,6 +177,10 @@ module InstanceMethods
   # Instance methods go here
 
   def initialize(attributes = nil)
+    if !attributes.nil?
+      attr_copy = attributes.clone.to_json 
+      attributes[:attributes_on_initialize] = attr_copy
+    end
     if attributes.nil? || attributes.empty? || self.class.native_attributes?(attributes)
       super
     else
@@ -219,6 +224,12 @@ module InstanceMethods
       conds << pk_name.to_s + s
     }
     conds
+  end
+
+  def attributes_on_initialize_as_hsh
+    HashWithIndifferentAccess.new(ActiveSupport::JSON.decode(
+      self.attributes_on_initialize
+    ))
   end
 
   def is_fact? ; true ; end

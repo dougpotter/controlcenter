@@ -78,7 +78,7 @@ module DimensionBehaviors
     end
 
     def keyize_index_attributes(attributes = nil, options = {})
-      return {} if attributes.nil?
+      retur {} if attributes.nil?
 
       key_attrs = {}
       attributes.each do |param, arg|
@@ -99,11 +99,14 @@ module DimensionBehaviors
             raise InvalidDimensionSpecification
           end
 
-          # Scalar indices; no translation
+          # Scalar and serialized indices; no translation
         elsif options[:include] && 
           (options[:include].include?(param.to_sym) || 
            options[:include].include?(param.to_s))
           key_attrs[param] = (DateTime.parse(arg) rescue arg)
+        elsif param == :attributes_on_initialize ||
+          param == "attributes_on_initialize"
+          key_attrs[param] = arg
         end
       end
       return key_attrs

@@ -30,14 +30,14 @@ module AdditiveFactBehaviors
         end
       end
       where_clause = self.new.where_conditions_from_params(options[:where])
-      
+
       # ammend from_clause, columns, and group_by_list to account for selected
       # dimensions which do not appear in fact table (and therefore necessitate
       # a join)
       from_clause = ""
       handle_joined_dimensions(from_clause, columns, group_by_list, options[:group_by])
 
-      
+
       # standard query
       fa.add(self.find_by_sql(
         "SELECT #{columns.join(", ")}, SUM(#{fact_table.singularize}) as sum
@@ -45,7 +45,7 @@ module AdditiveFactBehaviors
           WHERE #{where_clause.join(" AND ")}
           GROUP BY #{group_by_list.join(", ")}"
       ))
-     
+
       if options[:all_total] == []
         return
       end
@@ -123,6 +123,67 @@ module AdditiveFactBehaviors
   end
 
   module InstanceMethods
-  end
+    def self.included(base)
+      base.validate :dimension_values
+      base.validate :dimension_relationships
+    end
 
+    def dimension_values
+      dimensions = self.attributes.keys.select do |dim|
+        dim.match(/_id/)
+      end
+
+      nil_dims = dimensions.select { |dim|
+        self.send(dim).nil?
+      }
+
+      for dim in nil_dims
+        begin
+          business_code = ActiveRecord.const_get(dim[0..-4].classify).business_code
+        rescue
+          # not an active record class yet (e.g. geography), can't have a code, so we just skip it
+          next
+        end
+
+        code_at_initialize = attributes_on_initialize_as_hsh[business_code]
+        if !code_at_initialize.nil?
+          # code was provided, but not recognized, at initialize
+          self.errors.add(dim, "was indeterminate at initialization because " +
+                     "#{code_at_initialize.to_s} was unrecognized")
+        end
+      end
+    end
+
+    def dimension_relationships
+      dimensions = self.attributes.keys.select do |dim|
+        dim.match(/_id/)
+      end
+
+      dim_classes = dimensions.map { |d| 
+        ActiveRecord.const_get(d.match(/(.+)_id/)[1].classify)
+      }
+
+      dim_classes_with_enforced_relationships = dim_classes.select { |dim|
+        !dim.enforced_associations.empty?
+      }
+
+      for dim_class in dim_classes_with_enforced_relationships
+        dim_red_name = dim_class.to_s.underscore + "_id"
+        for association in dim_class.enforced_associations
+          dim_blue_name = association.singularize + "_id"
+
+          if self.attributes.member?(dim_blue_name)
+            dim_red_value = self.send(dim_red_name).to_s
+            dim_blue_value = self.send(dim_blue_name).to_s
+
+            dim_red_string = dim_red_name + ":" + dim_red_value
+            dim_blue_string = dim_blue_name + ":" + dim_blue_value
+            cache_string = [ dim_red_string, dim_blue_string ].sort.join(":")
+
+            self.errors.add_to_base("this is an unknown relationship: " + cache_string) unless CACHE.read(cache_string)
+          end   
+        end   
+      end   
+    end   
+  end
 end
