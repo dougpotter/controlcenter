@@ -62,6 +62,19 @@ Factory.define :impression_count do |i|
   i.ad_inventory_source_id {Factory(:ad_inventory_source).id}
   i.audience_id {Factory(:audience).id}
   i.impression_count 10000
+  attr_hsh = {
+    "audience_id" => 526, 
+    "geography_id" => nil, 
+    "end_time" => "Wed, 19 Jan 2011 22:00:00 UTC +00:00", 
+    "media_purchase_method_id" => nil, 
+    "creative_id" => 525, 
+    "ad_inventory_source_id" => 525, 
+    "campaign_id" => 1049, 
+    "click_count" => 1900, 
+    "duration_in_minutes" => 60, 
+    "start_time" => "Wed, 19 Jan 2011 21:00:00 UTC +00:00" 
+  }.to_json
+  i.attributes_on_initialize attr_hsh
 end
 
 Factory.define :click_count do |c|
@@ -75,6 +88,19 @@ Factory.define :click_count do |c|
   c.ad_inventory_source_id {Factory(:ad_inventory_source).id}
   c.audience_id {Factory(:audience).id}
   c.click_count 1900
+  attr_hsh = {
+    "audience_id" => 526, 
+    "geography_id" => nil, 
+    "end_time" => "Wed, 19 Jan 2011 22:00:00 UTC +00:00", 
+    "media_purchase_method_id" => nil, 
+    "creative_id" => 525, 
+    "ad_inventory_source_id" => 525, 
+    "campaign_id" => 1049, 
+    "click_count" => 1900, 
+    "duration_in_minutes" => 60, 
+    "start_time" => "Wed, 19 Jan 2011 21:00:00 UTC +00:00" 
+  }.to_json
+  c.attributes_on_initialize attr_hsh
 end
 
 Factory.define :conversion_count do |c|

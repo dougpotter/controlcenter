@@ -5,3 +5,11 @@ creative_one:
   creative_size_id: 1
   creative_code: AA11
   image_file_name: thefirstcreative.gif
+
+creative_two:
+  id: 2
+  name: second creative
+  media_type: flash
+  creative_size_id: 1
+  creative_code: AA12
+  image_file_name: thesecondcreative.gif

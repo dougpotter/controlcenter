@@ -8,3 +8,19 @@ module AppnexusSyncParameterGenerationHelper
     }
   end
 end
+
+module ActiveRecordErrorParsingHelper
+  # returns true if error contains an unrecognized dimension code error on account
+  # of code_at_init
+  def contains_unrecognized_code_error?(error, code_at_init)
+    !error.record.errors.select { |e| 
+      e[1] == "was indeterminate at initialization because " + 
+        "#{code_at_init} was unrecognized" 
+    }.empty?
+  end
+end
+
+module FactParameterGenerationHelper
+  def click_count_db_consistent_parameters
+  end
+end
