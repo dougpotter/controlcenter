@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101230052708) do
+ActiveRecord::Schema.define(:version => 20110119194855) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -41,7 +41,6 @@ ActiveRecord::Schema.define(:version => 20101230052708) do
     t.datetime "start_time"
     t.datetime "end_time"
     t.integer  "line_item_id",  :default => 12, :null => false
-    t.string   "campaign_type"
   end
 
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
@@ -81,6 +80,7 @@ ActiveRecord::Schema.define(:version => 20101230052708) do
     t.datetime "end_time"
     t.integer  "duration_in_minutes"
     t.integer  "media_purchase_method_id"
+    t.string   "attributes_on_initialize", :null => false
   end
 
   add_index "click_counts", ["ad_inventory_source_id"], :name => "click_counts_ad_inventory_source_id_fk"
@@ -271,6 +271,7 @@ ActiveRecord::Schema.define(:version => 20101230052708) do
     t.datetime "end_time"
     t.integer  "duration_in_minutes"
     t.integer  "media_purchase_method_id"
+    t.string   "attributes_on_initialize", :null => false
   end
 
   add_index "impression_counts", ["ad_inventory_source_id"], :name => "impression_counts_ad_inventory_source_id_fk"
