@@ -8,6 +8,12 @@ describe FactsController do
   end
 
   describe "POST 'create'" do
+
+    before(:each) do
+      DimensionCache.reset
+      DimensionCache.seed_relationships
+    end
+
     fixtures :creatives, :campaigns, :line_items, :ad_inventory_sources, :audiences, :campaigns_creatives, :ad_inventory_sources_campaigns
     it "should successfully create given known values and relationships" do
       post 'create',
@@ -23,13 +29,12 @@ describe FactsController do
       response.should be_success
     end
     it "should fail validation given known values but an unknown relationship" do
-      pending
       post 'create',
         :click_count => "1000",
         :start_time => Time.now.to_s, 
         :end_time => Time.now.to_s,
         :duration_in_minutes => 100,
-        :creative_code => "AA11",
+        :creative_code => "AA12",
         :campaign_code => "ABC1",
         :line_item_code => "ABCD",
         :ais_code => "AdX",
@@ -37,7 +42,6 @@ describe FactsController do
       response.should be_client_error
     end
     it "should fail validation given an unknown value" do
-      pending
       post 'create',
         :click_count => "1000",
         :start_time => Time.now.to_s, 
