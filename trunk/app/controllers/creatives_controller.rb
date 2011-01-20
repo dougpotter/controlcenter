@@ -74,7 +74,7 @@ class CreativesController < ApplicationController
 
   def index_by_advertiser
     @creatives = []
-    if params[:partner_id] == ""
+    if params[:partner_id].blank?
       @creatives = Creative.all
     else
       Campaign.find_all_by_partner_id(params[:partner_id]).each do |c|
