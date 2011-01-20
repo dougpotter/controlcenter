@@ -19,7 +19,6 @@ describe AdInventorySource do
   end
 
   it "should create a new instance given valid attributes" do
-    AdInventorySource.create!(@valid_attributes)
     Factory.create(:ad_inventory_source)
   end
 
