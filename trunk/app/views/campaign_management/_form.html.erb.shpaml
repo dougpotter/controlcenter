@@ -26,7 +26,7 @@ div id=left_pane
     = select_tag('campaign[audience_ids]', options_from_collection_for_select(@audiences, :id, :audience_code), :multiple => true)
 
   div id=partner_ais
-    div class=dimension_input, id=partner
+    div class=dimension_input id=partner
       label for="campaign_partner_id" | Partner:
       >br
 
