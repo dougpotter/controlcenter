@@ -52,7 +52,8 @@ describe Campaign do
       :ad_inventory_sources, 
       :audiences, 
       :campaigns_creatives, 
-      :ad_inventory_sources_campaigns
+      :ad_inventory_sources_campaigns,
+      :creative_sizes
 
     it "should add relationship with line item to dimension cache" do
       c = Campaign.new({
