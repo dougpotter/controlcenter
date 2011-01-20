@@ -25,7 +25,7 @@ class CreativesController < ApplicationController
     
     @unassociated_creatives = Set.new
     for creative in Creative.find(:all, :include => :campaigns)
-      if creative.campaigns.blank?
+      if creative.campaigns.empty?
         @unassociated_creatives << creative
       end
     end
