@@ -4,7 +4,7 @@ class CreativesController < ApplicationController
     campaign_code = params[:campaign_code]
 
     @partner_creatives = Set.new
-    if partner_id != "" && !partner_id.blank?
+    if !partner_id.blank?
       for campaign in Partner.find(partner_id).campaigns
         for creative in campaign.creatives
           @partner_creatives << creative
@@ -13,7 +13,7 @@ class CreativesController < ApplicationController
     end
 
     @campaign_creatives = Set.new
-    if campaign_code != "" && !campaign_code.blank?
+    if !campaign_code.blank?
       for creative in Campaign.find(:first, :conditions => {:campaign_code => campaign_code}).creatives
         @campaign_creatives << creative
       end
@@ -46,7 +46,7 @@ class CreativesController < ApplicationController
     @creative = Creative.new
     @creative.creative_size_id = params[:creative].delete(:creative_size)
 
-    if !params[:creative][:campaigns].blank? && params[:creative][:campaigns] != ""
+    if !params[:creative][:campaigns].blank?
       @creative.campaigns << Campaign.find(params[:creative].delete(:campaigns))
     end
 
