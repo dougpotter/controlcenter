@@ -19,8 +19,3 @@ module ActiveRecordErrorParsingHelper
     }.empty?
   end
 end
-
-module FactParameterGenerationHelper
-  def click_count_db_consistent_parameters
-  end
-end
