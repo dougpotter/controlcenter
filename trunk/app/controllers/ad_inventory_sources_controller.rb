@@ -7,7 +7,6 @@ class AdInventorySourcesController < ApplicationController
 
   def create
     @ais = AdInventorySource.new(params[:ais])
-    debugger
     if @ais.save
       redirect_to :action => :new
     else
