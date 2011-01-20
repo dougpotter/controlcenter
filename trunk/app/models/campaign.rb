@@ -27,8 +27,20 @@ class Campaign < ActiveRecord::Base
   validates_presence_of :name, :campaign_code
   validates_uniqueness_of :campaign_code
 
+  after_save :cache_relationships
+
   acts_as_dimension
   business_index :campaign_code, :aka => "cid"
+
+  def cache_relationships
+    for related_class in self.class.enforced_associations
+      for related_record in [ self.send(related_class) ].flatten
+        cache_string = DimensionCache.cache_string_from_records(
+          self, related_record)
+          CACHE.write(cache_string, true)
+      end
+    end
+  end
 
   def campaign_code_and_description
     out = campaign_code

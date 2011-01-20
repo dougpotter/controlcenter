@@ -30,21 +30,9 @@ module DimensionCache
 
       if !relationships.empty?
         for instance in dimension_class.all
-          dim_red_code_name = instance.class.to_s.underscore + "_id"
-          dim_red_code_value = instance.id
-          dim_blue_code_name = ""
-          dim_blue_code_value = "" 
-
           relationships.each do |relationship|
             for relation in [ instance.send(relationship[1]) ].flatten
-              dim_blue_code_name = relation.class.to_s.underscore + "_id"
-              dim_blue_code_value = relation.id
-              dim_red_component = 
-                dim_red_code_name.to_s + ":" + dim_red_code_value.to_s
-              dim_blue_component = 
-                dim_blue_code_name.to_s + ":" + dim_blue_code_value.to_s
-              cache_string = 
-                [ dim_red_component, dim_blue_component ].sort.join(":")
+              cache_string = self.cache_string_from_records(instance,relation)
               puts cache_string if options[:verbose]
               CACHE.write(cache_string, true)
             end   
@@ -52,6 +40,16 @@ module DimensionCache
         end   
       end
     end
+  end
+
+  def self.cache_string_from_records(red_record, blue_record)
+    red_model_name = red_record.class.to_s.underscore + "_id"
+    blue_model_name = blue_record.class.to_s.underscore + "_id"
+    red_model_value = red_record.id.to_s
+    blue_model_value = blue_record.id.to_s
+    red_string = red_model_name + ":" + red_model_value
+    blue_string = blue_model_name + ":" + blue_model_value
+    cache_string = [ red_string, blue_string ].sort.join(":")
   end
 
   def self.reset

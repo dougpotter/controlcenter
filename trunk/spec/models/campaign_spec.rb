@@ -44,4 +44,24 @@ describe Campaign do
       Factory.create(:campaign, :campaign_code => "111")
     }.should raise_error
   end
+
+  describe "with dimension cache" do 
+    fixtures :creatives, 
+      :campaigns, 
+      :line_items, 
+      :ad_inventory_sources, 
+      :audiences, 
+      :campaigns_creatives, 
+      :ad_inventory_sources_campaigns
+
+    it "should add relationship with line item to dimension cache" do
+      c = Campaign.new({
+        :name => "third campaign", 
+        :campaign_code => "A3C1", 
+        :line_item_id => 1
+      })
+      c.save!
+      CACHE.read("campaign_id:#{c.id}:line_item_id:1").should == true
+    end
+  end
 end
