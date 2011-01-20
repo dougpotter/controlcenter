@@ -6,11 +6,11 @@ class AdInventorySourcesController < ApplicationController
   end
 
   def create
-    @ais = AdInventorySource.new(params[:ad_inventory_source])
+    @ais = AdInventorySource.new(params[:ais])
+    debugger
     if @ais.save
       redirect_to :action => :new
     else
-      aises = AdInventorySource.find(:all)
       render :action => :new
     end
   end
