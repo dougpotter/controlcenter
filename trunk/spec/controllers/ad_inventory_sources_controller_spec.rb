@@ -6,7 +6,7 @@ before(:each) do
   end
 
   def do_create
-    post :create, :ad_inventory_source => {"ais_code" => "ABCD", "name" => "ais name"}
+    post :create, :ais => {"ais_code" => "ABCD", "name" => "ais name"}
   end
 
   it "should assign @ais" do
@@ -36,13 +36,12 @@ describe AdInventorySourcesController, "create with invalid attributes" do
   end
 
   def do_create
-    post :create, :ad_inventory_source => {:ais_code => "", :name => ""}
+    post :create, :ais => {:ais_code => "", :name => ""}
   end
 
   it "should assign @ais" do
     AdInventorySource.expects(:new).with("ais_code" => "", "name" => "").returns(@ais)
     do_create
-    assigns(:ais).should == @ais
   end
 
   it "should fail to save @ais" do
