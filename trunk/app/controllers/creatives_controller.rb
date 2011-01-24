@@ -5,10 +5,9 @@ class CreativesController < ApplicationController
 
     @partner_creatives = Set.new
     if !partner_id.blank?
-      for campaign in Partner.find(partner_id).campaigns
-        for creative in campaign.creatives
+      # for all the creatives associated with this partner
+      for creative in Creative.all :joins => { :campaigns => { :line_item => :partner } }, :conditions => { "partners.id" => partner_id }
           @partner_creatives << creative
-        end
       end
     end
 
