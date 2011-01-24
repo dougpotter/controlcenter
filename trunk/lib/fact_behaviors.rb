@@ -25,21 +25,21 @@ module FactBehaviors
     def parse_frequency_for_grouping(fact_table, frequency, group_by_list, column_aliases)
       case frequency
       when "hour"
-        date = SqlGenerator.date_from_datetime('start_time', {:fact_table => fact_table})
-        hour = SqlGenerator.hour_from_datetime('start_time', {:fact_table => fact_table})
+        date = SqlGenerator.date_from_datetime("#{fact_table}.start_time")
+        hour = SqlGenerator.hour_from_datetime("#{fact_table}.start_time")
         group_by_list.concat([date, hour])
         column_aliases[date] = 'date'
         column_aliases[hour] = 'hour'
       when "day"
-        date = SqlGenerator.date_from_datetime('start_time', {:fact_table => fact_table})
+        date = SqlGenerator.date_from_datetime("#{fact_table}.start_time")
         group_by_list << date
         column_aliases[date] = 'date'
       when "week"
-        start_date = SqlGenerator.beginning_of_week_from_datetime('start_time', {:fact_table => fact_table})
+        start_date = SqlGenerator.beginning_of_week_from_datetime("#{fact_table}.start_time")
         column_aliases[start_date] = 'start_date'
         group_by_list << start_date
       when "month"
-        start_date = SqlGenerator.beginning_of_month_from_datetime('start_time', {:fact_table => fact_table})
+        start_date = SqlGenerator.beginning_of_month_from_datetime("#{fact_table}.start_time")
         group_by_list << start_date
         column_aliases[start_date] = 'start_date'
       when nil
