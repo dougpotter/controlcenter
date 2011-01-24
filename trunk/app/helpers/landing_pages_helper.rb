@@ -26,7 +26,7 @@ module LandingPagesHelper
   end
 
   def options_for_partner_select
-    options_from_collection_for_select(@partners, :partner_code, :partner_code_and_name, params[:partner_code].map {|a| a.to_i})
+    options_from_collection_for_select(@partners, :partner_code, :partner_code_and_name, (params[:partner_code].map {|a| a.to_i} unless params[:partner_code].blank?))
   end
 
   def options_for_creative_select
