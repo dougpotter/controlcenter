@@ -19,6 +19,7 @@ class LineItem < ActiveRecord::Base
   belongs_to :partner
 
   validates_presence_of :partner_id
+  validates_uniqueness_of :line_item_code
 
   acts_as_dimension
 end

@@ -2,6 +2,9 @@
 
 h1 | New Line Item
 
+div class=notice
+  = notice
+
 % form_for @line_item, :html => { :multipart => true } do |f|
   = render :partial => 'form'
   = submit_tag 'Create Line Item'
