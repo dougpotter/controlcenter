@@ -78,12 +78,16 @@ class CreativesController < ApplicationController
     if params[:partner_id].blank?
       @creatives = Creative.all
     else
-      Campaign.find_all_by_partner_id(params[:partner_id]).each do |c|
-        @creatives << c.creatives
+      creatives = Creative.all(
+        :joins => { :campaigns => { :line_item => :partner }}, 
+        :conditions => { "partners.id" => params[:partner_id] }
+      )
+      for creative in creatives
+        @creatives << creative
       end
     end
 
-    @creatives.flatten!
+    @creatives.uniq!
 
     render :partial => 'layouts/edit_table', :locals => { :collection => @creatives, :header_names => ["Creative Code", "Name", "Media Type", "Creative Size", "Campaign"], :fields => ["creative_code", "description", "media_type", "size_name", "campaign_descriptions"], :width => "1100", :class_name => "creatives_summary", :edit_path => edit_creative_path(1) }
   end
