@@ -94,7 +94,6 @@ describe CreativesController do
     
     it "should select proper creatives when passed a valid partner_id" do
       get :index_by_advertiser, :partner_id => 1
-      debugger
       assigns[:creatives].size.should == 1
       assigns[:creatives].first.should == Creative.find(1)
     end
