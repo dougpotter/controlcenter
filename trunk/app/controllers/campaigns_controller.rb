@@ -13,8 +13,7 @@ class CampaignsController < ApplicationController
     # build new campaign
     @campaign = Campaign.new(params[:campaign])
     if !@campaign.save
-      render :text => "campaign failed to save"
-      return
+      redirect_to(new_campaign_path, :notice => "failed to save campaign")
     end
 
     # associate creatives with campaign
@@ -22,11 +21,13 @@ class CampaignsController < ApplicationController
       @creative = Creative.new(attributes)
       @creative.campaigns << @campaign
       if !@creative.save
-        render :text => "failed to save creative"
-        return
+        redirect_to(
+          campaign_management_index_path, 
+          :notice => "failed to save one or more creatives"
+        )
       end
     end
-
+    
     @sync_params = {}
     # deal with audience source
     if params[:audience][:audience_type] == "Ad-Hoc"
@@ -53,5 +54,33 @@ class CampaignsController < ApplicationController
     end
 
     redirect_to new_campaign_path
+  end
+
+  def edit
+    @campaign = Campaign.find(params[:id])
+    @line_items = LineItem.all
+    @selected_line_item = @campaign.line_item.id
+    @campaign_types = [ "Ad-Hoc", "Retargeting" ]
+  end
+
+  def update
+    @campaign = Campaign.find(params[:id])
+
+    if @campaign.update_attributes(params[:campaign])
+      redirect_to(
+        campaign_management_index_path, 
+        :notice => "campaign successfully updated"
+      )
+    else
+      notice = "campaign update failed: "
+      @campaign.errors.each do |attr,msg|
+        notice += attr + " " + msg + ";"
+      end
+      notice = notice[0..-2]
+      redirect_to(
+        edit_campaign_url, 
+        { :id => @campaign.id, :notice => notice }
+      )
+    end
   end
 end

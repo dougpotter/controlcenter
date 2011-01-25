@@ -1,0 +1,9 @@
+h1 | Edit Campaign
+>br
+
+div class=notice
+ = notice
+
+% form_for @campaign do |f|
+  = render :partial => 'form'  
+  = submit_tag "Save Edits"
