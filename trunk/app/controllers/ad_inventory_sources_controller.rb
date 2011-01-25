@@ -20,7 +20,7 @@ class AdInventorySourcesController < ApplicationController
 
   def update
     @ais = AdInventorySource.find(params[:id])
-    if @ais.update_attributes(params[:audience])
+    if @ais.update_attributes(params[:ais])
       redirect_to :action => :new
     else
       render :action => :edit
