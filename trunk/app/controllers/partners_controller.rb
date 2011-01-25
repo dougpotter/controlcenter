@@ -12,9 +12,15 @@ class PartnersController < ApplicationController
   def create
     @partner = Partner.new(params[:partner])
     if @partner.save
-      redirect_to new_partner_path
+      redirect_to(
+        new_partner_path,
+        :notice => "#{@partner.name} successfully created"
+      )
     else
-      render :action => :new
+      redirect_to(
+        new_partner_path,
+        :notice => "failed to save new advertiser"
+      )
     end
   end
 
@@ -25,7 +31,10 @@ class PartnersController < ApplicationController
   def update
     @partner = Partner.find(params[:id])
     if @partner.update_attributes(params[:partner])
-      redirect_to :action => 'new'
+      redirect_to(
+        :action => 'new',
+        :notice => "#{@partner.name} successfully updated"
+      )
     else
       render :action => 'edit', :id => @partner
     end
