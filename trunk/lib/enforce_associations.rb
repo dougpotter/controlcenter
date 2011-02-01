@@ -16,6 +16,11 @@ module EnforceAssociations
       super
     end 
 
+    def has_many(association_id, options = {}) 
+      update_enforced_associations(association_id, options)
+      super
+    end 
+
     def has_and_belongs_to_many(association_id, options = {}) 
       update_enforced_associations(association_id, options)
       super
