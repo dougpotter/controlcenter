@@ -1,3 +1,7 @@
+var root_url_regex = /((.*?)\/){3}/;
+var audience_source_form_url = location.href.match(root_url_regex)[0] + 
+"audiences/audience_source_form?source=";
+
 window.addEvent('domready', function() {
 
     // attaches a funciton to the checkbox which changes visibility of the 
@@ -39,8 +43,7 @@ window.addEvent('domready', function() {
     audience_type_selector.addEvent('change', function() {
           var audience_type= audience_type_selector.getSelected().getProperty('value');
           var req = new Request.HTML({
-              url: "http://127.0.0.1:3000/audiences/audience_source_form?source=" 
-              + audience_type,
+              url: audience_source_form_url + audience_type,
               method: 'get',
               update: $("audience_source_section")
             });
