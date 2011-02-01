@@ -1,0 +1,9 @@
+campaign_inventory_config_one:
+  id: 1
+  ad_inventory_source_id: 1
+  campaign_id: 1
+
+campaign_inventory_config_two:
+  id: 2
+  ad_inventory_source_id: 1
+  campaign_id: 2

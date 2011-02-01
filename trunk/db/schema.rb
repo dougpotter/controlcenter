@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110128201012) do
+ActiveRecord::Schema.define(:version => 20110131203347) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -19,14 +19,6 @@ ActiveRecord::Schema.define(:version => 20110128201012) do
 
   add_index "ad_inventory_sources", ["ais_code"], :name => "index_ad_inventory_sources_on_ais_code", :unique => true
 
-  create_table "ad_inventory_sources_campaigns", :id => false, :force => true do |t|
-    t.integer "campaign_id",            :null => false
-    t.integer "ad_inventory_source_id", :null => false
-  end
-
-  add_index "ad_inventory_sources_campaigns", ["ad_inventory_source_id"], :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
-  add_index "ad_inventory_sources_campaigns", ["campaign_id"], :name => "ad_inventory_sources_campaigns_campaign_id_fk"
-
   create_table "audiences", :force => true do |t|
     t.string  "description"
     t.string  "audience_code", :null => false
@@ -35,6 +27,14 @@ ActiveRecord::Schema.define(:version => 20110128201012) do
 
   add_index "audiences", ["audience_code"], :name => "index_audiences_on_audience_code", :unique => true
   add_index "audiences", ["campaign_id"], :name => "audiences_campaign_id_fk"
+
+  create_table "campaign_inventory_configs", :force => true do |t|
+    t.integer "campaign_id",            :null => false
+    t.integer "ad_inventory_source_id", :null => false
+  end
+
+  add_index "campaign_inventory_configs", ["ad_inventory_source_id"], :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
+  add_index "campaign_inventory_configs", ["campaign_id"], :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   create_table "campaigns", :force => true do |t|
     t.string   "name",          :default => "", :null => false
@@ -125,6 +125,15 @@ ActiveRecord::Schema.define(:version => 20110128201012) do
     t.string "name",         :null => false
     t.string "country_code"
   end
+
+  create_table "creative_inventory_configs", :id => false, :force => true do |t|
+    t.integer "creative_id",                  :null => false
+    t.integer "campaign_inventory_config_id", :null => false
+    t.boolean "configured",                   :null => false
+  end
+
+  add_index "creative_inventory_configs", ["campaign_inventory_config_id"], :name => "creative_inventory_configs_campaign_inventory_config_id_fk"
+  add_index "creative_inventory_configs", ["creative_id"], :name => "creative_inventory_configs_creative_id_fk"
 
   create_table "creative_sizes", :force => true do |t|
     t.float  "height"
@@ -483,10 +492,10 @@ ActiveRecord::Schema.define(:version => 20110128201012) do
     t.string "zip_code", :null => false
   end
 
-  add_foreign_key "ad_inventory_sources_campaigns", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
-  add_foreign_key "ad_inventory_sources_campaigns", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
-
   add_foreign_key "audiences", "campaigns", :name => "audiences_campaign_id_fk"
+
+  add_foreign_key "campaign_inventory_configs", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
+  add_foreign_key "campaign_inventory_configs", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   add_foreign_key "campaigns", "line_items", :name => "campaigns_line_item_id_fk"
 
@@ -512,6 +521,9 @@ ActiveRecord::Schema.define(:version => 20110128201012) do
   add_foreign_key "click_through_rates", "media_purchase_methods", :name => "click_through_rates_media_purchase_method_id_fk"
 
   add_foreign_key "conversion_counts", "campaigns", :name => "conversion_counts_campaign_id_fk"
+
+  add_foreign_key "creative_inventory_configs", "campaign_inventory_configs", :name => "creative_inventory_configs_campaign_inventory_config_id_fk"
+  add_foreign_key "creative_inventory_configs", "creatives", :name => "creative_inventory_configs_creative_id_fk"
 
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
 

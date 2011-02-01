@@ -105,7 +105,7 @@ describe ClickCount do
       :ad_inventory_sources, 
       :audiences, 
       :campaigns_creatives, 
-      :ad_inventory_sources_campaigns
+      :campaign_inventory_configs
 
     it "should create new instance with valid attributes" do
       lambda {

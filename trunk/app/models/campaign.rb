@@ -16,7 +16,10 @@
 # time period.
 class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :geographies
-  has_and_belongs_to_many :ad_inventory_sources, :enforce => true
+
+  has_many :campaign_inventory_configs
+  has_many :ad_inventory_sources, { :through => :campaign_inventory_configs, :enforce => true }
+
   has_and_belongs_to_many :creatives, :enforce => true
   has_one :audience
   belongs_to :line_item, :enforce => true
