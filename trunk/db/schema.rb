@@ -9,11 +9,12 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110119194855) do
+ActiveRecord::Schema.define(:version => 20110128201012) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
-    t.string "ais_code", :null => false
+    t.string "ais_code",            :null => false
+    t.string "ae_pixel_url_append"
   end
 
   add_index "ad_inventory_sources", ["ais_code"], :name => "index_ad_inventory_sources_on_ais_code", :unique => true
@@ -41,6 +42,7 @@ ActiveRecord::Schema.define(:version => 20110119194855) do
     t.datetime "start_time"
     t.datetime "end_time"
     t.integer  "line_item_id",  :default => 12, :null => false
+    t.string   "campaign_type"
   end
 
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
