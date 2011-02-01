@@ -6,7 +6,9 @@ describe PixelGenerator do
       :campaigns_creatives,
       :campaigns, 
       :campaign_inventory_configs,
-      :ad_inventory_sources
+      :ad_inventory_sources,
+      :line_items,
+      :partners
 
     before :each do
       @creative = Creative.find(1)
