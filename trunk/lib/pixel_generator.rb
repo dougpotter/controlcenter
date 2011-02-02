@@ -68,7 +68,7 @@ module PixelGenerator
 
   private
   # returns a properly formatted pixel URL as a string
-  def self.generate_pixel(creative, event_type, campaign_inventory_config)
+  def self.generate_pixel(creative, event_type, campaign_inventory_config, options = {})
     # type check arguments
     if EVENT_TYPES[event_type].nil?
       raise ArgumentError, "event_type must be a known event type"
@@ -102,6 +102,7 @@ module PixelGenerator
     pixel = pixel.gsub(CAMPAIGN_CODE_MACRO, campaign_code)
     pixel = pixel.gsub(CREATIVE_CODE_MACRO, creative_code)
     pixel = pixel.gsub(EVENT_TYPE_MACRO, event_type)
+    pixel += options[:append].to_s
 
     return pixel
   end
