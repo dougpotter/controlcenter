@@ -18,12 +18,18 @@ describe PixelGenerator do
     it "should return the full set of pixels when passed no options" do
       pixels = PixelGenerator.ae_pixels(@creative, @campaign)
       pixels.should == [ 
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=" + 
+        "ABC1&crid=AA11&mpm=cpm&evt=imp",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=" + 
+        "ABC1&crid=AA11&mpm=cpm&evt=eng",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&" +
+        "crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=" + 
+        "ABC1&crid=AA11&mpm=cpm&evt=imp",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=" +
+        "ABC1&crid=AA11&mpm=cpm&evt=eng",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&" +
+        "crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
       ]
     end
     it "should properly filter pixels on valid ais" do
@@ -33,9 +39,12 @@ describe PixelGenerator do
         :aises => "AdX"
       )
       pixels.should == [ 
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=" +
+        "ABC1&crid=AA11&mpm=cpm&evt=imp",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=" + 
+        "ABC1&crid=AA11&mpm=cpm&evt=eng",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&" +
+        "crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
       ]
     end
 
@@ -46,10 +55,14 @@ describe PixelGenerator do
         :event_types => ["imp", "clk"]
       )
       pixels.should == [
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=" +
+        "ABC1&crid=AA11&mpm=cpm&evt=imp",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&" +
+        "crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=" + 
+        "ABC1&crid=AA11&mpm=cpm&evt=imp",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&" +
+        "crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
       ]
     end
 
@@ -85,7 +98,8 @@ describe PixelGenerator do
         "imp", 
         @campaign_inventory_config)
 
-        pixel.should == "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp"
+        pixel.should == "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=" + 
+          "AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp"
     end
 
     it "should return the correct pixel when passed engagement event_type" do
@@ -94,7 +108,8 @@ describe PixelGenerator do
         "eng", 
         @campaign_inventory_config)
 
-        pixel.should == "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng"
+        pixel.should == "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=" +
+          "AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng"
     end
 
     it "should return the correct pixel when passed click event_type" do
@@ -103,7 +118,9 @@ describe PixelGenerator do
         "clk", 
         @campaign_inventory_config)
 
-        pixel.should == "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
+        pixel.should == "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&" +
+          "pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandin" +
+          "gpageforcreativeone.com"
     end
 
     it "should return raise proper error when event_type is unknown" do
