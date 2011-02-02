@@ -54,4 +54,8 @@ class Creative < ActiveRecord::Base
       "#{creative_code} - #{description}"
     end
   end
+
+  def ae_pixels(campaign, options = {})
+    PixelGenerator.ae_pixels(self, campaign, options)
+  end
 end
