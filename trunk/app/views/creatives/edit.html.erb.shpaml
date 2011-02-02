@@ -5,3 +5,5 @@ h1 | Edit Creative
   = render :partial => 'form'
   = submit_tag 'Save Edits'
 
+= render :partial => "pixels"
+

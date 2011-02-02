@@ -1,0 +1,11 @@
+div class=pixels
+  >br
+
+  % for campaign in @creative.campaigns
+    h1 | <%= "Campaign: #{campaign.name}" %>
+
+    % for event_type in [ :impression, :engagement, :click ]
+      h1 | <%= event_type.to_s.capitalize + " pixel:" %> 
+      = @creative.ae_pixels(campaign, :event_types => event_type)
+    div class="style:clear;"
+      >br
