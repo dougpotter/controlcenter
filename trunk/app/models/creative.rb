@@ -22,7 +22,6 @@ class Creative < ActiveRecord::Base
   has_many :impression_counts
   
   has_many :creative_inventory_configs
-  has_many :campaign_inventory_configs, :through => :creative_inventory_configs
 
   has_and_belongs_to_many :campaigns
   has_s3_attachment :image, "test-creatives", ":attachment/:id/:style/:filename"
