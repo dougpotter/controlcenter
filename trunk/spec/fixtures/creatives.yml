@@ -5,6 +5,7 @@ creative_one:
   creative_size_id: 1
   creative_code: AA11
   image_file_name: thefirstcreative.gif
+  landing_page_url: "http://thelandingpageforcreativeone.com"
 
 creative_two:
   id: 2
@@ -13,3 +14,4 @@ creative_two:
   creative_size_id: 1
   creative_code: AA12
   image_file_name: thesecondcreative.gif
+  landing_page_url: "http://thelandingpageforcreativetwo.com"

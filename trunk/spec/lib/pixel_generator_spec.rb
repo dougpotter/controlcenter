@@ -1,15 +1,15 @@
 require 'spec_helper'
 describe PixelGenerator do
-  describe "ae_pixels method" do
-    fixtures :creatives,
-      :creative_inventory_configs,
-      :campaigns_creatives,
-      :campaigns, 
-      :campaign_inventory_configs,
-      :ad_inventory_sources,
-      :line_items,
-      :partners
+  fixtures :creatives,
+    :creative_inventory_configs,
+    :campaigns_creatives,
+    :campaigns, 
+    :campaign_inventory_configs,
+    :ad_inventory_sources,
+    :line_items,
+    :partners
 
+  describe "ae_pixels method" do
     before :each do
       @creative = Creative.find(1)
       @campaign = Campaign.find(1)
@@ -20,10 +20,10 @@ describe PixelGenerator do
       pixels.should == [ 
         "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
         "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com",
         "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
         "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk"
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
       ]
     end
     it "should properly filter pixels on valid ais" do
@@ -35,7 +35,7 @@ describe PixelGenerator do
       pixels.should == [ 
         "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
         "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk"
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
       ]
     end
 
@@ -47,9 +47,9 @@ describe PixelGenerator do
       )
       pixels.should == [
         "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com",
         "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk"
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
       ]
     end
 
@@ -74,15 +74,6 @@ describe PixelGenerator do
 
 
   describe "generate_pixel method" do
-    fixtures :creatives,
-      :creative_inventory_configs,
-      :campaigns_creatives,
-      :campaigns, 
-      :campaign_inventory_configs,
-      :ad_inventory_sources,
-      :line_items,
-      :partners
-
     before :each do
       @creative = Creative.find(1)
       @campaign_inventory_config = CampaignInventoryConfig.find(1)
@@ -112,15 +103,15 @@ describe PixelGenerator do
         "clk", 
         @campaign_inventory_config)
 
-        pixel.should == "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk"
+        pixel.should == "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
     end
 
     it "should return raise proper error when event_type is unknown" do
       lambda {
-      pixel = PixelGenerator.generate_pixel(
-        @creative, 
-        "aaa", 
-        @campaign_inventory_config)
+        pixel = PixelGenerator.generate_pixel(
+          @creative, 
+          "aaa", 
+          @campaign_inventory_config)
       }.should raise_error(ArgumentError)
     end
   end

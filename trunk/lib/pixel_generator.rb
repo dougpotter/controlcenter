@@ -104,6 +104,11 @@ module PixelGenerator
     pixel = pixel.gsub(EVENT_TYPE_MACRO, event_type)
     pixel += options[:append].to_s
 
+    if event_type == EVENT_TYPES["click"] && 
+      landing_page_url = creative.landing_page_url
+      pixel += "&n=" + CGI::escape(landing_page_url)
+    end
+
     return pixel
   end
 end
