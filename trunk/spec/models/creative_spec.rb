@@ -93,12 +93,18 @@ describe Creative do
       pixels = creative.ae_pixels(campaign)
 
       pixels.should == [ 
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=imp",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=eng",
-        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=" +
+        "ABC1&crid=AA11&mpm=cpm&evt=imp",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=" +
+        "ABC1&crid=AA11&mpm=cpm&evt=eng",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=AdX&pid=1234&cid=ABC1&" +
+        "crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=" + 
+        "ABC1&crid=AA11&mpm=cpm&evt=imp",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=" +
+        "ABC1&crid=AA11&mpm=cpm&evt=eng",
+        "http://xcdn.xgraph.net/1234/ae/xg.gif?type=ae&ais=OX&pid=1234&cid=ABC1&" +
+        "crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
       ]
     end
   end
