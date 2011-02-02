@@ -30,6 +30,42 @@ module PixelGenerator
   "&pid=#{PARTNER_CODE_MACRO}&cid=#{CAMPAIGN_CODE_MACRO}&crid=" + 
   "#{CREATIVE_CODE_MACRO}&mpm=#{MPM_CODE_MACRO}&evt=#{EVENT_TYPE_MACRO}"
 
+
+  # returns array of strings (which are pixel URLs). Any unrecognized options keys
+  # are ignored; however, unknown values associated with known keys will result in
+  # an empty return array (because the method will filter out all results not
+  # consistent with that value)
+  def self.ae_pixels(creative, campaign, options = {})
+    # filter on aises
+    if options[:aises].blank?
+      campaign_inventory_configs = campaign.campaign_inventory_configs
+    else
+      all_campaign_inventory_configs = 
+        campaign.campaign_inventory_configs(:include => :ad_inventory_source)
+      campaign_inventory_configs = all_campaign_inventory_configs.select { |cic|
+        cic.ad_inventory_source.ais_code.member?(options[:aises])
+      }
+    end
+
+    # filter on event types
+    if options[:event_types].blank?
+      event_types = [ :imp, :eng, :clk ]
+    else
+      event_types = options[:event_types].map { |t| EVENT_TYPES[t] }
+      event_types.compact!
+    end
+   
+    # populate pixel array  
+    pixels = []
+    for cic in campaign_inventory_configs
+      for event_type in event_types
+        pixels << generate_pixel(creative, event_type, cic)
+      end 
+    end 
+
+    return pixels
+  end
+
   private
   # returns a properly formatted pixel URL as a string
   def self.generate_pixel(creative, event_type, campaign_inventory_config)

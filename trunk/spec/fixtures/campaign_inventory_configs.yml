@@ -5,5 +5,10 @@ campaign_inventory_config_one:
 
 campaign_inventory_config_two:
   id: 2
+  ad_inventory_source_id: 2
+  campaign_id: 1
+
+campaign_inventory_config_three:
+  id: 3
   ad_inventory_source_id: 1
   campaign_id: 2
