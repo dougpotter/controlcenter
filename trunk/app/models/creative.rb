@@ -54,10 +54,4 @@ class Creative < ActiveRecord::Base
       "#{creative_code} - #{description}"
     end
   end
-
-  def fully_configured?
-    fully_configured = true
-    self.creative_inventory_configs.each do |c|
-    end
-  end
 end
