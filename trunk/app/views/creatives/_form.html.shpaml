@@ -20,6 +20,11 @@ div class=dimension_input
   >br
   = collection_select('creative', 'creative_size', @creative_sizes, :id, :common_name, :selected => @creative.creative_size_id)
 
+div class=dimension_input
+  label for='landing_page_url' | Landing Page URL:
+  >br
+  = text_field('creative', 'landing_page_url', :size => 101)
+
   >br
 div class=dimension_input
   label for='creative_campaign' | Campaign:
