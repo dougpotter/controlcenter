@@ -1,7 +1,7 @@
 h1 | Edit Creative
 >br
 
-% form_for @creative do |f|
+% form_for @creative, :html => { :multipart => true} do |f|
   = render :partial => 'form'
   = submit_tag 'Save Edits'
 

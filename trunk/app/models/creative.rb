@@ -58,4 +58,8 @@ class Creative < ActiveRecord::Base
   def ae_pixels(campaign, options = {})
     PixelGenerator.ae_pixels(self, campaign, options)
   end
+
+  def has_image?
+    return !self.image_file_name.nil?
+  end
 end

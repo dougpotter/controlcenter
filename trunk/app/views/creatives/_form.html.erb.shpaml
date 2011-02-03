@@ -1,4 +1,5 @@
 = error_messages_for :creative
+<script src=/javascripts/creatives.js type=text/javascript></script>
 
 div class=dimension_input
   label for='creative_code' | Creative Code:
@@ -29,12 +30,20 @@ div class=dimension_input
 div class=dimension_input
   label for='creative_campaign' | Campaign:
   >br
-  = select('creative', 'campaigns', none_option + options_from_collection_for_select(@campaigns, :id, :campaign_code_and_description), :selected => @creative.campaigns.map {|c| c.id})
+  = select('creative', 'campaigns', none_option + options_from_collection_for_select(@campaigns, :id, :campaign_code_and_description, :selected => @creative.campaigns.map { |c| c.id }))
 
-div class=dimension_input
-  label for='creative_image' | Image:
-  >br
-  = file_field :creative, :image 
+.dimension_input
+  % if @creative.has_image?
+    label for='creative_image' | Image:
+    >br
+    #creative_image
+      = @creative.image_file_name
+      >br
+      = button_to_function "Change Image" do |page| page.call :injectFileField end 
+  % else
+    label for='creative_image' | No image, upload one now:
+    >br
+    = file_field(:creative, :image)
 
 div style='clear:both;'
   >br
