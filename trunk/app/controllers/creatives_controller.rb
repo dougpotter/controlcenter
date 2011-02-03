@@ -5,7 +5,9 @@ class CreativesController < ApplicationController
 
     @partner_creatives = Set.new
     if !partner_id.blank?
-      creatives = Creative.all(:joins => { :campaigns => { :line_item => :partner } })
+      creatives = Creative.all(
+        :joins => { :campaigns => { :line_item => :partner } }
+      )
       for creative in creatives
         if creative.campaigns.first.line_item.partner.id == partner_id.to_i
           @partner_creatives << creative
@@ -15,7 +17,10 @@ class CreativesController < ApplicationController
 
     @campaign_creatives = Set.new
     if !campaign_code.blank?
-      for creative in Campaign.find(:first, :conditions => {:campaign_code => campaign_code}).creatives
+      for creative in Campaign.find(
+        :first, 
+        :conditions => {:campaign_code => campaign_code}
+      ).creatives
         @campaign_creatives << creative
       end
     end
@@ -89,7 +94,27 @@ class CreativesController < ApplicationController
 
     @creatives.uniq!
 
-    render :partial => 'layouts/edit_table', :locals => { :collection => @creatives, :header_names => ["Creative Code", "Name", "Media Type", "Creative Size", "Campaign"], :fields => ["creative_code", "name", "media_type", "size_name", "campaign_descriptions"], :width => "1100", :class_name => "creatives_summary", :edit_path => edit_creative_path(1) }
+    render :partial => 'layouts/edit_table', 
+      :locals => { 
+        :collection => @creatives, 
+        :header_names => [
+          "Creative Code", 
+          "Name", 
+          "Media Type", 
+          "Creative Size", 
+          "Campaign"
+        ], 
+        :fields => [
+          "creative_code", 
+          "name", 
+          "media_type", 
+          "size_name", 
+          "campaign_descriptions"
+        ], 
+        :width => "1100", 
+        :class_name => "creatives_summary", 
+        :edit_path => edit_creative_path(1) 
+      }
   end
 
   def edit
@@ -115,6 +140,7 @@ class CreativesController < ApplicationController
     @num = params[:creative_number]
     @creative = Creative.new
     @creative_sizes = CreativeSize.all
-    render :partial => 'form_without_line_item', :locals => { :creative_number => @num }
+    render :partial => 'form_without_line_item', 
+      :locals => { :creative_number => @num }
   end
 end
