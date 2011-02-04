@@ -1,11 +1,15 @@
-div class=pixels
+div class=pixel_list
   >br
 
   % for campaign in @creative.campaigns
     h1 | <%= "Campaign: #{campaign.name}" %>
 
-    % for event_type in [ :impression, :engagement, :click ]
-      h1 | <%= event_type.to_s.capitalize + " pixel:" %> 
-      = @creative.ae_pixels(campaign, :event_types => event_type)
-    div class="style:clear;"
-      >br
+    % for ais in campaign.ad_inventory_sources
+      h2 | <%= "AIS: #{ais.name}" %>
+
+      % for event_type in [ :impression, :engagement, :click ]
+        h3 | <%= event_type.to_s.capitalize + " pixel:" %> 
+
+        = @creative.ae_pixels(campaign, { :event_types => event_type, :aises => ais.ais_code})
+      div class="style:clear;"
+        >br
