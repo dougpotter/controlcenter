@@ -9,7 +9,5 @@ div class=pixel_list
 
       % for event_type in [ :impression, :engagement, :click ]
         h3 | <%= event_type.to_s.capitalize + " pixel:" %> 
-
-        = @creative.ae_pixels(campaign, { :event_types => event_type, :aises => ais.ais_code})
-      div class="style:clear;"
-        >br
+        .pixel
+          = @creative.ae_pixels(campaign, { :event_types => event_type, :aises => ais.ais_code})
