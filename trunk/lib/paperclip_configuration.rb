@@ -16,7 +16,8 @@ module PaperclipConfiguration
         parts = [path_prefix, subdir, path_suffix].reject { |part| part.nil? }
         path = File.join(*parts)
         {
-          :path => path
+          :path => path,
+          :url => "/attachments/test-creatives/images/:id/:style/:basename.:extension"
         }
       end
       if storage
