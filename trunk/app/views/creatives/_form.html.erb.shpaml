@@ -19,7 +19,7 @@ div class=dimension_input
 div class=dimension_input
   label for='creative_size' | Creative Size:
   >br
-  = collection_select('creative', 'creative_size', @creative_sizes, :id, :common_name, :selected => @creative.creative_size_id)
+  = collection_select('creative', 'creative_size', @creative_sizes, :id, :height_width_string, :selected => @creative.creative_size_id)
 
 div class=dimension_input
   label for='landing_page_url' | Landing Page URL:
