@@ -46,7 +46,7 @@ div class=dimension_input
     = file_field(:creative, :image)
 
 .creative_image
-  = image_tag "/Users/michaelmaag/XGraph/repo/controlcenter/public/attachments/test-creatives/images/1/original/god-bless-america.jpg"
+  = image_tag @creative.image.url
 
 div style='clear:both;'
   >br
