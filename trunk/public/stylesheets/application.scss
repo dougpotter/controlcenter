@@ -315,10 +315,6 @@ table tbody {
   font-size: 18px;
 }
 
-#creative_image {
-  height: 20px;
-}
-
 .pixel_list h2 {
   padding-top: 9px;
   padding-bottom: 4px;
@@ -335,4 +331,8 @@ table tbody {
   padding-top: 1px;
   padding-bottom: 3px;
   text-indent: 7px;
+}
+
+.creative_image_panel input {
+  padding-top: 8px;
 }

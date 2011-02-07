@@ -1,5 +1,6 @@
-h1 | Edit Creative
->br
+h1 
+  = "Edit #{@creative.name}"
+  >br
 
 % form_for @creative, :html => { :multipart => true} do |f|
   = render :partial => 'form'

@@ -132,7 +132,7 @@ class CreativesController < ApplicationController
     if @creative.update_attributes(params[:creative])
       redirect_to :action => :new
     else
-      render :action => :edit
+      redirect_to :action => :edit
     end
   end
 

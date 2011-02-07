@@ -32,21 +32,20 @@ div class=dimension_input
   >br
   = select('creative', 'campaigns', none_option + options_from_collection_for_select(@campaigns, :id, :campaign_code_and_description, :selected => @creative.campaigns.map { |c| c.id }))
 
-.dimension_input
+div style="clear:both;"
+  >br
+
+.creative_image_panel
   % if @creative.has_image?
-    label for='creative_image' | Image:
-    >br
-    #creative_image
-      = @creative.image_file_name
+    #creative_image 
+      = image_tag_for_edit(@creative)
       >br
+      = "<label for=\"creative_image\">#{@creative.image_file_name}</label>"
       = button_to_function "Change Image" do |page| page.call :injectFileField end 
   % else
-    label for='creative_image' | No image, upload one now:
+    label for='creative_image' | No image chosen, upload on now:
     >br
     = file_field(:creative, :image)
-
-.creative_image
-  = image_tag @creative.image.url
 
 div style='clear:both;'
   >br
