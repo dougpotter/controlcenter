@@ -275,3 +275,8 @@ Factory.define :misfit_fact do |m|
   m.fact_class "click_count"
   m.fact_attributes { { :campaign_code => "AB12", :another_attribute => "value"} }
 end
+
+Factory.define :campaign_inventory_config do |c|
+  c.ad_inventory_source_id { Factory(:ad_inventory_source) }
+  c.campaign { Factory(:campaign) }
+end
