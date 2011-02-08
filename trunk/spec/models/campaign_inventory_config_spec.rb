@@ -18,7 +18,6 @@ describe CampaignInventoryConfig do
   end
 
   it "should raild to create a duplicate (db test)" do
-    pending
     cic_one = Factory.create(:campaign_inventory_config)
     lambda {
       cic_two = Factory.build(:campaign_inventory_config, 
