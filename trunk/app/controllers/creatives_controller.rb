@@ -136,6 +136,10 @@ class CreativesController < ApplicationController
     end
   end
 
+  def show
+    @creative = Creative.find(params[:id])
+  end
+
   def form_without_line_item
     @num = params[:creative_number]
     @creative = Creative.new
