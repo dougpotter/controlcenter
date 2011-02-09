@@ -21,21 +21,21 @@ class CreativesController < ApplicationController
         :first, 
         :conditions => {:campaign_code => campaign_code}
       ).creatives
-        @campaign_creatives << creative
+      @campaign_creatives << creative
       end
     end
-    
+
     # remove duplicates (creatives associated with both the parter and a campaign
     # for that partner)
     @partner_creatives -= @campaign_creatives
-    
+
     @unassociated_creatives = Set.new
     for creative in Creative.find(:all, :include => :campaigns)
       if creative.campaigns.empty?
         @unassociated_creatives << creative
       end
     end
-    
+
     render :partial => 'creative_list'
     return
   end
@@ -53,11 +53,18 @@ class CreativesController < ApplicationController
     @creative.creative_size_id = params[:creative].delete(:creative_size)
 
     if !params[:creative][:campaigns].blank?
-      @creative.campaigns << Campaign.find(params[:creative].delete(:campaigns))
+      campaign_ids = params[:creative][:campaigns]
+      for campaign_id in campaign_ids
+        campaign = Campaign.find(campaign_id)
+        @creative.campaigns << campaign
+        for campaign_inventory_config in campaign.campaign_inventory_configs
+          @creative.creative_inventory_configs << campaign_inventory_config
+        end
+      end
     end
 
     @creative.attributes = params[:creative]
-    
+
     if request.referer == new_campaign_url
       if @creative.save
         @creative = Creative.new
@@ -96,25 +103,25 @@ class CreativesController < ApplicationController
 
     render :partial => 'layouts/edit_table', 
       :locals => { 
-        :collection => @creatives, 
-        :header_names => [
-          "Creative Code", 
-          "Name", 
-          "Media Type", 
-          "Creative Size", 
-          "Campaign"
-        ], 
-        :fields => [
-          "creative_code", 
-          "name", 
-          "media_type", 
-          "size_name", 
-          "campaign_descriptions"
-        ], 
-        :width => "1100", 
-        :class_name => "creatives_summary", 
-        :edit_path => edit_creative_path(1) 
-      }
+      :collection => @creatives, 
+      :header_names => [
+        "Creative Code", 
+        "Name", 
+        "Media Type", 
+        "Creative Size", 
+        "Campaign"
+    ], 
+      :fields => [
+        "creative_code", 
+        "name", 
+        "media_type", 
+        "size_name", 
+        "campaign_descriptions"
+    ], 
+      :width => "1100", 
+      :class_name => "creatives_summary", 
+      :edit_path => edit_creative_path(1) 
+    }
   end
 
   def edit
