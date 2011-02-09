@@ -107,5 +107,39 @@ describe Creative do
         "crid=AA11&mpm=cpm&evt=clk&n=http%3A%2F%2Fthelandingpageforcreativeone.com"
       ]
     end
+
+    describe "configured? method" do
+      fixtures :creatives,
+        :creative_inventory_configs,
+        :campaigns_creatives,
+        :campaigns, 
+        :campaign_inventory_configs,
+        :ad_inventory_sources
+
+      describe "when the campaign portion of the campaign-AIS combo is" + 
+        "associated with the creative" do
+
+        it "should return true when this creative is configured on the given" +
+          "campaign-AIS combination" do
+          Creative.first.configured?(CampaignInventoryConfig.first).should be_true
+          end
+        it "should return false when creative is not configured on the given" +
+          "campaign-AIS comgination" do
+          Creative.find(2).configured?(
+            CampaignInventoryConfig.find(2)
+          ).should be_false
+          end
+        end
+
+      describe "when the campaign portion of the campaign-AIS combo is not" +
+        "associated with the creative" do
+
+        it "should return false" do
+          Creative.find(2).configured?(
+            CampaignInventoryConfig.first
+          ).should be_false
+        end
+      end
+    end
   end
 end

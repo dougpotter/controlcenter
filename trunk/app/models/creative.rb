@@ -20,12 +20,13 @@ class Creative < ActiveRecord::Base
   belongs_to :line_item
   has_many :click_counts
   has_many :impression_counts
-  
+
   has_many :creative_inventory_configs
+  has_many :campaign_inventory_configs, :through => :creative_inventory_configs
 
   has_and_belongs_to_many :campaigns
   has_s3_attachment :image, "test-creatives", ":attachment/:id/:style/:filename"
-  
+
   validates_presence_of :creative_code, :creative_size_id
   validates_uniqueness_of :creative_code
   validates_numericality_of :creative_size_id
@@ -46,7 +47,7 @@ class Creative < ActiveRecord::Base
       c.campaign_code_and_description
     }.join("; ")
   end
-  
+
   def creative_code_and_name
     if description == ""
       creative_code
@@ -61,5 +62,13 @@ class Creative < ActiveRecord::Base
 
   def has_image?
     return !self.image_file_name.nil?
+  end
+
+  def configured?(campaign_inventory_config)
+    return !CreativeInventoryConfig.all(
+      :conditions => {
+      :creative_id => self.id,
+      :campaign_inventory_config_id => campaign_inventory_config.id
+    }).empty?
   end
 end
