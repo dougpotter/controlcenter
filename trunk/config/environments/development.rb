@@ -28,7 +28,3 @@ config.middleware.use 'Shpaml::DevelopmentMiddleware'
 config.after_initialize do
   PaperclipConfiguration.path_prefix = ":rails_root/public/attachments"
 end
-
-# Object cache
-require 'active_support/cache/dalli_store23'
-config.cache_store = :dalli_store
