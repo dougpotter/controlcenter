@@ -42,7 +42,7 @@ class CreativesController < ApplicationController
 
   def new
     @creative = Creative.new
-    @creatives = Creative.all
+    @creatives = Creative.all(:joins => :creative_size)
     @campaigns = Campaign.all
     @creative_sizes = CreativeSize.all(:order => 'common_name')
     @partners = Partner.all
@@ -57,9 +57,6 @@ class CreativesController < ApplicationController
       for campaign_id in campaign_ids
         campaign = Campaign.find(campaign_id)
         @creative.campaigns << campaign
-        for campaign_inventory_config in campaign.campaign_inventory_configs
-          @creative.creative_inventory_configs << campaign_inventory_config
-        end
       end
     end
 

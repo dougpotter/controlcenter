@@ -9,12 +9,10 @@ describe CreativesController do
         :creative_size_id= => 1, 
         :campaigns => [], 
         :attributes= => {}, 
-        :creative_inventory_configs => [],
         :save => true
       )
-      adx = mock()
       Creative.expects(:new).returns(creative)
-      campaign = mock(:campaign_inventory_configs => [ adx ])
+      campaign = mock("campaign")
       Campaign.expects(:find).with("1").returns(campaign)
 
       post :create, 
@@ -34,14 +32,9 @@ describe CreativesController do
         :attributes= => {},
         :save => true
       )
-      adx = mock("adx")
-      ox = mock("ox")
       campaign_one = mock("campaign_one")
       campaign_two = mock("campaign_two")
-      campaign_one.expects(:campaign_inventory_configs).returns([ adx ])
-      campaign_two.expects(:campaign_inventory_configs).returns([ ox ])
       creative.expects(:campaigns).twice.returns([], [campaign_one])
-      creative.expects(:creative_inventory_configs).twice.returns([])
       Creative.expects(:new).returns(creative)
       Campaign.expects(:find).twice.returns(campaign_one, campaign_two)
 
