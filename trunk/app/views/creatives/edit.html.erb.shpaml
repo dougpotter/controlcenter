@@ -6,5 +6,5 @@ h1
   = render :partial => 'form'
   = submit_tag 'Save Edits'
 
-= render :partial => "pixels"
+= render :partial => "pixels", :locals => { :view => "edit" }
 

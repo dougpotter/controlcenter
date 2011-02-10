@@ -18,7 +18,7 @@
 
 .pixels_for_creative
   h1 | Pixels
-  = render :partial => "pixels"
+  = render :partial => "pixels", :locals => { :view => "show" }
 
 = link_to("Edit This Creative", edit_creative_path(@creative))
 
