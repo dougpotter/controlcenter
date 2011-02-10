@@ -71,4 +71,14 @@ class Creative < ActiveRecord::Base
       :campaign_inventory_config_id => campaign_inventory_config.id
     }).empty?
   end
+
+  def configure(campaign_inventory_config)
+    if !self.campaign_inventory_configs.member?(campaign_inventory_config)
+      self.campaign_inventory_configs << campaign_inventory_config
+    end
+  end
+
+  def unconfigure(campaign_inventory_config)
+    self.campaign_inventory_configs.delete(campaign_inventory_config)
+  end
 end

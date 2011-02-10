@@ -133,6 +133,15 @@ class CreativesController < ApplicationController
     @creative_size = CreativeSize.find(params[:creative].delete("creative_size"))
     params[:creative][:campaigns] = @campaigns
     params[:creative][:creative_size] = @creative_size
+
+    params[:campaign_inventory_config].each do |caic_id,configured|
+      if configured == "1"
+        @creative.configure(CampaignInventoryConfig.find(caic_id))
+      else
+        @creative.unconfigure(CampaignInventoryConfig.find(caic_id))
+      end
+    end    
+
     if @creative.update_attributes(params[:creative])
       redirect_to :action => :new
     else

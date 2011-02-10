@@ -4,7 +4,7 @@ h1
 
 % form_for @creative, :html => { :multipart => true} do |f|
   = render :partial => 'form'
+  = render :partial => "pixels", :locals => { :view => "edit" }
   = submit_tag 'Save Edits'
 
-= render :partial => "pixels", :locals => { :view => "edit" }
 

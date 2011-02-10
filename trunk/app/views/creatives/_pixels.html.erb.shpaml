@@ -11,7 +11,7 @@ div class=pixel_list
       % if view == "edit"
         p
           Configured?
-          = check_box('creative_inventory_config', 'configured', { :checked => @creative.configured?(campaign_inventory_config) })
+          = check_box('campaign_inventory_config', campaign_inventory_config.id.to_s, { :checked => @creative.configured?(campaign_inventory_config) })
       % if view == "show"
         % if @creative.configured?(campaign_inventory_config)
           p class=green
