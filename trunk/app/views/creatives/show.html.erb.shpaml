@@ -21,3 +21,6 @@
   = render :partial => "pixels"
 
 = link_to("Edit This Creative", edit_creative_path(@creative))
+
+div style="clear:both;"
+  >br

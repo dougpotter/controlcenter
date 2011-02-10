@@ -27,7 +27,6 @@ body {
 p {
 	color: #333333;
 	font-size: 12px;
-	margin-top: 14px;
 }
 
 
@@ -315,6 +314,12 @@ table tbody {
   font-size: 18px;
 }
 
+.pixel_list {
+  margin-bottom: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 .pixel_list h1 {
   font-size: 15px;
 }
@@ -353,5 +358,4 @@ table tbody {
 
 .pixels_for_creative {
   width: 800px;
-  padding-bottom: 30px;
 }

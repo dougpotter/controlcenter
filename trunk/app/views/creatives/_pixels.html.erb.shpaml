@@ -4,8 +4,12 @@ div class=pixel_list
   % for campaign in @creative.campaigns
     h1 | <%= "Campaign: #{campaign.name}" %>
 
-    % for ais in campaign.ad_inventory_sources
+    % for campaign_inventory_config in campaign.campaign_inventory_configs
+      % ais = campaign_inventory_config.ad_inventory_source
       h2 | <%= "AIS: #{ais.name}" %>
+      p
+        Configured?
+        = check_box('creative_inventory_config', 'configured', { :checked => @creative.configured?(campaign_inventory_config) })
 
       % for event_type in [ :impression, :engagement, :click ]
         h3 | <%= event_type.to_s.capitalize + " pixel:" %> 
