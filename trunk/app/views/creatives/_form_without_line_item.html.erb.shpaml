@@ -34,6 +34,10 @@ div id=creative_form_without_line_item<%="[#{creative_number}]"%> class=creative
     >br
     = file_field "creatives[#{creative_number}]", "image"
 
+  div class=dimension_input
+    label for='landing_page_url' | Landing Page URL:
+    >br 
+    = text_field('creative', 'landing_page_url', :size => 101)
+
   div style='clear:both;height:0px;'
     >br
-

@@ -30,9 +30,8 @@ h1 | Basics
     % for @ais in @aises
      = render :partial => 'sync_rule', :locals => { :ais => @ais }
 
-  div style="clear:both;"
-    >br
-
   = submit_tag "submit"
 
+  div style="clear:both;"
+    >br
 
