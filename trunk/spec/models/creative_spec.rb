@@ -141,5 +141,44 @@ describe Creative do
         end
       end
     end
+
+    describe "configure method" do
+      fixtures :creatives,
+        :creative_inventory_configs,
+        :campaigns_creatives,
+        :campaigns, 
+        :campaign_inventory_configs
+
+      it "should configure creative for campaign-AIS combo when creative is not" + 
+        "already configured" do
+        caic = CampaignInventoryConfig.find(2)
+        Creative.first.configured?(caic).should be_false
+        Creative.first.configure(caic)
+        Creative.first.configured?(caic).should be_true
+      end
+
+      it "should do nothing if creative is already configured" do
+        caic = CampaignInventoryConfig.find(1)
+        Creative.first.configured?(caic).should be_true
+        Creative.first.configure(caic)
+        Creative.first.configured?(caic).should be_true
+      end
+    end
+
+    describe "unconfigure method" do
+      it "should unconfigure creative if already configured"do
+        caic = CampaignInventoryConfig.find(1)
+        Creative.first.configured?(caic).should be_true
+        Creative.first.unconfigure(caic)
+        Creative.first.configured?(caic).should be_false
+      end
+
+      it "should do nothing if creative is not configured" do
+        caic = CampaignInventoryConfig.find(2)
+        Creative.first.configured?(caic).should be_false
+        Creative.first.unconfigure(caic)
+        Creative.first.configured?(caic).should be_false
+      end
+    end
   end
 end
