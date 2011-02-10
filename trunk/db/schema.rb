@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110208211744) do
+ActiveRecord::Schema.define(:version => 20110210212016) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -130,11 +130,10 @@ ActiveRecord::Schema.define(:version => 20110208211744) do
   create_table "creative_inventory_configs", :id => false, :force => true do |t|
     t.integer "creative_id",                  :null => false
     t.integer "campaign_inventory_config_id", :null => false
-    t.boolean "configured",                   :null => false
   end
 
   add_index "creative_inventory_configs", ["campaign_inventory_config_id"], :name => "creative_inventory_configs_campaign_inventory_config_id_fk"
-  add_index "creative_inventory_configs", ["creative_id"], :name => "creative_inventory_configs_creative_id_fk"
+  add_index "creative_inventory_configs", ["creative_id", "campaign_inventory_config_id"], :name => "ensure_unique_creative_ais_campaign_association", :unique => true
 
   create_table "creative_sizes", :force => true do |t|
     t.float  "height"
