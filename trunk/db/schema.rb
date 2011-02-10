@@ -134,6 +134,7 @@ ActiveRecord::Schema.define(:version => 20110210212016) do
 
   add_index "creative_inventory_configs", ["campaign_inventory_config_id"], :name => "creative_inventory_configs_campaign_inventory_config_id_fk"
   add_index "creative_inventory_configs", ["creative_id", "campaign_inventory_config_id"], :name => "ensure_unique_creative_ais_campaign_association", :unique => true
+  add_index "creative_inventory_configs", ["creative_id"], :name => "creative_inventory_configs_creative_id_fk"
 
   create_table "creative_sizes", :force => true do |t|
     t.float  "height"
