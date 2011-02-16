@@ -37,7 +37,7 @@ module Workflow
   # procesess and/or the data source itself, in case of data source uploading
   # files to us (as opposed to us downloading files from data source).
   class Base
-    include Logger
+    include Workflow::Logger
     include DebugPrint
     include Locking
     include Persistence
