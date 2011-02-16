@@ -67,7 +67,8 @@ div id=right_pane
   div style='clear:both;'
     >br
 
-  <div id="creatives"></div>
+  #creatives
+    <%# %>  
 
   <div style='clear:both;'></div>
 
