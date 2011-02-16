@@ -1,12 +1,12 @@
 = error_messages_for :partner
 
 div class=dimension_input
-  label for="partner_cocde" | Advertiser Code:
+  label for="partner_partner_code" | Advertiser Code:
   >br
   = text_field('partner', 'partner_code')
 
 div class=dimension_input
-  label for="name" | Advertiser Name:
+  label for="partner_name" | Advertiser Name:
   >br
   = text_field('partner', 'name')
 
