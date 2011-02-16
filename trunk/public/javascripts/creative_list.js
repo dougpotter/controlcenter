@@ -16,7 +16,7 @@ var update_creative_list_req = new Request.HTML({
 
 window.addEvent('domready', function(){
   $('campaign_partner_id').addEvent('change', function(){
-    var partner_id = $('campaign_partner_id').getSelected().getProperty('value');
+    var partner_id = $('campaign_partner_id').getSelected().value;
     update_creative_list_req.send({data: "partner_id=" + partner_id});
   });
 });
@@ -41,7 +41,7 @@ var removeCreativeForm = function(creative_num) {
 }
 
 window.addEvent('domready', function() {
-    var partner_id = $('campaign_partner_id').getSelected().getProperty('value');
-    var campaign_code = $('campaign_campaign_code').getProperty('value');
+    var partner_id = $('campaign_partner_id').getSelected().value;
+    var campaign_code = $('campaign_campaign_code').value;
     update_creative_list_req.send({data: "partner_id=" + partner_id + "&campaign_code=" + campaign_code});
   });
