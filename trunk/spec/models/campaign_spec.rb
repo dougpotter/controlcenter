@@ -45,6 +45,51 @@ describe Campaign do
     }.should raise_error
   end
 
+  it "should remove associated campaign_inventory_configs when destroyed" do
+    lambda {
+      c = Factory.create(:campaign)
+      c.ad_inventory_sources << Factory.create(:ad_inventory_source)
+      campaign_inventory_config_id = c.campaign_inventory_configs[0].id
+      c.destroy
+      CampaignInventoryConfig.find(campaign_inventory_config_id)
+    }.should raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it "should remove relationships with associated creatives when destroyed" do
+    campaign = Factory.create(:campaign)
+    creative = Factory.create(:creative)
+    creative_id = creative.id
+    creative_id = creative.id
+    campaign.creatives << creative
+    campaign.destroy
+    Creative.find(creative_id).campaigns.should == []
+  end
+
+  it "should not remove associated creatives when destroyed (just relatinoship)" do
+    campaign = Factory.create(:campaign)
+    creative = Factory.create(:creative)
+    creative_id = creative.id
+    campaign.creatives << creative
+    campaign.destroy
+    Creative.find(creative_id).should == creative
+  end
+
+  it "should remove relationship with audience when destroyed" do
+    campaign = Factory.create(:campaign)
+    audience = Factory.create(:audience, :campaign_id => campaign.id)
+    audience_id = audience.id
+    campaign.destroy
+    Audience.find(audience_id).campaign_id.should == nil
+  end
+
+  it "should not remove associated audience when destoryed (just relationship)" do
+    campaign = Factory.create(:campaign)
+    audience = Factory.create(:audience, :campaign_id => campaign.id)
+    audience_id = audience.id
+    campaign.destroy
+    Audience.find(audience_id).should == audience
+  end
+
   describe "with dimension cache" do 
     fixtures :creatives, 
       :campaigns, 

@@ -17,15 +17,15 @@
 class Campaign < ActiveRecord::Base
   has_and_belongs_to_many :geographies
 
-  has_many :campaign_inventory_configs
+  has_many :campaign_inventory_configs, :dependent => :destroy
   has_many :ad_inventory_sources, { :through => :campaign_inventory_configs, :enforce => true }
 
   has_and_belongs_to_many :creatives, :enforce => true
-  has_one :audience
+  has_one :audience, :dependent => :nullify
   belongs_to :line_item, :enforce => true
 
-  has_many :click_counts
-  has_many :impression_counts
+  has_many :click_counts, :dependent => :destroy
+  has_many :impression_counts, :dependent => :destroy
 
   validates_presence_of :name, :campaign_code
   validates_uniqueness_of :campaign_code
