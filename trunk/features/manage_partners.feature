@@ -8,6 +8,7 @@ Feature: Manage partners
     When I fill in the following:
       | Advertiser Code | 123432    |
       | Advertiser Name | Coca Cola |
+    And I press "Create Advertiser"
     Then I should see "Coca Cola"
     And I should see "123432"
 
