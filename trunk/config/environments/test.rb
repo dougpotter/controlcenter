@@ -38,7 +38,7 @@ config.gem "factory_girl", :lib => false, :version => ">= 1.3.1"
 config.gem "cucumber", :lib => false, :version => ">= 0.10.0"
 config.gem "webrat", :lib => false, :version => ">=0.7.3"
 config.gem "cucumber-rails", :lib => false, :version => ">=0.3.2"
-config.gem "database-cleaner", :lib => false, :version => ">=0.6.3"
+config.gem "database_cleaner", :lib => false, :version => ">=0.6.3"
 
 config.after_initialize do
   DelayedLoad.configure :sass do
