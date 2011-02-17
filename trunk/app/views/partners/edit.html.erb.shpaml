@@ -7,3 +7,6 @@ h1 | Edit Advertiser
   = render :partial => 'form'
   = submit_tag 'Save Edits'
 
+div style="clear:both;"
+  >br
+
