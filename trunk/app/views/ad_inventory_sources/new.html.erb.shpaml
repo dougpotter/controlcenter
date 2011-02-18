@@ -1,6 +1,9 @@
 h1 | New AIS
 >br
 
+.notice
+  = notice
+
 % form_for @ais do |f|
   = render :partial => 'form'
   = submit_tag('Create AIS')
