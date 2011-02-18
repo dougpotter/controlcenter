@@ -1,0 +1,9 @@
+h1 | Edit Line Item
+>br
+
+% form_for @line_item do |f|
+  = render :partial => 'form'
+  = submit_tag 'Save Edits'
+
+div style="clear:both;"
+  >br

@@ -18,4 +18,9 @@ class LineItemsController < ApplicationController
       redirect_to(new_line_item_path, :notice => notice)
     end
   end
+
+  def edit
+    @line_item = LineItem.find(params[:id])
+    @partners = Partner.all
+  end
 end
