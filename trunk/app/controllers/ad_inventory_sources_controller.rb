@@ -21,7 +21,10 @@ class AdInventorySourcesController < ApplicationController
   def update
     @ais = AdInventorySource.find(params[:id])
     if @ais.update_attributes(params[:ais])
-      redirect_to :action => :new
+      redirect_to(
+        new_ad_inventory_source_path, 
+        :notice => "#{@ais.name} successfully updated"
+      )
     else
       render :action => :edit
     end

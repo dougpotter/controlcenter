@@ -19,6 +19,9 @@ module NavigationHelpers
     when /the new manage_line_items page/
       new_manage_line_items_path
 
+    when /the edit ad inventory source page for AdX/
+      edit_ad_inventory_source_path(AdInventorySource.find_by_ais_code("AdX").id)
+
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

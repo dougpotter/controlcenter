@@ -4,3 +4,6 @@ h1 | Edit Ad Inventory Source
 % form_for @ais do |f|
   = render :partial => 'form'
   = submit_tag 'Save Edits'
+
+div styel="clear:both;"
+  >br
