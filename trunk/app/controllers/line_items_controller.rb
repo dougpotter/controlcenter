@@ -1,9 +1,8 @@
 class LineItemsController < ApplicationController
   def new
     @line_item = LineItem.new
+    @line_items = LineItem.all
     @partners = Partner.all
-    @creative_sizes = CreativeSize.all
-    @creative = Creative.new
   end
 
   def create

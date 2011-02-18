@@ -21,5 +21,9 @@ class LineItem < ActiveRecord::Base
   validates_presence_of :partner_id
   validates_uniqueness_of :line_item_code
 
+  def partner_name
+    self.partner.name
+  end
+
   acts_as_dimension
 end

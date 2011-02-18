@@ -11,3 +11,10 @@ div class=notice
 
 div style="clear:both;"
   >br
+
+div id=summary_table
+  h1 | Existing Line Items
+  = render :partial => 'layouts/edit_table', :locals => { :collection => @line_items, :header_names => ["Name", "Line Item Code", "Start Date", "End Date", "Partner"], :fields => ["name", "line_item_code", "start_time", "end_time", "partner_name"], :class_name => "line_item_summary", :width => "800", :edit_path => edit_line_item_path(1) }
+
+div style="clear:both;"
+  >br
