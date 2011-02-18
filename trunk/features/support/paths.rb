@@ -10,6 +10,15 @@ module NavigationHelpers
 
     when /the home\s?page/
       '/'
+    when /the new line_item page/
+      new_line_item_path
+
+    when /the new manage_line_items page/
+      new_manage_line_items_path
+
+    when /the new manage_line_items page/
+      new_manage_line_items_path
+
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
