@@ -8,3 +8,6 @@ div class=notice
 % form_for @line_item, :html => { :multipart => true } do |f|
   = render :partial => 'form'
   = submit_tag 'Create Line Item'
+
+div style="clear:both;"
+  >br
