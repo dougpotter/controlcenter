@@ -1,3 +1,6 @@
+.notice
+  = notice
+
 div id=graph_selector_panel
     = link_to 'New Line Item', new_line_item_path
     = link_to 'New Campaign', new_campaign_path

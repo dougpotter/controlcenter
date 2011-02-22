@@ -57,7 +57,9 @@ class CampaignsController < ApplicationController
       end
     end
 
-    redirect_to campaign_management_index_path
+    redirect_to(
+      campaign_management_index_path, 
+      :notice => "campaign successfully created")
   end
 
   def edit
