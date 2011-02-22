@@ -10,6 +10,9 @@ module NavigationHelpers
 
     when /the home\s?page/
       '/'
+    when /the new audience page/
+      new_audience_path
+
     when /the new line_item page/
       new_line_item_path
 
