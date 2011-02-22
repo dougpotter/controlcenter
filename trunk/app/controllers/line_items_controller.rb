@@ -11,11 +11,16 @@ class LineItemsController < ApplicationController
     if @line_item.save
       redirect_to(new_line_item_path, :notice => "line item successfully saved")
     else
-      notice = "line item failed to save:\n"
-      @line_item.errors.each do |attr, msg|
-        notice += "#{attr} #{msg}\n"
-      end
-      redirect_to(new_line_item_path, :notice => notice)
+      redirect_to(new_line_item_path)
+    end
+  end
+
+  def update
+    @line_item = LineItem.find(params[:id])
+    if @line_item.update_attributes(params[:line_item])
+      redirect_to(new_line_item_path, :notice => "line item successfully updated")
+    else
+      redirect_to(edit_line_item_path(params[:id]))
     end
   end
 
