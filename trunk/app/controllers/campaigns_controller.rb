@@ -11,23 +11,27 @@ class CampaignsController < ApplicationController
 
   def create
     # build new campaign
+    params[:campaign][:line_item] = LineItem.find(params[:campaign][:line_item])
     @campaign = Campaign.new(params[:campaign])
     if !@campaign.save
       redirect_to(new_campaign_path, :notice => "failed to save campaign")
+      return
     end
 
     # associate creatives with campaign
-    params[:creatives].each do |number,attributes|
-      @creative = Creative.new(attributes)
-      @creative.campaigns << @campaign
-      if !@creative.save
-        redirect_to(
-          campaign_management_index_path, 
-          :notice => "failed to save one or more creatives"
-        )
+    if !params[:creatives].nil?
+      params[:creatives].each do |number,attributes|
+        @creative = Creative.new(attributes)
+        @creative.campaigns << @campaign
+        if !@creative.save
+          redirect_to(
+            campaign_management_index_path, 
+            :notice => "failed to save one or more creatives"
+          )
+        end
       end
     end
-    
+
     @sync_params = {}
     # deal with audience source
     if params[:audience][:audience_type] == "Ad-Hoc"
@@ -53,7 +57,7 @@ class CampaignsController < ApplicationController
       end
     end
 
-    redirect_to new_campaign_path
+    redirect_to campaign_management_index_path
   end
 
   def edit

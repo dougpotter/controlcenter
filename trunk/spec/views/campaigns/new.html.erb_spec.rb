@@ -2,9 +2,10 @@ require 'spec_helper'
 
 describe "campaigns/new.html.erb" do
   it "should render" do
+    line_item = mock()
     campaign = mock(
       "campaign",
-      :line_item_id => "1",
+      :line_item => line_item,
       :name => "campaign name",
       :campaign_code => "ACODE"
     )
