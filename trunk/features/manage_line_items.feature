@@ -35,3 +35,23 @@ Feature: Manage line_items
     And the "Start Time" date field should contain "February 1, 2010"
     And the "End Time" date field should contain "April 1, 2010"
     And the "Existing Advertiser" field should display "Ford"
+
+  Scenario: Update line_item
+    Given the following partners:
+      | name | partner_code |
+      | Ford |     11111    |
+    And the following line_items:
+      | name | line_item_code | start_time | end_time | partner_code |
+      | Ford Spring 2008 | ABC12 | February 1, 2010 | April 1, 2010 | 11111 |
+    And I am on the edit line item page for ABC12
+    And the "Line Item Code" field should contain "ABC12"
+    And the "Line Item Name" field should contain "Ford Spring 2008"
+    And the "Start Time" date field should contain "February 1, 2010"
+    And the "End Time" date field should contain "April 1, 2010"
+    And the "Existing Advertiser" field should display "Ford"
+    And I fill in the following:
+      | Line Item Code | ABC13 |
+    When I press "Save Edits"
+    Then I should see "line item successfully updated"
+    And I should see "ABC13"
+    And I should not see "ABC12"

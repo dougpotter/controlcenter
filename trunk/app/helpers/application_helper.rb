@@ -30,6 +30,15 @@ module ApplicationHelper
   def none_option
     "<option value=''>-</option>"
   end
+
+  def id_if_exists(model)
+    begin
+      id = model.id
+    rescue RuntimeError
+      id = nil
+    end
+    return id
+  end
   
   def clear(how=:both, content=nil)
     if content == :br

@@ -29,7 +29,7 @@ end
 Then /^the "([^"]*)" field should display "([^"]*)"$/ do |label, selected| 
   desired_element_selected = false
   field_labeled(label).options.each do |option|
-    if option.element.text == selected
+    if option.element.text == selected && !option.element.attributes["selected"].nil?
       desired_element_selected = true
     end
   end
