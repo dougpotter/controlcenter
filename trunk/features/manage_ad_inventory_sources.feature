@@ -9,7 +9,7 @@ Feature: Manage AISes
       |         name         | ais_code |
       |        Google        |   AdX    |
       |  Burst Ad Conductor  |   AdC    |
-    When I am on the new ad inventory source page
+    When I am on the new ad_inventory_source page
     Then I should see "Google"
     And I should see "AdX"
     And I should see "Burst Ad Conductor"
@@ -41,7 +41,7 @@ Feature: Manage AISes
       |         name          | ais_code |
       |   Google Ad Exchange  |   AdX    |
       |   Burst Ad Conductor  |   AdC    |
-    And I am on the edit ad inventory source page for AdX
+    And I am on the edit ad_inventory_source page for AdX
     And I fill in the following:
       |   Name   | Google |
     When I press "Save Edits"
