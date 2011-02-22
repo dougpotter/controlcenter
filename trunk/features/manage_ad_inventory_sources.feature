@@ -5,7 +5,7 @@ Feature: Manage AISes
   I will need to manage AISes in XGCC
 
   Scenario: See list of existing AISes
-    Given the following ad inventory sources:
+    Given the following ad_inventory_sources:
       |         name         | ais_code |
       |        Google        |   AdX    |
       |  Burst Ad Conductor  |   AdC    |
@@ -16,7 +16,7 @@ Feature: Manage AISes
     And I should see "AdC"
 
   Scenario: Create new AIS
-    Given I am on the new ad inventory source page
+    Given I am on the new ad_inventory_source page
     And I fill in the following:
       | AIS Code |      TSQUA      |
       |   Name   |   Time Square   |
@@ -26,7 +26,7 @@ Feature: Manage AISes
     And I should see "Time Square"
 
   Scenario: Edit AIS
-    Given the following ad inventory sources:
+    Given the following ad_inventory_sources:
       |         name         | ais_code |
       |        Google        |   AdX    |
       |  Burst Ad Conductor  |   AdC    |
@@ -37,7 +37,7 @@ Feature: Manage AISes
     And the "Name" field should contain "Google"
 
   Scenario: Update AIS
-    Given the following ad inventory sources:
+    Given the following ad_inventory_sources:
       |         name          | ais_code |
       |   Google Ad Exchange  |   AdX    |
       |   Burst Ad Conductor  |   AdC    |
