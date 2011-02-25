@@ -32,6 +32,18 @@ begin
       t.profile = 'rerun'
     end
 
+    Cucumber::Rake::Task.new({:selenium => 'db:test:prepare'}, 'Runs all features that use selenium and should pass') do |t|
+      t.binary = vendored_cucumber_bin
+      t.fork = true # You may get faster startup if you set this to false
+      t.profile = 'selenium'
+    end
+
+    Cucumber::Rake::Task.new({:selenium_wip => 'db:test:prepare'}, 'Run features that use selenium and are presently a work in progress') do |t|
+      t.binary = vendored_cucumber_bin
+      t.fork = true # You may get faster startup if you set this to false
+      t.profile = 'selenium_wip'
+    end
+
     desc 'Run all features'
     task :all => [:ok, :wip]
   end
