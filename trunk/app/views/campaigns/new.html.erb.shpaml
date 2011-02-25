@@ -17,7 +17,7 @@ h1 | Basics
   h1 | Creatives
 
   <div id=new_creatives></div>
-  <%= link_to_function "+", :class => "add_creative_link" do |page|
+  <%= link_to_function "+", { :title => "add_creative", :class => "add_creative_link" } do |page|
     page.call :newCreativeForm
     end %>
 
