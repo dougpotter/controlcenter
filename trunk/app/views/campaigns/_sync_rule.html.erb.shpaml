@@ -12,7 +12,7 @@ div class=sync_rule_entry_boxes
 
     <% if ais.ais_code == "ApN" %>
       div class=dimension_input
-        label for="apn_segment_id" | AppNexus Segment Id:
+        label for="sync_rule_ApN_apn_segment_id" | AppNexus Segment Id:
         >br
         = text_field "sync_rule[#{ais.ais_code}]", 'apn_segment_id'
     <% else %>
