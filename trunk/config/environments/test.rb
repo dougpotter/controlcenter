@@ -39,6 +39,7 @@ config.gem "cucumber", :lib => false, :version => ">= 0.10.0"
 config.gem "webrat", :lib => false, :version => ">=0.7.3"
 config.gem "cucumber-rails", :lib => false, :version => ">=0.3.2"
 config.gem "database_cleaner", :lib => false, :version => ">=0.6.3"
+config.gem "selenium-client", :lib => false, :version => ">=1.2.18"
 
 config.after_initialize do
   DelayedLoad.configure :sass do
