@@ -1,0 +1,59 @@
+p
+  = link_to 'Previous day', url_for(:date => @previous_day)
+  = link_to 'Next day', url_for(:date => @next_day)
+  = link_to 'Month overview', extraction_overview_path(@date.year, @date.month)
+
+a name=summary
+  h2 | Counts by status
+
+table class=extraction-status
+  tr
+    th | Status
+    th | Count
+  % for status in @counts_by_status.keys.sort
+    % count = @counts_by_status[status]
+    tr class="<%= extraction_status_to_css_class(status) %>"
+      td
+        = link_to_function extraction_status_name(status), "ReportPage.showFilesWithStatus('#{extraction_status_to_css_class(status)}')"
+      td
+        = count
+  tr
+    td
+      % if !@counts_by_status.empty?
+        = link_to_function 'All', 'ReportPage.showAllFiles()'
+      % else
+        All
+    td
+      = @counts_by_status.inject(0) { |size, element| size + element.last }
+
+h2 | Files
+
+table id=file_table class=extraction-status
+  tr
+    th | Url
+    th | Status
+    th | Label Date
+    th | Label Hour
+    th | Discovered At
+    th | Extracted At
+    th | Verified At
+  % for file in @files
+    tr class="<%= extraction_status_to_css_class(file.status) %>"
+      td
+        = file.url
+      td
+        = extraction_status_name(file.status)
+      td
+        = file.label_date.strftime('%Y%m%d')
+      td
+        = file.label_hour
+      td
+        = file.discovered_at.try(:strftime, '%Y%m%d %H:%M')
+      td
+        = file.extracted_at.try(:strftime, '%Y%m%d %H:%M')
+      td
+        = file.verified_at.try(:strftime, '%Y%m%d %H:%M')
+
+p
+  = link_to 'Previous day', url_for(:date => @previous_day)
+  = link_to 'Next day', url_for(:date => @next_day)

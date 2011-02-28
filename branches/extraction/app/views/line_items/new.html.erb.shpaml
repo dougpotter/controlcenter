@@ -1,0 +1,7 @@
+<script src="/javascripts/creative_list.js" type="text/javascript"></script>
+
+h1 | New Line Item
+
+% form_for @line_item, :html => { :multipart => true } do |f|
+  = render :partial => 'form'
+  = submit_tag 'Create Line Item'

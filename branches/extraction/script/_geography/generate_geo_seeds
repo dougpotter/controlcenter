@@ -1,0 +1,131 @@
+#!/usr/bin/env ruby
+# Generation script for seed fixtures
+#
+# Usage:
+# If called with no argument, re-generates all fixtures
+# If called with an argument, re-generates the fixture for that table:
+# ruby scrpt/generate_geo_fixtures name_of_table
+
+require 'rubygems'
+require 'fastercsv'
+require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'vendor/plugins/seed-fu/lib/seed-fu/writer')
+PARSED_PATH = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'db', 'geo_parsed_data')
+
+# declare paramters for each table being seeded
+cities = {
+  :infile => 'cities.csv',
+  :outfile => '003_cities.rb',
+  :model => 'City',
+  :seed_by_arr => [],
+  :column_maps => { :name => 'name', :region_id => 'abbreviation' },
+  :lookups => {:region_id => "Region.find_by_abbreviation"}
+}
+states = {
+  :infile => 'states.csv',
+  :outfile => '002_regions.rb', 
+  :model => 'Region',
+  :seed_by_arr => [],
+  :column_maps => { :abbreviation => 'abbreviation', :country_id => 'country' },
+  :lookups => {:country_id => "Country.find_by_name"}
+}
+zips = {
+  :infile => 'zips.csv',
+  :outfile => '004_zips.rb',
+  :model => 'Zip',
+  :seed_by_arr => [],
+  :column_maps => { :zip => 'zip' },
+  :lookups => {}
+}
+msas = {
+  :infile => 'msas.csv',
+  :outfile => '005_msas.rb',
+  :model => "Msa",
+  :seed_by_arr => [],
+  :column_maps => { :msa_code => 'msa' },
+  :lookups => {}
+}
+countries = {
+  :infile => 'countries.csv',
+  :outfile => '001_countries.rb',
+  :model => 'Country',
+  :seed_by_arr => [],
+  :column_maps => { :name => 'name' },
+  :looups => {}
+}
+region_zips = {
+  :infile => 'states_zips.csv',
+  :outfile => '006_region_zips.rb',
+  :model => 'RegionZip',
+  :seed_by_arr => [:region_id, :zip_id],
+  :column_maps => {:region_id => 'abbreviation', :zip_id => 'zip' },
+  :lookups => {:region_id => "Region.find_by_abbreviation", :zip_id => "Zip.find_by_zip" }
+}
+msa_regions = {
+  :infile => 'msas_states.csv', 
+  :outfile => '007_msa_regions.rb',
+  :model => 'MsaRegion',
+  :seed_by_arr => [:msa_id, :region_id],
+  :column_maps => {:msa_id => 'msa', :region_id => 'abbreviation'},
+  :lookups => {:msa_id => "Msa.find_by_msa_code", :region_id => "Region.find_by_abbreviation"}
+}
+countries_regions = {
+  :infile => 'countries_states.csv',
+  :outfile => 'countries_regions.rb',
+  :model => 'CountryRegion',
+  :seed_by_arr => [:country_id, :region_id],
+  :column_maps => {:country_id => 'name', :region_id => 'abbreviation'},
+  :lookups => {:country_id => "Country.find_by_name", :region_id => "Region.find_by_abbreviation"}
+}
+
+# consolidate paramter hashes
+@file_map = {"cities" => cities, "states" => states, "zips" => zips, "msas" => msas, "countries" => countries, "region_zips" => region_zips, "msa_regions" => msa_regions}
+
+# builds particular key => value pair where the value involves a query
+def build_lookup(search_string, value)
+  lookup = search_string + "(\"" + value + "\").id"
+end
+
+# helper for gen_seed_fu_fixture, build hash of proper format from
+# row of csv data and column mappings. lookups is a hash for seeding
+# columns which are foreign keys and therefore require a query to 
+# obtain the value. They'll need to be seeded in the manner
+# Model.find_by_columnnamehere("columnvalue").id
+def build_add_seed_hash(row, column_maps, lookups)
+  hsh = {}
+  column_maps.each do |db_column,infile_column|
+    value = row[infile_column]
+    if search_string = lookups[db_column]
+      hsh[db_column] = build_lookup(search_string, value)
+    else
+      hsh[db_column] = value
+    end
+  end
+  hsh
+end
+
+def gen_seed_fu_fixture(table, path_to_csv)
+  table_attr = @file_map[table]
+  infile = File.join(path_to_csv, table_attr[:infile])
+  seed_file = File.join(path_to_csv, '..', 'fixtures', table_attr[:outfile])
+
+  File.open(seed_file, 'w') do |outfile|
+    if table_attr[:seed_by_arr] == []
+      outfile.puts "#{table_attr[:model]}.seed_many(["
+    else
+      outfile.puts "#{table_attr[:model]}.seed_many(#{table_attr[:seed_by_arr].inspect.gsub(/(\[|\])/,"")}#{if table_attr[:seed_by_arr] != [];",";else;"";end}["
+    end
+  FasterCSV.foreach(infile, :return_headers => false, :headers => :first_row) do |row|
+    outfile.puts build_add_seed_hash(row, table_attr[:column_maps], table_attr[:lookups]).inspect.gsub(/id=>\"/,"id=>").gsub(/id\"\,/,"id\,").gsub(/id\"\}/,"id\}").gsub(/\\\"/,"\"") + ","
+  end
+  outfile.puts "])"
+end
+end
+
+# handle perameter
+if ARGV[0] == nil
+  for table in @file_map.keys
+    gen_seed_fu_fixture(table, PARSED_PATH)
+  end
+else
+  gen_seed_fu_fixture(ARGV[0], PARSED_PATH)
+end

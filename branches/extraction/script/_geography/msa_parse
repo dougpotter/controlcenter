@@ -1,0 +1,166 @@
+#!/usr/bin/env ruby
+
+# Rreads and parses msa data taken from the U.S. Census Bureau website:
+# http://www.census.gov/population/www/metroareas/metrodef.html
+# (stored in db/geographies.txt).  This is 2008 data.
+# File describes areas of 3 types: MSA, division, and component
+# Most of the country is broken up into MSAs which contain components.
+# The largest metropolitaing areas, however, are an MSA broken into
+# divisions which are then broken into components. Therefore, a comonent
+# always has an MSA but not necessarily a division.
+
+require 'rubygems'
+require 'fastercsv'
+require 'set'
+
+lines = []
+DB_PATH = File.expand_path(File.join(File.dirname(__FILE__), '..', 'db', 'geo_source_data'))
+File.open(File.expand_path(File.join(File.expand_path(__FILE__), '..', '..', 'db', 'geo_source_data', 'geographies.txt')), 'r') do |f|
+  while (line = f.gets)
+    if line.match(/(\d{5})\s{3}(\d{5}|\s{5})\s{3}(\s{5}|\d{5})\s+(\D+)/).to_a.size != 0
+      lines << line
+    end
+  end
+end
+
+# Parse and write to 3 semi-colon delimited files
+# msas.csv: msa_code, text_description
+# divisions.csv: division_code, text_desc 
+# components.csv: msa_code, division_code, component_code, text_desc
+msas = []
+divisions = []
+components = []
+states = Set.new
+cities = Set.new
+msas_states = []
+msas_cities = []
+div_states = []
+div_cities = []
+
+#msas.puts "msa_code;cities;states"
+#divisions.puts "division_code;description"
+#components.puts "msa_code;division_code;component_code;description"
+for line in lines
+  all, cbsa_code, div_code, fips_state_county, title = line.match(/(\d{5})\s{3}(\d{5}|\s{5})\s{3}(\s{5}|\d{5})\s+(\D+)\n/).to_a
+  if !div_code.include?("  ") && !fips_state_county.include?("  ") 
+    # line describes component within division within msa
+    all, component_name, state = title.match(/(\D+)\,\s(\w{2})/).to_a
+    components << [fips_state_county, component_name, state, div_code, cbsa_code]
+  elsif div_code.include?("  ") && !fips_state_county.include?("  ") 
+    # line describes component with no division (just msa)
+    all, component_name, state = title.match(/(\D+)\,\s(\w{2})/).to_a
+    components << [fips_state_county, component_name, state, "", cbsa_code]
+  elsif !div_code.include?("  ") && fips_state_county.include?("  ") 
+    # line describing division within msa
+    all, cities_group, states_group = title.match(/(\D+)\,\s(\D+?)\s/).to_a
+    cities_split = cities_group.split(/-/)
+    states_split = states_group.split(/-/)
+    for state in states_split
+      div_states << [div_code, state]
+      states << state
+    end
+    for city in cities_split
+      div_cities << [div_code, city]
+      cities << city
+    end
+    divisions << [div_code, title, cbsa_code]
+  else 
+    # line describes msa
+    all, cities_group, states_group = title.match(/(\D+)\,\s(\D+?)\s/).to_a
+    cities_split = cities_group.split(/-/)
+    states_split = states_group.split(/-/)
+    for city in cities_split
+      msas_cities << [city, cbsa_code]
+      cities.delete_if { |i| i.eql?("") }
+      cities << city
+    end
+    for state in states_split
+      msas_states << [state, cbsa_code]
+      states << state
+    end
+    msas << [cbsa_code, title]
+  end
+end
+
+#assign id to each state, city, and msa
+states_hash = Hash.new
+cities_hash = Hash.new
+msas_hash = Hash.new
+id = 1
+for state in states
+  states_hash[state] = id
+  id += 1
+end
+id = 1
+for city in cities
+  cities_hash[city] = id
+  id += 1
+end
+id = 1
+for line in msas
+  msa, description = line
+  msas_hash[msa] = id
+  id += 1
+end
+
+FasterCSV.open(File.join(DB_PATH, "msas.csv"), 'w') do |csv|
+  csv << ["id", "description", "msa"]
+  for line in msas
+    msa, description = line
+    csv << [msas_hash[msa], description, msa] 
+  end
+end
+FasterCSV.open(File.join(DB_PATH, "divisions.csv"), 'w') do |csv|
+  csv << ["id", "description", "msa_id"]
+  for division in divisions
+    csv << division
+  end
+end
+i = 0
+FasterCSV.open(File.join(DB_PATH, "components.csv"), 'w') do |csv|
+  csv << ["id", "description", "state_id", "division_id", "msa_id"]
+  for component in components
+    id, description, state, division_id, msa = component
+    csv << [id, description, states_hash[state], division_id, msas_hash[msa]]
+  end
+end
+FasterCSV.open(File.join(DB_PATH, "states.csv"), 'w') do |csv|
+  csv << ["id", "abbreviation"]
+  for state in states
+    csv << [states_hash[state], state]
+  end
+end
+FasterCSV.open(File.join(DB_PATH, "cities.csv"), 'w') do |csv|
+  csv << ["id", "name"]
+  for city in cities
+    csv << [cities_hash[city], city]
+  end
+end
+FasterCSV.open(File.join(DB_PATH, "msas_states.csv"), 'w') do |csv|
+  csv << ["abbreviation", "msa"]
+  for relationship in msas_states
+    abbreviation, msa = relationship
+    csv << [abbreviation,msa]
+  end
+end
+FasterCSV.open(File.join(DB_PATH, "msas_cities.csv"), 'w') do |csv|
+  csv << ["city_id", "msa_id"]
+  for relationship in msas_cities
+    name, msa = relationship
+    csv << [cities_hash[name], msas_hash[msa]]
+  end
+end
+FasterCSV.open(File.join(DB_PATH, "divisions_states.csv"), 'w') do |csv|
+  csv << ["division_id", "state_id"]
+  for relationship in div_states
+    division_id, abbreviation = relationship
+    csv << [division_id, states_hash[abbreviation]]
+  end
+end
+FasterCSV.open(File.join(DB_PATH, "divisions_cities.csv"), 'w') do |csv|
+  csv << ["division_id", "city_id"]
+  for relationship in div_cities
+    division_id, name = relationship
+    csv << [division_id, cities_hash[name]]
+  end
+end

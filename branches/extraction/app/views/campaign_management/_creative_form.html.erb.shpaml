@@ -1,0 +1,28 @@
+= error_messages_for :object => object
+
+div class=dimension_input
+  label for="creative_code" | Code:
+  >br
+  
+  = f.text_field('creative_code', :size => 5)
+
+div class=dimension_input
+  label for="creative_name" | Name:
+  >br
+  
+  = f.text_field('description', :size => 5)
+
+div class=dimension_input
+  label for="creative_media_type" | Media type:
+  >br
+  
+  = f.text_field('media_type', :size => 5)
+
+div class=dimension_input
+  label for="creative_size_id" | Size:
+  >br
+  
+  = f.select('creative_size_id', options_from_collection_for_select(@creative_sizes, :id, :common_name, f.object))
+
+div style='clear:both;'
+  >br

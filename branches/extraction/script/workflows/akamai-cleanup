@@ -1,0 +1,85 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: script/workflows/akamai-cleanup [options]"
+  
+  opts.separator ''
+  opts.separator 'Action options: (by default, clean up uploaded files over 14 days old)'
+  
+  opts.on('-g', '--age AGE', 'Specify the age of uploaded files to clean up') do |age|
+    options[:age] = age
+  end
+  
+  opts.separator ''
+  opts.separator 'Configuration options:'
+  
+  opts.on('-e', '--environment RAILS_ENV', 'Specify rails environment (development/production/test') do |env|
+    ENV['RAILS_ENV'] = env
+  end
+  opts.on('-c', '--config-file PATH', 'Specify configuration file path (by default, config/workflows/clearspring.yml is used)') do |path|
+    options[:config_path] = path
+  end
+  
+  opts.separator ''
+  opts.separator 'Behavior modifying options:'
+  
+  opts.on('-p', '--[no-]pretend', 'Show what files would be removed, but do not remove them') do |pretend|
+    options[:pretend] = pretend
+  end
+  opts.on('-o', '--[no-]only-verified', 'Cleanup only successfully extracted and verified files') do |only_verified|
+    options[:only_verified] = only_verified
+  end
+  
+  opts.separator ''
+  opts.separator 'Debugging options:'
+  
+  opts.on('--[no-]debug', 'Enable debugging output') do |value|
+    options[:debug] = value
+  end
+  
+  opts.separator ''
+  opts.separator 'Informational options:'
+  
+  opts.on('-h', '--help', 'Display this help text') do
+    puts opts
+    exit
+  end
+end.parse!
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
+
+# 14 days for uploaded files
+default_age = 14 * 86400
+
+if value = options[:age]
+  begin
+    options[:age] = TimeDistanceParser.parse(value)
+  rescue ArgumentError => e
+    $stderr.puts "Invalid age value: #{value}: #{e.message}"
+    exit(3)
+  end
+else
+  options[:age] = default_age
+end
+
+class AkamaiCleanupWorkflowRunner < StandardWorkflowRunner
+  def initialize
+    super(AkamaiCleanupWorkflow)
+  end
+  
+  def perform(params)
+    workflow = @workflow_class.new(params)
+    workflow.cleanup
+  end
+end
+
+runner = AkamaiCleanupWorkflowRunner.new
+settings = AkamaiExtractWorkflow.configuration(options)
+settings.update(options)
+params = settings.to_hash
+
+runner.exec(params)

@@ -1,0 +1,109 @@
+# Use this file to define tasks that need to be executed periodically.
+
+# Note: our deployment configuration automatically updates crontab
+# on target system to execute tasks defined in this file (schedule.rb).
+# In order to temporarily prevent a task defined here from running,
+# you can comment out the appropriate line(s) in the target system's
+# crontab. To access crontab for another user, use -u argument to crontab
+# like this:
+#
+# sudo crontab -e -u www
+#
+# Keep in mind that deploying the application will put the tasks back into
+# the target's crontab. If you are deploying code and want to avoid the
+# tasks being put back into the target crontab, comment out the following
+# line in deploy.rb which arranges for the crontab to be updated:
+#
+# after "deploy:symlink", "deploy:update_crontab"
+#
+# This needs to be done in addition to commenting out the entry in remote
+# crontab.
+
+# It is helpful to understand cron before editing this file:
+# http://en.wikipedia.org/wiki/Cron
+
+# Example:
+#
+# set :output, "/path/to/my/cron_log.log"
+#
+# every 2.hours do
+#   command "/usr/bin/some_great_command"
+#   runner "MyModel.some_method"
+#   rake "some:great:rake:task"
+# end
+#
+# every 4.days do
+#   runner "AnotherModel.prune_old_records"
+# end
+
+# Learn more: http://github.com/javan/whenever
+
+# Note: every command/runner/rake declaration (like above) is turned into
+# a separate line in crontab. Thus, specifying multiple tasks to be done
+# in a single block at a single time will launch them concurrently and
+# independently from one another. The independence aspect of this behavior
+# may be desirable, but concurrence aspect should be carefully considered
+# as all tasks scheduled for the same time will be trying to load the
+# rails environment concurrently, likely placing significant CPU load on
+# the machine running them.
+
+# Below are sample entries for running various jobs in production.
+# Despite being in a single sample file they do not all go on one machine.
+# For example, akamai extraction happens on ftp.xgraph.net only and
+# clearspring extraction happens on a separate worklfow machine.
+
+# Akamai log files do not appear to be uploaded at a particular time
+# in an hour.
+every 1.hour do
+  rake 'workflows:akamai:extract_autorun'
+end
+
+# Run a late extraction pass because it's easier to be proactive
+# than to manually extract missing data when things get uploaded
+# too late or missed.
+# Late extraction run catches infrequent condition of files being
+# made available late. No need to run it every hour.
+every 4.hours do
+  rake 'workflows:akamai:extract_late'
+end
+
+# Clearspring files seem to mostly materialize a couple minutes after each
+# hour mark, with some exceptions. Running extraction exactly on the hour
+# is asking for race conditions. Run extraction 15 minutes before every hour.
+every 1.hour, :at => 45 do
+  rake 'workflows:clearspring:extract_autorun'
+end
+
+# Late extraction run catches infrequent condition of files being
+# made available late. No need to run it every hour.
+every 4.hour, :at => 45 do
+  rake 'workflows:clearspring:extract_late'
+end
+
+# 7 AM EST is 11 AM or noon UTC depending on DST
+every 1.day, :at => 7 do
+  rake 'workflows:akamai:verify_daily'
+  rake 'workflows:clearspring:verify_daily'
+end
+
+every 1.hour, :at => 15 do
+  rake 'workflows:akamai:verify_hourly'
+  rake 'workflows:clearspring:verify_hourly'
+end
+
+# Very late extraction pass
+every 1.day, :at => %w(1:20am 1:20pm)  do
+  rake 'workflows:akamai:extract_very_late'
+  rake 'workflows:clearspring:extract_very_late'
+end
+
+# Verification for very late extraction pass
+every 1.day, :at => %w(4:10am 4:10pm) do
+  rake 'workflows:akamai:verify_late'
+  rake 'workflows:clearspring:verify_late'
+end
+
+# Check and/or advance appnexus bulk uploading jobs every 10 minutes.
+every 10.minutes do
+  rake 'workflows:appnexus:advance'
+end

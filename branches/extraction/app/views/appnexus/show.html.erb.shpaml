@@ -1,0 +1,50 @@
+h1 | Appnexus Sync
+
+table
+  tr
+    th | Partner code
+    td
+      = @job_parameters.partner_code
+    
+  tr
+    th | Audience code
+    td
+      = @job_parameters.audience_code
+    
+  tr
+    th | S3 xguid list prefix
+    td
+      = @job_parameters.s3_xguid_list_prefix
+    
+  tr
+    th | AppNexus segment ID
+    td
+      = @job_parameters.appnexus_segment_id
+    
+  tr
+    th | Created at
+    td
+      = @job.created_at.to_s
+    
+  tr
+    th | Status
+    td
+      = appnexus_status_name(@job.status)
+  
+  % if @job.completed_at
+    tr
+      th | Completed at
+      td
+        = @job.completed_at.to_s
+  
+  % if @job.state[:diagnostics]
+    tr
+      th | Diagnostics
+      td
+        pre style='overflow:scroll;width:80%'
+          = @job.state[:diagnostics]
+
+= clear
+
+p
+  = link_to 'Back to list', appnexus_sync_index_path

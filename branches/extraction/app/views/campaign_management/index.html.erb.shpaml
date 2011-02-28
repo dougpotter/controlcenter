@@ -1,0 +1,37 @@
+div id=graph_selector_panel
+    = link_to 'New Line Item', new_line_item_path
+    = link_to 'New Campaign', new_campaign_path
+    = link_to 'Advertiser Management', new_partner_path
+    = link_to 'AIS Management', new_ad_inventory_source_path
+    = link_to 'Creative Management', new_creative_path
+div style='clear:both;'
+  >br
+
+h1 | Edit Campaign
+
+div id=graph_selector_panel
+  h2 | Narrow by:
+  >br
+  
+  = form_tag({:action => 'filter_list'}, :id => 'filter_form')
+    = render :partial => 'index_filter_fields'
+
+    div class=dimension_input
+      = submit_tag('Go')
+    
+    div style='clear:both;'
+      >span
+  </form>
+  
+  #campaign_list
+    = render :partial => 'campaign_list'
+
+
+  div style='clear:both;'
+    >br
+
+div style='clear:both;'
+  >span
+
+script type=text/javascript
+  CampaignPage.initialize();
