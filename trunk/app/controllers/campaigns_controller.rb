@@ -28,32 +28,35 @@ class CampaignsController < ApplicationController
             campaign_management_index_path, 
             :notice => "failed to save one or more creatives"
           )
+          return
         end
       end
     end
 
-    @sync_params = {}
-    # deal with audience source
-    if params[:audience][:audience_type] == "Ad-Hoc"
-      @sync_params["s3_xguid_list_prefix"] = params[:audience_source][:s3_location]
-      @sync_params["partner_code"] = @campaign.partner.partner_code
-      @sync_params["audience_code"] = params[:audience_source][:audience_code]
-      @sync_params["appnexus_segment_id"] = params[:sync_rule][:ApN][:apn_segment_id]
-    elsif params[:audience][:audience_type] == "Retargeting"
-      render :text => "retargeting audience not yet supported"
-      return
-    else
-      render :text => "audience source not supported"
-      return
-    end
-
-
-    # sync audience with ApN
-    @aises_for_inclusion = params[:aises_for_sync]
-    if @aises_for_inclusion.delete("ApN")
-      if !create_and_run_apn_sync_job('appnexus-list-generate', @sync_params)
-        render :text => "invalid appnexus sync job"
+    if params[:aises_for_sync]
+      # deal with audience source
+      @sync_params = {}
+      if params[:audience][:audience_type] == "Ad-Hoc"
+        @sync_params["s3_xguid_list_prefix"] = params[:audience_source][:s3_location]
+        @sync_params["partner_code"] = @campaign.partner.partner_code
+        @sync_params["audience_code"] = params[:audience_source][:audience_code]
+        @sync_params["appnexus_segment_id"] = params[:sync_rules][:ApN][:apn_segment_id]
+      elsif params[:audience][:audience_type] == "Retargeting"
+        render :text => "retargeting audience not yet supported"
         return
+      else
+        render :text => "audience source not supported"
+        return
+      end
+
+
+      if @apn_params = params[:sync_rules].delete("ApN")
+      # sync audience with ApN
+        @sync_params.update(@apn_params)
+        if !create_and_run_apn_sync_job('appnexus-list-generate', @sync_params)
+          render :text => "invalid appnexus sync job"
+          return
+        end
       end
     end
 

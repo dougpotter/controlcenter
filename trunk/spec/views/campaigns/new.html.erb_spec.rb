@@ -10,7 +10,7 @@ describe "campaigns/new.html.erb" do
       :campaign_code => "ACODE"
     )
     adx = mock("adx")
-    adx.expects(:ais_code).times(10).returns("ACODE")
+    adx.expects(:ais_code).times(12).returns("ACODE")
     aises = [ adx ]
     campaign.expects(:class).times(4).returns(Campaign)
     template.expects(:options_from_collection_for_select).

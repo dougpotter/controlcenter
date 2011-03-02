@@ -16,15 +16,14 @@ describe CampaignsController do
               :audience_source => {
               :s3_location => "/a/path/in/s3",
               :audience_code => "AB17" },
-              :sync_rule => { "ApN" => { :apn_segment_id => "" } },
-              :aises_for_sync => [""],
+              :sync_rules => { "ApN" => { :apn_segment_id => "" } },
               :audience => { :audience_type => "Ad-Hoc" }
           end
 
           context "with valid attributes" do
             before(:each) do
-              @partner = mock("Partner", :partner_code => "ACODE")
-              @campaign = mock("Campaign", :save => true, :partner => @partner)
+              @partner = mock("Partner")
+              @campaign = mock("Campaign", :save => true)
               @line_item = mock("Line Item")
             end
 
@@ -100,8 +99,8 @@ describe CampaignsController do
               :audience_source => {
               :s3_location => "/a/path/in/s3",
               :audience_code => "AB17" },
-              :sync_rule => { "ApN" => { :apn_segment_id => "ACODE" } },
-              :aises_for_sync => [ "", "ApN" ],
+              :sync_rules => { "ApN" => { :apn_segment_id => "ACODE" } },
+              :aises_for_sync => [ "ApN" ],
               :audience => { :audience_type => "Ad-Hoc" }
           end
 
@@ -119,6 +118,8 @@ describe CampaignsController do
                 "campaign_code" => "ACODE",
                 "line_item" => @line_item
               }).returns(@campaign)
+              CampaignsController.any_instance.
+                expects(:create_and_run_apn_sync_job).returns(true)
               do_create
             end
 
