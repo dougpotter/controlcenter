@@ -33,6 +33,10 @@ when "selenium"
     end
   end
 
+  After do
+    DatabaseCleaner.strategy = :truncation
+  end
+
 else
   Webrat.configure do |config|
     config.mode = :rails
