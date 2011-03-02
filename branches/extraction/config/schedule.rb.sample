@@ -107,3 +107,8 @@ end
 every 10.minutes do
   rake 'workflows:appnexus:advance'
 end
+
+# Remove old semaphore data
+every 1.week do
+  rake 'gc:semaphores'
+end
