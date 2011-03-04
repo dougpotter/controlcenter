@@ -47,6 +47,15 @@
 # rails environment concurrently, likely placing significant CPU load on
 # the machine running them.
 
+# Specify a different job template.
+# Zsh needs none of the contortions that bash seems to require.
+# Note: on centos by default cron commands are executed by /bin/sh.
+# This it may be necessary to either set SHELL=/bin/zsh or to specify
+# a job template invoking zsh.
+#
+# set :job_template, nil
+# set :job_template, "zsh -c 'exec :job'"
+
 # Below are sample entries for running various jobs in production.
 # Despite being in a single sample file they do not all go on one machine.
 # For example, akamai extraction happens on ftp.xgraph.net only and
