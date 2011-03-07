@@ -17,9 +17,9 @@ Feature: Manage creatives
     Then I should see "creative successfully created"
     And I should see "New Creative"
 
-  @selenium @wip
+  @selenium 
   Scenario: Remove a creative
-    Given the standard ad-hoc campaign and associated entities exists
+    Given the standard ad-hoc campaign and associated entities exist
     And the following creatives:
       | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |  campaign_code |
       |     ACODE     |  aname |   flash    |    Medium     | http://www.what.com |      ACODE |
