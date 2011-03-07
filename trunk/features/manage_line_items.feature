@@ -56,7 +56,7 @@ Feature: Manage line_items
     And I should see "ABC13"
     And I should not see "ABC12"
 
-  @selenium @wip
+  @selenium 
   Scenario: remove line item
     Given the following partners:
       | name | partner_code |
