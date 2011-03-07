@@ -1,11 +1,12 @@
 h1 
   = "Edit #{@creative.name}"
   >br
-
 % form_for @creative, :html => { :multipart => true} do |f|
   = render :partial => 'form'
   = render :partial => "pixels", :locals => { :view => "edit" }
   = submit_tag 'Save Edits'
+  
+= button_to "Delete Creative", {:action => "destroy", :id => @creative.id}, {:class => "delete_button", :confirm => "Are you sure you want to delete this creative?", :method => "delete"}
 
 div style="clear:both;"
   >br

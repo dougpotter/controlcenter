@@ -154,6 +154,11 @@ class CreativesController < ApplicationController
     @creative = Creative.find(params[:id])
   end
 
+  def destroy
+    @creative = Creative.find(params[:id]).destroy
+    redirect_to(new_creative_path, :notice => "creative deleted")
+  end
+
   def form_without_line_item
     @num = params[:creative_number]
     @creative = Creative.new

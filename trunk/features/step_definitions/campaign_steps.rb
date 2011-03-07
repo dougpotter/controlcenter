@@ -1,5 +1,10 @@
 Given /^the following campaigns:$/ do |campaigns|
-  Campaign.create!(campaigns.hashes)
+  for hash in campaigns.hashes
+    hash["line_item_id"] = LineItem.find_by_line_item_code(
+      hash.delete("line_item_code")
+    ).id
+    Campaign.create!(hash)
+  end
 end
 
 When /^I delete the (\d+)(?:st|nd|rd|th) campaign$/ do |pos|
@@ -16,10 +21,6 @@ end
 When /^I check sync checkbox "([^"]*)"$/ do |ais|
   field = "aises_for_sync_"
   check(field)
-end
-
-Given /^I visit new campaign page in my browser$/ do
-  visit("http://127.0.0.1:3000/campaigns/new")
 end
 
 Given /^the standard ais, partner, line item, audience, creative size setup exists$/ do
@@ -56,6 +57,14 @@ Given /^I fill in ad-hoc campaign information$/ do
     | Campaign Code | ANB6 |
     | S3 Location | bucket:/a/path/in/s3 |
     | Audience Code | CODA |
+  })
+end
+
+Given /^the standard ad-hoc campaign and associated entities exists$/ do
+  When "the standard ais, partner, line item, audience, creative size setup exists"
+  Given "the following campaigns:", table(%{
+    |   name   | campaign_code | line_item_code | 
+    |  a name  |     ACODE     |     ABC1       |
   })
 end
 

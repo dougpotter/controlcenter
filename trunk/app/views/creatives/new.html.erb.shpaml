@@ -5,8 +5,12 @@
 .notice
   = notice
 
+
 h1 | New Creative
 >br
+
+.notice
+  = @notice
 
 % form_for @creative, :html => { :multipart => true } do |f|
   = render :partial => 'form'

@@ -280,3 +280,8 @@ Factory.define :campaign_inventory_config do |c|
   c.ad_inventory_source_id { Factory(:ad_inventory_source) }
   c.campaign { Factory(:campaign) }
 end
+
+Factory.define :creative_inventory_config do |c|
+  c.creative_id { Factory(:creative) }
+  c.campaign_inventory_config_id { Factory(:campaign_inventory_config) }
+end

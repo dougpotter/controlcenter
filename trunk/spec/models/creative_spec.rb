@@ -76,6 +76,33 @@ describe Creative do
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
 
+  it "should delete free-standing (no associated line item or creative inventory" +
+    "configs) creative when destroyed" do
+    creative = Factory.create(:creative)
+
+    expect {
+      creative.destroy
+    }.to change{ Creative.all.count}.by(-1)
+  end
+
+  it "should delete any associated creative inventory configs when destroyed" do
+    creative = Factory.create(:creative)
+    Factory.create(:creative_inventory_config, :creative_id => creative.id)
+
+    expect {
+      creative.destroy
+    }.to change{ CreativeInventoryConfig.all.count}.by(-1)
+  end
+
+  it "should delete any associated relationships with line items when destroyed" do
+    creative = Factory.create(
+      :creative, 
+      :line_items => [ Factory.create(:line_item) ]
+    )
+
+    creative.destroy
+  end
+
   # a more thorough testing of this method exists in the specs for PixelGenerator
   describe "ae_pixels method" do
     fixtures :creatives,
@@ -139,7 +166,7 @@ describe Creative do
             CampaignInventoryConfig.first
           ).should be_false
         end
-      end
+        end
     end
 
     describe "configure method" do
@@ -155,7 +182,7 @@ describe Creative do
         Creative.first.configured?(caic).should be_false
         Creative.first.configure(caic)
         Creative.first.configured?(caic).should be_true
-      end
+        end
 
       it "should do nothing if creative is already configured" do
         caic = CampaignInventoryConfig.find(1)

@@ -38,6 +38,9 @@ module NavigationHelpers
     when /the edit line item page for ABC12/
       edit_line_item_path(LineItem.find_by_line_item_code("ABC12").id)
 
+    when /the edit creative page for ACODE/
+      edit_creative_path(Creative.find_by_creative_code("ACODE").id)
+
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #

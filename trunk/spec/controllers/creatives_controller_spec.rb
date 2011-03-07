@@ -101,4 +101,20 @@ describe CreativesController do
       assigns[:creatives].first.should == Creative.find(1)
     end
   end
+
+  describe "destroy" do
+
+    it "should assign removed creative to creatives" do
+      creative = Factory.create(:creative)
+      delete :destroy, :id => creative.id
+      assigns[:creative].should == creative
+    end
+
+    it "should remove proper creative from database" do
+      creative = Factory.create(:creative)
+      Creative.expects(:find).with(creative.id.to_s).
+        returns(mock("Creative", :destroy => self))
+      delete :destroy, :id => creative.id
+    end
+  end
 end
