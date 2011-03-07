@@ -2,6 +2,9 @@
 <script src="/javascripts/filter_by_partner.js" type="text/javascript"></script>
 <script src="/javascripts/routes.js" type="text/javascript"></script>
 
+.notice
+  = notice
+
 h1 | New Creative
 >br
 

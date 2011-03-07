@@ -35,6 +35,8 @@ when "selenium"
 
   After do
     DatabaseCleaner.strategy = :truncation
+    # removes any creatives uploaded during test process
+    FileUtils.rm_rf(File.join(RAILS_ROOT, "test-creatives"))
   end
 
 else
@@ -68,6 +70,11 @@ else
   # subsequent scenarios. If you do this, we recommend you create a Before
   # block that will explicitly put your database in a known state.
   Cucumber::Rails::World.use_transactional_fixtures = true
+
+  After do
+    # removes any creatives uploaded during test process
+    FileUtils.rm_rf(File.join(RAILS_ROOT, "test-creatives"))
+  end
 end
 
 # How to clean your database when transactions are turned off. See

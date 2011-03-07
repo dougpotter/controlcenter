@@ -74,7 +74,8 @@ class CreativesController < ApplicationController
       end
     else
       if @creative.save
-        redirect_to new_creative_path
+        redirect_to new_creative_path, :notice => "creative successfully created"
+        return
       else
         render :action => :new
         return

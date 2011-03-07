@@ -2,27 +2,27 @@
 <script src=/javascripts/creatives.js type=text/javascript></script>
 
 div class=dimension_input
-  label for='creative_code' | Creative Code:
+  label for='creative_creative_code' | Creative Code:
   >br
   = text_field('creative', 'creative_code')
 
 div class=dimension_input
-  label for='name' | Name:
+  label for='creative_name' | Name:
   >br
   = text_field('creative', 'name')
 
 div class=dimension_input
-  label for='media_type' | Media Type:
+  label for='creative_media_type' | Media Type:
   >br
   = text_field('creative', 'media_type')
 
 div class=dimension_input
-  label for='creative_size' | Creative Size:
+  label for='creative_creative_size' | Creative Size:
   >br
   = collection_select('creative', 'creative_size', @creative_sizes, :id, :height_width_string, :selected => @creative.creative_size_id)
 
 div class=dimension_input
-  label for='landing_page_url' | Landing Page URL:
+  label for='creative_landing_page_url' | Landing Page URL:
   >br
   = text_field('creative', 'landing_page_url', :size => 101)
 

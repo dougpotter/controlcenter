@@ -10,6 +10,9 @@ module NavigationHelpers
 
     when /the home\s?page/
       '/'
+    when /the new creative page/
+      new_creative_path
+
     when /the new creative_size page/
       new_creative_size_path
 
