@@ -9,6 +9,7 @@ describe "partners/new.html.erb" do
     partner = mock(
       "partner",
       :partner_code => "",
+      :id => 1,
       :name => ""
     )
     partner.expects(:class).times(4).returns(Partner)

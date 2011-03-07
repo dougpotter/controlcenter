@@ -7,6 +7,7 @@ describe "campaigns/new.html.erb" do
       "campaign",
       :line_item => line_item,
       :name => "campaign name",
+      :id => 1,
       :campaign_code => "ACODE"
     )
     adx = mock("adx")

@@ -87,3 +87,6 @@ end
 # Mongrel has a bug regarding cookie placement. This is part of the fix described 
 # here: https://rails.lighthouseapp.com/projects/8994/tickets/4690
 require File.join(File.dirname(File.expand_path(__FILE__)), 'mongrel')
+
+# to suppress deprecation warnings about Object#id in spec tests
+Object.send :undef_method, :id
