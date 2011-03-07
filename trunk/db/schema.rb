@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110301152550) do
+ActiveRecord::Schema.define(:version => 20110302185414) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -407,10 +407,11 @@ ActiveRecord::Schema.define(:version => 20110301152550) do
   add_index "semaphore_allocations", ["semaphore_resource_id"], :name => "index_semaphore_allocations_on_semaphore_resource_id"
 
   create_table "semaphore_resources", :force => true do |t|
-    t.string  "name",     :null => false
-    t.string  "location"
-    t.integer "capacity", :null => false
-    t.integer "usage"
+    t.string   "name",       :null => false
+    t.string   "location"
+    t.integer  "capacity",   :null => false
+    t.integer  "usage"
+    t.datetime "updated_at", :null => false
   end
 
   add_index "semaphore_resources", ["name", "location"], :name => "index_semaphore_resources_on_name_and_location"
