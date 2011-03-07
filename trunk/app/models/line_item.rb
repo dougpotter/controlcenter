@@ -14,7 +14,7 @@
 # Line Item is defined as a component of an insertion order which
 # specifies quantity and pricing of advertising to be delivered
 class LineItem < ActiveRecord::Base
-  has_many :campaigns
+  has_many :campaigns, :dependent => :destroy
   has_and_belongs_to_many :creatives
   belongs_to :partner
 

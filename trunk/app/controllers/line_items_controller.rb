@@ -28,4 +28,9 @@ class LineItemsController < ApplicationController
     @line_item = LineItem.find(params[:id])
     @partners = Partner.all
   end
+
+  def destroy
+    @line_item = LineItem.destroy(params[:id])
+    redirect_to new_line_item_path
+  end
 end

@@ -55,3 +55,19 @@ Feature: Manage line_items
     Then I should see "line item successfully updated"
     And I should see "ABC13"
     And I should not see "ABC12"
+
+  @selenium @wip
+  Scenario: remove line item
+    Given the following partners:
+      | name | partner_code |
+      | Ford |     11111    |
+    And the following line_items:
+      | name | line_item_code | start_time | end_time | partner_code |
+      | Ford Spring 2008 | ABC12 | February 1, 2010 | April 1, 2010 | 11111 |
+      | Ford Spring 2009 | ABC13 | February 1, 2011 | April 1, 2011 | 11111 |
+    And I am on the edit line item page for ABC12
+    When I press "Delete Line Item"
+    Then I should see a "Are you sure you want to delete this line item? All associated campaigns, creatives, ad inventory configurations, etc will also be delete." JS dialog
+    And I should see "ABC13"
+    And I should not see "ABC12"
+

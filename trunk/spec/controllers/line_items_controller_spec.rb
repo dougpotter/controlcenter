@@ -156,4 +156,42 @@ describe LineItemsController do
       end
     end
   end
+
+  context "destroy" do
+
+    before(:each) do
+      @line_item = Factory.create(:line_item)
+    end
+
+    def do_delete
+      delete :destroy, :id => @line_item.id
+    end
+
+    it "should delete a line line item when its id is passed in params[:id]" do
+      do_delete
+      response.should redirect_to(new_line_item_path)
+    end
+
+    it "should delete a line item with one creative-less campaign" do
+      @campaign = Factory.create(:campaign)
+      @campaign.line_item = @line_item
+      @campaign.save
+
+      expect {
+        do_delete
+      }.to change{ Campaign.all.count }.by(-1)
+    end
+
+    it "should delete a line item with associated creatives" do
+      pending "convert LineItem.has_and_belongs_to_many :creatives to has_many :through"
+      @creative = Factory.create(:creative)
+      @creative.line_items << @line_item
+      @creative.save
+
+      expect {
+        do_delete
+      }.to change{ Creative.all.count }.by(-1)
+    end
+
+  end
 end
