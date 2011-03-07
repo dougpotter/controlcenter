@@ -37,10 +37,12 @@ class CampaignsController < ApplicationController
       # deal with audience source
       @sync_params = {}
       if params[:audience][:audience_type] == "Ad-Hoc"
-        @sync_params["s3_xguid_list_prefix"] = params[:audience_source][:s3_location]
+        @sync_params["s3_xguid_list_prefix"] = 
+          params[:audience_source][:s3_location]
         @sync_params["partner_code"] = @campaign.partner.partner_code
         @sync_params["audience_code"] = params[:audience_source][:audience_code]
-        @sync_params["appnexus_segment_id"] = params[:sync_rules][:ApN][:apn_segment_id]
+        @sync_params["appnexus_segment_id"] = 
+          params[:sync_rules][:ApN][:apn_segment_id]
       elsif params[:audience][:audience_type] == "Retargeting"
         render :text => "retargeting audience not yet supported"
         return
