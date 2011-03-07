@@ -183,7 +183,6 @@ describe LineItemsController do
     end
 
     it "should delete a line item with associated creatives" do
-      pending "convert LineItem.has_and_belongs_to_many :creatives to has_many :through"
       @creative = Factory.create(:creative)
       @creative.line_items << @line_item
       @creative.save

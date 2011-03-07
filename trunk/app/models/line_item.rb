@@ -15,7 +15,8 @@
 # specifies quantity and pricing of advertising to be delivered
 class LineItem < ActiveRecord::Base
   has_many :campaigns, :dependent => :destroy
-  has_and_belongs_to_many :creatives
+  has_many :creatives_line_items
+  has_many :creatives, :through => :creatives_line_items, :dependent => :destroy
   belongs_to :partner
 
   validates_presence_of :partner_id
