@@ -1,6 +1,15 @@
 require 'spec_helper'
 
 describe CampaignsController do
+
+  context "destroy" do
+    it "should destroy the campaign with id passed in params[:id]" do
+      @campaign = Factory.create(:campaign)
+      Campaign.expects(:destroy).with(@campaign.id.to_s).returns(@campaign)
+      delete :destroy, :id => @campaign.id
+    end
+  end
+
   context "create" do
 
     context "ad-hoc campaign" do

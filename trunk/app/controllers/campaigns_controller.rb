@@ -94,4 +94,8 @@ class CampaignsController < ApplicationController
       )
     end
   end
+
+  def destroy
+    @campaign = Campaign.destroy(params[:id])
+  end
 end
