@@ -61,3 +61,13 @@ Feature: Manage campaigns
     Then I should see "campaign successfully created"
     And I should see "ANB6"
     And I should see "A New Campaign for Ford"
+
+  @selenium @wip
+  Scenario: delete campaign
+    Given the standard ad-hoc campaign and associated entities exist
+    And I am on the edit campaign page for ACODE
+    When I press "Delete Campaign"
+    Then I should see a "Are you sure you want to delete this campaign? All creative associations (but not the actual creatives), ais associations (but not the ais), and audience associations (but not the audience) will also be deleted." JS dialog
+    And I should not see "Ford Campaign"
+    And I should not see "ACODE"
+

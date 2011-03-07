@@ -60,11 +60,11 @@ Given /^I fill in ad-hoc campaign information$/ do
   })
 end
 
-Given /^the standard ad-hoc campaign and associated entities exists$/ do
+Given /^the standard ad-hoc campaign and associated entities exist$/ do
   When "the standard ais, partner, line item, audience, creative size setup exists"
   Given "the following campaigns:", table(%{
-    |   name   | campaign_code | line_item_code | 
-    |  a name  |     ACODE     |     ABC1       |
+    |      name      | campaign_code | line_item_code | 
+    |  Ford Campaign |     ACODE     |     ABC1       |
   })
 end
 

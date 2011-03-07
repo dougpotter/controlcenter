@@ -41,6 +41,9 @@ module NavigationHelpers
     when /the edit creative page for ACODE/
       edit_creative_path(Creative.find_by_creative_code("ACODE").id)
 
+    when /the edit campaign page for ACODE/
+      edit_campaign_path(Campaign.find_by_campaign_code("ACODE").id)
+
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #
