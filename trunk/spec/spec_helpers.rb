@@ -19,3 +19,10 @@ module ActiveRecordErrorParsingHelper
     }.empty?
   end
 end
+
+module ViewHelperMethodHelper
+  # returns a basic set of selection option
+  def default_ofcfs_result
+    "<option value=\"an option\"></option>"
+  end
+end
