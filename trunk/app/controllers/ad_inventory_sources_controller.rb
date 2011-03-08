@@ -29,4 +29,8 @@ class AdInventorySourcesController < ApplicationController
       render :action => :edit
     end
   end
+
+  def destroy 
+    @ais = AdInventorySource.destroy(params[:id])
+  end
 end

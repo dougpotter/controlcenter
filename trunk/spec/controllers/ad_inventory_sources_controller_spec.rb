@@ -55,3 +55,11 @@ describe AdInventorySourcesController, "create with invalid attributes" do
     response.should render_template('new')
   end
 end
+
+describe AdInventorySourcesController, "destroy" do
+  it "should delete ais with id passed in params[:id]" do
+    @ais = Factory.create(:ad_inventory_source)
+    AdInventorySource.expects(:destroy).with(@ais.id.to_s).returns(@ais)
+    delete :destroy, :id => @ais.id
+  end
+end
