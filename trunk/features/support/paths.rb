@@ -34,7 +34,6 @@ module NavigationHelpers
     when /the edit ad_inventory_source page for AdX/
       edit_ad_inventory_source_path(AdInventorySource.find_by_ais_code("AdX").id)
 
-
     when /the edit line item page for ABC12/
       edit_line_item_path(LineItem.find_by_line_item_code("ABC12").id)
 
