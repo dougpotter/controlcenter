@@ -17,7 +17,7 @@ describe CampaignInventoryConfig do
     }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
-  it "should raild to create a duplicate (db test)" do
+  it "should fail to create a duplicate (db test)" do
     cic_one = Factory.create(:campaign_inventory_config)
     lambda {
       cic_two = Factory.build(:campaign_inventory_config, 
@@ -28,5 +28,17 @@ describe CampaignInventoryConfig do
       )
       cic_two.save(false)
     }.should raise_error(ActiveRecord::StatementInvalid)
+  end
+
+  it "should delete creative associations when destroyed" do
+    @campaign_ic = Factory.create(:campaign_inventory_config)
+    @creative_ic = Factory.create(
+      :creative_inventory_config, 
+      :campaign_inventory_config_id => @campaign_ic.id
+    )
+    
+    expect {
+      @campaign_ic.destroy
+    }.to change { CreativeInventoryConfig.all.count }.by(-1)
   end
 end
