@@ -42,5 +42,6 @@ class PartnersController < ApplicationController
 
   def destroy
     @partner = Partner.destroy(params[:id])
+    redirect_to(new_partner_path, :notice => "advertiser deleted")
   end
 end

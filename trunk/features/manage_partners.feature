@@ -21,3 +21,16 @@ Feature: Manage partners
     Then I should see "Edit Advertiser"
     And the "Advertiser Code" field should contain "123432"
     And the "Advertiser Name" field should contain "Coca Cola"
+
+  @selenium @wip
+  Scenario: Remove partner 
+    Given the following partners:
+      |   name    | partner_code |
+      | Coca Cola |    123432    |
+    And I am on the edit partner page for 123432
+    When I press "Delete Advertiser"
+    Then I should see a "Are you sure you want to delete this advertiser?" JS dialog
+    And I should see "advertiser deleted"
+    And I should see "New Advertiser"
+    And I should not see "123432"
+    And I should not see "Coca Cola"

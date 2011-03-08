@@ -67,4 +67,10 @@ describe PartnersController, "destroy" do
     Partner.expects(:destroy).with(@partner.id.to_s).returns(@partner)
     delete :destroy, :id => @partner.id
   end
+
+  it "should redirect to new partner page" do
+    @partner = Factory.create(:partner)
+    delete :destroy, :id => @partner.id
+    response.should redirect_to(new_partner_url)
+  end
 end
