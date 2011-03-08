@@ -32,5 +32,6 @@ class AdInventorySourcesController < ApplicationController
 
   def destroy 
     @ais = AdInventorySource.destroy(params[:id])
+    redirect_to(new_ad_inventory_source_path, :notice => "ad inventory source deleted")
   end
 end

@@ -62,4 +62,10 @@ describe AdInventorySourcesController, "destroy" do
     AdInventorySource.expects(:destroy).with(@ais.id.to_s).returns(@ais)
     delete :destroy, :id => @ais.id
   end
+
+  it "should redirect to new ad inventory source page" do
+    @ais = Factory.create(:ad_inventory_source)
+    delete :destroy, :id => @ais.id
+    response.should redirect_to(new_ad_inventory_source_url)
+  end
 end
