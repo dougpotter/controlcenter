@@ -12,7 +12,7 @@
 # advertising inventory. Examples as of today (08-03-2010) are Ad
 # Exchange, Ad Conductor, and Open Exchange
 class AdInventorySource < ActiveRecord::Base
-  has_many :campaign_inventory_configs
+  has_many :campaign_inventory_configs, :dependent => :delete_all
   has_many :campaigns, :through => :campaign_inventory_configs
 
   has_many :click_counts

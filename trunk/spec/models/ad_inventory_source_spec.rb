@@ -49,4 +49,14 @@ describe AdInventorySource do
       a.save(false)
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
+
+  it "should delete associations with campaigns when destroyed" do
+    @ais = Factory.create(:ad_inventory_source)
+    @ais.campaigns << Factory.create(:campaign)
+    @ais.save
+
+    expect {
+      @ais.destroy
+    }.to change { CampaignInventoryConfig.all.count }.by(-1)
+  end
 end
