@@ -70,4 +70,5 @@ Feature: Manage campaigns
     Then I should see a "Are you sure you want to delete this campaign? All creative associations (but not the actual creatives), ais associations (but not the ais), and audience associations (but not the audience) will also be deleted." JS dialog
     And I should not see "Ford Campaign"
     And I should not see "ACODE"
+    And I should see "campaign deleted"
 

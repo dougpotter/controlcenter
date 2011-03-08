@@ -8,6 +8,12 @@ describe CampaignsController do
       Campaign.expects(:destroy).with(@campaign.id.to_s).returns(@campaign)
       delete :destroy, :id => @campaign.id
     end
+
+    it "should redirect to campaign management index page" do
+      @campaign = Factory.create(:campaign)
+      delete :destroy, :id => @campaign.id
+      response.should redirect_to(campaign_management_index_url)
+    end
   end
 
   context "create" do
