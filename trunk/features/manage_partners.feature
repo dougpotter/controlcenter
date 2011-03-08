@@ -22,7 +22,7 @@ Feature: Manage partners
     And the "Advertiser Code" field should contain "123432"
     And the "Advertiser Name" field should contain "Coca Cola"
 
-  @selenium @wip
+  @selenium 
   Scenario: Remove partner 
     Given the following partners:
       |   name    | partner_code |
