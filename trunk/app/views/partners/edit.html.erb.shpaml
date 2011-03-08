@@ -1,11 +1,11 @@
-= error_messages_for :partner
-
 h1 | Edit Advertiser
 >br
 
 % form_for @partner do |f|
   = render :partial => 'form'
   = submit_tag 'Save Edits'
+
+= button_to "Delete Advertiser", { :action => "destroy", :id => @partner.id }, { :class => "delete_button", :confirm => "Are you sure you want to delete this advertiser?", :method => "delete" }
 
 div style="clear:both;"
   >br
