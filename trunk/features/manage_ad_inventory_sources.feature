@@ -47,3 +47,15 @@ Feature: Manage AISes
     When I press "Save Edits"
     Then I should see "Google successfully updated"
     And I should not see "Google Ad Exchange"
+
+  @selenium @wip
+  Scenario: Delete AIS
+    Given the following ad_inventory_sources:
+      |         name          | ais_code |
+      |   Google Ad Exchange  |   AdX    |
+      |   Burst Ad Conductor  |   AdC    |
+    And I am on the edit ad_inventory_source page for AdX
+    When I press "Delete AIS"
+    Then I should see a "Are you sure you want to delete this AIS? All associations with campaigns and creative configurations will also be deleted" JS dialog
+    And I should see "ad inventory source deleted"
+    And I should not see "AdX"
