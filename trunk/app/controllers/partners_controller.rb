@@ -40,4 +40,7 @@ class PartnersController < ApplicationController
     end
   end
 
+  def destroy
+    @partner = Partner.destroy(params[:id])
+  end
 end

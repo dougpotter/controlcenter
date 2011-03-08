@@ -59,3 +59,12 @@ describe PartnersController, "create with invalid attributes" do
     response.should be_redirect
   end
 end
+
+describe PartnersController, "destroy" do
+
+  it "should call destroy on the partner whose id is passed in params[:id]" do
+    @partner = Factory.create(:partner)
+    Partner.expects(:destroy).with(@partner.id.to_s).returns(@partner)
+    delete :destroy, :id => @partner.id
+  end
+end
