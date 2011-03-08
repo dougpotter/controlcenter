@@ -62,7 +62,7 @@ Feature: Manage campaigns
     And I should see "ANB6"
     And I should see "A New Campaign for Ford"
 
-  @selenium @wip
+  @selenium 
   Scenario: delete campaign
     Given the standard ad-hoc campaign and associated entities exist
     And I am on the edit campaign page for ACODE
