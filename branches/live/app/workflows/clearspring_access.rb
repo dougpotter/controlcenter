@@ -35,7 +35,9 @@ module ClearspringAccess
     end
     
     def get_source_size(url)
-      @http_client.get_url_content_length(url)
+      page_text = retry_network_errors(@network_error_retry_options) do
+        @http_client.get_url_content_length(url)
+      end
     end
     
     # -----
