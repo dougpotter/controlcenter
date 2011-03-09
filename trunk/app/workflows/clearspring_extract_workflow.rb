@@ -113,6 +113,8 @@ class ClearspringExtractWorkflow < Workflow::ExtractBase
   # Readiness heuristic - for now we consider a file to be fully uploaded
   # if it was modified over 2 hours ago.
   def fully_uploaded?(file_url)
-    @http_client.get_url_time(file_url) < Time.now - 2.hours
+    retry_network_errors(@network_error_retry_options) do
+      @http_client.get_url_time(file_url) < Time.now - 2.hours
+    end
   end
 end
