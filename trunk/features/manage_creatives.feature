@@ -44,4 +44,18 @@ Feature: Manage creatives
     Then I should see a "Are you sure you want to delete this creative?" JS dialog
     And I should see "creative deleted"
     And I should not see "aname"
-    
+
+  Scenario: Show creative
+    Given the standard ad-hoc campaign and associated entities exist
+    And the following creatives:
+      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |  campaign_code |
+      |     ACODE     |  aname |   flash    |    Medium     | http://www.what.com |      ACODE |
+      |     BCODE     |  bname |   flash    |    Medium     | http://www.what.com |      ACODE |
+    And creative "ACODE" is associated with campaign "ACODE"
+    And I am on the new creative page
+    When I follow "ACODE"
+    Then I should see "Creative Name: aname"
+    And I should see "Creative Code: ACODE"
+    And I should see "Media Type: flash"
+    And I should see "Size: 250 x 300"
+    And I should see "Campaigns: ACODE - Ford Campaign"

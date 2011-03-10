@@ -22,7 +22,8 @@ describe "creatives/show.html.erb" do
     campaign = mock(
       "campaign",
       :name => "campaign name",
-      :campaign_inventory_configs => [ caic ]
+      :campaign_inventory_configs => [ caic ],
+      :campaign_code_and_description => "ACODE - description"
     )
     creative = mock(
       "creative",
@@ -31,9 +32,9 @@ describe "creatives/show.html.erb" do
       :creative_code => "ACODE",
       :media_type => "type_of_media",
       :creative_size => creative_size,
-      :campaigns => [ campaign ],
       :configured? => true
     )
+    creative.expects(:campaigns).twice.returns([ campaign])
     creative.expects(:ae_pixels).times(3).returns(
       "http://pixel", 
       "http://pixel",

@@ -15,6 +15,12 @@
   p
     Size:
     = @creative.creative_size.height_width_string
+  p
+    Campaigns:
+    >br
+    <% for campaign in @creative.campaigns %>
+    <%= campaign.campaign_code_and_description + "</br>" %>
+    <% end %>
 
 .pixels_for_creative
   h1 | Pixels

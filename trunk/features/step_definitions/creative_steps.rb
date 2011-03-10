@@ -30,3 +30,9 @@ end
 Then /^I should see a "([^"]*)" JS dialog$/ do |message|
   selenium.confirmation.should eql(message)
 end
+
+Given /^creative "([^"]*)" is associated with campaign "([^"]*)"$/ do |creative_code, campaign_code|
+  @creative = Creative.find_by_creative_code(creative_code)
+  @creative.campaigns << Campaign.find_by_campaign_code(campaign_code)
+  @creative.save
+end
