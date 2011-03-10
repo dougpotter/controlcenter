@@ -135,18 +135,20 @@ class CreativesController < ApplicationController
     params[:creative][:campaigns] = @campaigns
     params[:creative][:creative_size] = @creative_size
 
-    params[:campaign_inventory_config].each do |caic_id,configured|
-      if configured == "1"
-        @creative.configure(CampaignInventoryConfig.find(caic_id))
-      else
-        @creative.unconfigure(CampaignInventoryConfig.find(caic_id))
-      end
-    end    
+    if params[:campaign_inventory_config]
+      params[:campaign_inventory_config].each do |caic_id,configured|
+        if configured == "1"
+          @creative.configure(CampaignInventoryConfig.find(caic_id))
+        else
+          @creative.unconfigure(CampaignInventoryConfig.find(caic_id))
+        end
+      end    
+    end
 
     if @creative.update_attributes(params[:creative])
-      redirect_to :action => :new
+      redirect_to(new_creative_path, :notice => "creative successfully updated")
     else
-      redirect_to :action => :edit
+      redirect_to(edit_creative_path, :notice => "something's wrong")
     end
   end
 

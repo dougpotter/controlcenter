@@ -59,3 +59,16 @@ Feature: Manage creatives
     And I should see "Media Type: flash"
     And I should see "Size: 250 x 300"
     And I should see "Campaigns: ACODE - Ford Campaign"
+
+  Scenario: update creative
+    Given the standard ad-hoc campaign and associated entities exist
+    And the following creatives:
+      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |  campaign_code |
+      |     ACODE     |  aname |   flash    |    Medium     | http://www.what.com |      ACODE |
+      |     BCODE     |  bname |   flash    |    Medium     | http://www.what.com |      ACODE |
+    And creative "ACODE" is associated with campaign "ACODE"
+    And I am on the edit creative page for ACODE
+    And I fill in "Landing Page URL" with "http://google.com"
+    When I press "Save Edits"
+    Then I should see "creative successfully updated"
+    And I should see "New Creative"

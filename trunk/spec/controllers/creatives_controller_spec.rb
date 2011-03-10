@@ -117,4 +117,20 @@ describe CreativesController do
       delete :destroy, :id => creative.id
     end
   end
+
+  describe "update" do
+    it "should redirect to new creative page" do
+      put :update,
+        :id => "1",
+        :creative => { 
+          :creative_size => "1", 
+          :name => "name", 
+          :media_type => "flash", 
+          :creative_code => "ACODE", 
+          :campaigns => "1" 
+          }
+
+      response.should redirect_to(new_creative_url)
+    end
+  end
 end
