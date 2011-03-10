@@ -17,6 +17,21 @@ Feature: Manage creatives
     Then I should see "creative successfully created"
     And I should see "New Creative"
 
+  Scenario: create a new creative with a campaign
+    Given the standard ad-hoc campaign and associated entities exist
+    And I am on the new creative page
+    And I fill in the following:
+      | Creative Code    | ACODE                        |   
+      | Name             | fall whatever                |   
+      | Media Type       | flash                        |   
+      | Landing Page URL | http://www.xcdn.com/whatever |
+    And I select "90 x 728" from "Creative Size"
+    And I attach the image "logo.png" to "creative_image"
+    And I select "ACODE - Ford Campaign" from "Campaign"
+    When I press "Create Creative"
+    Then I should see "creative successfully created"
+    And I should see "New Creative"
+
   @selenium 
   Scenario: Remove a creative
     Given the standard ad-hoc campaign and associated entities exist

@@ -53,9 +53,9 @@ class CreativesController < ApplicationController
     @creative.creative_size_id = params[:creative].delete(:creative_size)
 
     if !params[:creative][:campaigns].blank?
-      campaign_ids = params[:creative][:campaigns]
-      for campaign_id in campaign_ids
-        campaign = Campaign.find(campaign_id)
+      params[:creative][:campaigns] = params[:creative][:campaigns].to_a
+      params[:creative][:campaigns].size.times do
+        campaign = Campaign.find(params[:creative][:campaigns].pop)
         @creative.campaigns << campaign
       end
     end

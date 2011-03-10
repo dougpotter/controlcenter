@@ -28,7 +28,7 @@ div class=dimension_input
 
   >br
 div class=dimension_input
-  label for='creative_campaign' | Campaign:
+  label for='creative_campaigns' | Campaign:
   >br
   = select('creative', 'campaigns', none_option + options_from_collection_for_select(@campaigns, :id, :campaign_code_and_description, :selected => @creative.campaigns.map { |c| c.id }))
 
