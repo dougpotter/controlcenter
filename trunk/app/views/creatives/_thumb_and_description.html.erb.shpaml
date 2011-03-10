@@ -1,3 +1,4 @@
-= image_tag(@creative.image.url, :width => 300)
+% creative = @creative if @creative
+= image_tag(creative.image.url, :width => 300)
 p 
-  = @creative.creative_code_and_name
+  = creative.creative_code_and_name

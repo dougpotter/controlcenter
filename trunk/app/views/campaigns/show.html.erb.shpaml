@@ -15,5 +15,11 @@ h1 | Campaign Information
   p
     Campaign Code: <%= @campaign.campaign_code %>
 
+h1 | Creatives
+
+.creative_thumbs
+  % for creative in @campaign.creatives
+    = render :partial => "/creatives/thumb_and_description", :locals => { :creative => creative }
+
 div style="clear: both;"
   >br
