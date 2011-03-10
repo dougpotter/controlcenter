@@ -51,10 +51,10 @@ class Creative < ActiveRecord::Base
   end
 
   def creative_code_and_name
-    if description == ""
+    if self.name == ""
       creative_code
     else
-      "#{creative_code} - #{description}"
+      "#{creative_code} - #{self.name}"
     end
   end
 
