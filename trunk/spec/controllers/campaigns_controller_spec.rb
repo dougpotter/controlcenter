@@ -177,4 +177,11 @@ describe CampaignsController do
       end
     end
   end
+
+  describe "show" do
+    it "should find the creative passed in params[:id]" do
+      Campaign.expects(:find).with("1")
+      get :show, :id => 1
+    end
+  end
 end

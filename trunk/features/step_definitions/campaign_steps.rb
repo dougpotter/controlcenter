@@ -68,6 +68,12 @@ Given /^the standard ad-hoc campaign and associated entities exist$/ do
   })
 end
 
+Given /^campaign "([^"]*)" is associated with audience "([^"]*)"$/ do |campaign_code, audience_code|
+  @campaign = Campaign.find_by_campaign_code(campaign_code)
+  @campaign.audience = Audience.find_by_audience_code(audience_code)
+  @campaign.save
+end
+
 def english_to_integer(english)
   # NOTE: 0 indexed
   case english

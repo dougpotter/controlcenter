@@ -72,3 +72,24 @@ Feature: Manage campaigns
     And I should not see "ACODE"
     And I should see "campaign deleted"
 
+  Scenario: show campaign
+    Given the standard ad-hoc campaign and associated entities exist
+    And campaign "ACODE" is associated with audience "HNXT"
+    When I am on the show campaign page for ACODE
+    Then I should see "ACODE - Ford Campaign"
+
+    And I should see "Campaign Information"
+    And I should see "Line Item: Ford Spring"
+    And I should see "Audience Type: Ad-Hoc"
+    And I should see "Audience: HNXT - Ford Connected"
+    And I should see "Campaign Name: Ford Campaign"
+    And I should see "Campaign Code: ACODE"
+
+    And I should see "Creatives"
+    And I should see the associated creatives for campaign "ACODE"
+
+    And I should see "Configured Ad Inventory Sources"
+    And I should see the configured ad inventory sources for "ACODE"
+
+    And I should see "Edit Campaign"
+    

@@ -1,0 +1,19 @@
+h1 
+  <%= @campaign.campaign_code_and_description %>
+
+h1 | Campaign Information
+
+.campaign_description
+  p
+    Line Item: <%= @campaign.line_item.name %>
+  p
+    Audience Type: <%= @campaign.campaign_type %>
+  p
+    Audience: <%= @campaign.audience.audience_code_and_description if @campaign.audience %>
+  p
+    Campaign Name: <%= @campaign.name %>
+  p
+    Campaign Code: <%= @campaign.campaign_code %>
+
+div style="clear: both;"
+  >br

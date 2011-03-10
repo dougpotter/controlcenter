@@ -99,4 +99,8 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.destroy(params[:id])
     redirect_to(campaign_management_index_path, :notice => "campaign deleted")
   end
+
+  def show
+    @campaign = Campaign.find(params[:id])
+  end
 end
