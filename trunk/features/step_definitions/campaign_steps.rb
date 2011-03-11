@@ -63,8 +63,8 @@ end
 Given /^the standard ad-hoc campaign and associated entities exist$/ do
   When "the standard ais, partner, line item, audience, creative size setup exists"
   Given "the following campaigns:", table(%{
-    |      name      | campaign_code | line_item_code | 
-    |  Ford Campaign |     ACODE     |     ABC1       |
+    |      name      | campaign_code | line_item_code | campaign_type |
+    |  Ford Campaign |     ACODE     |     ABC1       |    Ad-Hoc     |
   })
 end
 
@@ -136,3 +136,25 @@ Given /^I attach file "([^"]*)" to "([^"]*)" in selenium mode$/ do |file_name, f
   fill_in(field, :with => path)
 end
 
+Then /^I should see the associated creatives for campaign "([^"]*)"$/ do |campaign_code|
+  for creative in Campaign.find_by_campaign_code(campaign_code).creatives
+    Then "I should see \"BCODE - bname\""
+    Then "I should see \"CCODE - cname\""
+  end
+end
+
+Given /^campaign "([^"]*)" is associated with ais "([^"]*)"$/ do |campaign_code, ais_code|
+  campaign = Campaign.find_by_campaign_code(campaign_code)
+  ais = AdInventorySource.find_by_ais_code(ais_code)
+  cic = CampaignInventoryConfig.new({
+    :ad_inventory_source_id => ais.id,
+    :campaign_id => campaign.id
+  })
+  cic.save
+end
+
+Then /^I should see the configured ad inventory sources for "([^"]*)"$/ do |campaign_code|
+  for ais in Campaign.find_by_campaign_code(campaign_code).aises do
+    Then "I should see \"#{ais.name}\""
+  end
+end

@@ -74,7 +74,12 @@ Feature: Manage campaigns
 
   Scenario: show campaign
     Given the standard ad-hoc campaign and associated entities exist
+    And the following creatives are associated with campaign "ACODE":
+      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |
+      |     BCODE     |  bname |   flash    |         Medium            | http://www.what.com |
+      |     CCODE     |  cname |   flash    |         Medium            | http://www.what.com |
     And campaign "ACODE" is associated with audience "HNXT"
+    And campaign "ACODE" is associated with ais "AdX"
     When I am on the show campaign page for ACODE
     Then I should see "ACODE - Ford Campaign"
 

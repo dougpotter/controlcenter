@@ -26,6 +26,14 @@ describe "/campaigns/show.html.erb" do
       "Audience",
       :audience_code_and_description => "AUDC - desc"
     )
+    @ais1 = stub_everything(
+      "AIS1",
+      :name => "Google AdX"
+    )
+    @ais2 = stub_everything(
+      "AIS2",
+      :name => "Burst OX"
+    )
     @campaign = stub_everything(
       "Campaign",
       :campaign_code_and_description => "ABC - description",
@@ -35,7 +43,8 @@ describe "/campaigns/show.html.erb" do
       :name => "campaign name",
       :campaign_code => "CACO",
       :campaign_type => "Ad-Hoc",
-      :creatives => [ @creative1, @creative2 ]
+      :creatives => [ @creative1, @creative2 ],
+      :aises => [ @ais1, @ais2]
     )
     assigns[:campaign] = @campaign
   end
@@ -72,5 +81,18 @@ describe "/campaigns/show.html.erb" do
       with_tag("img[src=\"/path/to/creative/1\"]")
       with_tag("img[src=\"/path/to/creative/2\"]")
     end
+  end
+
+  it "should contain list of configured AISes with heading \"Configured Ad" +
+    " Inventory Sources\"" do
+    render
+    response.should have_tag("h1", "Configured Ad Inventory Sources")
+    response.should have_tag("p", "Google AdX")
+    response.should have_tag("p", "Burst OX")
+    end
+
+  it "should contain a link to edit the campaign" do
+    render
+    response.should have_tag("a", "Edit Campaign")
   end
 end

@@ -35,10 +35,10 @@ Feature: Manage creatives
   @selenium 
   Scenario: Remove a creative
     Given the standard ad-hoc campaign and associated entities exist
-    And the following creatives:
-      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |  campaign_code |
-      |     ACODE     |  aname |   flash    |    Medium     | http://www.what.com |      ACODE |
-      |     BCODE     |  bname |   flash    |    Medium     | http://www.what.com |      ACODE |
+    And the following creatives are associated with campaign "ACODE":
+      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |
+      |     ACODE     |  aname |   flash    |        Medium             | http://www.what.com |
+      |     BCODE     |  bname |   flash    |        Medium             | http://www.what.com |
     And I am on the edit creative page for ACODE
     When I press "Delete Creative"
     Then I should see a "Are you sure you want to delete this creative?" JS dialog
@@ -47,10 +47,10 @@ Feature: Manage creatives
 
   Scenario: Show creative
     Given the standard ad-hoc campaign and associated entities exist
-    And the following creatives:
-      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |  campaign_code |
-      |     ACODE     |  aname |   flash    |    Medium     | http://www.what.com |      ACODE |
-      |     BCODE     |  bname |   flash    |    Medium     | http://www.what.com |      ACODE |
+    And the following creatives are associated with campaign "ACODE":
+      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |
+      |     ACODE     |  aname |   flash    |         Medium            | http://www.what.com |
+      |     BCODE     |  bname |   flash    |         Medium            | http://www.what.com |
     And creative "ACODE" is associated with campaign "ACODE"
     And I am on the new creative page
     When I follow "ACODE"
@@ -62,10 +62,10 @@ Feature: Manage creatives
 
   Scenario: update creative
     Given the standard ad-hoc campaign and associated entities exist
-    And the following creatives:
-      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |  campaign_code |
-      |     ACODE     |  aname |   flash    |    Medium     | http://www.what.com |      ACODE |
-      |     BCODE     |  bname |   flash    |    Medium     | http://www.what.com |      ACODE |
+    And the following creatives are associated with campaign "ACODE":
+      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |
+      |     ACODE     |  aname |   flash    |         Medium            | http://www.what.com |
+      |     BCODE     |  bname |   flash    |         Medium            | http://www.what.com |
     And creative "ACODE" is associated with campaign "ACODE"
     And I am on the edit creative page for ACODE
     And I fill in "Landing Page URL" with "http://google.com"

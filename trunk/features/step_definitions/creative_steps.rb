@@ -1,12 +1,23 @@
 Given /^the following creatives:$/ do |creatives|
   for hash in creatives.hashes
-    campaign = Campaign.find_by_campaign_code(hash.delete("campaign_code"))
-    hash["creative_size_id"] = CreativeSize.find_by_common_name(
-      hash.delete("creative_size_common_name")
-    ).id
     creative = Creative.new(hash)
-    creative.campaigns << campaign
     creative.save
+  end
+end
+
+Given /^the following creatives are associated with campaign "([^"]*)":$/ do |campaign_code, creatives|
+  campaign = Campaign.find_by_campaign_code(campaign_code)
+  line_item = campaign.line_item
+  if line_item && campaign
+    for hash in creatives.hashes
+      hash["creative_size_id"] = CreativeSize.find_by_common_name(
+        hash.delete("creative_size_common_name")
+      ).id
+      creative = Creative.new(hash)
+      creative.campaigns << campaign
+      creative.line_items << line_item
+      creative.save
+    end
   end
 end
 

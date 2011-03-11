@@ -55,6 +55,13 @@ class Campaign < ActiveRecord::Base
     line_item.partner
   end
 
+  def aises
+    AdInventorySource.all(
+      :joins => { :campaign_inventory_configs => :campaign },
+      :conditions => { :campaigns => { :id => self.id } }
+    )
+  end
+
   class << self
     def generate_campaign_code
       CodeGenerator.generate_unique_code(
