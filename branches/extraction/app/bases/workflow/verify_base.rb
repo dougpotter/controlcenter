@@ -59,7 +59,7 @@ module Workflow
         
         ok = false
         if params[:trust_recorded]
-          data_provider_file = DataProviderFile.find_by_url(url)
+          data_provider_file = channel.data_provider_files.find_by_url(url)
           if data_provider_file && data_provider_file.status == DataProviderFile::VERIFIED
             have << bucket_path
             ok = true
