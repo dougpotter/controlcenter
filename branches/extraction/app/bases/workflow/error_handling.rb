@@ -26,7 +26,8 @@ module Workflow
           end
           
           if index == options[:retry_count]
-            raise
+            e.message += " (after #{options[:retry_count]} retries)"
+            raise e
           else
             if extra_callback
               extra_callback.call(e)
