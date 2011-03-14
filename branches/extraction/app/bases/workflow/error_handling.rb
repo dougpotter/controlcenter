@@ -48,7 +48,9 @@ module Workflow
     def retry_aws_errors(options)
       callback = lambda do |exception|
         http_code = exception.http_code.to_i
-        if http_code < 500 || http_code >= 600
+        if http_code == 403 && exception.include?(/^RequestTimeTooSkewed:/)
+          # retry
+        elsif http_code < 500 || http_code >= 600
           # only retry 5xx errors
           raise
         end
