@@ -292,8 +292,8 @@ Factory.define :audience_source do |a|
     a.load_status "pending"
     a.sequence(:beacon_load_id) { |i| "AB#{i}LKEWMW9" }
   else
-    r.referrer_regex "a\.*regex"
-    r.request_regex "another\.*regex"
+    a.referrer_regex "a\.*regex"
+    a.request_regex "another\.*regex"
   end
 end
 
