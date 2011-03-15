@@ -43,6 +43,9 @@ module NavigationHelpers
     when /the edit campaign page for ACODE/
       edit_campaign_path(Campaign.find_by_campaign_code("ACODE").id)
 
+    when /the show campaign page for ANB6/
+      campaign_path(Campaign.find_by_campaign_code("ANB6").id)
+
     when /the show campaign page for ACODE/
       campaign_path(Campaign.find_by_campaign_code("ACODE").id)
 

@@ -56,7 +56,7 @@ Given /^I fill in ad-hoc campaign information$/ do
     | Campaign Name | A New Campaign for Ford |
     | Campaign Code | ANB6 |
     | S3 Location | bucket:/a/path/in/s3 |
-    | Audience Code | CODA |
+    | Audience Code | HNXT |
   })
 end
 

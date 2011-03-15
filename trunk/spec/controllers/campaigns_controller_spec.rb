@@ -38,7 +38,11 @@ describe CampaignsController do
           context "with valid attributes" do
             before(:each) do
               @partner = mock("Partner")
-              @campaign = mock("Campaign", :save => true)
+              @campaign = mock(
+                "Campaign", 
+                :update_attributes => true,
+                :save => true
+              )
               @line_item = mock("Line Item")
             end
 
@@ -51,6 +55,19 @@ describe CampaignsController do
               }).returns(@campaign)
               do_create
               assigns(:campaign).should == @campaign
+            end
+
+            it "should associate audience with campaign" do
+              LineItem.expects(:find).with("1").returns(@line_item)
+              Campaign.expects(:new).with({
+                "name" => "A New Campaign",
+                "campaign_code" => "ACODE",
+                "line_item" => @line_item
+              }).returns(@campaign)
+              @audience = stub_everything("Audience")
+              Audience.expects(:find_by_audience_code).with("AB17").
+                returns(@audience)
+              do_create
             end
 
             it "should save @campaign" do
@@ -77,7 +94,10 @@ describe CampaignsController do
 
           context "with invalid attributes" do
             before(:each) do
-              @campaign = mock("Campaign", :save => false) 
+              @campaign = mock(
+                "Campaign", 
+                :save => false
+              ) 
               @line_item = mock("Line Item")
             end
 
@@ -122,7 +142,12 @@ describe CampaignsController do
           context "with valid attributes" do
             before(:each) do
               @partner = mock("Partner", :partner_code => "ACODE") 
-              @campaign = mock("Campaign", :partner => @partner, :save => true) 
+              @campaign = mock(
+                "Campaign", 
+                :update_attributes => true,
+                :partner => @partner, 
+                :save => true
+              ) 
               @line_item = mock("Line Item")
             end
 
@@ -156,7 +181,12 @@ describe CampaignsController do
           context "with invalid apn sync params" do
             before(:each) do
               @partner = mock("Partner", :partner_code => "ACODE") 
-              @campaign = mock("Campaign", :partner => @partner, :save => true) 
+              @campaign = mock(
+                "Campaign", 
+                :partner => @partner, 
+                :update_attributes => true,
+                :save => true
+              ) 
               @line_item = mock("Line Item")
             end
 

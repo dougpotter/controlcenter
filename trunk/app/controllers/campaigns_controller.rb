@@ -18,6 +18,14 @@ class CampaignsController < ApplicationController
       return
     end
 
+    # assocaite audience
+    if @audience = Audience.find_by_audience_code(
+      params[:audience_source][:audience_code])
+      if !@campaign.update_attributes({:audience => @audience})
+        redirect_to(new_campaign_path, :notice => "failed to save audience")
+      end
+    end
+
     # associate creatives with campaign
     if !params[:creatives].nil?
       params[:creatives].each do |number,attributes|
@@ -53,7 +61,7 @@ class CampaignsController < ApplicationController
 
 
       if @apn_params = params[:sync_rules].delete("ApN")
-      # sync audience with ApN
+        # sync audience with ApN
         @sync_params.update(@apn_params)
         if !create_and_run_apn_sync_job('appnexus-list-generate', @sync_params)
           render :text => "invalid appnexus sync job"

@@ -8,9 +8,12 @@ Feature: Manage campaigns
     And I am on the new campaign page
     And I fill in ad-hoc campaign information
     When I press "submit"
-    Then I should see "campaign successfully created"
-    And I should see "ANB6"
+    Then I should be on "the show campaign page for ANB6"
+    And I should see "campaign successfully created"
+    And I should see "ANB6 - A New Campaign for Ford"
     And I should see "A New Campaign for Ford"
+    And I should see "Audience Type: Ad-Hoc"
+    And I should see "Audience: HNXT - Ford Connected"
 
   @selenium 
   Scenario: Click new creative

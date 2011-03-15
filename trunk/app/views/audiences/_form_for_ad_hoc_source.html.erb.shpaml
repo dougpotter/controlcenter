@@ -4,7 +4,7 @@ div class=dimension_input
   = text_field 'audience_source', 's3_location'
 
 div class=dimension_input
-  label for="audience_source_s3_location" | Audience Code: 
+  label for="audience_source_audience_code" | Audience Code: 
   >br
   = text_field 'audience_source', 'audience_code'
 
