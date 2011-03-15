@@ -4,7 +4,7 @@ div class=dimension_input
   = select('campaign', 'line_item', none_option + options_from_collection_for_select(@line_items, 'id', 'name', @selected_line_item))
 
 div class=dimension_input
-  label for="audience_audience_type" | Audience Type:
+  label for="campaign_campaign_type" | Audience Type:
   >br 
   = select('campaign', 'campaign_type', options_for_select(@campaign_types))
 

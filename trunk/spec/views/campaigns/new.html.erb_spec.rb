@@ -8,7 +8,8 @@ describe "campaigns/new.html.erb" do
       :line_item => line_item,
       :name => "campaign name",
       :id => 1,
-      :campaign_code => "ACODE"
+      :campaign_code => "ACODE",
+      :campaign_type => "Ad-Hoc"
     )
     adx = mock("adx")
     adx.expects(:ais_code).times(12).returns("ACODE")
