@@ -26,8 +26,10 @@ module Workflow
           end
           
           if index == options[:retry_count]
-            e.message += " (after #{options[:retry_count]} retries)"
-            raise e
+            message = "#{e.message} (after #{options[:retry_count]} retries)"
+            new_exc = e.class.new(message)
+            new_exc.set_backtrace(e.backtrace)
+            raise new_exc
           else
             if extra_callback
               extra_callback.call(e)
