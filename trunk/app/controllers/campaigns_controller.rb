@@ -63,7 +63,7 @@ class CampaignsController < ApplicationController
     end
 
     redirect_to(
-      campaign_management_index_path, 
+      campaign_path(@campaign), 
       :notice => "campaign successfully created")
   end
 

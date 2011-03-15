@@ -63,7 +63,7 @@ describe CampaignsController do
               do_create
             end
 
-            it "response should redirect to campaign management" do
+            it "response should redirect to show action" do
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
                 "name" => "A New Campaign",
@@ -71,7 +71,7 @@ describe CampaignsController do
                 "line_item" => @line_item
               }).returns(@campaign)
               do_create
-              response.should redirect_to(campaign_management_index_path)
+              response.should redirect_to(campaign_path(@campaign))
             end
           end
 
