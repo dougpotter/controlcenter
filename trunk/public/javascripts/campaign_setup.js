@@ -39,7 +39,7 @@ window.addEvent('domready', function() {
 
     // attach event listener audience type select which updates audience source
     // fields when appropriate
-    var audience_type_selector = $('audience_audience_type');
+    var audience_type_selector = $('campaign_campaign_type');
     audience_type_selector.addEvent('change', function() {
           var audience_type= audience_type_selector.getSelected().getProperty('value');
           var req = new Request.HTML({

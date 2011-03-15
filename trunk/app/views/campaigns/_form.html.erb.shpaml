@@ -6,7 +6,7 @@ div class=dimension_input
 div class=dimension_input
   label for="audience_audience_type" | Audience Type:
   >br 
-  = select('audience', 'audience_type', options_for_select(@campaign_types))
+  = select('campaign', 'campaign_type', options_for_select(@campaign_types))
 
 div class=dimension_input
   label for="campaign_name" | Campaign Name:
