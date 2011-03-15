@@ -1,9 +1,12 @@
 require 'spec_helper'
 
 describe RetargetingSource do
+  it "should create new instance given only referrer regex" do
+    Factory.create(:retargeting_source, :request_regex => nil)
+  end
 
-  it "should create a new instance given valid attributes" do
-    Factory.create(:retargeting_source)
+  it "should create new instance given only referrer regex" do
+    Factory.create(:retargeting_source, :request_regex => nil)
   end
 
   it "should fail to create new instance given an s3 bucket" do
@@ -24,15 +27,9 @@ describe RetargetingSource do
     }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
-  it "should fail to create new instance given only request regex" do
+  it "should fail to create new instance given no request or referrer regex" do
     lambda {
-      Factory.create(:retargeting_source, :referrer_regex => nil)
-    }.should raise_error(ActiveRecord::RecordInvalid)
-  end
-
-  it "should fail to create new instance given only referrer regex" do
-    lambda {
-      Factory.create(:retargeting_source, :request_regex => nil)
+      Factory.create(:retargeting_source, :request_regex => nil, :referrer_regex => nil)
     }.should raise_error(ActiveRecord::RecordInvalid)
   end
 end
