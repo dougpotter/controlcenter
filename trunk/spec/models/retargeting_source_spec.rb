@@ -14,25 +14,25 @@ describe RetargetingSource do
 
   it "should fail to create new instance given a load status" do
     lambda {
-      Factory.create(:retargeting_source, :load_staus => "pending")
-    }.should raise_error
+      Factory.create(:retargeting_source, :load_status => "pending")
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "should fail to create a new instance given a beacon load id" do
     lambda {
-      Factory.create(:retargeting_source, :beacon_retargeting_id => "ABC123")
-    }.should raise_error
+      Factory.create(:retargeting_source, :beacon_load_id=> "ABC123")
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "should fail to create new instance given only request regex" do
     lambda {
       Factory.create(:retargeting_source, :referrer_regex => nil)
-    }.should raise_error
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "should fail to create new instance given only referrer regex" do
     lambda {
       Factory.create(:retargeting_source, :request_regex => nil)
-    }.should raise_error
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 end
