@@ -1,3 +1,6 @@
+.notice
+  = notice
+
 h1 
   <%= @campaign.campaign_code_and_description %>
 
