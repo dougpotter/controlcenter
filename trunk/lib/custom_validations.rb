@@ -7,6 +7,20 @@ module CustomValidations
   
   module ClassMethods
 
+    # Validates that none of the attributes passed are present
+
+    def validates_absence_of(*attr_names)
+      validates_each(attr_names) do |record, attr_name, value|
+        if record.send(attr_name)
+          record.errors.add(
+            attr_name,
+            :invalid,
+            :default => "mistakenly tried to instantiate #{self.to_s} with attribute \"#{attr_name}\""
+          )
+        end
+      end
+    end
+
     # Validates that specified attributes are of type Time.
     #
     # Configuration Options:

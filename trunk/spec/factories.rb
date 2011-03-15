@@ -285,3 +285,14 @@ Factory.define :creative_inventory_config do |c|
   c.creative_id { Factory(:creative) }
   c.campaign_inventory_config_id { Factory(:campaign_inventory_config) }
 end
+
+Factory.define :ad_hoc_source do |a|
+  a.sequence(:s3_bucket) { |i| "bucket:/a/path/#{i}/s3" }
+  a.load_status "pending"
+  a.sequence(:beacon_load_id) { |i| "AB#{i}LKEWMW9" }
+end
+
+Factory.define :retargeting_source do |r|
+  r.referrer_regex "a\.*regex"
+  r.request_regex "another\.*regex"
+end
