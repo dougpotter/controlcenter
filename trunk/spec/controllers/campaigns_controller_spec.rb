@@ -214,4 +214,25 @@ describe CampaignsController do
       get :show, :id => 1
     end
   end
+
+  describe "update" do
+    def do_update
+      put :update, 
+        :id => 1,
+        :campaign => { 
+          :name => "name",
+          :campaign_type => "Ad-Hoc",
+          :campaign_code => "ACODE",
+          :line_item => "1" }
+    end
+
+    it "should update attributes of campaign passed in params[:id]" do
+      @campaign = stub_everything("Campaign", :update_attributes => true)
+      Campaign.expects(:find).with("1").returns(@campaign)
+      do_update
+    end
+
+    it "should update audience source information"
+
+  end
 end

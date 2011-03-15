@@ -85,6 +85,7 @@ class CampaignsController < ApplicationController
   def update
     @campaign = Campaign.find(params[:id])
 
+    params[:campaign][:line_item] = LineItem.find(params[:campaign][:line_item])
     if @campaign.update_attributes(params[:campaign])
       redirect_to(
         campaign_management_index_path, 
