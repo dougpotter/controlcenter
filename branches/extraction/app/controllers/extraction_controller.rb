@@ -10,7 +10,7 @@ class ExtractionController < ApplicationController
     
     @bogus_files = DataProviderFile.all(
       :conditions => [
-        'status=? and label_date is null and label_hour is null and discovered_at >= ?',
+        'status=? and (label_date is null and label_hour is null or name_date is null) and discovered_at >= ?',
         DataProviderFile::DISCOVERED, Time.now - 7.days
       ],
       :order => 'discovered_at'

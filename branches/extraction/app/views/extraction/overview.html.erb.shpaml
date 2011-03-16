@@ -20,7 +20,7 @@ table class=extraction-status
 
 % if !@bogus_files.blank?
 
-  h2 | Recently discovered files lacking label date/hour
+  h2 | Recently discovered files lacking label date/hour or name date
 
   table class=extraction-status
     tr
