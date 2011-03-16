@@ -311,5 +311,4 @@ end
 Factory.define :audience_manifest do |a|
   a.audience_id { Factory(:audience).id }
   a.audience_source_id { Factory(:audience_source).id }
-  a.sequence(:audience_iteration_number) { |i| i }
 end
