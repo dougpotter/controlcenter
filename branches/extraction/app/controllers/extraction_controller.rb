@@ -22,7 +22,7 @@ class ExtractionController < ApplicationController
   def details
     date = params[:date]
     @files = DataProviderFile.all(
-      :conditions => ['url like ?', "%#{date}%"],
+      :conditions => ['name_date=?', date],
       :order => 'url'
     )
     @counts_by_status = @files.inject({}) do |counts, file|
@@ -55,7 +55,7 @@ class ExtractionController < ApplicationController
       counts = DataProviderFile.find_by_sql(<<-SQL)
         select status, count(*) as count
         from data_provider_files
-        where url like #{DataProviderFile.quote_value("%#{date_str}%")}
+        where name_date = #{DataProviderFile.quote_value("#{date_str}")}
         group by status
       SQL
       counts_map = {}
