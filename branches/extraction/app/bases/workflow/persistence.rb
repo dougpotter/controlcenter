@@ -19,9 +19,11 @@ module Workflow
           end
         else
           begin
+            name_date = determine_name_date_from_data_provider_file(file_url)
             file = DataProviderFile.new(
               :url => file_url,
-              :data_provider_channel => channel
+              :data_provider_channel => channel,
+              :name_date => name_date
             )
             if block_given?
               yield file
@@ -69,12 +71,14 @@ module Workflow
             file.save!
           end
         else
+          name_date = determine_name_date_from_data_provider_file(file_url)
           file = DataProviderFile.create!(
             :url => file_url,
             :data_provider_channel => channel,
             :status => DataProviderFile::DISCOVERED,
             :label_date => date,
             :label_hour => hour,
+            :name_date => name_date,
             :discovered_at => Time.now
           )
         end
