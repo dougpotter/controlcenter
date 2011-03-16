@@ -44,26 +44,20 @@ describe CampaignsController do
                 :save => true
               )
               @line_item = mock("Line Item")
-            end
-
-            it "should assign @campaign" do
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
                 "name" => "A New Campaign",
                 "campaign_code" => "ACODE",
                 "line_item" => @line_item
               }).returns(@campaign)
+            end
+
+            it "should assign @campaign" do
               do_create
               assigns(:campaign).should == @campaign
             end
 
             it "should associate audience with campaign" do
-              LineItem.expects(:find).with("1").returns(@line_item)
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
               @audience = stub_everything("Audience")
               Audience.expects(:find_by_audience_code).with("AB17").
                 returns(@audience)
@@ -71,22 +65,10 @@ describe CampaignsController do
             end
 
             it "should save @campaign" do
-              LineItem.expects(:find).with("1").returns(@line_item)
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
               do_create
             end
 
             it "response should redirect to show action" do
-              LineItem.expects(:find).with("1").returns(@line_item)
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
               do_create
               response.should redirect_to(campaign_path(@campaign))
             end
