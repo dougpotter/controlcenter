@@ -13,12 +13,12 @@ class AudiencesController < ApplicationController
   end
 
   def create
+    params[:audience][:campaign_id] = Campaign.find(params[:audience][:campaign_id]).id
     @audience = Audience.new(params[:audience])
+
     if @audience.save
-      redirect_to :action => :new
+      redirect_to(new_audience_path)
     else
-      @audiences = Audience.find(:all)
-      render :action => :new
     end
   end
 
