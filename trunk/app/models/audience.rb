@@ -23,6 +23,9 @@ class Audience < ActiveRecord::Base
   has_many :click_counts
   has_many :impression_counts
 
+  has_many :audience_manifests
+  has_many :audience_sources, :through => :audience_manifests
+
   validates_presence_of :audience_code
   validates_uniqueness_of :audience_code
 

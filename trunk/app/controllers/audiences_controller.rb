@@ -16,7 +16,17 @@ class AudiencesController < ApplicationController
     params[:audience][:campaign_id] = Campaign.find(params[:audience][:campaign_id]).id
     @audience = Audience.new(params[:audience])
 
+    @audience_type = params[:audience_source].delete(:type)
+    if @audience_type =="Ad-Hoc"
+      @audience_source = AdHocSource.new(params[:audience_source])
+    elsif @audience_type == "Retargeting"
+      @audience_source = RetargetingSource.new(params[:audience_source])
+    else
+      raise "Audience type not supplied or type supplied was not recognized"
+    end
+
     if @audience.save
+      @audience << @audience_source
       redirect_to(new_audience_path)
     else
     end
