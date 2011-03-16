@@ -20,26 +20,26 @@ describe AudienceManifest do
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
 
-  it "should faild to create new instance with missing audience id (validation)" do
+  it "should fail to create new instance with missing audience id (validation)" do
     lambda {
       Factory.create(:audience_manifest, :audience_id => nil)
     }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
-  it "should faild to create new instance with missing audience id (db)" do
+  it "should fail to create new instance with missing audience id (db)" do
     lambda {
       a = Factory.build(:audience_manifest, :audience_id => nil)
       a.save(false)
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
 
-  it "should faild to create new instance with missing audience source id (validation)" do
+  it "should fail to create new instance with missing audience source id (validation)" do
     lambda {
       Factory.create(:audience_manifest, :audience_source_id => nil)
     }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
-  it "should faild to create new instance with missing audience source id (db)" do
+  it "should fail to create new instance with missing audience source id (db)" do
     lambda {
       a = Factory.build(:audience_manifest, :audience_source_id => nil)
       a.save(false)
