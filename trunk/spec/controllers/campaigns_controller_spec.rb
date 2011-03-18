@@ -198,23 +198,46 @@ describe CampaignsController do
   end
 
   describe "update" do
-    def do_update
-      put :update, 
-        :id => 1,
-        :campaign => { 
-          :name => "name",
-          :campaign_type => "Ad-Hoc",
-          :campaign_code => "ACODE",
-          :line_item => "1" }
+    context "an Ad-Hoc campaign" do
+      context "with a new source" do
+        def do_update
+          put :update, 
+            :id => 1,
+            :campaign => { 
+              :name => "name",
+              :campaign_type => "Ad-Hoc",
+              :campaign_code => "ACODE",
+              :line_item => "1" },
+            :audience => {
+              :id => "2",
+              :audience_source => { 
+                :s3_bucket => "bucket:/a/path",
+                :type => "Ad-Hoc"
+              }
+            }
+        end
+
+        it "should update attributes of campaign passed in params[:id]" do
+          @campaign = stub_everything("Campaign", :update_attributes => true)
+          Campaign.expects(:find).with("1").returns(@campaign)
+          do_update
+        end
+
+        it "should update audience source information" do
+          @campaign = stub_everything("Campaign", :update_attributes => true)
+          Campaign.expects(:find).with("1").returns(@campaign)
+          @audience_source = stub_everything("AudienceSource")
+          AudienceSource.expects(:new).returns(@audience_source)
+          @audience_sources_array = mock("Array")
+          @audience_sources_array.expects(:<<).with(@audience_source)
+          @audience = stub_everything(
+            "Audience", 
+            :audience_sources => @audience_sources_array
+          )
+          Audience.expects(:find).with("2").returns(@audience)
+          do_update
+        end
+      end
     end
-
-    it "should update attributes of campaign passed in params[:id]" do
-      @campaign = stub_everything("Campaign", :update_attributes => true)
-      Campaign.expects(:find).with("1").returns(@campaign)
-      do_update
-    end
-
-    it "should update audience source information"
-
   end
 end

@@ -87,6 +87,9 @@ class CampaignsController < ApplicationController
 
     params[:campaign][:line_item] = LineItem.find(params[:campaign][:line_item])
     if @campaign.update_attributes(params[:campaign])
+      @audience = Audience.find(params[:audience][:id])
+      @audience_source = AudienceSource.new(params[:audience][:audience_source])
+      @audience.audience_sources << @audience_source
       redirect_to(
         campaign_management_index_path, 
         :notice => "campaign successfully updated"
