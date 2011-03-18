@@ -36,7 +36,7 @@ class Audience < ActiveRecord::Base
     "#{audience_code} - #{description}"
   end
 
-  def audience_iteration_number
+  def iteration_number
     self.audience_manifests.sort_by { |man|
       man.audience_iteration_number
     }.last.audience_iteration_number

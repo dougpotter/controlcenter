@@ -51,12 +51,12 @@ describe Audience do
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
 
-  context "\#audience_iteration" do
+  context "\#iteration_number" do
     it "should return 0 if audience is on the first iteration" do
       audience = Factory.create(:audience)
       audience_source = Factory.create(:ad_hoc_source)
       audience.audience_sources << audience_source
-      audience.audience_iteration_number.should == 0
+      audience.iteration_number.should == 0
     end
 
     it "should return 1 if audience is on the second iteration" do
@@ -65,7 +65,16 @@ describe Audience do
       audience_source2 = Factory.create(:ad_hoc_source)
       audience.audience_sources << audience_source1
       audience.audience_sources << audience_source2
-      audience.audience_iteration_number.should == 1
+      audience.iteration_number.should == 1
+    end
+
+    it "should return 0 after second iteration is deleted" do
+      audience = Factory.create(:audience)
+      audience_source1 = Factory.create(:ad_hoc_source)
+      audience_source2 = Factory.create(:ad_hoc_source)
+      audience.audience_sources << audience_source1
+      audience.audience_sources << audience_source2
+      audience.iteration_number.should == 1
     end
   end
 end
