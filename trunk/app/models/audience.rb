@@ -55,6 +55,24 @@ class Audience < ActiveRecord::Base
     return sources
   end
 
+  def source_type
+    if self.audience_sources.empty
+      return nil
+    else
+      return self.audience_sources.last.class
+    end
+  end
+
+  def update_source(audience_source)
+    if self.audience_sources.blank? 
+      self.audience_sources << audience_source
+    elsif self.audience_sources.last.class == audience_source.class
+      self.audience_sources << audience_source
+    else
+      raise "audience of type #{audience.source_type} cannot be changed to audience of type#{audience_source.class}"
+    end
+  end
+
   class << self
     def generate_audience_code
       CodeGenerator.generate_unique_code(

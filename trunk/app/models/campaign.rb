@@ -62,6 +62,22 @@ class Campaign < ActiveRecord::Base
     )
   end
 
+  def has_audience?
+    if self.audience
+      return true
+    else
+      return false
+    end
+  end
+
+  def update_audience_source(audience_source)
+    if self.has_audience?
+      self.audience.update_source(audience_source)
+    else
+      raise "campaign #{self.name} does not have an audience to update"
+    end
+  end
+
   class << self
     def generate_campaign_code
       CodeGenerator.generate_unique_code(

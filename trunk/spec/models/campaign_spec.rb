@@ -90,6 +90,37 @@ describe Campaign do
     Audience.find(audience_id).should == audience
   end
 
+  context "\#update_audience_source" do
+    it "should raise exception if campaign has no audience" do
+      campaign = Factory.create(:campaign)
+      audience_source = Factory.create(:ad_hoc_source)
+      lambda {
+        campaign.update_audience_source(audience_source)
+      }.should raise_error
+    end
+
+    it "should create a new audience manifest with iteration number 0 when called for first time with an Ad-Hoc Source" do
+      campaign = Factory.create(:campaign)
+      audience = Factory.create(:audience)
+      campaign.audience = audience
+      campaign.save
+      audience_source = Factory.create(:ad_hoc_source)
+      campaign.update_audience_source(audience_source)
+    end
+
+    it "should create a new audience manifest with iteration number 0 when called for the first time with a Retargeting Source"
+
+    it "should create a new audience manifest with iteration number 1 upon association of the second Ad-Hoc Source"
+    it "should create a new audience manifest with iteration number 1 upon association of the second Retargeting Source"
+
+    it "should not create a new audience manifest when called with the same Ad-Hoc audience source"
+    it "should not create a new audiecne manifest when called with the same Retargeting audience source"
+
+    it "should raise the proper errors when passed invalid params"
+
+  end
+
+
   describe "with dimension cache" do 
     fixtures :creatives, 
       :campaigns, 
