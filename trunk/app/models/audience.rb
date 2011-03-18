@@ -36,6 +36,12 @@ class Audience < ActiveRecord::Base
     "#{audience_code} - #{description}"
   end
 
+  def audience_iteration_number
+    self.audience_manifests.sort_by { |man|
+      man.audience_iteration_number
+    }.last.audience_iteration_number
+  end
+
   class << self
     def generate_audience_code
       CodeGenerator.generate_unique_code(

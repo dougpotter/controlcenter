@@ -286,17 +286,6 @@ Factory.define :creative_inventory_config do |c|
   c.campaign_inventory_config_id { Factory(:campaign_inventory_config) }
 end
 
-Factory.define :audience_source do |a|
-  if rand > 0.5
-    a.sequence(:s3_bucket) { |i| "bucket:/a/path/#{i}/s3" }
-    a.load_status "pending"
-    a.sequence(:beacon_load_id) { |i| "AB#{i}LKEWMW9" }
-  else
-    a.referrer_regex "a\.*regex"
-    a.request_regex "another\.*regex"
-  end
-end
-
 Factory.define :ad_hoc_source do |a|
   a.sequence(:s3_bucket) { |i| "bucket:/a/path/#{i}/s3" }
   a.load_status "pending"
