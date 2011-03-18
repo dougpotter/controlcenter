@@ -34,4 +34,18 @@ describe AdHocSource do
       Factory.create(:ad_hoc_source, :beacon_load_id => nil)
     }.should raise_error
   end
+
+  context "\#same_as" do
+    it "should return true if self points to same location as source passed" do
+      source1 = Factory.create(:ad_hoc_source, :s3_bucket => "samebucket:/a/path")
+      source2 = Factory.create(:ad_hoc_source, :s3_bucket => "samebucket:/a/path")
+      source1.same_as(source2).should be_true
+    end
+
+    it "should return false if self points to same location as source passed" do
+      source1 = Factory.create(:ad_hoc_source, :s3_bucket => "samebucket:/a/path")
+      source2 = Factory.create(:ad_hoc_source, :s3_bucket => "different:/a/path")
+      source1.same_as(source2).should be_false
+    end
+  end
 end

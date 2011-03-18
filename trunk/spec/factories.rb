@@ -293,8 +293,8 @@ Factory.define :ad_hoc_source do |a|
 end
 
 Factory.define :retargeting_source do |r|
-  r.referrer_regex "a\.*regex"
-  r.request_regex "another\.*regex"
+  r.sequence(:referrer_regex) { |i| "a\.i*#{i}regex" }
+  r.request_regex nil
 end
 
 Factory.define :audience_manifest do |a|

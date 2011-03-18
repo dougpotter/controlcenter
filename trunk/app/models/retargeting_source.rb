@@ -9,4 +9,9 @@ class RetargetingSource < AudienceSource
         "must have at least on of request regex and referrer regex")
     end
   end
+
+  def same_as(other_source)
+    self.referrer_regex == other_source.referrer_regex &&
+      self.request_regex == other_source.request_regex
+  end
 end

@@ -56,20 +56,26 @@ class Audience < ActiveRecord::Base
   end
 
   def source_type
-    if self.audience_sources.empty
+    if self.audience_sources.empty?
       return nil
     else
       return self.audience_sources.last.class
     end
   end
 
+  def latest_source
+    sources_in_order.last
+  end
+
   def update_source(audience_source)
     if self.audience_sources.blank? 
       self.audience_sources << audience_source
+    elsif self.latest_source.same_as(audience_source)
+      # do nothing
     elsif self.audience_sources.last.class == audience_source.class
       self.audience_sources << audience_source
     else
-      raise "audience of type #{audience.source_type} cannot be changed to audience of type#{audience_source.class}"
+      raise "audience of type #{self.source_type} cannot be changed to audience of type #{audience_source.class}"
     end
   end
 

@@ -32,4 +32,30 @@ describe RetargetingSource do
       Factory.create(:retargeting_source, :request_regex => nil, :referrer_regex => nil)
     }.should raise_error(ActiveRecord::RecordInvalid)
   end
+
+  context "\#same_as" do
+    it "should return true if the referrer regexes match" do
+      source1 = Factory.create(:retargeting_source, :referrer_regex => "match")
+      source2 = Factory.create(:retargeting_source, :referrer_regex => "match")
+      source1.same_as(source2).should be_true
+    end
+
+    it "should return true if the request regexes match" do
+      source1 = Factory.create(:retargeting_source, :request_regex => "match")
+      source2 = Factory.create(:retargeting_source, :request_regex => "match")
+      source1.same_as(source2).should be_true
+    end
+
+    it "should return false if the referrer regexes do not match" do
+      source1 = Factory.create(:retargeting_source, :referrer_regex => "match")
+      source2 = Factory.create(:retargeting_source, :referrer_regex => "notmatch")
+      source1.same_as(source2).should be_false
+    end
+
+    it "should return false if the request regexes do not match" do
+      source1 = Factory.create(:retargeting_source, :request_regex => "match")
+      source2 = Factory.create(:retargeting_source, :request_regex => "notmatch")
+      source1.same_as(source2).should be_false
+    end
+  end
 end

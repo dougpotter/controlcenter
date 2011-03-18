@@ -91,7 +91,7 @@ describe Audience do
   end
 
   context "\#update_source" do
-    context "with Ad-Hoce source" do
+    context "with Ad-Hoc source" do
       it "should add new audience manifest when passed it's first source" do
         audience = Factory.create(:audience)
         audience_source = Factory.create(:ad_hoc_source)
@@ -100,16 +100,81 @@ describe Audience do
         }.to change{ AudienceManifest.count }.by(1)
       end
 
-      it "should raise exception if new audience source does not share type of existing audience source" do
+      it "should add new audience manifest when passed it's second source" do
         audience = Factory.create(:audience)
         audience_source1 = Factory.create(:ad_hoc_source)
         audience.update_source(audience_source1)
         audience_source2 = Factory.create(:ad_hoc_source)
-        audience.update_source(audience_source2)
+        expect {
+          audience.update_source(audience_source2)
+        }.to change{ AudienceManifest.count }.by(1)
+      end
+
+      it "should raise exception if new audience source does not share type of existing audience source" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(:ad_hoc_source)
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(:retargeting_source)
         lambda {
           audience.update_source(audience_source2)
         }.should raise_error
       end
+
+      it "should do nothing if source passed has the same s3 bucket" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(
+          :ad_hoc_source, 
+          :s3_bucket => "same_bucket:/a/path"
+        )
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(
+          :ad_hoc_source, 
+          :s3_bucket => "same_bucket:/a/path"
+        )
+        expect {
+          audience.update_source(audience_source2)
+        }.to change{ AudienceManifest.count }.by(0)
+        audience.iteration_number.should == 0
+      end
+    end
+
+    context "with Regargeting source" do
+      it "should add new audience manifest when passed it's first source" do
+        audience = Factory.create(:audience)
+        audience_source = Factory.create(:retargeting_source)
+        expect {
+          audience.update_source(audience_source)
+        }.to change{ AudienceManifest.count }.by(1)
+      end
+
+      it "should add new audience manifest when passed it's second source" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(:retargeting_source)
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(:retargeting_source)
+        expect {
+          audience.update_source(audience_source2)
+        }.to change{ AudienceManifest.count }.by(1)
+      end
+
+      it "should raise exception if new audience source does not share type of existing audience source" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(:retargeting_source)
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(:ad_hoc_source)
+        lambda {
+          audience.update_source(audience_source2)
+        }.should raise_error
+      end
+    end
+  end
+
+  context "\#latest_source" do
+    it "should return the source of the latest iteration" do
+        audience = Factory.create(:audience)
+        audience_source = Factory.build(:retargeting_source)
+        audience.update_source(audience_source)
+        audience.latest_source.should == audience_source
     end
   end
 end
