@@ -51,6 +51,17 @@ describe Audience do
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
 
+  context "\#sources_in_order" do
+    it "should return audience sources in order of increasing iteration number" do
+      audience = Factory.create(:audience)
+      audience_source1 = Factory.create(:ad_hoc_source)
+      audience_source2 = Factory.create(:ad_hoc_source)
+      audience.audience_sources << audience_source1
+      audience.audience_sources << audience_source2
+      audience.sources_in_order.should == [ audience_source1, audience_source2 ]
+    end
+  end
+
   context "\#iteration_number" do
     it "should return 0 if audience is on the first iteration" do
       audience = Factory.create(:audience)
@@ -74,7 +85,8 @@ describe Audience do
       audience_source2 = Factory.create(:ad_hoc_source)
       audience.audience_sources << audience_source1
       audience.audience_sources << audience_source2
-      audience.iteration_number.should == 1
+      audience.audience_sources[-1].destroy
+      audience.iteration_number.should == 0
     end
   end
 end

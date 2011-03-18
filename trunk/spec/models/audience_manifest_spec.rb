@@ -58,7 +58,7 @@ describe AudienceManifest do
 
   it "should populate the audience iteration number with 0 on first audience iteration" do
     audience = Factory.build(:audience)
-    audience_source = Factory.build(:audience_source)
+    audience_source = Factory.build(:ad_hoc_source)
 
     am = Factory.build(
       :audience_manifest, 
@@ -72,7 +72,7 @@ describe AudienceManifest do
 
   it "should populate the audience iteration number with 1 on second audience iteration" do
     audience = Factory.create(:audience)
-    audience_source1 = Factory.create(:audience_source)
+    audience_source1 = Factory.create(:ad_hoc_source)
 
     am1 = Factory.build(
       :audience_manifest, 
@@ -81,7 +81,7 @@ describe AudienceManifest do
     )
     am1.save
 
-    audience_source2 = Factory.create(:audience_source)
+    audience_source2 = Factory.create(:ad_hoc_source)
     am2 = Factory.build(
       :audience_manifest,
       :audience_id => audience.id,

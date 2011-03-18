@@ -23,7 +23,7 @@ class Audience < ActiveRecord::Base
   has_many :click_counts
   has_many :impression_counts
 
-  has_many :audience_manifests
+  has_many :audience_manifests, :dependent => :destroy
   has_many :audience_sources, :through => :audience_manifests
 
   validates_presence_of :audience_code
@@ -40,6 +40,19 @@ class Audience < ActiveRecord::Base
     self.audience_manifests.sort_by { |man|
       man.audience_iteration_number
     }.last.audience_iteration_number
+  end
+
+  def sources_in_order
+    manifests = self.audience_manifests.sort_by { |man|
+      man.audience_iteration_number
+    }
+
+    sources = []
+    for manifest in manifests
+      sources << manifest.audience_source
+    end
+    
+    return sources
   end
 
   class << self
