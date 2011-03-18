@@ -41,8 +41,16 @@ describe RetargetingSource do
     end
 
     it "should return true if the request regexes match" do
-      source1 = Factory.create(:retargeting_source, :request_regex => "match")
-      source2 = Factory.create(:retargeting_source, :request_regex => "match")
+      source1 = Factory.create(
+        :retargeting_source, 
+        :request_regex => "match",
+        :referrer_regex => nil
+      )
+      source2 = Factory.create(
+        :retargeting_source, 
+        :request_regex => "match",
+        :referrer_regex => nil
+      )
       source1.same_as(source2).should be_true
     end
 
