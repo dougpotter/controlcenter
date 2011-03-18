@@ -166,6 +166,23 @@ describe Audience do
           audience.update_source(audience_source2)
         }.should raise_error
       end
+
+      it "should do nothing if new audience source has the same referrer/request regex combo" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(
+          :retargeting_source, 
+          :referrer_regex => "same"
+        )
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(
+          :retargeting_source, 
+          :referrer_regex => "same"
+        )
+        expect {
+          audience.update_source(audience_source2)
+        }.to change{ AudienceManifest.count }.by(0)
+        audience.iteration_number.should == 0
+      end
     end
   end
 
