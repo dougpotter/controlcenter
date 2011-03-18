@@ -10,6 +10,7 @@ class AdInventorySourcesController < ApplicationController
     if @ais.save
       redirect_to(new_ad_inventory_source_path, :notice => "AIS successfully saved")
     else
+      @aises = AdInventorySource.all
       render :action => :new
     end
   end
