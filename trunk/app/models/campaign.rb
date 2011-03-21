@@ -70,6 +70,14 @@ class Campaign < ActiveRecord::Base
     end
   end
 
+  def audience_sources
+    if self.audience
+      self.audience.audience_sources
+    else
+      return nil
+    end
+  end
+
   def update_audience_source(audience_source)
     if self.has_audience?
       self.audience.update_source(audience_source)

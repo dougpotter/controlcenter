@@ -107,19 +107,27 @@ describe Campaign do
       audience_source = Factory.create(:ad_hoc_source)
       campaign.update_audience_source(audience_source)
     end
-
-    it "should create a new audience manifest with iteration number 0 when called for the first time with a Retargeting Source"
-
-    it "should create a new audience manifest with iteration number 1 upon association of the second Ad-Hoc Source"
-    it "should create a new audience manifest with iteration number 1 upon association of the second Retargeting Source"
-
-    it "should not create a new audience manifest when called with the same Ad-Hoc audience source"
-    it "should not create a new audiecne manifest when called with the same Retargeting audience source"
-
-    it "should raise the proper errors when passed invalid params"
-
   end
 
+  context "\#audience_sources" do
+    it "should return nil if the campaign has no audience" do
+      campaign = Factory.create(:campaign)
+      campaign.audience_sources.should == nil
+    end
+
+    it "should return the audience source if the campaign has one" do
+      ad_hoc_source = Factory.create(:ad_hoc_source)
+      audience = Factory.create(:audience, :audience_sources => [ ad_hoc_source ])
+      campaign = Factory.create(:campaign, :audience => audience)
+      campaign.audience_sources.should == [ ad_hoc_source ]
+    end
+
+    it "should return empty array if the campaign has an audience with no source" do
+      audience = Factory.create(:audience)
+      campaign = Factory.create(:campaign, :audience => audience)
+      campaign.audience_sources.should == []
+    end
+  end
 
   describe "with dimension cache" do 
     fixtures :creatives, 
