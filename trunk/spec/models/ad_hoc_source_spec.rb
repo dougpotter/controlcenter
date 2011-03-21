@@ -23,18 +23,6 @@ describe AdHocSource do
     }.should raise_error
   end
 
-  it "should faild to create a new instance given no load status" do
-    lambda {
-      Factory.create(:ad_hoc_source, :load_status => nil)
-    }.should raise_error
-  end
-
-  it "should faild to create a new instance given no beacon load id" do
-    lambda {
-      Factory.create(:ad_hoc_source, :beacon_load_id => nil)
-    }.should raise_error
-  end
-
   context "\#same_as" do
     it "should return true if self points to same location as source passed" do
       source1 = Factory.create(:ad_hoc_source, :s3_bucket => "samebucket:/a/path")
