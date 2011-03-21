@@ -55,7 +55,7 @@ Given /^I fill in ad-hoc campaign information$/ do
   And "I fill in the following:", table(%{
     | Campaign Name | A New Campaign for Ford |
     | Campaign Code | ANB6 |
-    | S3 Location | bucket:/a/path/in/s3 |
+    | S3 Bucket | bucket:/a/path/in/s3 |
     | Audience Code | HNXT |
   })
 end

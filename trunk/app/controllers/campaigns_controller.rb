@@ -20,7 +20,7 @@ class CampaignsController < ApplicationController
 
     # assocaite audience
     if @audience = Audience.find_by_audience_code(
-      params[:audience_source][:audience_code])
+      params[:audience][:audience_code])
       if !@campaign.update_attributes({:audience => @audience})
         redirect_to(new_campaign_path, :notice => "failed to save audience")
       end
@@ -44,11 +44,12 @@ class CampaignsController < ApplicationController
     if params[:aises_for_sync]
       # deal with audience source
       @sync_params = {}
-      if params[:audience][:audience_type] == "Ad-Hoc"
+
+      if params[:audience][:audience_source][:type] == "Ad-Hoc"
         @sync_params["s3_xguid_list_prefix"] = 
-          params[:audience_source][:s3_location]
+          params[:audience][:audience_source][:s3_location]
         @sync_params["partner_code"] = @campaign.partner.partner_code
-        @sync_params["audience_code"] = params[:audience_source][:audience_code]
+        @sync_params["audience_code"] = params[:audience][:audience_code]
         @sync_params["appnexus_segment_id"] = 
           params[:sync_rules][:ApN][:apn_segment_id]
       elsif params[:audience][:audience_type] == "Retargeting"
@@ -84,16 +85,32 @@ class CampaignsController < ApplicationController
 
   def update
     @campaign = Campaign.find(params[:id])
+    params[:campaign][:line_item] = 
+      LineItem.find(params[:campaign][:line_item])
+    params[:campaign][:audience] = 
+      Audience.find_by_audience_code(params[:audience][:audience_code])
 
-    params[:campaign][:line_item] = LineItem.find(params[:campaign][:line_item])
     if @campaign.update_attributes(params[:campaign])
-      @audience = Audience.find(params[:audience][:id])
-      @audience_source = AudienceSource.new(params[:audience][:audience_source])
-      @audience.audience_sources << @audience_source
-      redirect_to(
-        campaign_management_index_path, 
-        :notice => "campaign successfully updated"
-      )
+
+      source_type = params[:audience][:audience_source].delete(:type)
+      case source_type
+      when "Ad-Hoc"
+        @audience_source = 
+          AdHocSource.new(params[:audience][:audience_source])
+      when "Retargeting"
+        @audience_source = 
+          RetargetingSource.new(params[:audience][:audience_source])
+      end
+
+      if @campaign.audience.update_source(@audience_source)
+        redirect_to(
+          campaign_path(@campaign.id), 
+          :notice => "campaign successfully updated"
+        )
+      else
+        "campaign update failed on audience source update"
+      end
+
     else
       notice = "campaign update failed: "
       @campaign.errors.each do |attr,msg|

@@ -25,14 +25,15 @@ describe CampaignsController do
           def do_create
             post :create,
               :campaign => {
-              :name => "A New Campaign",
-              :campaign_code => "ACODE",
-              :line_item => "1" },
-              :audience_source => {
-              :s3_location => "/a/path/in/s3",
-              :audience_code => "AB17" },
-              :sync_rules => { "ApN" => { :apn_segment_id => "" } },
-              :audience => { :audience_type => "Ad-Hoc" }
+                :name => "A New Campaign",
+                :campaign_code => "ACODE",
+                :line_item => "1" },
+              :audience => {
+                :audience_code => "AB17",
+                :audience_source => { 
+                  :s3_location => "/a/path/in/s3",
+                  :type => "Ad-Hoc" } },
+              :sync_rules => { "ApN" => { :apn_segment_id => "" } }
           end
 
           context "with valid attributes" do
@@ -110,15 +111,16 @@ describe CampaignsController do
           def do_create
             post :create,
               :campaign => {
-              :name => "A New Campaign",
-              :campaign_code => "ACODE",
-              :line_item => "1" },
-              :audience_source => {
-              :s3_location => "/a/path/in/s3",
-              :audience_code => "AB17" },
+                :name => "A New Campaign",
+                :campaign_code => "ACODE",
+                :line_item => "1" },
+              :audience => {
+                :audience_code => "AB17",
+                :audience_source => { 
+                  :s3_location => "/a/path/in/s3",
+                  :type => "Ad-Hoc" } },
               :sync_rules => { "ApN" => { :apn_segment_id => "ACODE" } },
-              :aises_for_sync => [ "ApN" ],
-              :audience => { :audience_type => "Ad-Hoc" }
+              :aises_for_sync => [ "ApN" ]
           end
 
           context "with valid attributes" do
@@ -212,31 +214,81 @@ describe CampaignsController do
               :id => "2",
               :audience_source => { 
                 :s3_bucket => "bucket:/a/path",
-                :type => "Ad-Hoc"
+                :type => "Ad-Hoc",
+                :load_status => "pending",
+                :beacon_load_id => "ABEACON123ID"
               }
             }
         end
 
         it "should update attributes of campaign passed in params[:id]" do
-          @campaign = stub_everything("Campaign", :update_attributes => true)
+          @audience = stub_everything("Audience")
+          @campaign = stub_everything(
+            "Campaign", 
+            :update_attributes => true,
+            :audience => @audience
+          )
           Campaign.expects(:find).with("1").returns(@campaign)
           do_update
         end
 
         it "should update audience source information" do
-          @campaign = stub_everything("Campaign", :update_attributes => true)
-          Campaign.expects(:find).with("1").returns(@campaign)
-          @audience_source = stub_everything("AudienceSource")
-          AudienceSource.expects(:new).returns(@audience_source)
-          @audience_sources_array = mock("Array")
-          @audience_sources_array.expects(:<<).with(@audience_source)
-          @audience = stub_everything(
-            "Audience", 
-            :audience_sources => @audience_sources_array
+          @audience = stub_everything("Audience")
+          @campaign = stub_everything(
+            "Campaign", 
+            :update_attributes => true,
+            :audience => @audience
           )
-          Audience.expects(:find).with("2").returns(@audience)
+          Campaign.expects(:find).with("1").returns(@campaign)
+          @ad_hoc_source = stub_everything("AdHocSource", :update_source => true)
+          AdHocSource.expects(:new).returns(@audience_source)
           do_update
         end
+      end
+    end
+  end
+
+  context "an Retargeting campaign" do
+    context "with a new source" do
+      def do_update
+        put :update, 
+          :id => 1,
+          :campaign => { 
+            :name => "name",
+            :campaign_type => "Ad-Hoc",
+            :campaign_code => "ACODE",
+            :line_item => "1" },
+          :audience => {
+            :id => "2",
+            :audience_source => { 
+              :referrer_regex => "a\.*regex",
+              :type => "Retargeting"
+            }
+          }
+      end
+
+      it "should update attributes of campaign passed in params[:id]" do
+        @audience = stub_everything("Audience")
+        @campaign = stub_everything(
+          "Campaign", 
+          :update_attributes => true,
+          :audience => @audience
+        )
+        Campaign.expects(:find).with("1").returns(@campaign)
+        do_update
+      end
+
+      it "should update audience source information" do
+        @audience = stub_everything("Audience")
+        @campaign = stub_everything(
+          "Campaign", 
+          :update_attributes => true,
+          :audience => @audience
+        )
+        Campaign.expects(:find).with("1").returns(@campaign)
+        @retargeting_source = stub_everything("RetargetingSource", :update_source => true)
+        RetargetingSource.expects(:new).returns(@retargeting_source)
+        do_update
       end
     end
   end

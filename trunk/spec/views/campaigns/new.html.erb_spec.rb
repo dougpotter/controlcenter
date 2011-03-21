@@ -9,7 +9,8 @@ describe "campaigns/new.html.erb" do
       :name => "campaign name",
       :id => 1,
       :campaign_code => "ACODE",
-      :campaign_type => "Ad-Hoc"
+      :campaign_type => "Ad-Hoc",
+      :audience_sources => []
     )
     adx = mock("adx")
     adx.expects(:ais_code).times(12).returns("ACODE")

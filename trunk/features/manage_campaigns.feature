@@ -100,4 +100,14 @@ Feature: Manage campaigns
     And I should see the configured ad inventory sources for "ACODE"
 
     And I should see "Edit Campaign"
-    
+
+  Scenario: associate new audience with a campaign on campaign edit form
+    Given the standard ad-hoc campaign and associated entities exist
+    And I am on the edit campaign page for ACODE
+    And I fill in the following:
+      | S3 Bucket     | bucket:/a/path/in/s3/ |
+      | Audience Code | HNXT                  |
+    When I press "Save Edits"
+    Then I should be on the show campaign page for ACODE
+    And I should see "ACODE - Ford Campaign"
+    And I should see "Audience: HNXT - Ford Connected"
