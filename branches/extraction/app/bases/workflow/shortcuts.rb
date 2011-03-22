@@ -47,7 +47,11 @@ module Workflow
               params = settings.merge(:date => date, :channel => channel)
               workflow = workflow_class.new(params.to_hash)
               files.each do |file|
-                workflow.extract_if_fully_uploaded(file.url)
+                begin
+                  workflow.extract_if_fully_uploaded(file.url)
+                rescue Workflow::FileAlreadyExtracted
+                  # ignore
+                end
               end
             end
           end
