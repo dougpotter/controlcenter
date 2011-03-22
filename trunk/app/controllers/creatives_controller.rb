@@ -130,7 +130,7 @@ class CreativesController < ApplicationController
 
   def update
     @creative = Creative.find(params[:id])
-    @campaigns = Campaign.find(params[:creative].delete("campaigns")).to_a
+    @campaigns = [ Campaign.find(params[:creative].delete("campaigns")) ].flatten
     @creative_size = CreativeSize.find(params[:creative].delete("creative_size"))
     params[:creative][:campaigns] = @campaigns
     params[:creative][:creative_size] = @creative_size
