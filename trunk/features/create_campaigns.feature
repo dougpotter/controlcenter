@@ -8,13 +8,23 @@ Feature:
     Given the standard ais, partner, line item, audience, creative size setup exists
     And I am on the new campaign page
     And I fill in ad-hoc campaign information
+    And I fill in the following:
+      | Audience Code | AUDCOD |
     When I press "submit"
     Then I should be on "the show campaign page for ANB6"
     And I should see "campaign successfully created"
     And I should see "ANB6 - A New Campaign for Ford"
     And I should see "A New Campaign for Ford"
     And I should see "Audience Type: Ad-Hoc"
-    And I should see "Audience: HNXT - Ford Connected"
+    And I should see "Audience: AUDCOD - An Audience for Ford"
+
+  Scenario: Create a new Ad-Hoc campaign with no creative, no AIS, and a duplicate audience code
+    Given the standard ais, partner, line item, audience, creative size setup exists
+    And I am on the new campaign page
+    And I fill in ad-hoc campaign information
+    When I press "submit"
+    Then I should be on "the new campaign page for ANB6"
+    And I should see "audience code HNXT already exists, please choose a new one"
 
   @selenium 
   Scenario: Click new creative

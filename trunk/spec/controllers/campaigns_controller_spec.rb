@@ -46,12 +46,15 @@ describe CampaignsController do
                 :save => true
               )
               @line_item = mock("Line Item")
+              @ad_hoc_source = mock("Ad Hoc Source")
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
                 "name" => "A New Campaign",
                 "campaign_code" => "ACODE",
                 "line_item" => @line_item
               }).returns(@campaign)
+              Audience.expects(:find_by_audience_code).returns(nil)
+              AdHocSource.expects(:new).returns(@ad_hoc_source)
             end
 
             it "should assign @campaign" do
@@ -61,8 +64,10 @@ describe CampaignsController do
 
             it "should associate audience with campaign" do
               @audience = stub_everything("Audience")
-              Audience.expects(:find_by_audience_code).with("AB17").
-                returns(@audience)
+              Audience.expects(:new).with(
+                "audience_code" => "AB17",
+                "description" => "an audience name"
+              ).returns(@audience)
               do_create
             end
 
@@ -127,7 +132,7 @@ describe CampaignsController do
 
           context "with valid attributes" do
             before(:each) do
-              @partner = mock("Partner", :partner_code => "ACODE") 
+              @partner = mock("Partner", :partner_code => "ACODE")
               @campaign = mock(
                 "Campaign", 
                 :update_attributes => true,
@@ -135,27 +140,26 @@ describe CampaignsController do
                 :save => true
               ) 
               @line_item = mock("Line Item")
-            end
-
-            it "should save @campaign" do
+              @audience = mock("Audience")
+              @ad_hoc_source = mock("Ad Hoc Source", :s3_location => "a/location")
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
                 "name" => "A New Campaign",
                 "campaign_code" => "ACODE",
                 "line_item" => @line_item
               }).returns(@campaign)
+              Audience.expects(:find_by_audience_code).with("AB17").returns(nil)
+              AdHocSource.expects(:new).returns(@ad_hoc_source)
+              Audience.expects(:new).returns(@audience)
+            end
+
+            it "should save @campaign" do
               CampaignsController.any_instance.
                 expects(:create_and_run_apn_sync_job).returns(true)
               do_create
             end
 
             it "should create and run apn sync job" do
-              LineItem.expects(:find).with("1").returns(@line_item)
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
               CampaignsController.any_instance.
                 expects(:create_and_run_apn_sync_job).returns(true)
               do_create
@@ -166,23 +170,28 @@ describe CampaignsController do
 
           context "with invalid apn sync params" do
             before(:each) do
-              @partner = mock("Partner", :partner_code => "ACODE") 
+              @partner = mock("Partner", :partner_code => "ACODE")
               @campaign = mock(
                 "Campaign", 
-                :partner => @partner, 
                 :update_attributes => true,
+                :partner => @partner, 
                 :save => true
               ) 
               @line_item = mock("Line Item")
-            end
-
-            it "should fail to create and run apn sync job" do
+              @audience = mock("Audience")
+              @ad_hoc_source = mock("Ad Hoc Source", :s3_location => "a/location")
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
                 "name" => "A New Campaign",
                 "campaign_code" => "ACODE",
                 "line_item" => @line_item
               }).returns(@campaign)
+              Audience.expects(:find_by_audience_code).with("AB17").returns(nil)
+              AdHocSource.expects(:new).returns(@ad_hoc_source)
+              Audience.expects(:new).returns(@audience)
+            end
+
+            it "should fail to create and run apn sync job" do
               CampaignsController.any_instance.
                 expects(:create_and_run_apn_sync_job).returns(false)
               do_create

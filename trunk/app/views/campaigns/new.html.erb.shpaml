@@ -1,6 +1,9 @@
 <script src="/javascripts/campaign_setup.js" type="text/javascript"></script>
 <script src="/javascripts/creative_list.js" type="text/javascript"></script>
 
+.notice
+  = notice
+
 h1 | Basics
 
 % form_for @campaign, :html => { :multipart => true } do |f|

@@ -18,11 +18,29 @@ class CampaignsController < ApplicationController
       return
     end
 
-    # assocaite audience
-    if @audience = Audience.find_by_audience_code(
-      params[:audience][:audience_code])
+    if @audience = Audience.find_by_audience_code(params[:audience][:audience_code])
+      # duplicate audience code
+      redirect_to(
+        new_campaign_path, 
+        :notice => "audience code #{@audience.audience_code} already exists," +
+        " please choose a new one"
+      )
+      return
+    else
+      # build new audience and source and associate them
+      source_type = params[:audience][:audience_source].delete(:type)
+      case source_type
+      when "Ad-Hoc"
+        @audience_source = 
+          AdHocSource.new(params[:audience].delete(:audience_source))
+      when "Retargeting"
+        @audience_source = 
+          RetargetingSource.new(params[:audience].delete(:audience_source))
+      end
+      @audience = Audience.new(params[:audience])
       if !@campaign.update_attributes({:audience => @audience})
         redirect_to(new_campaign_path, :notice => "failed to save audience")
+        return
       end
     end
 
@@ -45,14 +63,13 @@ class CampaignsController < ApplicationController
       # deal with audience source
       @sync_params = {}
 
-      if params[:audience][:audience_source][:type] == "Ad-Hoc"
-        @sync_params["s3_xguid_list_prefix"] = 
-          params[:audience][:audience_source][:s3_location]
+      if source_type == "Ad-Hoc"
+        @sync_params["s3_xguid_list_prefix"] = @audience_source.s3_location
         @sync_params["partner_code"] = @campaign.partner.partner_code
         @sync_params["audience_code"] = params[:audience][:audience_code]
         @sync_params["appnexus_segment_id"] = 
           params[:sync_rules][:ApN][:apn_segment_id]
-      elsif params[:audience][:audience_type] == "Retargeting"
+      elsif source_type == "Retargeting"
         render :text => "retargeting audience not yet supported"
         return
       else
