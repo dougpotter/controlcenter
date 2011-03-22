@@ -47,6 +47,10 @@ Given /^the standard ais, partner, line item, audience, creative size setup exis
     |  90    |  728  |   Leaderboard   |
     |  600   |  160  | Wide Skyscraper |
   })
+  When "the following ad_hoc_sources:", table(%{
+    |     s3_bucket    | load_status | beacon_load_id |
+    | bucket:/a/bucket |   pending   |     ABCNID     |
+  })
 end
 
 Given /^I fill in ad-hoc campaign information$/ do

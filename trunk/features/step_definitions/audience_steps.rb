@@ -27,3 +27,13 @@ Given /^the standard partner, line item, and campaign exist$/ do
    |     ACODE     |     ABC1       | Ford Campaign |
   })
 end
+
+Given /^the audience "([^"]*)" is associated with ad-hoc source "([^"]*)"$/ do |audience_code, ad_hoc_source_s3_bucket|
+  audience = Audience.find_by_audience_code(audience_code)
+  source = AdHocSource.find_by_s3_bucket(ad_hoc_source_s3_bucket)
+  audience.update_source(source)
+end
+
+Then /^I debug$/ do
+  debugger
+end

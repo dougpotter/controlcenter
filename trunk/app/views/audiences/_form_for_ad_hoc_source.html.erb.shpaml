@@ -1,18 +1,29 @@
-div class=dimension_input
-  label for="audience_audience_source_s3_bucket" | S3 Bucket: 
-  >br
-  = text_field 'audience[audience_source]', 's3_bucket'
-
-div class=dimension_input
-  label for="audience_audience_code" | Audience Code: 
-  >br
-  = text_field 'audience', 'audience_code'
-
 = hidden_field('audience[audience_source]', 'type', :value => "Ad-Hoc")
 
 % if !@campaign.audience_sources.blank?
+  div class=dimension_input
+    label for="audience_audience_source_s3_bucket" | S3 Bucket: 
+    >br
+    = text_field 'audience[audience_source]', 's3_bucket', :value => @campaign.audience_sources.first.s3_bucket
+
+  div class=dimension_input
+    label for="audience_audience_code" | Audience Code: 
+    >br
+    = text_field 'audience', 'audience_code', :value => @campaign.audience.audience_code
   = hidden_field('audience[audience_source]', 'load_status', :value => @campaign.audience_sources.first.load_status)
   = hidden_field('audience[audience_source]', 'beacon_load_id', :value => @campaign.audience_sources.first.beacon_load_id)
+
+
+% if @campaign.audience_sources.blank?
+  div class=dimension_input
+    label for="audience_audience_source_s3_bucket" | S3 Bucket: 
+    >br
+    = text_field 'audience[audience_source]', 's3_bucket'
+
+  div class=dimension_input
+    label for="audience_audience_code" | Audience Code: 
+    >br
+    = text_field 'audience', 'audience_code'
 
 div style='clear:both;'
   >br

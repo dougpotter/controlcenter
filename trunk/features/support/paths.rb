@@ -10,6 +10,9 @@ module NavigationHelpers
 
     when /the home\s?page/
       '/'
+    when /the new ad_hoc_source page/
+      new_ad_hoc_source_path
+
     when /the new creative page/
       new_creative_path
 
