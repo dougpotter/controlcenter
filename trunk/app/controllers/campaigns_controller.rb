@@ -87,30 +87,51 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.find(params[:id])
     params[:campaign][:line_item] = 
       LineItem.find(params[:campaign][:line_item])
-    params[:campaign][:audience] = 
-      Audience.find_by_audience_code(params[:audience][:audience_code])
 
-    if @campaign.update_attributes(params[:campaign])
 
+    if @audience = Audience.find_by_audience_code(params[:audience][:audience_code]) && !@campaign.has_audience?
+      # attempt to use duplicate audience code for new audience code
+      redirect_to(
+        edit_campaign_url(@campaign.id), 
+        :notice => "Audience code #{params[:audience][:audience_code]} already" +
+        " exists, please choose a new one"
+      )
+      return
+    elsif @audience = @campaign.audience
+      # updating existing audience
       source_type = params[:audience][:audience_source].delete(:type)
       case source_type
       when "Ad-Hoc"
         @audience_source = 
-          AdHocSource.new(params[:audience][:audience_source])
+          AdHocSource.new(params[:audience].delete(:audience_source))
       when "Retargeting"
         @audience_source = 
-          RetargetingSource.new(params[:audience][:audience_source])
+          RetargetingSource.new(params[:audience].delete(:audience_source))
       end
+      @audience.update_attributes(params[:audience])
+      @audience.update_source(@audience_source)
+    elsif params[:audience][:audience_code]
+      # associating brand new audience
+      source_type = params[:audience][:audience_source].delete(:type)
+      case source_type
+      when "Ad-Hoc"
+        @audience_source = 
+          AdHocSource.new(params[:audience].delete(:audience_source))
+      when "Retargeting"
+        @audience_source = 
+          RetargetingSource.new(params[:audience].delete(:audience_source))
+      end
+      @audience = Audience.create(params[:audience])
+      @audience.update_source(@audience_source)
+    end
 
-      if @campaign.audience.update_source(@audience_source)
+    params[:campaign][:audience] = @audience
+
+    if @campaign.update_attributes(params[:campaign])
         redirect_to(
           campaign_path(@campaign.id), 
           :notice => "campaign successfully updated"
         )
-      else
-        "campaign update failed on audience source update"
-      end
-
     else
       notice = "campaign update failed: "
       @campaign.errors.each do |attr,msg|

@@ -30,6 +30,7 @@ describe CampaignsController do
                 :line_item => "1" },
               :audience => {
                 :audience_code => "AB17",
+                :description => "an audience name",
                 :audience_source => { 
                   :s3_location => "/a/path/in/s3",
                   :type => "Ad-Hoc" } },
@@ -116,6 +117,7 @@ describe CampaignsController do
                 :line_item => "1" },
               :audience => {
                 :audience_code => "AB17",
+                :description => "an audience name",
                 :audience_source => { 
                   :s3_location => "/a/path/in/s3",
                   :type => "Ad-Hoc" } },
@@ -201,7 +203,7 @@ describe CampaignsController do
 
   describe "update" do
     context "an Ad-Hoc campaign" do
-      context "with a new source" do
+      context "source s3 bucket" do
         def do_update
           put :update, 
             :id => 1,
@@ -212,11 +214,11 @@ describe CampaignsController do
               :line_item => "1" },
             :audience => {
               :id => "2",
+              :description => "an audience name",
+              :audience_code => "ACODE",
               :audience_source => { 
                 :s3_bucket => "bucket:/a/path",
                 :type => "Ad-Hoc",
-                :load_status => "pending",
-                :beacon_load_id => "ABEACON123ID"
               }
             }
         end
@@ -232,16 +234,23 @@ describe CampaignsController do
           do_update
         end
 
-        it "should update audience source information" do
-          @audience = stub_everything("Audience")
+        it "should update audience source s3_bucket and nothing more" do
+          @audience_source = mock("Audience Source")
+          @audience = mock(
+            "Audience", 
+            :update_attributes => true,
+            :update_source => true
+          )
           @campaign = stub_everything(
             "Campaign", 
+            :audience => @audience,
             :update_attributes => true,
-            :audience => @audience
+            :has_audience? => true
           )
-          Campaign.expects(:find).with("1").returns(@campaign)
-          @ad_hoc_source = stub_everything("AdHocSource", :update_source => true)
-          AdHocSource.expects(:new).returns(@audience_source)
+          Campaign.expects(:find).returns(@campaign)
+          Audience.expects(:find_by_audience_code).with("ACODE").returns(nil)
+          AdHocSource.expects(:new).
+            with({'s3_bucket' => "bucket:/a/path"}).returns(@audience_source)
           do_update
         end
       end
@@ -249,7 +258,7 @@ describe CampaignsController do
   end
 
   context "an Retargeting campaign" do
-    context "with a new source" do
+    context "with a brand new source" do
       def do_update
         put :update, 
           :id => 1,
@@ -260,6 +269,8 @@ describe CampaignsController do
             :line_item => "1" },
           :audience => {
             :id => "2",
+            :audience_code => "ACODE",
+            :description => "an audience name",
             :audience_source => { 
               :referrer_regex => "a\.*regex",
               :type => "Retargeting"
@@ -279,15 +290,16 @@ describe CampaignsController do
       end
 
       it "should update audience source information" do
-        @audience = stub_everything("Audience")
-        @campaign = stub_everything(
-          "Campaign", 
-          :update_attributes => true,
-          :audience => @audience
+        @audience_source = mock("Audience Source")
+        @audience = mock(
+          "Audience", 
+          :update_source => true
         )
-        Campaign.expects(:find).with("1").returns(@campaign)
-        @retargeting_source = stub_everything("RetargetingSource", :update_source => true)
-        RetargetingSource.expects(:new).returns(@retargeting_source)
+        @campaign = stub_everything("Campaign", :update_attributes => true)
+        Campaign.expects(:find).returns(@campaign)
+        Audience.expects(:find_by_audience_code).with("ACODE").returns(nil)
+        Audience.expects(:create).returns(@audience)
+        RetargetingSource.expects(:new).with({'referrer_regex' => "a.*regex"}).returns(@audience_source)
         do_update
       end
     end

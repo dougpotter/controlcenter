@@ -33,7 +33,3 @@ Given /^the audience "([^"]*)" is associated with ad-hoc source "([^"]*)"$/ do |
   source = AdHocSource.find_by_s3_bucket(ad_hoc_source_s3_bucket)
   audience.update_source(source)
 end
-
-Then /^I debug$/ do
-  debugger
-end

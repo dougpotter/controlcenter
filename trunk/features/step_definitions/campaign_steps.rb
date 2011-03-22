@@ -75,7 +75,7 @@ end
 Given /^campaign "([^"]*)" is associated with audience "([^"]*)"$/ do |campaign_code, audience_code|
   @campaign = Campaign.find_by_campaign_code(campaign_code)
   @campaign.audience = Audience.find_by_audience_code(audience_code)
-  @campaign.save
+  @campaign.save!
 end
 
 def english_to_integer(english)

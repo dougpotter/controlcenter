@@ -4,12 +4,18 @@
   div class=dimension_input
     label for="audience_audience_source_s3_bucket" | S3 Bucket: 
     >br
-    = text_field 'audience[audience_source]', 's3_bucket', :value => @campaign.audience_sources.first.s3_bucket
+    = text_field 'audience[audience_source]', 's3_bucket', :value => @campaign.audience.latest_source.s3_bucket
 
   div class=dimension_input
     label for="audience_audience_code" | Audience Code: 
     >br
-    = text_field 'audience', 'audience_code', :value => @campaign.audience.audience_code
+    = @campaign.audience.audience_code
+
+  div class=dimension_input
+    label for="audience_description" | Audience Name: 
+    >br
+    = text_field 'audience', 'description', :value => @campaign.audience.description
+
   = hidden_field('audience[audience_source]', 'load_status', :value => @campaign.audience_sources.first.load_status)
   = hidden_field('audience[audience_source]', 'beacon_load_id', :value => @campaign.audience_sources.first.beacon_load_id)
 
@@ -24,6 +30,11 @@
     label for="audience_audience_code" | Audience Code: 
     >br
     = text_field 'audience', 'audience_code'
+
+  div class=dimension_input
+    label for="audience_description" | Audience Name: 
+    >br
+    = text_field 'audience', 'description'
 
 div style='clear:both;'
   >br
