@@ -49,7 +49,7 @@ module Workflow
               files.each do |file|
                 begin
                   workflow.extract_if_fully_uploaded(file.url)
-                rescue Workflow::FileAlreadyExtracted
+                rescue Workflow::FileAlreadyExtracted, Workflow::FileExtractionInProgress
                   # ignore
                 end
               end
