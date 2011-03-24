@@ -26,7 +26,10 @@ module Workflow
           end
           
           if index == options[:retry_count]
-            raise
+            message = "#{e.message} (after #{options[:retry_count]} retries)"
+            new_exc = e.class.new(message)
+            new_exc.set_backtrace(e.backtrace)
+            raise new_exc
           else
             if extra_callback
               extra_callback.call(e)
@@ -47,7 +50,9 @@ module Workflow
     def retry_aws_errors(options)
       callback = lambda do |exception|
         http_code = exception.http_code.to_i
-        if http_code < 500 || http_code >= 600
+        if http_code == 403 && exception.include?(/^RequestTimeTooSkewed:/)
+          # retry
+        elsif http_code < 500 || http_code >= 600
           # only retry 5xx errors
           raise
         end
