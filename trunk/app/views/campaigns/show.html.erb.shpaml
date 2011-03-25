@@ -10,7 +10,7 @@ h1 | Campaign Information
   p
     Line Item: <%= @campaign.line_item.name %>
   p
-    Audience Type: <%= @campaign.campaign_type %>
+    Audience Type: <%= @campaign.source_type %>
   p
     Audience: <%= @campaign.audience.audience_code_and_description if @campaign.audience %>
   p

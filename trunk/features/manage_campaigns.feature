@@ -21,6 +21,7 @@ Feature: Manage campaigns
       | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |
       |     BCODE     |  bname |   flash    |         Medium            | http://www.what.com |
       |     CCODE     |  cname |   flash    |         Medium            | http://www.what.com |
+    And the audience "HNXT" is associated with ad-hoc source "bucket:/a/bucket"
     And campaign "ACODE" is associated with audience "HNXT"
     And campaign "ACODE" is associated with ais "AdX"
     When I am on the show campaign page for ACODE

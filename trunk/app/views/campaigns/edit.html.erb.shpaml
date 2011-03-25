@@ -9,7 +9,8 @@ div class=notice
 % form_for @campaign do |f|
   = render :partial => 'form'  
   div id=audience_source_section
-    = render :partial => 'audiences/form_for_ad_hoc_source', :locals => { :campaign => @campaign }
+    % partial_string = "audiences/form_for_" + @campaign_types.first.class.to_s.underscore
+    = render :partial => partial_string
   div style="clear: both;"
     >br
   = submit_tag "Save Edits"

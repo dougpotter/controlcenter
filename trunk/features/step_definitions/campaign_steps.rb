@@ -155,6 +155,7 @@ Given /^campaign "([^"]*)" is associated with ais "([^"]*)"$/ do |campaign_code,
     :ad_inventory_source_id => ais.id,
     :campaign_id => campaign.id
   })
+
   cic.save
 end
 
@@ -162,4 +163,8 @@ Then /^I should see the configured ad inventory sources for "([^"]*)"$/ do |camp
   for ais in Campaign.find_by_campaign_code(campaign_code).aises do
     Then "I should see \"#{ais.name}\""
   end
+end
+
+Then /^I wait for page to load$/ do
+  @seleniu.wait_for_condition "selenium.browserbot.getCurrentWindow().document.ready(function(){ return true;});"
 end

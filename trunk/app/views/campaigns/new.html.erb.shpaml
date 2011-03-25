@@ -12,7 +12,8 @@ h1 | Basics
   h1 | Audience Source
   
   div id=audience_source_section
-    = render :partial => '/audiences/form_for_ad_hoc_source'
+    % partial_string = "audiences/form_for_" + @campaign_types.first.class.to_s.underscore
+    = render :partial => partial_string
 
   div class="style:clear;"
     >br

@@ -8,5 +8,10 @@ div class=dimension_input
   >br
   = text_field 'audience_source', 'referrer_regex'
 
+div class=dimension_input
+  label for="audience_audience_code" | Audience Code:
+  >br
+  = text_field 'audience', 'audience_code'
+
 div style='clear:both;'
   >br

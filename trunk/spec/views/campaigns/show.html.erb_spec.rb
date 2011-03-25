@@ -38,7 +38,7 @@ describe "/campaigns/show.html.erb" do
       "Campaign",
       :campaign_code_and_description => "ABC - description",
       :line_item => @line_item,
-      :campaign_type => "Ad-Hoc",
+      :source_type => "Ad-Hoc",
       :audience => @audience,
       :name => "campaign name",
       :campaign_code => "CACO",

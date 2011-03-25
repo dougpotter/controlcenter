@@ -2,8 +2,7 @@ class CampaignsController < ApplicationController
   def new
     @campaign = Campaign.new
     @line_items = LineItem.all
-    @campaign_types = [ "Ad-Hoc", "Retargeting" ]
-    #@aises = AdInventorySource.all
+    @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
     @creative_sizes = CreativeSize.all
     @creative = Creative.new
@@ -38,6 +37,7 @@ class CampaignsController < ApplicationController
           RetargetingSource.new(params[:audience].delete(:audience_source))
       end
       @audience = Audience.new(params[:audience])
+      @audience.update_source(@audience_source)
       if !@campaign.update_attributes({:audience => @audience})
         redirect_to(new_campaign_path, :notice => "failed to save audience")
         return
@@ -97,14 +97,19 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.find(params[:id])
     @line_items = LineItem.all
     @selected_line_item = @campaign.line_item.id
-    @campaign_types = [ "Ad-Hoc", "Retargeting" ]
+    @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
+  end
+
+  def matching_source_types?(campaign, source)
+    if campaign.audience.latest_source.class.to_s ==source.class.to_s
+      return true
+    end
   end
 
   def update
     @campaign = Campaign.find(params[:id])
     params[:campaign][:line_item] = 
       LineItem.find(params[:campaign][:line_item])
-
 
     if @audience = Audience.find_by_audience_code(params[:audience][:audience_code]) && !@campaign.has_audience?
       # attempt to use duplicate audience code for new audience code

@@ -16,12 +16,11 @@ class AudiencesController < ApplicationController
     params[:audience][:campaign_id] = Campaign.find(params[:audience][:campaign_id]).id
     @audience = Audience.new(params[:audience])
 
-    @audience_type = params[:audience_source].delete(:type)
-    if @audience_type =="Ad-Hoc"
-      @audience_source = AdHocSource.new(params[:audience_source])
-    elsif @audience_type == "Retargeting"
-      @audience_source = RetargetingSource.new(params[:audience_source])
-    else
+    begin
+      @audience_source = ActiveRecord.const_get(
+        params[:audience_source].delete(:type)
+      ).new(params[:audience_source])
+    rescue
       raise "Audience type not supplied or type supplied was not recognized"
     end
 
@@ -46,12 +45,25 @@ class AudiencesController < ApplicationController
   end
 
   def audience_source_form
-    if params[:source] == 'Retargeting'
-      render :partial => 'form_for_retargeting_source'
-    elsif params[:source] == 'Ad-Hoc'
-      render :partial => 'form_for_ad_hoc_source'
+    partial_translation = {
+      "AdHocSource" => 'form_for_ad_hoc_source',
+      "RetargetingSource" => 'form_for_retargeting_source'
+    }
+
+    if !params[:campaign_code].blank?
+      # must ensure consistent source
+      @campaign = Campaign.find_by_campaign_code(params[:campaign_code])
+      if @campaign.consistent_source(params[:source])
+        # consistent sourced, render tempalte
+        render :partial => partial_translation[params[:source]]
+      else
+        # in consistent sources, return error
+        render :nothing => true, :status => :forbidden
+      end
     else
-      render "invalid or absent audience type"
+      # we're on campaign edit, campaign doesn't have a source yet
+      @campaign = Campaign.new
+      render :partial => partial_translation[params[:source]]
     end
   end
 

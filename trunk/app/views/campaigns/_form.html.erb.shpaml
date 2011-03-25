@@ -6,7 +6,10 @@ div class=dimension_input
 div class=dimension_input
   label for="campaign_campaign_type" | Audience Type:
   >br 
-  = select('campaign', 'campaign_type', options_for_select(@campaign_types))
+  % if !@campaign.has_audience?
+    = select('campaign', 'campaign_type', options_from_collection_for_select(@campaign_types, :class_name, :display_name, @campaign.source_type))
+  % if @campaign.has_audience?
+    = @campaign.source_type
 
 div class=dimension_input
   label for="campaign_name" | Campaign Name:

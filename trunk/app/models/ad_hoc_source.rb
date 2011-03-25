@@ -6,4 +6,12 @@ class AdHocSource < AudienceSource
   def same_as(other_source)
     self.s3_bucket == other_source.s3_bucket
   end
+
+  def display_name
+    "Ad-Hoc"
+  end
+
+  def class_name
+    self.class.to_s
+  end
 end

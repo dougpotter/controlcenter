@@ -20,7 +20,7 @@ describe AudiencesController, "create" do
           :campaign_id => 1,
           :description => "desc" },
           :audience_source => { 
-          :type => "Ad-Hoc"
+          :type => "AdHocSource"
         }
       end
 
@@ -62,7 +62,7 @@ describe AudiencesController, "create" do
           :campaign_id => 1,
           :description => "desc" },
           :audience_source => { 
-          :type => "Ad-Hoc",
+          :type => "AdHocSource",
           :s3_bucket => "bucket:/a/path"
         }
       end
@@ -101,7 +101,7 @@ describe AudiencesController, "create" do
           :campaign_id => 1,
           :description => "desc" },
           :audience_source => { 
-          :type => "Retargeting",
+          :type => "RetargetingSource",
           :referrer_regex => "a*regex"
         }
       end

@@ -78,6 +78,24 @@ class Campaign < ActiveRecord::Base
     end
   end
 
+  def source_type
+    if self.audience && self.audience.latest_source
+      self.audience.latest_source.display_name
+    else
+      "none"
+    end
+  end
+
+  def consistent_source(source_as_string)
+    if !self.has_audience?
+      return true
+    elsif self.source_type == source_as_string
+      return true
+    else
+      return false
+    end
+  end
+
   def update_audience_source(audience_source)
     if self.has_audience?
       self.audience.update_source(audience_source)

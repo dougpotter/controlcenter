@@ -55,6 +55,11 @@ describe CampaignsController do
               }).returns(@campaign)
               Audience.expects(:find_by_audience_code).returns(nil)
               AdHocSource.expects(:new).returns(@ad_hoc_source)
+              @audience = stub_everything("Audience", :update_source => true)
+              Audience.expects(:new).with(
+                "audience_code" => "AB17",
+                "description" => "an audience name"
+              ).returns(@audience)
             end
 
             it "should assign @campaign" do
@@ -63,11 +68,6 @@ describe CampaignsController do
             end
 
             it "should associate audience with campaign" do
-              @audience = stub_everything("Audience")
-              Audience.expects(:new).with(
-                "audience_code" => "AB17",
-                "description" => "an audience name"
-              ).returns(@audience)
               do_create
             end
 
@@ -140,7 +140,7 @@ describe CampaignsController do
                 :save => true
               ) 
               @line_item = mock("Line Item")
-              @audience = mock("Audience")
+              @audience = mock("Audience", :update_source => true)
               @ad_hoc_source = mock("Ad Hoc Source", :s3_location => "a/location")
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
@@ -178,7 +178,7 @@ describe CampaignsController do
                 :save => true
               ) 
               @line_item = mock("Line Item")
-              @audience = mock("Audience")
+              @audience = mock("Audience", :update_source => true)
               @ad_hoc_source = mock("Ad Hoc Source", :s3_location => "a/location")
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
@@ -264,52 +264,53 @@ describe CampaignsController do
         end
       end
     end
-  end
 
-  context "an Retargeting campaign" do
-    context "with a brand new source" do
-      def do_update
-        put :update, 
-          :id => 1,
-          :campaign => { 
-            :name => "name",
-            :campaign_type => "Ad-Hoc",
-            :campaign_code => "ACODE",
-            :line_item => "1" },
-          :audience => {
-            :id => "2",
-            :audience_code => "ACODE",
-            :description => "an audience name",
-            :audience_source => { 
-              :referrer_regex => "a\.*regex",
-              :type => "Retargeting"
+    context "an Retargeting campaign" do
+      context "with a brand new source" do
+        def do_update
+          put :update, 
+            :id => 1,
+            :campaign => { 
+              :name => "name",
+              :campaign_type => "Ad-Hoc",
+              :campaign_code => "ACODE",
+              :line_item => "1" },
+            :audience => {
+              :id => "2",
+              :audience_code => "ACODE",
+              :description => "an audience name",
+              :audience_source => { 
+                :referrer_regex => "a\.*regex",
+                :type => "Retargeting"
+              }
             }
-          }
-      end
+        end
 
-      it "should update attributes of campaign passed in params[:id]" do
-        @audience = stub_everything("Audience")
-        @campaign = stub_everything(
-          "Campaign", 
-          :update_attributes => true,
-          :audience => @audience
-        )
-        Campaign.expects(:find).with("1").returns(@campaign)
-        do_update
-      end
+        it "should update attributes of campaign passed in params[:id]" do
+          @audience = stub_everything("Audience")
+          @campaign = stub_everything(
+            "Campaign", 
+            :update_attributes => true,
+            :audience => @audience
+          )
+          Campaign.expects(:find).with("1").returns(@campaign)
+          do_update
+        end
 
-      it "should update audience source information" do
-        @audience_source = mock("Audience Source")
-        @audience = mock(
-          "Audience", 
-          :update_source => true
-        )
-        @campaign = stub_everything("Campaign", :update_attributes => true)
-        Campaign.expects(:find).returns(@campaign)
-        Audience.expects(:find_by_audience_code).with("ACODE").returns(nil)
-        Audience.expects(:create).returns(@audience)
-        RetargetingSource.expects(:new).with({'referrer_regex' => "a.*regex"}).returns(@audience_source)
-        do_update
+        it "should update audience source information" do
+          @audience_source = mock("Audience Source")
+          @audience = mock(
+            "Audience", 
+            :update_source => true
+          )
+          @campaign = stub_everything("Campaign", :update_attributes => true)
+          Campaign.expects(:find).returns(@campaign)
+          Audience.expects(:find_by_audience_code).with("ACODE").returns(nil)
+          Audience.expects(:create).returns(@audience)
+          RetargetingSource.expects(:new).
+            with({'referrer_regex' => "a.*regex"}).returns(@audience_source)
+          do_update
+        end
       end
     end
   end

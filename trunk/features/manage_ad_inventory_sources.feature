@@ -48,7 +48,7 @@ Feature: Manage AISes
     Then I should see "Google successfully updated"
     And I should not see "Google Ad Exchange"
 
-  @selenium @wip
+  @selenium
   Scenario: Delete AIS
     Given the following ad_inventory_sources:
       |         name          | ais_code |

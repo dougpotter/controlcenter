@@ -14,4 +14,12 @@ class RetargetingSource < AudienceSource
     self.referrer_regex == other_source.referrer_regex &&
       self.request_regex == other_source.request_regex
   end
+
+  def display_name
+    "Retargeting"
+  end
+
+  def class_name
+    self.class.to_s
+  end
 end
