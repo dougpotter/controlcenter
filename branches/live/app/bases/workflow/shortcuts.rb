@@ -145,7 +145,7 @@ module Workflow
             [time.strftime('%Y%m%d'), time.hour]
           end
         else
-          lookback_from_day = params[lookback_from_key] || channel.lookback_from_hour / 24
+          lookback_from_day = params[lookback_from_key] || (7 * channel.lookback_from_hour + 23) / 24
           lookback_from_day += lookback_offset
           lookback_to_day = params[lookback_to_key] || channel.lookback_to_hour / 24
           lookback_to_day += lookback_offset
