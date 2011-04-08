@@ -13,6 +13,8 @@ config/schedule.rb.production
 config/workflows/*.yml
 config/workflows/*.yml.production
 config/cap_mailer_settings.rb
+config/dropbox.yml
+config/dropbox.yml.production
 db/development_structure.sql
 doc/debug.rtf
 log/*.log
