@@ -17,6 +17,7 @@
 # Creative is the visual component of an ad
 class Creative < ActiveRecord::Base
   belongs_to :creative_size
+  belongs_to :partner
   has_many :click_counts
   has_many :impression_counts
 

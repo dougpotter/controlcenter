@@ -7,8 +7,6 @@ describe "creatives/edit.html.erb" do
     creative_sizes = stub_everything("CreativeSizes")
     template.expects(:collection_select).returns(
       "<option value=\"an option\"></option>")
-    template.expects(:options_from_collection_for_select).returns(
-      "<option value=\"an option\"></option>")
     assigns[:creative] = creative 
     assigns[:creative_sizes] = creative_sizes
     render
@@ -19,8 +17,6 @@ describe "creatives/edit.html.erb" do
     creative.expects(:class).times(4).returns(Creative)
     creative_sizes = stub_everything("CreativeSizes")
     template.expects(:collection_select).returns(
-      "<option value=\"an option\"></option>")
-    template.expects(:options_from_collection_for_select).returns(
       "<option value=\"an option\"></option>")
     assigns[:creative] = creative 
     assigns[:creative_sizes] = creative_sizes
