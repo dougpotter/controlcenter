@@ -84,4 +84,13 @@ class Creative < ActiveRecord::Base
   def unconfigure(campaign_inventory_config)
     self.campaign_inventory_configs.delete(campaign_inventory_config)
   end
+
+  def self.generate_creative_code
+    CodeGenerator.generate_unique_code(
+      self,
+      :creative_code,
+      :length => 5,
+      :alphabet => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    )
+  end
 end
