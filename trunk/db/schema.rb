@@ -199,9 +199,11 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
     t.datetime "verified_at"
     t.date     "label_date"
     t.integer  "label_hour"
+    t.date     "name_date"
   end
 
   add_index "data_provider_files", ["data_provider_channel_id", "url"], :name => "index_data_provider_files_on_data_provider_channel_id_and_url", :unique => true
+  add_index "data_provider_files", ["name_date"], :name => "index_data_provider_files_on_name_date"
 
   create_table "data_providers", :force => true do |t|
     t.string "name", :null => false

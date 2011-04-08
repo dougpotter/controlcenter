@@ -141,7 +141,11 @@ describe CampaignsController do
               ) 
               @line_item = mock("Line Item")
               @audience = mock("Audience", :update_source => true)
-              @ad_hoc_source = mock("Ad Hoc Source", :s3_location => "a/location")
+              @ad_hoc_source = mock(
+                "Ad Hoc Source", 
+                :s3_location => "a/location",
+                :class_name => "AdHocSource"
+              )
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
                 "name" => "A New Campaign",
@@ -179,7 +183,11 @@ describe CampaignsController do
               ) 
               @line_item = mock("Line Item")
               @audience = mock("Audience", :update_source => true)
-              @ad_hoc_source = mock("Ad Hoc Source", :s3_location => "a/location")
+              @ad_hoc_source = mock(
+                "Ad Hoc Source", 
+                :s3_location => "a/location",
+                :class_name => "AdHocSource"
+              )
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
                 "name" => "A New Campaign",

@@ -27,15 +27,7 @@ class CampaignsController < ApplicationController
       return
     else
       # build new audience and source and associate them
-      source_type = params[:audience][:audience_source].delete(:type)
-      case source_type
-      when "Ad-Hoc"
-        @audience_source = 
-          AdHocSource.new(params[:audience].delete(:audience_source))
-      when "Retargeting"
-        @audience_source = 
-          RetargetingSource.new(params[:audience].delete(:audience_source))
-      end
+      @audience_source = source_from_params
       @audience = Audience.new(params[:audience])
       @audience.update_source(@audience_source)
       if !@campaign.update_attributes({:audience => @audience})
@@ -63,13 +55,13 @@ class CampaignsController < ApplicationController
       # deal with audience source
       @sync_params = {}
 
-      if source_type == "Ad-Hoc"
+      if @audience_source.class_name == "AdHocSource"
         @sync_params["s3_xguid_list_prefix"] = @audience_source.s3_location
         @sync_params["partner_code"] = @campaign.partner.partner_code
         @sync_params["audience_code"] = params[:audience][:audience_code]
         @sync_params["appnexus_segment_id"] = 
           params[:sync_rules][:ApN][:apn_segment_id]
-      elsif source_type == "Retargeting"
+      elsif @audience_source.class_name == "RetargetingSource"
         render :text => "retargeting audience not yet supported"
         return
       else
@@ -121,32 +113,14 @@ class CampaignsController < ApplicationController
       return
     elsif @audience = @campaign.audience
       # updating existing audience
-      source_type = params[:audience][:audience_source].delete(:type)
-      case source_type
-      when "Ad-Hoc"
-        @audience_source = 
-          AdHocSource.new(params[:audience].delete(:audience_source))
-      when "Retargeting"
-        @audience_source = 
-          RetargetingSource.new(params[:audience].delete(:audience_source))
-      end
       @audience.update_attributes(params[:audience])
-      @audience.update_source(@audience_source)
     elsif params[:audience][:audience_code]
       # associating brand new audience
-      source_type = params[:audience][:audience_source].delete(:type)
-      case source_type
-      when "Ad-Hoc"
-        @audience_source = 
-          AdHocSource.new(params[:audience].delete(:audience_source))
-      when "Retargeting"
-        @audience_source = 
-          RetargetingSource.new(params[:audience].delete(:audience_source))
-      end
       @audience = Audience.create(params[:audience])
-      @audience.update_source(@audience_source)
     end
 
+    @audience_source = source_from_params
+    @audience.update_source(@audience_source)
     params[:campaign][:audience] = @audience
 
     if @campaign.update_attributes(params[:campaign])
@@ -174,5 +148,18 @@ class CampaignsController < ApplicationController
 
   def show
     @campaign = Campaign.find(params[:id])
+  end
+
+  def source_from_params
+    source_type = params[:audience][:audience_source].delete(:type)
+    case source_type
+    when "Ad-Hoc"
+      @audience_source = 
+        AdHocSource.new(params[:audience].delete(:audience_source))
+    when "Retargeting"
+      @audience_source = 
+        RetargetingSource.new(params[:audience].delete(:audience_source))
+    end
+    return @audience_source
   end
 end
