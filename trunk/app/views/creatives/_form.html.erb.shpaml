@@ -2,16 +2,24 @@
 <script src="/javascripts/creatives.js" type="text/javascript"></script>
 
 div class=dimension_input
-  label for='creative_landing_page_url' | Landing Page URL:
-  >br
-  = text_field('creative', 'landing_page_url', :size => 101)
-
-div class=dimension_input
   label for='creative_partner' | Partner:
   >br
   = collection_select('creative', 'partner', @partners, 'id', 'name', :selected => @creative.partner_id)
 
-.creative_image_panel
+div class=dimension_input 
+  label for='creative_landing_page_url' | Landing Page URL:
+  >br
+  = text_field('creative', 'landing_page_url', :size => 101)
+
+div style='clear:both;'
+  >br
+
+div class=dimension_input 
+  label for='creative_campaigns' | Campaign:
+  >br
+  = collection_select('creative', 'campaigns', @campaigns, 'id', 'name', { :selected => @creative.campaigns.map { |c| c.id } }, { :multiple => true })
+
+.creative_image_panel 
   % if @creative.has_image?
     #creative_image 
       = image_tag_for_edit(@creative)

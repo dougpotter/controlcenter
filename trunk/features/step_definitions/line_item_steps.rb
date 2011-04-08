@@ -35,3 +35,9 @@ Then /^the "([^"]*)" field should display "([^"]*)"$/ do |label, selected|
   end
   desired_element_selected.should == true
 end
+
+Given /^the line item "([^"]*)" is associated with partner "([^"]*)"$/ do |line_item_code, partner_code|
+  @line_item = LineItem.find_by_line_item_code(line_item_code)
+  @partner = Partner.find_by_partner_code(partner_code)
+  @line_item.update_attributes({:partner => @partner})
+end

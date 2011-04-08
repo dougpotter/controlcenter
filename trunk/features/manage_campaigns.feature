@@ -18,9 +18,9 @@ Feature: Manage campaigns
   Scenario: show campaign
     Given the standard ad-hoc campaign and associated entities exist
     And the following creatives are associated with campaign "ACODE":
-      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |
-      |     BCODE     |  bname |   flash    |         Medium            | http://www.what.com |
-      |     CCODE     |  cname |   flash    |         Medium            | http://www.what.com |
+      | creative_code |  name  | media_type | creative_size_common_name |   landing_page_url  |   file name |
+      |     BCODE     |  bname |   flash    |         Medium            | http://www.what.com |  160x600_8F_Interim_final.gif |
+      |     CCODE     |  cname |   flash    |         Medium            | http://www.what.com |  160x600_8F_Interim_final.gif |
     And the audience "HNXT" is associated with ad-hoc source "bucket:/a/bucket"
     And campaign "ACODE" is associated with audience "HNXT"
     And campaign "ACODE" is associated with ais "AdX"

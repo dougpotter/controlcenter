@@ -13,6 +13,15 @@ Given /^the following creatives are associated with campaign "([^"]*)":$/ do |ca
       hash["creative_size_id"] = CreativeSize.find_by_common_name(
         hash.delete("creative_size_common_name")
       ).id
+      hash["partner_id"] = line_item.partner.id
+      hash["image"] = File.open(
+        File.join(
+          RAILS_ROOT,
+          "public",
+          "images",
+          "for_testing",
+          hash.delete("file name") 
+      ))
       creative = Creative.new(hash)
       creative.campaigns << campaign
       creative.line_items << line_item
@@ -42,8 +51,30 @@ Then /^I should see a "([^"]*)" JS dialog$/ do |message|
   selenium.confirmation.should eql(message)
 end
 
-Given /^creative "([^"]*)" is associated with campaign "([^"]*)"$/ do |creative_code, campaign_code|
-  @creative = Creative.find_by_creative_code(creative_code)
-  @creative.campaigns << Campaign.find_by_campaign_code(campaign_code)
-  @creative.save
+Then /^then I remove all creatives from apn$/ do
+  require 'curl'
+  agent = Curl::Easy.new('https://api.displaywords.com/auth')
+  agent.enable_cookies = true
+
+  auth = ActiveSupport::JSON.encode({
+    :auth => {
+    "username" => "michael@xgraph.com",
+    "password" => "9d55cdbb" }
+  })
+  agent.post_body = auth
+  agent.http_post
+
+  apn_token = ActiveSupport::JSON.decode(agent.body_str)["response"]["token"]
+  agent.cookies = "Authorization: #{apn_token}"
+  
+  agent.url = "https://api.displaywords.com/creative?advertiser_id=6755"
+  agent.http_get
+  test_creatives = 
+    ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
+  test_creative_ids = test_creatives.map { |c| c["id"] }
+  for creative_id in test_creative_ids
+    agent.url = 
+      "https://api.displaywords.com/creative?advertiser_id=6755&id=#{creative_id}"
+    agent.http_delete
+  end
 end

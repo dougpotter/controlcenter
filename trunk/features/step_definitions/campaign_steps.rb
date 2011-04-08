@@ -51,6 +51,7 @@ Given /^the standard ais, partner, line item, audience, creative size setup exis
     |     s3_bucket    | load_status | beacon_load_id |
     | bucket:/a/bucket |   pending   |     ABCNID     |
   })
+  When "the line item \"ABC1\" is associated with partner \"11111\""
 end
 
 Given /^I fill in ad-hoc campaign information$/ do
@@ -71,6 +72,7 @@ Given /^the standard ad-hoc campaign and associated entities exist$/ do
     |      name      | campaign_code | line_item_code | campaign_type |
     |  Ford Campaign |     ACODE     |     ABC1       |    Ad-Hoc     |
   })
+  When "the campaign \"ACODE\" is relatd to line item \"ABC1\""
 end
 
 Given /^campaign "([^"]*)" is associated with audience "([^"]*)"$/ do |campaign_code, audience_code|
@@ -167,4 +169,11 @@ end
 
 Then /^I wait for page to load$/ do
   @seleniu.wait_for_condition "selenium.browserbot.getCurrentWindow().document.ready(function(){ return true;});"
+end
+
+Given /^the campaign "([^"]*)" is relatd to line item "([^"]*)"$/ do |campaign_code, line_item_code|
+  @line_item = LineItem.find_by_line_item_code(line_item_code)
+  Campaign.find_by_campaign_code(campaign_code).update_attributes({
+    :line_item => LineItem.find_by_line_item_code(line_item_code)
+  })
 end

@@ -1,4 +1,8 @@
 class CreativesController < ApplicationController
+  skip_before_filter :verify_authenticity_token
+
+  attr_accessor :apn_token
+
   def index
     partner_id = params[:partner_id]
     campaign_code = params[:campaign_code]
@@ -49,8 +53,23 @@ class CreativesController < ApplicationController
   end
 
   def create
+    require 'image_spec'
+
+    format_map = {
+      "gif" => "image",
+      "jpeg" => "image",
+      "jpg" => "image",
+      "png" => "image",
+      "swf" => "flash"
+    }
+
     @creative = Creative.new
-    @creative.creative_size_id = params[:creative].delete(:creative_size)
+    if creative_image = ImageSpec.new(params[:creative][:image])
+      params[:creative][:creative_size] = CreativeSize.find_by_height_and_width(
+        creative_image.height,
+        creative_image.width
+      )
+    end
 
     if !params[:creative][:campaigns].blank?
       params[:creative][:campaigns] = params[:creative][:campaigns].to_a
@@ -60,26 +79,58 @@ class CreativesController < ApplicationController
       end
     end
 
+
+    params[:creative][:partner] = Partner.find(params[:creative][:partner])
+    params[:creative][:creative_code] = Creative.generate_creative_code
+
     @creative.attributes = params[:creative]
 
+    format = format_map[params[:creative][:image].original_filename.match(/.+\.(.+)/)[1]]
+    apn_json = ActiveSupport::JSON.encode({
+      :creative => {
+        :file_name => params[:creative][:image].original_filename,
+        :name => params[:creative][:image].original_filename,
+        :format => format,
+        :width => creative_image.width,
+        :height => creative_image.height,
+        :click_url => params[:creative][:landing_page_url],
+        :content => ActiveSupport::Base64.encode64(params[:creative][:image].read),
+        :track_clicks => "true",
+        :code => params[:creative][:creative_code],
+        :flash_click_variable => "clickTag" }
+    })
+
     if request.referer == new_campaign_url
-      if @creative.save
+      if @creative.save && apn_new(@creative.partner.partner_code, apn_json)
         @creative = Creative.new
         @creative_sizes = CreativeSize.all(:order => 'common_name')
-        render :partial => 'form_without_campaign'
+        @partners = Partner.all
+        @campaigns = Campaign.all
+        redirect_to(new_creative_path, :notice => "creative successfully created")
         return
       else 
         render :text => ""
         return
       end
     else
-      if @creative.save
-        redirect_to new_creative_path, :notice => "creative successfully created"
-        return
+      if @creative.save && apn_new(@creative.partner.partner_code, apn_json)
+        redirect_to(new_creative_path, :notice => "creative successfully created")
       else
-        render :action => :new
-        return
+        redirect_to(new_creative_path, :notice => "something went wrong")
       end
+    end
+  end
+
+  def apn_new(partner_code, apn_json)
+    partner_code = "77777"
+    agent = authenticated_apn_agent
+    agent.url = "https://api.displaywords.com/creative?advertiser_code=#{partner_code}"
+    agent.post_body = apn_json
+    agent.http_post
+    if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
+      return true
+    else
+      return false
     end
   end
 
@@ -126,12 +177,23 @@ class CreativesController < ApplicationController
     @creative = Creative.find(params[:id])
     @creative_sizes = CreativeSize.all
     @campaigns = Campaign.all
+    @partners = Partner.all
   end
 
   def update
+    require 'image_spec'
+
     @creative = Creative.find(params[:id])
     @campaigns = [ Campaign.find(params[:creative].delete("campaigns")) ].flatten
-    @creative_size = CreativeSize.find(params[:creative].delete("creative_size"))
+    if params[:creative][:image] 
+      creative_image = ImageSpec.new(params[:creative][:image])
+      @creative_size = CreativeSize.find_by_height_and_width(
+        creative_image.height,
+        creative_image.width
+      )
+    else
+      @creative_size = CreativeSize.find(@creative.creative_size)
+    end
     params[:creative][:campaigns] = @campaigns
     params[:creative][:creative_size] = @creative_size
 
@@ -144,6 +206,8 @@ class CreativesController < ApplicationController
         end
       end    
     end
+
+    params[:creative][:partner] = Partner.find(params[:creative][:partner])
 
     if @creative.update_attributes(params[:creative])
       redirect_to(new_creative_path, :notice => "creative successfully updated")
@@ -167,5 +231,23 @@ class CreativesController < ApplicationController
     @creative_sizes = CreativeSize.all
     render :partial => 'form_without_line_item', 
       :locals => { :creative_number => @num }
+  end
+
+  def authenticated_apn_agent
+    require 'curl'
+    agent = Curl::Easy.new('https://api.displaywords.com/auth')
+    agent.enable_cookies = true
+    
+    auth = ActiveSupport::JSON.encode({
+      :auth => {
+        "username" => "michael@xgraph.com",
+        "password" => "9d55cdbb" }
+    })
+    agent.post_body = auth
+    agent.http_post
+    
+    apn_token = ActiveSupport::JSON.decode(agent.body_str)["response"]["token"]
+    agent.cookies = "Authorization: #{apn_token}"
+    return agent
   end
 end

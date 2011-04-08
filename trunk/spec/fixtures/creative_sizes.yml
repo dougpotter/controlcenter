@@ -1,5 +1,17 @@
 creative_size_one:
   id: 1
-  height: 300
+  height: 90
   width: 720
+  common_name: creative size
+
+creative_size_two:
+  id: 2
+  height: 250
+  width: 300
+  common_name: creative size
+
+creative_size_three:
+  id: 3
+  height: 600
+  width: 160
   common_name: creative size
