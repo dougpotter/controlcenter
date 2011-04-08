@@ -42,6 +42,8 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect "/audiences/audience_source_form", :controller => "audiences", :action => "audience_source_form"
 
+  map.connect "/campaigns/filtered_by_partner", :controller => "campaigns", :action => "options_filtered_by_partner"
+
   
   # Facts are known on the outside as "metrics"
   map.resources :facts, :as => "metrics"

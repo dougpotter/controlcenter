@@ -30,6 +30,7 @@ Factory.define :creative do |c|
   c.media_type "media type"
   c.creative_size_id {Factory(:creative_size).id}
   c.sequence(:creative_code) { |n| "294v#{n}" }
+  c.partner_id { Factory(:partner).id }
 end
 
 Factory.define :ad_inventory_source do |f|

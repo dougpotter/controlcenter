@@ -212,7 +212,7 @@ class CreativesController < ApplicationController
     if @creative.update_attributes(params[:creative])
       redirect_to(new_creative_path, :notice => "creative successfully updated")
     else
-      redirect_to(edit_creative_path, :notice => "something's wrong")
+      redirect_to(new_creative_path, :notice => "something's wrong")
     end
   end
 

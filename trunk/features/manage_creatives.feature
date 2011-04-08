@@ -63,3 +63,12 @@ Feature: Manage creatives
     When I press "Save Edits"
     Then I should see "creative successfully updated"
     And I should see "New Creative"
+
+  @selenium 
+  Scenario: Filter campaigns by choosing a partner
+    Given the standard ad-hoc campaign and associated entities exist
+    And the secondary ad-hoc campaign and associated entities exist
+    And I am on the new creative page
+    When I select "Ford" from "Partner"
+    Then I should see "Ford Campaign"
+    And I should not see "Shamwow Campaign"

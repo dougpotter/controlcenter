@@ -75,6 +75,22 @@ Given /^the standard ad-hoc campaign and associated entities exist$/ do
   When "the campaign \"ACODE\" is relatd to line item \"ABC1\""
 end
 
+Given /^the secondary ad\-hoc campaign and associated entities exist$/ do
+  When "the following partners:", table(%{
+    | partner_code |   name  |
+    |     22222    | Shamwow |
+  })
+  When "the following line_items:", table(%{
+    | line_item_code |      name      | partner_code |
+    |     ABC2       | Shamwow Spring |    22222     |   
+  })
+  When "the following campaigns:", table(%{
+    |       name       | campaign_code | line_item_code | campaign_type |
+    | Shamwow Campaign |     BCODE     |     ABC2       |    Ad-Hoc     |
+  })
+  When "the campaign \"BCODE\" is relatd to line item \"ABC2\""
+end
+
 Given /^campaign "([^"]*)" is associated with audience "([^"]*)"$/ do |campaign_code, audience_code|
   @campaign = Campaign.find_by_campaign_code(campaign_code)
   @campaign.audience = Audience.find_by_audience_code(audience_code)

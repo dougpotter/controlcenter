@@ -4,7 +4,7 @@
 div class=dimension_input
   label for='creative_partner' | Partner:
   >br
-  = collection_select('creative', 'partner', @partners, 'id', 'name', :selected => @creative.partner_id)
+  = collection_select('creative', 'partner', @partners, 'id', 'name', { :selected => @creative.partner_id, :include_blank => true})
 
 div class=dimension_input 
   label for='creative_landing_page_url' | Landing Page URL:

@@ -240,6 +240,11 @@ describe CampaignsController do
             }
         end
 
+        before(:each) do
+          @line_item = stub_everything("LineItem")
+          LineItem.expects(:find).with("1").returns(@line_item)
+        end
+
         it "should update attributes of campaign passed in params[:id]" do
           @audience = stub_everything("Audience")
           @campaign = stub_everything(
@@ -292,6 +297,11 @@ describe CampaignsController do
                 :type => "Retargeting"
               }
             }
+        end
+
+        before(:each) do
+          @line_item = stub_everything("LineItem")
+          LineItem.expects(:find).with("1").returns(@line_item)
         end
 
         it "should update attributes of campaign passed in params[:id]" do

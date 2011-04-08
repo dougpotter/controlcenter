@@ -162,4 +162,18 @@ class CampaignsController < ApplicationController
     end
     return @audience_source
   end
+
+  def options_filtered_by_partner
+    if !params[:partner_id].blank?
+      @campaigns = Campaign.find(
+        :all, 
+        :joins => { :line_item => :partner }, 
+        :conditions => { "partners.id" => params[:partner_id] }
+      )
+    else
+      @campaigns = Campaign.all
+    end
+
+    render :partial => "options_for_select", :locals => { :campaigns => @campaigns }
+  end
 end
