@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110316193718) do
+ActiveRecord::Schema.define(:version => 20110329212818) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
   end
 
   add_index "audiences", ["audience_code"], :name => "index_audiences_on_audience_code", :unique => true
-  add_index "audiences", ["campaign_id"], :name => "index_audiences_on_campaign_id", :unique => true
+  add_index "audiences", ["campaign_id"], :name => "audiences_campaign_id_fk"
 
   create_table "campaign_inventory_configs", :force => true do |t|
     t.integer "campaign_id",            :null => false
@@ -53,13 +53,14 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
 
   add_index "campaign_inventory_configs", ["ad_inventory_source_id"], :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
   add_index "campaign_inventory_configs", ["campaign_id", "ad_inventory_source_id"], :name => "ensure_unique_ais_campaign_association", :unique => true
+  add_index "campaign_inventory_configs", ["campaign_id"], :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   create_table "campaigns", :force => true do |t|
-    t.string   "name",          :null => false
-    t.string   "campaign_code", :null => false
+    t.string   "name",          :default => "", :null => false
+    t.string   "campaign_code", :default => "", :null => false
     t.datetime "start_time"
     t.datetime "end_time"
-    t.integer  "line_item_id",  :null => false
+    t.integer  "line_item_id",  :default => 12, :null => false
     t.string   "campaign_type"
   end
 
@@ -106,6 +107,7 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
   add_index "click_counts", ["ad_inventory_source_id"], :name => "click_counts_ad_inventory_source_id_fk"
   add_index "click_counts", ["audience_id"], :name => "click_counts_audience_id_fk"
   add_index "click_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "media_purchase_method_id", "start_time", "end_time", "duration_in_minutes"], :name => "click_counts_required_columns_20100827", :unique => true
+  add_index "click_counts", ["campaign_id"], :name => "click_counts_campaign_id_fk"
   add_index "click_counts", ["creative_id"], :name => "click_counts_creative_id_fk"
   add_index "click_counts", ["geography_id"], :name => "click_counts_geography_id_fk"
   add_index "click_counts", ["media_purchase_method_id"], :name => "click_counts_media_purchase_method_id_fk"
@@ -167,10 +169,12 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
     t.integer  "image_file_size"
     t.datetime "image_updated_at"
     t.string   "landing_page_url"
+    t.integer  "partner_id",         :null => false
   end
 
   add_index "creatives", ["creative_code"], :name => "index_creatives_on_creative_code", :unique => true
   add_index "creatives", ["creative_size_id"], :name => "creatives_creative_size_id_fk"
+  add_index "creatives", ["partner_id"], :name => "creatives_partner_id_fk"
 
   create_table "creatives_line_items", :id => false, :force => true do |t|
     t.integer "creative_id",  :null => false
@@ -203,6 +207,7 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
   end
 
   add_index "data_provider_files", ["data_provider_channel_id", "url"], :name => "index_data_provider_files_on_data_provider_channel_id_and_url", :unique => true
+  add_index "data_provider_files", ["data_provider_channel_id"], :name => "data_provider_files_data_provider_channel_id_fk"
   add_index "data_provider_files", ["name_date"], :name => "index_data_provider_files_on_name_date"
 
   create_table "data_providers", :force => true do |t|
@@ -263,6 +268,20 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
   add_index "ecpms", ["creative_id"], :name => "ecpms_creative_id_fk"
   add_index "ecpms", ["media_purchase_method_id"], :name => "ecpms_media_purchase_method_id_fk"
 
+  create_table "effective_cost_per_thousand_impressions", :force => true do |t|
+    t.integer  "campaign_id"
+    t.integer  "ad_inventory_source_id"
+    t.integer  "media_purchase_method_id"
+    t.integer  "audience_id"
+    t.integer  "creative_id"
+    t.datetime "start_time",               :null => false
+    t.datetime "end_time",                 :null => false
+    t.datetime "duration_in_minutes",      :null => false
+    t.float    "ecpm",                     :null => false
+  end
+
+  add_index "effective_cost_per_thousand_impressions", ["campaign_id"], :name => "effective_cost_per_thousand_impressions_campaign_id_fk"
+
   create_table "geographies", :force => true do |t|
     t.integer "country_id", :null => false
     t.integer "msa_id",     :null => false
@@ -292,6 +311,7 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
   add_index "impression_counts", ["ad_inventory_source_id"], :name => "impression_counts_ad_inventory_source_id_fk"
   add_index "impression_counts", ["audience_id"], :name => "impression_counts_audience_id_fk"
   add_index "impression_counts", ["campaign_id", "creative_id", "ad_inventory_source_id", "audience_id", "media_purchase_method_id", "start_time", "end_time", "duration_in_minutes"], :name => "impression_counts_required_columns_20100827", :unique => true
+  add_index "impression_counts", ["campaign_id"], :name => "impression_counts_campaign_id_fk"
   add_index "impression_counts", ["creative_id"], :name => "impression_counts_creative_id_fk"
   add_index "impression_counts", ["geography_id"], :name => "impression_counts_geography_id_fk"
   add_index "impression_counts", ["media_purchase_method_id"], :name => "impression_counts_media_purchase_method_id_fk"
@@ -446,6 +466,12 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
 
   add_index "unique_conversion_counts", ["campaign_id"], :name => "unique_conversion_counts_campaign_id_fk"
 
+  create_table "unique_fact_meta_datas", :force => true do |t|
+    t.text    "interest_specification"
+    t.integer "unique_fact_id"
+    t.string  "unique_fact_type"
+  end
+
   create_table "unique_impression_counts", :force => true do |t|
     t.integer  "partner_id"
     t.integer  "campaign_id"
@@ -531,6 +557,7 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
   add_foreign_key "creative_inventory_configs", "creatives", :name => "creative_inventory_configs_creative_id_fk"
 
   add_foreign_key "creatives", "creative_sizes", :name => "creatives_creative_size_id_fk"
+  add_foreign_key "creatives", "partners", :name => "creatives_partner_id_fk"
 
   add_foreign_key "creatives_line_items", "creatives", :name => "creatives_line_items_creative_id_fk"
   add_foreign_key "creatives_line_items", "line_items", :name => "creatives_line_items_line_item_id_fk"
@@ -556,6 +583,8 @@ ActiveRecord::Schema.define(:version => 20110316193718) do
   add_foreign_key "ecpms", "campaigns", :name => "ecpms_campaign_id_fk"
   add_foreign_key "ecpms", "creatives", :name => "ecpms_creative_id_fk"
   add_foreign_key "ecpms", "media_purchase_methods", :name => "ecpms_media_purchase_method_id_fk"
+
+  add_foreign_key "effective_cost_per_thousand_impressions", "campaigns", :name => "effective_cost_per_thousand_impressions_campaign_id_fk"
 
   add_foreign_key "geographies", "countries", :name => "geographies_country_id_fk"
   add_foreign_key "geographies", "msas", :name => "geographies_msa_id_fk"
