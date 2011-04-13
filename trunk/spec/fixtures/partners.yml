@@ -2,3 +2,8 @@ partner_one:
   id: 1
   name: partner one
   partner_code: 1234
+
+partner_two:
+  id: 2
+  name: test partner
+  partner_code: 77777

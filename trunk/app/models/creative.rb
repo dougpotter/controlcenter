@@ -37,6 +37,20 @@ class Creative < ActiveRecord::Base
   acts_as_dimension
   business_index :creative_code, :aka => "crid"
 
+  acts_as_apn_object :apn_attr_map => { 
+      :width => "width",
+      :height => "height",
+      :code => "creative_code",
+      :file_name => "image_file_name",
+      :name => "image_file_name",
+      :content => "image_base64",
+      :format => "apn_format" },
+    :non_method_attr_map => {
+      :flash_click_variable => "clickTag",
+      :track_clicks => "true" },
+    :apn_wrapper => "creative",
+    :url_macros => {  :new => [ :partner_code ] }
+
   def <=>(another_creative)
     self.creative_code <=> another_creative.creative_code 
   end
@@ -93,20 +107,29 @@ class Creative < ActiveRecord::Base
     self.creative_size.height.to_i.to_s
   end
 
-  def apn_json
-    ActiveSupport::JSON.encode({
-      :creative => {
-        :width => self.width,
-        :height => self.height,
-        :code => self.creative_code,
-        :file_name => self.image_file_name,
-        :name => self.image_file_name,
-        :content => ActiveSupport::Base64.encode64(self.image.to_file.read),
-        :format => APN_FORMAT_MAP[self.image_file_name.match(/.+\.(.+)/)[1]],
-        :flash_click_variable => "clickTag",
-        :track_clicks => "true"
-      }
-    })
+  def apn_format
+    begin
+      return APN_FORMAT_MAP[image_file_name.match(/.+\.(.+)/)[1]]
+    rescue NoMethodError
+      nil
+    end
+  end
+
+  def image_base64
+    image_contents = ""
+    f = image.to_file
+    if self.new_record?
+      f.open
+      image_contents = f.read
+      f.close
+    else
+      image_contents = f.read
+    end
+    return ActiveSupport::Base64.encode64(image_contents)
+  end
+
+  def partner_code
+    self.partner.partner_code.to_s
   end
 
   def self.generate_creative_code

@@ -1,6 +1,8 @@
 require 'appnexus_client'
 
-APN_CONFIG = YAML.load_file(File.join(RAILS_ROOT, 'config', 'appnexus.yml'))
+APN_CONFIG = HashWithIndifferentAccess.new(
+  YAML.load_file(File.join(RAILS_ROOT, 'config', 'appnexus.yml'))
+)
 
 APN_FORMAT_MAP = HashWithIndifferentAccess.new({
   :gif => "image",
@@ -10,4 +12,9 @@ APN_FORMAT_MAP = HashWithIndifferentAccess.new({
   :swf => "flash"
 })
 
+class AppnexusRecordInvalid < StandardError
+end
 
+ActiveRecord::Base.class_eval do
+    include AppnexusClient::API
+end

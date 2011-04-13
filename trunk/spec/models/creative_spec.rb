@@ -237,22 +237,23 @@ describe Creative do
 
       @proper_json = ActiveSupport::JSON.encode({
         :creative => {
-          :width => "728",
-          :height => "90",
-          :code => "ZZ11",
-          :file_name => "160x600_8F_Interim_final.gif",
-          :name => "160x600_8F_Interim_final.gif",
-          :content => ActiveSupport::Base64.encode64(File.open(File.join(
-            RAILS_ROOT, 
-            'public', 
-            'images', 
-            'for_testing', 
-            '160x600_8F_Interim_final.gif')).read),
-          :format => "image",
-          :flash_click_variable => "clickTag",
-          :track_clicks => "true" }
+        :width => "728",
+        :height => "90",
+        :code => "ZZ11",
+        :file_name => "160x600_8F_Interim_final.gif",
+        :name => "160x600_8F_Interim_final.gif",
+        :content => ActiveSupport::Base64.encode64(File.open(File.join(
+          RAILS_ROOT, 
+          'public', 
+          'images', 
+          'for_testing', 
+          '160x600_8F_Interim_final.gif')).read),
+        :format => "image",
+        :flash_click_variable => "clickTag",
+        :track_clicks => "true" }
       })
-      @creative.apn_json.should == @proper_json
+
+      ActiveSupport::JSON.decode(@creative.apn_json).should == ActiveSupport::JSON.decode(@proper_json)
     end
   end
 end
