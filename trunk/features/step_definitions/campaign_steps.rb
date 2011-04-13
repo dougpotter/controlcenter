@@ -31,11 +31,11 @@ Given /^the standard ais, partner, line item, audience, creative size setup exis
   })
   When "the following partners:", table(%{
     | partner_code | name |
-    |     11111    | Ford |
+    |     77777    | Ford |
   })
   When "the following line_items:", table(%{
     | line_item_code |    name     | partner_code |
-    |     ABC1       | Ford Spring |    11111     |   
+    |     ABC1       | Ford Spring |    77777     |   
   })
   When "the following audiences:", table(%{
     | audience_code |   description  |
@@ -51,7 +51,7 @@ Given /^the standard ais, partner, line item, audience, creative size setup exis
     |     s3_bucket    | load_status | beacon_load_id |
     | bucket:/a/bucket |   pending   |     ABCNID     |
   })
-  When "the line item \"ABC1\" is associated with partner \"11111\""
+  When "the line item \"ABC1\" is associated with partner \"77777\""
 end
 
 Given /^I fill in ad-hoc campaign information$/ do
