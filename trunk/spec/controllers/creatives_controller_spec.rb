@@ -5,19 +5,16 @@ describe CreativesController do
   describe "create with valid attributes" do
 
     it "should save a new creative associated with one campaign" do
-      partner = mock("Partner", :partner_code => "ACODE")
       creative = mock(
         "Creative",
         :campaigns => [], 
         :attributes= => {}, 
-        :partner => partner,
-        :apn_json => ActiveSupport::JSON.encode({:the => "proper JSON"}),
+        :save_apn => true,
         :save => true
       )
       Creative.expects(:new).returns(creative)
       campaign = mock("campaign")
       Campaign.expects(:find).with("1").returns(campaign)
-      controller.expects(:apn_new).returns(true)
 
       post :create, 
         :creative => { 
@@ -36,12 +33,10 @@ describe CreativesController do
     end
 
     it "should save a new creative associated with multiple campaigns" do
-      partner = mock("Partner", :partner_code => "ACODE")
       creative = mock(
         "creative",
         :attributes= => {},
-        :partner => partner,
-        :apn_json => ActiveSupport::JSON.encode({:the => "proper JSON"}),
+        :save_apn => true,
         :save => true
       )
       campaign_one = mock("campaign_one")
@@ -49,7 +44,6 @@ describe CreativesController do
       creative.expects(:campaigns).twice.returns([], [campaign_one])
       Creative.expects(:new).returns(creative)
       Campaign.expects(:find).twice.returns(campaign_one, campaign_two)
-      controller.expects(:apn_new).returns(true)
 
       post :create, 
         :creative => { 
@@ -68,16 +62,13 @@ describe CreativesController do
     end
 
     it "should save a new creative not yet associated with any campaigns" do
-      partner = mock("Partner", :partner_code => "ACODE")
       creative = mock(
         "Creative",
         :attributes= => {}, 
         :save => true,
-        :apn_json => ActiveSupport::JSON.encode({:the => "proper JSON"}),
-        :partner => partner
+        :save_apn => true
       )
       Creative.expects(:new).returns(creative)
-      controller.expects(:apn_new).returns(true)
 
       post :create, 
         :creative => { 

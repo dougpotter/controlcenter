@@ -77,10 +77,8 @@ class CreativesController < ApplicationController
 
     @creative.attributes = params[:creative]
 
-    apn_json = @creative.apn_json
-
     if request.referer == new_campaign_url
-      if @creative.save && apn_new(@creative.partner.partner_code, apn_json)
+      if @creative.save && @creative.save_apn
         redirect_to(new_creative_path, :notice => "creative successfully created")
         return
       else 
@@ -88,24 +86,11 @@ class CreativesController < ApplicationController
         return
       end
     else
-      if @creative.save && apn_new(@creative.partner.partner_code, apn_json)
+      if @creative.save && @creative.save_apn
         redirect_to(new_creative_path, :notice => "creative successfully created")
       else
         redirect_to(new_creative_path, :notice => "something went wrong")
       end
-    end
-  end
-
-  def apn_new(partner_code, apn_json)
-    partner_code = "77777"
-    agent = AppnexusClient::API.new_agent
-    agent.url = "https://api.displaywords.com/creative?advertiser_code=#{partner_code}"
-    agent.post_body = apn_json
-    agent.http_post
-    if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
-      return true
-    else
-      return false
     end
   end
 
