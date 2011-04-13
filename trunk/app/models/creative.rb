@@ -85,6 +85,30 @@ class Creative < ActiveRecord::Base
     self.campaign_inventory_configs.delete(campaign_inventory_config)
   end
 
+  def width
+    self.creative_size.width.to_i.to_s
+  end
+
+  def height
+    self.creative_size.height.to_i.to_s
+  end
+
+  def apn_json
+    ActiveSupport::JSON.encode({
+      :creative => {
+        :width => self.width,
+        :height => self.height,
+        :code => self.creative_code,
+        :file_name => self.image_file_name,
+        :name => self.image_file_name,
+        :content => ActiveSupport::Base64.encode64(self.image.to_file.read),
+        :format => APN_FORMAT_MAP[self.image_file_name.match(/.+\.(.+)/)[1]],
+        :flash_click_variable => "clickTag",
+        :track_clicks => "true"
+      }
+    })
+  end
+
   def self.generate_creative_code
     CodeGenerator.generate_unique_code(
       self,

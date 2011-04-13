@@ -11,6 +11,7 @@ describe CreativesController do
         :campaigns => [], 
         :attributes= => {}, 
         :partner => partner,
+        :apn_json => ActiveSupport::JSON.encode({:the => "proper JSON"}),
         :save => true
       )
       Creative.expects(:new).returns(creative)
@@ -40,6 +41,7 @@ describe CreativesController do
         "creative",
         :attributes= => {},
         :partner => partner,
+        :apn_json => ActiveSupport::JSON.encode({:the => "proper JSON"}),
         :save => true
       )
       campaign_one = mock("campaign_one")
@@ -71,6 +73,7 @@ describe CreativesController do
         "Creative",
         :attributes= => {}, 
         :save => true,
+        :apn_json => ActiveSupport::JSON.encode({:the => "proper JSON"}),
         :partner => partner
       )
       Creative.expects(:new).returns(creative)

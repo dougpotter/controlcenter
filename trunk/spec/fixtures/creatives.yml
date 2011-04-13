@@ -4,16 +4,18 @@ creative_one:
   media_type: flash
   creative_size_id: 1
   creative_code: AA11
-  image_file_name: thefirstcreative.gif
+  image_file_name: thefirstcreative.swf
+  image_content_type: application/x-shockwave-flash
   landing_page_url: "http://thelandingpageforcreativeone.com"
   partner_id: 1
 
 creative_two:
   id: 2
   name: second creative
-  media_type: flash
+  media_type: image
   creative_size_id: 1
   creative_code: AA12
   image_file_name: thesecondcreative.gif
+  image_content_type: image/gif
   landing_page_url: "http://thelandingpageforcreativetwo.com"
   partner_id: 1

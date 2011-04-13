@@ -85,20 +85,7 @@ class CreativesController < ApplicationController
 
     @creative.attributes = params[:creative]
 
-    format = format_map[params[:creative][:image].original_filename.match(/.+\.(.+)/)[1]]
-    apn_json = ActiveSupport::JSON.encode({
-      :creative => {
-        :file_name => params[:creative][:image].original_filename,
-        :name => params[:creative][:image].original_filename,
-        :format => format,
-        :width => creative_image.width,
-        :height => creative_image.height,
-        :click_url => params[:creative][:landing_page_url],
-        :content => ActiveSupport::Base64.encode64(params[:creative][:image].read),
-        :track_clicks => "true",
-        :code => params[:creative][:creative_code],
-        :flash_click_variable => "clickTag" }
-    })
+    apn_json = @creative.apn_json
 
     if request.referer == new_campaign_url
       if @creative.save && apn_new(@creative.partner.partner_code, apn_json)
