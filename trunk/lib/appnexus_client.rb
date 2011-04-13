@@ -38,27 +38,21 @@
 #  object e.g.:
 #  "creative"
 #
-# :url_macros
-#  mappings for those substitutions 
-#  e.g. for the url above, the configuraiton parameter would look lik this:
-#  :new => [ :partner_code ]
+# :urls
+#  a hash  mapping AppNexus URLs to their associated CRUD actions for that object,
+#  with macros indicating where a substitution should take place e.g.:
+#
+#  :new => https://api.dislaywords.com/creative?advertiser_code=##partner_code##
+#
+#  would indicate the new action for a creative uses the corresponding URL with
+#  the result of Creative#partner_code substituted for the string ##partner_code##
 #
 # Finally, in addition to the object level configuraiton parameters specified in
 # their respective model class files, AppnexusClient::API looks for a 
 # config/appnexus.yml file containing the an authentication URL and credientials. A
 # sample file of the appropriate format is provided in config/appnexus.yml.sample.
-# Temporarily, due to bad visionon my part, this sample file is not accurate - 
-# you also have to define urls in this config file . This is going to change in the 
-# next few commits so just bear with me.
-#
-#  mappings between AppNexus URLs and their associated CRUD actions for that object
-#  with '###' indicating requisite substitutions
-#  e.g. if the appropriate URL for the NEW action is:
-#  https://api.dislaywords.com/creative?advertiser_code=ADVERTISER_CODE
-#  the configuration url would be:
-#  https://api.dislaywords.com/creative?advertiser_code=###
-#
-#
+
+
 module AppnexusClient
   module API
 
@@ -82,6 +76,24 @@ module AppnexusClient
 
     module ClassMethods
       attr_accessor :apn_mappings
+
+      def apn_action_url(action, substitutions)
+        substitutions = [substitutions].flatten
+        substitutions.map! { |subs| subs.to_s }
+        matcher = /\#\#(.+?)\#\#/
+        url = APN_CONFIG["api_root_url"] + apn_mappings[:urls][action]
+        macros = url.scan(matcher).size
+        if macros != substitutions.size
+          raise "number of macros and number of substitutions in AppNexus URL" + 
+            " don't agree"
+        else
+          while url.match(matcher)
+            url.sub!(matcher, substitutions.shift)
+          end
+        end
+
+        return url
+      end
     end
 
 

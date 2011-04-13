@@ -2,4 +2,7 @@ authentication_url: https://api.displaywords.com/auth
 authentication_hash:
   auth:
     username: michael@xgraph.com
-    password: 9054mxbz
+    password: 9a53cdea
+api_root_url: https://api.displaywords.com/
+test_codes:
+  advertiser: 77777

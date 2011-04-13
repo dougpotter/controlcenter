@@ -52,8 +52,7 @@ class Creative < ActiveRecord::Base
     :urls => {
       :index => "creative?advertiser_code=##partner_code##",
       :delete => "creative?advertiser_code=##partner_code##&code=##creative_code##",
-      :new => "creative?advertiser_code=##partner_code##" },
-    :url_macros => {  :new => [ :partner_code ] }
+      :new => "creative?advertiser_code=##partner_code##" }
 
   def <=>(another_creative)
     self.creative_code <=> another_creative.creative_code 
