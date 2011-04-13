@@ -235,13 +235,12 @@ class AppnexusSyncWorkflow
   end
   
   def choose_most_recent_ending_subdir(basenames)
-    endpoints = basenames.map do |basename|
+    endpoints = []
+    basenames.each do |basename|
       if basename =~ /^(\d{8})-(\d{8})$/
-        $2
-      else
-        nil
+        endpoints << $2
       end
-    end.reject { |endpoint| endpoint.nil? }
+    end
     latest_endpoint = latest_index = nil
     endpoints.each_with_index do |endpoint, index|
       if latest_endpoint.nil? || endpoint > latest_endpoint
