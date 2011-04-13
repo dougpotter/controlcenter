@@ -53,15 +53,7 @@ end
 
 Then /^then I remove all creatives from apn$/ do
   require 'curl'
-  agent = Curl::Easy.new(APN_CONFIG["authentication_url"])
-  agent.enable_cookies = true
-
-  auth = ActiveSupport::JSON.encode(APN_CONFIG["authentication_hash"])
-  agent.post_body = auth
-  agent.http_post
-
-  apn_token = ActiveSupport::JSON.decode(agent.body_str)["response"]["token"]
-  agent.cookies = "Authorization: #{apn_token}"
+  agent = AppnexusClient::API.new_agent
   
   agent.url = "https://api.displaywords.com/creative?advertiser_id=6755"
   agent.http_get

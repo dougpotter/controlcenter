@@ -30,6 +30,7 @@ end
 module AppnexusClientHelper
   def remove_all_test_creatives_from_apn
     require 'curl'
+=begin
     agent = Curl::Easy.new(APN_CONFIG["authentication_url"])
     agent.enable_cookies = true
 
@@ -39,6 +40,8 @@ module AppnexusClientHelper
 
     apn_token = ActiveSupport::JSON.decode(agent.body_str)["response"]["token"]
     agent.cookies = "Authorization: #{apn_token}"
+=end
+    agent = AppnexusClient::API.new_agent
 
     agent.url = "https://api.displaywords.com/creative?advertiser_id=6755"
     agent.http_get
