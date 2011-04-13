@@ -56,11 +56,7 @@ Then /^then I remove all creatives from apn$/ do
   agent = Curl::Easy.new('https://api.displaywords.com/auth')
   agent.enable_cookies = true
 
-  auth = ActiveSupport::JSON.encode({
-    :auth => {
-    "username" => "michael@xgraph.com",
-    "password" => "9d55cdbb" }
-  })
+  auth = ActiveSupport::JSON.encode(APN_CONFIG["authentication"])
   agent.post_body = auth
   agent.http_post
 
