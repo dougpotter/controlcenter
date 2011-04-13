@@ -81,10 +81,6 @@ class CreativesController < ApplicationController
 
     if request.referer == new_campaign_url
       if @creative.save && apn_new(@creative.partner.partner_code, apn_json)
-        @creative = Creative.new
-        @creative_sizes = CreativeSize.all(:order => 'common_name')
-        @partners = Partner.all
-        @campaigns = Campaign.all
         redirect_to(new_creative_path, :notice => "creative successfully created")
         return
       else 
