@@ -50,20 +50,3 @@ end
 Then /^I should see a "([^"]*)" JS dialog$/ do |message|
   selenium.confirmation.should eql(message)
 end
-
-Then /^then I remove all creatives from apn$/ do
-  require 'curl'
-  agent = AppnexusClient::API.new_agent
- 
-  test_advertiser = APN_CONFIG["test_codes"]["advertiser"] 
-  agent.url = Creative.apn_action_url(:index, test_advertiser)
-  agent.http_get
-
-  test_creatives = 
-    ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
-  test_creative_codes = test_creatives.map { |c| c["code"] }
-  for creative_code in test_creative_codes
-    agent.url = Creative.apn_action_url(:delete, [ test_advertiser, creative_code ])
-    agent.http_delete
-  end
-end
