@@ -26,14 +26,21 @@ describe AppnexusClient do
     })
   end
 
-  describe "compiled_url" do
+  describe "#apn_action_url" do
+    it "should correctly substitute values in NEW action" do
+      proper_url = "https://api.displaywords.com/creative?advertiser_code=77777"
+      @creative.apn_action_url(:new).should == proper_url
+    end
 
-    it "should correctly substitute values for macros" do
+    it "should correctly substitute values in INDEX action" do
+      proper_url = "https://api.displaywords.com/creative?advertiser_code=77777"
+      @creative.apn_action_url(:index).should == proper_url
+    end
+
+    it "should correctly substitute values in DELETE action" do
       proper_url = 
-        APN_CONFIG["displaywords_urls"]["creative"]["new"].
-        gsub("###", @creative.partner_code)
-
-      @creative.compiled_url(:new).should == proper_url
+        "https://api.displaywords.com/creative?advertiser_code=77777&code=ZZ11"
+      @creative.apn_action_url(:delete).should == proper_url
     end
   end
 

@@ -71,7 +71,8 @@ module AppnexusClient
             :apn_attr_map => hsh[:apn_attr_map], 
             :non_method_attr_map => hsh[:non_method_attr_map],
             :apn_wrapper => hsh[:apn_wrapper],
-            :url_macros => hsh[:url_macros]
+            :url_macros => hsh[:url_macros],
+            :urls => hsh[:urls]
           })
           extend ClassMethods
           include InstanceMethods
@@ -99,7 +100,7 @@ module AppnexusClient
 
       def save_apn
         agent = AppnexusClient::API.new_agent
-        agent.url = compiled_url("new")
+        agent.url = apn_action_url("new")
         agent.post_body = apn_json
         agent.http_post
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
@@ -111,7 +112,7 @@ module AppnexusClient
 
       def save_apn!
         agent = AppnexusClient::API.new_agent
-        agent.url = compiled_url("new")
+        agent.url = apn_action_url("new")
         agent.post_body = apn_json
         agent.http_post
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
@@ -123,12 +124,16 @@ module AppnexusClient
         end
       end
 
-      def compiled_url(action)
-        url = 
-          APN_CONFIG["displaywords_urls"][self.class.to_s.downcase][action].clone
-        for method in self.class.apn_mappings[:url_macros][:new]
-          url.sub!("###", self.send(method))
-        end
+      def apn_action_url(action)
+        url = APN_CONFIG["api_root_url"] + self.class.apn_mappings[:urls][action]
+        return compile_url(url)
+      end
+
+      def compile_url(url)
+        matcher = /\#\#(.+?)\#\#/
+          while url.match(matcher) && method = url.match(matcher)[1]
+            url.sub!(matcher, self.send(method))
+          end
         return url
       end
     end

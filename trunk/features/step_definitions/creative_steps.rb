@@ -54,15 +54,17 @@ end
 Then /^then I remove all creatives from apn$/ do
   require 'curl'
   agent = AppnexusClient::API.new_agent
-  
-  agent.url = "https://api.displaywords.com/creative?advertiser_id=6755"
+ 
+  test_advertiser_id = APN_CONFIG["test_ids"]["advertiser"] 
+  agent.url = 
+    "https://api.displaywords.com/creative?advertiser_id=#{test_advertiser_id}"
   agent.http_get
   test_creatives = 
     ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
   test_creative_ids = test_creatives.map { |c| c["id"] }
   for creative_id in test_creative_ids
     agent.url = 
-      "https://api.displaywords.com/creative?advertiser_id=6755&id=#{creative_id}"
+      "https://api.displaywords.com/creative?advertiser_id=#{test_advertiser_id}&id=#{creative_id}"
     agent.http_delete
   end
 end

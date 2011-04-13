@@ -49,6 +49,10 @@ class Creative < ActiveRecord::Base
       :flash_click_variable => "clickTag",
       :track_clicks => "true" },
     :apn_wrapper => "creative",
+    :urls => {
+      :index => "creative?advertiser_code=##partner_code##",
+      :delete => "creative?advertiser_code=##partner_code##&code=##creative_code##",
+      :new => "creative?advertiser_code=##partner_code##" },
     :url_macros => {  :new => [ :partner_code ] }
 
   def <=>(another_creative)
