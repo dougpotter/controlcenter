@@ -1,4 +1,5 @@
 app/views/**/*.html.erb
+config/appnexus.yml
 config/appwall.yml
 config/appwall.yml.production
 config/aws.yml

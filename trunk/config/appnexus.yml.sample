@@ -1,0 +1,5 @@
+displaywords_urls:
+  authentication: https://api.displaywords.com/auth
+auth:
+  username: Shirley Tilgman
+  password: gotigers
