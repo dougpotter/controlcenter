@@ -53,10 +53,10 @@ end
 
 Then /^then I remove all creatives from apn$/ do
   require 'curl'
-  agent = Curl::Easy.new('https://api.displaywords.com/auth')
+  agent = Curl::Easy.new(APN_CONFIG["authentication_url"])
   agent.enable_cookies = true
 
-  auth = ActiveSupport::JSON.encode(APN_CONFIG["authentication"])
+  auth = ActiveSupport::JSON.encode(APN_CONFIG["authentication_hash"])
   agent.post_body = auth
   agent.http_post
 

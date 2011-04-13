@@ -1,5 +1,5 @@
-displaywords_urls:
-  authentication: https://api.displaywords.com/auth
-auth:
-  username: Shirley Tilgman
-  password: gotigers
+authentication_url: https://api.displaywords.com/auth
+authentication_hash:
+  auth:
+    username: michael@xgraph.com
+    password: 9054mxbz
