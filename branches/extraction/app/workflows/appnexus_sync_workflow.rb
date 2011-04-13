@@ -241,7 +241,7 @@ class AppnexusSyncWorkflow
       else
         nil
       end
-    end
+    end.reject { |endpoint| endpoint.nil? }
     latest_endpoint = latest_index = nil
     endpoints.each_with_index do |endpoint, index|
       if latest_endpoint.nil? || endpoint > latest_endpoint
