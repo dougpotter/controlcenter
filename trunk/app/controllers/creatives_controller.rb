@@ -123,7 +123,7 @@ class CreativesController < ApplicationController
 
   def apn_new(partner_code, apn_json)
     partner_code = "77777"
-    agent = authenticated_apn_agent
+    agent = AppnexusClient::API.new_agent
     agent.url = "https://api.displaywords.com/creative?advertiser_code=#{partner_code}"
     agent.post_body = apn_json
     agent.http_post
@@ -231,23 +231,5 @@ class CreativesController < ApplicationController
     @creative_sizes = CreativeSize.all
     render :partial => 'form_without_line_item', 
       :locals => { :creative_number => @num }
-  end
-
-  def authenticated_apn_agent
-    require 'curl'
-    agent = Curl::Easy.new('https://api.displaywords.com/auth')
-    agent.enable_cookies = true
-    
-    auth = ActiveSupport::JSON.encode({
-      :auth => {
-        "username" => "michael@xgraph.com",
-        "password" => "9d55cdbb" }
-    })
-    agent.post_body = auth
-    agent.http_post
-    
-    apn_token = ActiveSupport::JSON.decode(agent.body_str)["response"]["token"]
-    agent.cookies = "Authorization: #{apn_token}"
-    return agent
   end
 end
