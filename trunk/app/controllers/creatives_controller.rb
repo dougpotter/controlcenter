@@ -55,14 +55,6 @@ class CreativesController < ApplicationController
   def create
     require 'image_spec'
 
-    format_map = {
-      "gif" => "image",
-      "jpeg" => "image",
-      "jpg" => "image",
-      "png" => "image",
-      "swf" => "flash"
-    }
-
     @creative = Creative.new
     if creative_image = ImageSpec.new(params[:creative][:image])
       params[:creative][:creative_size] = CreativeSize.find_by_height_and_width(
