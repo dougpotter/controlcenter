@@ -13,7 +13,6 @@ Feature: Manage creatives
     When I press "Create Creative"
     Then I should see "creative successfully created"
     And I should see "New Creative"
-    And then I remove all creatives from apn
 
   Scenario: create a new creative with a campaign
     Given the standard ad-hoc campaign and associated entities exist
@@ -26,7 +25,6 @@ Feature: Manage creatives
     When I press "Create Creative"
     Then I should see "creative successfully created"
     And I should see "New Creative"
-    And then I remove all creatives from apn
 
   @selenium 
   Scenario: Remove a creative
