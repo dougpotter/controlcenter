@@ -75,10 +75,12 @@ describe AppnexusClient do
 
     describe "save_apn" do
       it "should return true if upload returns success message" do
+      pending "a sandbox implementation of AppNexus API"
         @creative.save_apn.should == true
       end
 
       it "should return false if upload returns error message" do
+      pending "a sandbox implementation of AppNexus API"
         @creative.image = nil
         @creative.save_apn.should == false
       end
@@ -86,11 +88,13 @@ describe AppnexusClient do
 
     describe "save_apn!" do
       it "should return true if upload returns success message" do
+      pending "a sandbox implementation of AppNexus API"
         @creative.save_apn!.should == true
       end
 
       it "should raise ActiveRecord::AppnexusRecordInvalid if upload returns error"+
         " message" do
+      pending "a sandbox implementation of AppNexus API"
         lambda {
           @creative.image = nil
           @creative.save_apn!
