@@ -235,25 +235,25 @@ class AppnexusSyncWorkflow
   end
   
   def choose_most_recent_ending_subdir(basenames)
-    endpoints = []
-    basenames.each do |basename|
-      if basename =~ /^(\d{8})-(\d{8})$/
-        endpoints << $2
-      end
+    candidates = basenames.select do |basename|
+      basename =~ /^(\d{8})-(\d{8})$/
     end
-    latest_endpoint = latest_index = nil
-    endpoints.each_with_index do |endpoint, index|
-      if latest_endpoint.nil? || endpoint > latest_endpoint
-        latest_endpoint = endpoint
+
+    if candidates.blank?
+      raise InvalidLookupPrefix, "None of the subdirs looked like lookup table subdirs"
+    end
+
+    latest_endpoint = latest_index = 0
+    candidates.each_with_index do |candidate, index|
+      if candidate.match(/^(\d{8})-(\d{8})$/)[2].to_i > latest_endpoint
+        latest_endpoint = candidate.match(/^(\d{8})-(\d{8})$/)[2].to_i
         latest_index = index
       end
     end
-    if latest_endpoint.nil?
-      raise InvalidLookupPrefix, "None of the subdirs looked like lookup table subdirs"
-    end
-    basenames[latest_index]
+
+    candidates[latest_index]
   end
-  
+
   def determine_lookup_url(params)
     bucket, path = params[:lookup_prefix].split(':', 2)
     lookup_start_date = params[:lookup_start_date]
