@@ -1,8 +1,16 @@
-authentication_url: https://api.displaywords.com/auth
-authentication_hash:
-  auth:
-    username: michael@xgraph.com
-    password: 9a53cdea
-api_root_url: https://api.displaywords.com/
-test_codes:
-  advertiser: 77777
+development: &development
+  authentication_hash:
+    auth:
+      username: michael
+      password: e49f27a6
+  api_root_url: http://hb.sand-08.adnxs.net/
+  test_codes:
+    advertiser: 77777
+test: *development
+cucumber: *development
+production: 
+  authentication_hash:
+    auth:
+      username: production_username
+      password: production_password
+  api_root_url: https://api.displaywords.com/

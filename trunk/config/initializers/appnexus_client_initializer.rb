@@ -1,7 +1,7 @@
 require 'appnexus_client'
 
 APN_CONFIG = HashWithIndifferentAccess.new(
-  YAML.load_file(File.join(RAILS_ROOT, 'config', 'appnexus.yml'))
+  YAML.load_file(File.join(RAILS_ROOT, 'config', 'appnexus.yml'))[RAILS_ENV]
 )
 
 APN_FORMAT_MAP = HashWithIndifferentAccess.new({

@@ -49,8 +49,9 @@
 #
 # Finally, in addition to the object level configuraiton parameters specified in
 # their respective model class files, AppnexusClient::API looks for a 
-# config/appnexus.yml file containing the an authentication URL and credientials. A
-# sample file of the appropriate format is provided in config/appnexus.yml.sample.
+# config/appnexus.yml file containing the authentication credientials, a base URL,
+# and some test parameters. A sample file of the appropriate format is provided in 
+# config/appnexus.yml.sample.
 
 
 module AppnexusClient
@@ -94,6 +95,7 @@ module AppnexusClient
 
         return url
       end
+
     end
 
 
@@ -152,13 +154,46 @@ module AppnexusClient
 
     def self.new_agent
       require 'curl'
-      @agent = Curl::Easy.new(APN_CONFIG["authentication_url"])
+      @agent = Curl::Easy.new(APN_CONFIG["api_root_url"] + "auth")
       @agent.enable_cookies = true
       @agent.post_body = APN_CONFIG["authentication_hash"].to_json
       @agent.http_post
       api_token = ActiveSupport::JSON.decode(@agent.body_str)["response"]["token"]
       @agent.headers["Authorization"] = api_token
       return @agent
+    end
+
+    def self.assigned_ids
+      agent = new_agent
+      agent.url = "https://api.displaywords.com/advertiser"
+      agent.http_get
+      advertisers = ActiveSupport::JSON.decode(agent.body_str)["response"]["advertisers"].map { |a|
+        a["id"]
+      }
+
+      creatives = []
+
+      for advertiser in advertisers
+        agent.url = "https://api.displaywords.com/creative?advertiser_id=#{advertiser}"
+        agent.http_get
+        for creative in ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
+          creatives << creative
+        end
+      end
+
+      bingos = []
+      for creative in creatives
+        if !creative["campaigns"].nil?
+          bingos << "#{creative["id"]}\t#{creative["name"]}\n"
+        end
+      end
+
+      File.open('emergency.txt', 'w') do |f|
+        for bingo in bingos
+          f.puts bingo
+        end
+      end
+      return bingos
     end
   end
 end

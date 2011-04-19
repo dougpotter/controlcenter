@@ -34,35 +34,35 @@ describe AppnexusClient do
     end
 
     it "should correctly compile array when passed an array of one substitution" do
-      proper_url = "https://api.displaywords.com/creative?advertiser_code=8675309"
+      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
       Creative.apn_action_url(:new, ["8675309"]).should ==
-        "https://api.displaywords.com/creative?advertiser_code=8675309"
+        "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
     end
 
     it "should correctly compile array when passed a string of one substitution" do
-      proper_url = "https://api.displaywords.com/creative?advertiser_code=8675309"
+      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
       Creative.apn_action_url(:index, "8675309").should ==
-        "https://api.displaywords.com/creative?advertiser_code=8675309"
+        "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
     end
 
 
     it "should correctly compile array when passed an array of multiple" + 
       " substitutions" do
-      proper_url = "https://api.displaywords.com/creative?advertiser_code=8675309"
+      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
       Creative.apn_action_url(:delete, ["8675309", "12345"]).should ==
-        "https://api.displaywords.com/creative?advertiser_code=8675309&code=12345"
+        "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309&code=12345"
     end
   end
 
   describe "#apn_action_url" do
     it "should correctly substitute one value " do
-      proper_url = "https://api.displaywords.com/creative?advertiser_code=77777"
+      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=77777"
       @creative.apn_action_url(:new).should == proper_url
     end
 
     it "should correctly substitute multiple values" do
       proper_url = 
-        "https://api.displaywords.com/creative?advertiser_code=77777&code=ZZ11"
+        "http://hb.sand-08.adnxs.net/creative?advertiser_code=77777&code=ZZ11"
       @creative.apn_action_url(:delete).should == proper_url
     end
   end
