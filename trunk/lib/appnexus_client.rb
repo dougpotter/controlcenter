@@ -211,38 +211,5 @@ module AppnexusClient
       @agent.headers["Authorization"] = api_token
       return @agent
     end
-
-    def self.assigned_ids
-      agent = new_agent
-      agent.url = "https://api.displaywords.com/advertiser"
-      agent.http_get
-      advertisers = ActiveSupport::JSON.decode(agent.body_str)["response"]["advertisers"].map { |a|
-        a["id"]
-      }
-
-      creatives = []
-
-      for advertiser in advertisers
-        agent.url = "https://api.displaywords.com/creative?advertiser_id=#{advertiser}"
-        agent.http_get
-        for creative in ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
-          creatives << creative
-        end
-      end
-
-      bingos = []
-      for creative in creatives
-        if !creative["campaigns"].nil?
-          bingos << "#{creative["id"]}\t#{creative["name"]}\n"
-        end
-      end
-
-      File.open('emergency.txt', 'w') do |f|
-        for bingo in bingos
-          f.puts bingo
-        end
-      end
-      return bingos
-    end
   end
 end
