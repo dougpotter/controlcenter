@@ -30,7 +30,7 @@ class Creative < ActiveRecord::Base
   has_and_belongs_to_many :campaigns
   has_s3_attachment :image, "test-creatives", ":attachment/:id/:style/:filename"
 
-  validates_presence_of :creative_code, :creative_size_id
+  validates_presence_of :creative_code, :creative_size_id, :partner_id
   validates_uniqueness_of :creative_code
   validates_numericality_of :creative_size_id
 

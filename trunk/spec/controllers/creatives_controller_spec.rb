@@ -9,8 +9,8 @@ describe CreativesController do
         "Creative",
         :campaigns => [], 
         :attributes= => {}, 
-        :save_apn => true,
-        :save => true
+        :save_apn! => true,
+        :save! => true
       )
       Creative.expects(:new).returns(creative)
       campaign = mock("campaign")
@@ -36,8 +36,8 @@ describe CreativesController do
       creative = mock(
         "creative",
         :attributes= => {},
-        :save_apn => true,
-        :save => true
+        :save_apn! => true,
+        :save! => true
       )
       campaign_one = mock("campaign_one")
       campaign_two = mock("campaign_two")
@@ -65,8 +65,8 @@ describe CreativesController do
       creative = mock(
         "Creative",
         :attributes= => {}, 
-        :save_apn => true,
-        :save => true
+        :save_apn! => true,
+        :save! => true
       )
       Creative.expects(:new).returns(creative)
 

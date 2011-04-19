@@ -157,6 +157,9 @@ module AppnexusClient
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
           return true
         else
+          self.errors.add_to_base(
+            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
+          )
           return false
         end
       end
@@ -169,8 +172,10 @@ module AppnexusClient
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
           return true
         else
-          error_msg = 
-            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
+          error_msg = ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
+          self.errors.add_to_base(
+            error_msg
+          )
           raise AppnexusRecordInvalid, error_msg
         end
       end

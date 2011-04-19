@@ -56,7 +56,8 @@ class CreativesController < ApplicationController
     require 'image_spec'
 
     @creative = Creative.new
-    if creative_image = ImageSpec.new(params[:creative][:image])
+    if params[:creative][:image]
+      creative_image = ImageSpec.new(params[:creative][:image])
       params[:creative][:creative_size] = CreativeSize.find_by_height_and_width(
         creative_image.height,
         creative_image.width
@@ -72,25 +73,26 @@ class CreativesController < ApplicationController
     end
 
 
-    params[:creative][:partner] = Partner.find(params[:creative][:partner])
+    if params[:creative][:partner].blank?
+      params[:creative][:partner] = nil
+    else
+      params[:creative][:partner] = Partner.find(params[:creative][:partner])
+    end
+
     params[:creative][:creative_code] = Creative.generate_creative_code
 
     @creative.attributes = params[:creative]
 
-    if request.referer == new_campaign_url
-      if @creative.save && @creative.save_apn
-        redirect_to(new_creative_path, :notice => "creative successfully created")
-        return
-      else 
-        render :text => ""
-        return
-      end
-    else
-      if @creative.save && @creative.save_apn
-        redirect_to(new_creative_path, :notice => "creative successfully created")
-      else
-        redirect_to(new_creative_path, :notice => "something went wrong")
-      end
+    begin
+      @creative.save!
+      @creative.save_apn!
+      redirect_to(new_creative_path, :notice => "creative successfully created")
+    rescue
+      @creatives = Creative.all(:joins => :creative_size)
+      @campaigns = Campaign.all
+      @creative_sizes = CreativeSize.all(:order => 'common_name')
+      @partners = Partner.all
+      render :action => "new"
     end
   end
 
