@@ -3,49 +3,15 @@ require 'spec_helper'
 describe CreativesController do
 
   describe "create with valid attributes" do
-
-    it "should save a new creative associated with one campaign" do
-      creative = mock(
+    before(:each) do
+      @creative = mock(
         "Creative",
-        :campaigns => [], 
-        :attributes= => {}, 
-        :save_apn! => true,
-        :save! => true
-      )
-      Creative.expects(:new).returns(creative)
-      campaign = mock("campaign")
-      Campaign.expects(:find).with("1").returns(campaign)
-
-      post :create, 
-        :creative => { 
-          :creative_size => "1", 
-          :name => "name", 
-          :media_type => "flash", 
-          :partner => "1",
-          :image => File.open(
-            File.join(
-              RAILS_ROOT, 
-              'public', 
-              'images', 
-              'for_testing', 
-              '160x600_8F_Interim_final.gif' )),
-          :campaigns => "1" }
-    end
-
-    it "should save a new creative associated with multiple campaigns" do
-      creative = mock(
-        "creative",
         :attributes= => {},
         :save_apn! => true,
         :save! => true
       )
-      campaign_one = mock("campaign_one")
-      campaign_two = mock("campaign_two")
-      creative.expects(:campaigns).twice.returns([], [campaign_one])
-      Creative.expects(:new).returns(creative)
-      Campaign.expects(:find).twice.returns(campaign_one, campaign_two)
 
-      post :create, 
+      @basic_create_hash = {
         :creative => { 
           :creative_size => "1", 
           :name => "name", 
@@ -57,33 +23,36 @@ describe CreativesController do
               'public', 
               'images', 
               'for_testing', 
-              '160x600_8F_Interim_final.gif' )),
-          :campaigns => ["1","2"] }
+              '160x600_8F_Interim_final.gif' )) }}
+    end
+
+    it "should save a new creative associated with one campaign" do
+      @creative.expects(:campaigns).returns([])
+      Creative.expects(:new).returns(@creative)
+      campaign = mock("campaign")
+      Campaign.expects(:find).with("1").returns(campaign)
+
+      @basic_create_hash[:creative].merge!(:campaigns => "1" )
+
+      post :create, @basic_create_hash
+    end
+
+    it "should save a new creative associated with multiple campaigns" do
+      campaign_one = mock("campaign_one")
+      campaign_two = mock("campaign_two")
+      @creative.expects(:campaigns).twice.returns([], [campaign_one])
+      Creative.expects(:new).returns(@creative)
+      Campaign.expects(:find).twice.returns(campaign_one, campaign_two)
+
+      @basic_create_hash[:creative].merge!(:campaigns => [ "1", "2" ])
+
+      post :create, @basic_create_hash 
     end
 
     it "should save a new creative not yet associated with any campaigns" do
-      creative = mock(
-        "Creative",
-        :attributes= => {}, 
-        :save_apn! => true,
-        :save! => true
-      )
-      Creative.expects(:new).returns(creative)
+      Creative.expects(:new).returns(@creative)
 
-      post :create, 
-        :creative => { 
-          :creative_size => "1", 
-          :name => "name", 
-          :media_type => "flash", 
-          :partner => "1",
-          :image => File.open(
-            File.join(
-              RAILS_ROOT, 
-              'public', 
-              'images', 
-              'for_testing', 
-              '160x600_8F_Interim_final.gif' )),
-          :creative_code => "ACODE" }
+      post :create, @basic_create_hash
     end
   end
 
@@ -144,26 +113,35 @@ describe CreativesController do
   end
 
   describe "update" do
-    it "should redirect to new creative page" do
-      put :update,
-        :id => "1",
-        :creative => { 
-          :creative_size => "1", 
-          :name => "name", 
-          :media_type => "flash", 
-          :creative_code => "ACODE", 
-          :campaigns => "1",
-          :partner => "1",
-          :image => File.open(
-            File.join(
-              RAILS_ROOT, 
-              'public', 
-              'images', 
-              'for_testing', 
-              '160x600_8F_Interim_final.gif'
-            ))}
+    context " with valid attributes" do 
+      def do_update
+        put :update,
+          :id => "1",
+          :creative => { 
+            :creative_size => "1", 
+            :name => "name", 
+            :media_type => "flash", 
+            :creative_code => "ACODE", 
+            :campaigns => "1",
+            :partner => "1",
+            :image => File.open(
+              File.join(
+                RAILS_ROOT, 
+                'public', 
+                'images', 
+                'for_testing', 
+                '160x600_8F_Interim_final.gif'
+              ))}
+      end
 
-      response.should redirect_to(new_creative_url)
+      it "should redirect to new creative page" do
+        do_update
+        response.should redirect_to(new_creative_url)
+      end
+
+      context " with invalid attributes" do
+        it "should re-render the edit form"
+      end
     end
   end
 end
