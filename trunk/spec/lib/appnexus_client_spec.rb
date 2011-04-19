@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe AppnexusClient do
-  include AppnexusClientHelper
-
   fixtures :creatives,
     :creative_inventory_configs,
     :campaigns_creatives,
@@ -41,7 +39,7 @@ describe AppnexusClient do
 
     it "should correctly compile array when passed a string of one substitution" do
       proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
-      Creative.apn_action_url(:index, "8675309").should ==
+      Creative.apn_action_url(:index_by_advertiser, "8675309").should ==
         "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
     end
 
@@ -67,20 +65,47 @@ describe AppnexusClient do
     end
   end
 
-  describe "methods that interact with apn" do
+  describe "all_apn" do
+    it "should return an array of all creatives in the Appnexus sandbox" do
+      agent = AppnexusClient::API.new_agent
+      agent.url = Creative.apn_action_url(:index)
+      agent.http_get
+      creatives = 
+        ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
 
-    after(:each) do
-      remove_all_test_creatives_from_apn
+      Creative.all_apn.should == creatives
+      end
+  end
+
+  describe "delete_all_apn" do
+    it "should delete all creatives when called on Creative class" do
+      @creative.save
+      @creative.save_apn
+      Creative.delete_all_apn
+      Creative.all_apn.size.should == 0
     end
+  end
+
+  describe "#delete_apn" do
+    it "should delete this record from apnexus" do
+      @creative.save
+      @creative.save_apn
+
+      @creative.delete_apn.should == true
+    end
+  end
+
+  describe "methods that interact with apn" do
+      after(:each) do
+        Creative.delete_all_apn
+      end
 
     describe "save_apn" do
       it "should return true if upload returns success message" do
-      pending "a sandbox implementation of AppNexus API"
         @creative.save_apn.should == true
       end
 
       it "should return false if upload returns error message" do
-      pending "a sandbox implementation of AppNexus API"
         @creative.image = nil
         @creative.save_apn.should == false
       end
@@ -88,13 +113,11 @@ describe AppnexusClient do
 
     describe "save_apn!" do
       it "should return true if upload returns success message" do
-      pending "a sandbox implementation of AppNexus API"
         @creative.save_apn!.should == true
       end
 
       it "should raise ActiveRecord::AppnexusRecordInvalid if upload returns error"+
         " message" do
-      pending "a sandbox implementation of AppNexus API"
         lambda {
           @creative.image = nil
           @creative.save_apn!

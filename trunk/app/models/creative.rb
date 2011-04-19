@@ -50,8 +50,11 @@ class Creative < ActiveRecord::Base
       :track_clicks => "true" },
     :apn_wrapper => "creative",
     :urls => {
-      :index => "creative?advertiser_code=##partner_code##",
+      :index => "creative",
+      :view => "creative?code=##creative_code##",
+      :index_by_advertiser => "creative?advertiser_code=##partner_code##",
       :delete => "creative?advertiser_code=##partner_code##&code=##creative_code##",
+      :delete_by_apn_ids => "creative?advertiser_id=##apn_creative_id##&id=##apn_id##",
       :new => "creative?advertiser_code=##partner_code##" }
 
   def <=>(another_creative)

@@ -78,7 +78,7 @@ class CreativesController < ApplicationController
     @creative.attributes = params[:creative]
 
     if request.referer == new_campaign_url
-      if @creative.save
+      if @creative.save && @creative.save_apn
         redirect_to(new_creative_path, :notice => "creative successfully created")
         return
       else 
@@ -86,7 +86,7 @@ class CreativesController < ApplicationController
         return
       end
     else
-      if @creative.save 
+      if @creative.save && @creative.save_apn
         redirect_to(new_creative_path, :notice => "creative successfully created")
       else
         redirect_to(new_creative_path, :notice => "something went wrong")

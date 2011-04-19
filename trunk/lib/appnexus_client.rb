@@ -78,7 +78,7 @@ module AppnexusClient
     module ClassMethods
       attr_accessor :apn_mappings
 
-      def apn_action_url(action, substitutions)
+      def apn_action_url(action, *substitutions)
         substitutions = [substitutions].flatten
         substitutions.map! { |subs| subs.to_s }
         matcher = /\#\#(.+?)\#\#/
@@ -94,6 +94,43 @@ module AppnexusClient
         end
 
         return url
+      end
+
+      def all_apn
+        agent = AppnexusClient::API.new_agent
+        agent.url = apn_action_url(:index)
+        agent.http_get
+
+        ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
+      end
+
+      def delete_url(object_hash)
+        url = apn_mappings[:urls][:delete_by_apn_ids].clone
+        necessary_attributes = url.scan(/(?:\?|\&)(.+?)=/).flatten
+        substitutions = []
+        for attribute in necessary_attributes
+          substitutions << object_hash[attribute]
+        end
+
+        apn_action_url(:delete_by_apn_ids, substitutions)
+      end
+
+      def delete_all_apn
+
+        objects = all_apn
+
+        agent = AppnexusClient::API.new_agent
+
+        for object in objects
+          agent.url = delete_url(object)
+          agent.http_delete
+        end
+
+        if all_apn.size == 0
+          return true
+        else
+          return false
+        end
       end
 
     end
@@ -135,6 +172,18 @@ module AppnexusClient
           error_msg = 
             ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
           raise AppnexusRecordInvalid, error_msg
+        end
+      end
+
+      def delete_apn
+        agent = AppnexusClient::API.new_agent
+        agent.url = apn_action_url(:delete)
+        agent.http_delete
+
+        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
+          return true
+        else
+          return true
         end
       end
 

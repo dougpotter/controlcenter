@@ -13,6 +13,7 @@ Feature: Manage creatives
     When I press "Create Creative"
     Then I should see "creative successfully created"
     And I should see "New Creative"
+    And Then I remove creatives from Appnexus sandbox
 
   Scenario: create a new creative with a campaign
     Given the standard ad-hoc campaign and associated entities exist
@@ -25,6 +26,7 @@ Feature: Manage creatives
     When I press "Create Creative"
     Then I should see "creative successfully created"
     And I should see "New Creative"
+    And Then I remove creatives from Appnexus sandbox
 
   @selenium 
   Scenario: Remove a creative

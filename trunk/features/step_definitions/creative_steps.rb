@@ -50,3 +50,7 @@ end
 Then /^I should see a "([^"]*)" JS dialog$/ do |message|
   selenium.confirmation.should eql(message)
 end
+
+Then /^Then I remove creatives from Appnexus sandbox$/ do
+  Creative.delete_all_apn
+end

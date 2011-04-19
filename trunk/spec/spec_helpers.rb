@@ -26,8 +26,3 @@ module ViewHelperMethodHelper
     "<option value=\"an option\"></option>"
   end
 end
-
-module AppnexusClientHelper
-  def remove_all_test_creatives_from_apn
-  end
-end
