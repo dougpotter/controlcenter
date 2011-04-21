@@ -55,6 +55,7 @@ class Creative < ActiveRecord::Base
       :index_by_advertiser => "creative?advertiser_code=##partner_code##",
       :delete => "creative?advertiser_code=##partner_code##&code=##creative_code##",
       :delete_by_apn_ids => "creative?advertiser_id=##apn_creative_id##&id=##apn_id##",
+      :update => "creative?code=##creative_code##&advertiser_code=##partner_code##",
       :new => "creative?advertiser_code=##partner_code##" }
 
   def <=>(another_creative)

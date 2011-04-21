@@ -171,7 +171,8 @@ class CreativesController < ApplicationController
 
     params[:creative][:partner] = Partner.find(params[:creative][:partner])
 
-    if @creative.update_attributes(params[:creative])
+    if @creative.update_attributes(params[:creative]) && 
+      @creative.update_attributes_apn
       redirect_to(new_creative_path, :notice => "creative successfully updated")
     else
       redirect_to(new_creative_path, :notice => "something's wrong")

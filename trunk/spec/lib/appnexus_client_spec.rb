@@ -124,5 +124,44 @@ describe AppnexusClient do
         }.should raise_error(AppnexusRecordInvalid)
         end
     end
+
+    describe "update_attributes" do
+      it "with valid attributes should update the appropriate record" do
+        @creative.save_apn
+        @creative.update_attributes(
+          :image => File.open(File.join(
+            RAILS_ROOT,
+            'public',
+            'images',
+            'for_testing',
+            '300x250_8F_Interim_final.gif' 
+        )))
+        @creative.update_attributes_apn
+        agent = AppnexusClient::API.new_agent
+        agent.url = Creative.apn_action_url(:view, @creative.creative_code)
+        agent.http_get
+        ActiveSupport::JSON.
+          decode(agent.body_str)["response"]["creative"]["name"].should == 
+          "300x250_8F_Interim_final.gif"
+      end
+
+      it "with valid attributes should return true" do
+        @creative.save_apn
+        @creative.update_attributes(
+          :image => File.open(File.join(
+            RAILS_ROOT,
+            'public',
+            'images',
+            'for_testing',
+            '300x250_8F_Interim_final.gif' 
+        )))
+        @creative.update_attributes_apn.should == true
+      end
+
+      it "with invalid attributes should return false" do
+        @creative.partner_id = nil
+        @creative.update_attributes_apn.should == false
+      end
+    end
   end
 end

@@ -146,7 +146,9 @@ module AppnexusClient
 
         json_hash.merge!(self.class.apn_mappings[:non_method_attr_map])
 
-        return ActiveSupport::JSON.encode(self.class.apn_mappings[:apn_wrapper] => json_hash)
+        return ActiveSupport::JSON.encode(
+          self.class.apn_mappings[:apn_wrapper] => json_hash
+        )
       end
 
       def save_apn
@@ -172,11 +174,34 @@ module AppnexusClient
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
           return true
         else
-          error_msg = ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
+          error_msg = 
+            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
           self.errors.add_to_base(
             error_msg
           )
           raise AppnexusRecordInvalid, error_msg
+        end
+      end
+
+      # because our XGCC's db is the cannonical reference for creatives, instead of
+      # taking a new set of parameters and exposing the possibility of having more
+      # current information in AppNexus than in XGCC's db, update_attributes_apn 
+      # takes no params and simply syncronizes the current state of 'this' with 
+      # AppNexus
+      def update_attributes_apn
+        agent = AppnexusClient::API.new_agent
+        agent.url = apn_action_url("update")
+        agent.http_put(apn_json)
+
+        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
+          return true
+        else
+          error_msg =
+            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
+          self.errors.add_to_base(
+            error_msg
+          )
+          return false
         end
       end
 

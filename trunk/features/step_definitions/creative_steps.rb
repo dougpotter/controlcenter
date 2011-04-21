@@ -26,6 +26,7 @@ Given /^the following creatives are associated with campaign "([^"]*)":$/ do |ca
       creative.campaigns << campaign
       creative.line_items << line_item
       creative.save
+      creative.save_apn
     end
   end
 end

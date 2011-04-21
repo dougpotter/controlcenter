@@ -72,7 +72,7 @@ Given /^the standard ad-hoc campaign and associated entities exist$/ do
     |      name      | campaign_code | line_item_code | campaign_type |
     |  Ford Campaign |     ACODE     |     ABC1       |    Ad-Hoc     |
   })
-  When "the campaign \"ACODE\" is relatd to line item \"ABC1\""
+  When "the campaign \"ACODE\" is related to line item \"ABC1\""
 end
 
 Given /^the secondary ad\-hoc campaign and associated entities exist$/ do
@@ -88,7 +88,7 @@ Given /^the secondary ad\-hoc campaign and associated entities exist$/ do
     |       name       | campaign_code | line_item_code | campaign_type |
     | Shamwow Campaign |     BCODE     |     ABC2       |    Ad-Hoc     |
   })
-  When "the campaign \"BCODE\" is relatd to line item \"ABC2\""
+  When "the campaign \"BCODE\" is related to line item \"ABC2\""
 end
 
 Given /^campaign "([^"]*)" is associated with audience "([^"]*)"$/ do |campaign_code, audience_code|
@@ -187,7 +187,7 @@ Then /^I wait for page to load$/ do
   @seleniu.wait_for_condition "selenium.browserbot.getCurrentWindow().document.ready(function(){ return true;});"
 end
 
-Given /^the campaign "([^"]*)" is relatd to line item "([^"]*)"$/ do |campaign_code, line_item_code|
+Given /^the campaign "([^"]*)" is related to line item "([^"]*)"$/ do |campaign_code, line_item_code|
   @line_item = LineItem.find_by_line_item_code(line_item_code)
   Campaign.find_by_campaign_code(campaign_code).update_attributes({
     :line_item => LineItem.find_by_line_item_code(line_item_code)
