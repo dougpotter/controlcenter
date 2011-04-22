@@ -84,8 +84,12 @@ class Creative < ActiveRecord::Base
     PixelGenerator.ae_pixels(self, campaign, options)
   end
 
-  def has_image?
-    return !self.image_file_name.nil?
+  def has_clean_image?
+    return !self.image.to_file.nil? && !self.image.dirty?
+  end
+
+  def has_dirty_image?
+    return !self.image.to_file.nil? && self.image.dirty?
   end
 
   def configured?(campaign_inventory_config)

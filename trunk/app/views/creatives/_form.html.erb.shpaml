@@ -20,7 +20,7 @@ div class=dimension_input
   = collection_select('creative', 'campaigns', @campaigns, 'id', 'name', { :selected => @creative.campaigns.map { |c| c.id } }, { :multiple => true })
 
 .creative_image_panel 
-  % if @creative.has_image?
+  % if @creative.has_clean_image?
     #creative_image 
       = image_tag_for_edit(@creative)
       >br
