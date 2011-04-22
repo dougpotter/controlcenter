@@ -63,6 +63,12 @@ describe AppnexusClient do
         "http://hb.sand-08.adnxs.net/creative?advertiser_code=77777&code=ZZ11"
       @creative.apn_action_url(:delete).should == proper_url
     end
+
+    it "should substitute the blank string for undefined attributes" do
+      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code="
+      @creative.partner = nil
+      @creative.apn_action_url(:new).should == proper_url
+    end
   end
 
   describe "all_apn" do
@@ -145,6 +151,16 @@ describe AppnexusClient do
           "300x250_8F_Interim_final.gif"
       end
 
+      it "should create the creative if it doesn't already exist" do
+        Creative.delete_all_apn
+        @creative.update_attributes_apn
+        agent = AppnexusClient::API.new_agent
+        agent.url = Creative.apn_action_url(:view, @creative.creative_code)
+        agent.http_get
+        ActiveSupport::JSON.decode(agent.body_str)["response"]["status"].should == 
+          "OK"
+      end
+
       it "with valid attributes should return true" do
         @creative.save_apn
         @creative.update_attributes(
@@ -159,7 +175,7 @@ describe AppnexusClient do
       end
 
       it "with invalid attributes should return false" do
-        @creative.partner_id = nil
+        @creative.partner = nil
         @creative.update_attributes_apn.should == false
       end
     end

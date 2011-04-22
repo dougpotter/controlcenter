@@ -140,7 +140,11 @@ class Creative < ActiveRecord::Base
   end
 
   def partner_code
-    self.partner.partner_code.to_s
+    if partner
+      return partner.partner_code.to_s
+    else
+      return nil
+    end
   end
 
   def self.generate_creative_code

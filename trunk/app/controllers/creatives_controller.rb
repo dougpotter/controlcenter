@@ -146,18 +146,20 @@ class CreativesController < ApplicationController
     require 'image_spec'
 
     @creative = Creative.find(params[:id])
-    @campaigns = [ Campaign.find(params[:creative].delete("campaigns")) ].flatten
+    if !params[:creative][:campaigns].blank?
+      params[:creative][:campaigns] = 
+        [ Campaign.find(params[:creative].delete("campaigns")) ].flatten
+    end
     if params[:creative][:image] 
       creative_image = ImageSpec.new(params[:creative][:image])
-      @creative_size = CreativeSize.find_by_height_and_width(
+      params[:creative][:creative_size] = CreativeSize.find_by_height_and_width(
         creative_image.height,
         creative_image.width
       )
     else
-      @creative_size = CreativeSize.find(@creative.creative_size)
+      params[:creative][:creative_size] = 
+        @creative_size = CreativeSize.find(@creative.creative_size)
     end
-    params[:creative][:campaigns] = @campaigns
-    params[:creative][:creative_size] = @creative_size
 
     if params[:campaign_inventory_config]
       params[:campaign_inventory_config].each do |caic_id,configured|

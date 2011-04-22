@@ -190,8 +190,14 @@ module AppnexusClient
       # AppNexus
       def update_attributes_apn
         agent = AppnexusClient::API.new_agent
-        agent.url = apn_action_url("update")
-        agent.http_put(apn_json)
+        if self.exists_apn?
+          agent.url = apn_action_url("update")
+          agent.http_put(apn_json)
+        else
+          agent.url = apn_action_url("new")
+          agent.post_body = apn_json
+          agent.http_post
+        end
 
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
           return true
@@ -217,6 +223,18 @@ module AppnexusClient
         end
       end
 
+      def exists_apn?
+        agent = AppnexusClient::API.new_agent
+        agent.url = apn_action_url(:view)
+        agent.http_get
+
+        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
+          return true
+        else
+          return false
+        end
+      end
+
       def apn_action_url(action)
         url = APN_CONFIG["api_root_url"] + self.class.apn_mappings[:urls][action]
         return compile_url(url)
@@ -225,7 +243,7 @@ module AppnexusClient
       def compile_url(url)
         matcher = /\#\#(.+?)\#\#/
           while url.match(matcher) && method = url.match(matcher)[1]
-            url.sub!(matcher, self.send(method))
+            url.sub!(matcher, self.send(method).to_s)
           end
         return url
       end
