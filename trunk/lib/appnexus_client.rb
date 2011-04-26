@@ -57,7 +57,7 @@
 module AppnexusClient
   module API
 
-    attr_accessor :agent
+    @@agent = nil
 
     def self.included(base)
       base.instance_eval do
@@ -249,15 +249,44 @@ module AppnexusClient
       end
     end
 
+    def self.issue_get(object, *filters)
+      url = "#{APN_CONFIG[:api_root_url]}#{object}"
+      if !filters.empty?
+        url += "?"
+        filters.each do |attribute, value|
+          url += "#{attribute}=#{value}"
+        end
+      end
+      self.new_agent
+      @@agent.url = url
+      @@agent.http_get
+      puts JSON.pretty_generate(
+        ActiveSupport::JSON.decode(@@agent.body_str)
+      )
+      return nil
+    end
+
+    def self.method_missing(method_sym, *filters, &block)
+      if method_sym.to_s =~ /^get_(.*)$/
+        self.issue_get($1.gsub("_", "-"), filters)
+      else
+        raise NoMethodError, "undefined method #{method_sym} for #{self}"
+      end
+    end
+
+    def self.env
+      return RAILS_ENV
+    end
+
     def self.new_agent
       require 'curl'
-      @agent = Curl::Easy.new(APN_CONFIG["api_root_url"] + "auth")
-      @agent.enable_cookies = true
-      @agent.post_body = APN_CONFIG["authentication_hash"].to_json
-      @agent.http_post
-      api_token = ActiveSupport::JSON.decode(@agent.body_str)["response"]["token"]
-      @agent.headers["Authorization"] = api_token
-      return @agent
+      @@agent = Curl::Easy.new(APN_CONFIG["api_root_url"] + "auth")
+      @@agent.enable_cookies = true
+      @@agent.post_body = APN_CONFIG["authentication_hash"].to_json
+      @@agent.http_post
+      api_token = ActiveSupport::JSON.decode(@@agent.body_str)["response"]["token"]
+      @@agent.headers["Authorization"] = api_token
+      return @@agent
     end
   end
 end
