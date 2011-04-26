@@ -33,4 +33,9 @@ class LineItemsController < ApplicationController
     @line_item = LineItem.destroy(params[:id])
     redirect_to new_line_item_path
   end
+
+  def show
+    @line_item = LineItem.find(params[:id])
+    @campaigns = @line_item.campaigns
+  end
 end

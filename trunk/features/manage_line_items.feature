@@ -20,6 +20,19 @@ Feature: Manage line_items
     And I should see "Ford Spring 2008"
     And I should see "ABC12"
 
+  Scenario: View line_item
+    Given the standard ad-hoc campaign and associated entities exist
+    When I am on the show line_item page for ABC1
+    Then I should see "Create associated campaign"
+    And I should see "Name"
+    And I should see "Line Item Code"
+    And I should see "Partner"
+    And I should see "Campaigns"
+    And I should see "Ford Campaign"
+    And I should see "Ad-Hoc"
+    And I should see "ACODE"
+    And I should see "Inventory Sources"
+
   Scenario: Edit line_item
     Given the following partners:
       | name | partner_code |

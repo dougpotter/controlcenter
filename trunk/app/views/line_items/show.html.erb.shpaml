@@ -1,0 +1,30 @@
+h1 | Line Item
+
+p
+  = "Name: #{@line_item.name}"
+p
+  = "Line Item Code: #{@line_item.line_item_code}"
+p
+  = "Partner: #{@line_item.partner.name}"
+
+div styel="clear:both;"
+  >br
+
+h3 | Campaigns
+
+% for campaign in @campaigns
+    p 
+      = campaign.name
+    p
+      = "Campaign Type: #{campaign.source_type}"
+    p
+      = "Campaign Code: #{campaign.campaign_code}"
+    p
+      = "Inventory Sources: #{campaign.ad_inventory_sources.join(",")}"
+    >br
+
+
+= link_to "Create associated campaign", "#{new_campaign_path}?line_item_id=#{@line_item.id}"
+
+div styel="clear:both;"
+  >br

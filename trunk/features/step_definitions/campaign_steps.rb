@@ -72,7 +72,11 @@ Given /^the standard ad-hoc campaign and associated entities exist$/ do
     |      name      | campaign_code | line_item_code | campaign_type |
     |  Ford Campaign |     ACODE     |     ABC1       |    Ad-Hoc     |
   })
+
+  When "the audience \"HNXT\" is associated with ad-hoc source \"bucket:/a/bucket\""
+  When "the campaign \"ACODE\" is related to audience \"HNXT\""
   When "the campaign \"ACODE\" is related to line item \"ABC1\""
+  When "campaign \"ACODE\" is associated with ais \"AdX\""
 end
 
 Given /^the secondary ad\-hoc campaign and associated entities exist$/ do
@@ -192,4 +196,9 @@ Given /^the campaign "([^"]*)" is related to line item "([^"]*)"$/ do |campaign_
   Campaign.find_by_campaign_code(campaign_code).update_attributes({
     :line_item => LineItem.find_by_line_item_code(line_item_code)
   })
+end
+
+Given /^the campaign "([^"]*)" is related to audience "([^"]*)"$/ do |campaign_code, audience_code|
+  Campaign.find_by_campaign_code(campaign_code).audience = 
+    Audience.find_by_audience_code(audience_code)
 end

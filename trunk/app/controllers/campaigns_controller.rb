@@ -6,6 +6,7 @@ class CampaignsController < ApplicationController
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
     @creative_sizes = CreativeSize.all
     @creative = Creative.new
+    params[:line_item_id] ? @selected_line_item = params[:line_item_id].to_i : nil
   end
 
   def create

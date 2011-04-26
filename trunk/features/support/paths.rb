@@ -55,6 +55,9 @@ module NavigationHelpers
     when /the edit partner page for 123432/
       edit_partner_path(Partner.find_by_partner_code("123432").id)
 
+    when /the show line_item page for ABC1/
+      line_item_path(LineItem.find_by_line_item_code("ABC1").id)
+
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #
