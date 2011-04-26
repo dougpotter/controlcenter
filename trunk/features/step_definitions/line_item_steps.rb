@@ -41,3 +41,14 @@ Given /^the line item "([^"]*)" is associated with partner "([^"]*)"$/ do |line_
   @partner = Partner.find_by_partner_code(partner_code)
   @line_item.update_attributes({:partner => @partner})
 end
+
+Then /^the show line_item information should be properly populated$/ do
+  And "I should see \"Name\""
+  And "I should see \"Line Item Code\""
+  And "I should see \"Partner\""
+  And "I should see \"Campaigns\""
+  And "I should see \"Ford Campaign\""
+  And "I should see \"Ad-Hoc\""
+  And "I should see \"ACODE\""
+  And "I should see \"Inventory Sources\""
+end

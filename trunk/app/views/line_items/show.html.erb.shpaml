@@ -26,5 +26,10 @@ h3 | Campaigns
 
 = link_to "Create associated campaign", "#{new_campaign_path}?line_item_id=#{@line_item.id}"
 
+>br
+>br
+
+= link_to "Edit Line Item", edit_line_item_path(@line_item.id)
+
 div styel="clear:both;"
   >br
