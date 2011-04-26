@@ -2,7 +2,7 @@
 # backend process interaction with AppNexus. Currently some of this functionality
 # exists in AppnexusSyncWorkflow. We can discuss at another time whenther to merge
 # the two. AppnexusSyncWorkflow does fit nicely into the FETL stack (and
-# associated coneptual category), so merging may not be ideal afterall.
+# associated conceptual category), so merging may not be ideal afterall.
 #
 # The AppnexusClient::API module is intended to expose AppNexus's RESTful API
 # to XGCC's backend in order to facilitate easy backend synchronization of XGCC
@@ -15,9 +15,11 @@
 #
 # #save_apn
 # #save_apn!
+# #delete_apn
+# #update_attributes_apn
 #
-# AppnexusClient::API is envoked by placing the following 'declaration' at the top 
-# of a model class:
+# AppnexusClient::API is invoked by placing the following 'declaration' at the top 
+# of an ActiveRecord model class:
 #
 # acts_as_apn_object
 #
@@ -39,13 +41,14 @@
 #  "creative"
 #
 # :urls
-#  a hash  mapping AppNexus URLs to their associated CRUD actions for that object,
-#  with macros indicating where a substitution should take place e.g.:
+#  a hash  mapping AppNexus URL extensions to their associated CRUD actions for that
+#  object, with macros indicating where a substitution should take place e.g.:
 #
-#  :new => https://api.dislaywords.com/creative?advertiser_code=##partner_code##
+#  :new => creative?advertiser_code=##partner_code##
 #
-#  would indicate the new action for a creative uses the corresponding URL with
-#  the result of Creative#partner_code substituted for the string ##partner_code##
+#  would indicate the new action for a creative uses the root URL defined in the
+#  configuration file (see below) plus this extension with the result of 
+#  Creative#partner_code substituted for the string '##partner_code##'
 #
 # Finally, in addition to the object level configuraiton parameters specified in
 # their respective model class files, AppnexusClient::API looks for a 
