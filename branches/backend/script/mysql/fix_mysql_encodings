@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# fix_mysql_encodings.rb: Change character set encoding and collation to UTF-8
+# for all MySQL databases/tables.
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
+
+UTF8_CHARSET = "utf8"
+UTF8_COLLATION = "utf8_general_ci"
+
+rails_config = Rails::Configuration.new
+db_name = rails_config.database_configuration[RAILS_ENV]["database"]
+
+connection = ActiveRecord::Base.connection
+
+quoted_db_name = connection.quote_column_name(db_name)
+quoted_charset = connection.quote(UTF8_CHARSET)
+quoted_collation = connection.quote(UTF8_COLLATION)
+connection.execute(
+  "ALTER DATABASE #{quoted_db_name} DEFAULT CHARACTER SET = #{quoted_charset} " + 
+  "DEFAULT COLLATE = #{quoted_collation};")
+
+connection.tables.each do |table_name|
+  quoted_table_name = connection.quote_column_name(table_name)
+  connection.execute(
+    "ALTER TABLE #{quoted_table_name} CONVERT TO CHARACTER SET #{quoted_charset} " + 
+    "COLLATE #{quoted_collation};")
+end

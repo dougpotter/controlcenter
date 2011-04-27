@@ -1,0 +1,18 @@
+% for label, name, form_tag_name in dimensions
+  div class="dimension_input"
+    label for="<%= form_tag_name %>" 
+      = label + ':' 
+    >br 
+    
+    = check_box_tag "#{form_tag_name}_group", '1', @checkboxes["#{form_tag_name}_group"] || @checkboxes["#{form_tag_name}_summarize"], :class => 'group-box'
+    label for='<%= form_tag_name %>_group' | Group By? 
+    >br 
+    
+    = check_box_tag "#{form_tag_name}_summarize", '1', @checkboxes["#{form_tag_name}_summarize"], :class => 'summarize-box'
+    label for='<%= form_tag_name %>_summarize' | Summarize?
+    >br 
+        
+    label for='<%= form_tag_name %>' | Filter By:    
+    >br         
+   
+    = select_tag(form_tag_name, all_filter_option + send("options_for_#{name}_select"), :multiple => true)

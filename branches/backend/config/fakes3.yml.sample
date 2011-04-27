@@ -1,0 +1,4 @@
+development: &common
+  code_path: /path/to/fakes3
+  upload_root: /path/to/upload/root
+  #daemonize: true

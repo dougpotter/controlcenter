@@ -1,0 +1,12 @@
+# access_key_id and secret_access_key are required;
+# other settings are optional.
+
+development:
+  access_key_id: 1E3GDYEOGFJPIT7XXXXXX
+  secret_access_key: hgTHt68JY07JKUY08ftHYtERkjgtfERn57XXXXXX
+  #s3_host: s3.amazonaws.com
+  # 80 or 443, default is 443
+  #s3_port: 443
+  # http or https, default is https
+  #s3_protocol: https
+  #ca_file: /path/to/cert.pem

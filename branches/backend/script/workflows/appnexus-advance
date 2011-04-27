@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: script/workflows/appnexus-advance [options]"
+  
+  opts.separator ''
+  opts.separator 'Debugging options:'
+  
+  opts.on('--[no-]debug', 'Enable debugging output') do |value|
+    options[:debug] = value
+  end
+  
+  opts.separator ''
+  opts.separator 'Informational options:'
+  
+  opts.on('-h', '--help', 'Display this help text') do
+    puts opts
+    exit
+  end
+end.parse!
+
+require File.join(File.dirname(__FILE__), '../../config/boot')
+require File.join(File.dirname(__FILE__), '../../config/environment')
+
+if options[:debug]
+  $logger = Logger.new(STDOUT)
+  $logger.sev_threshold = Logger::DEBUG
+end
+
+jobs = AppnexusSyncJob.processing.all(:order => 'created_at')
+if options[:debug]
+  $logger.debug("Found #{jobs.length} jobs to run.")
+end
+jobs.each do |job|
+  if options[:debug]
+    $logger.debug("Running job #{job.id} (#{job.class})")
+  end
+  job.run(options)
+end

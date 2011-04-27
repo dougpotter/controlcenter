@@ -1,0 +1,51 @@
+<div class="dimension_input sync_rule_checkbox_and_label" id=<%="\"sync_checkbox_for_#{ais.ais_code}\""%>>
+  label for="use_ais" | <%= ais.ais_code %>:
+  = check_box 'aises_for_sync', nil, { :class => "sync_rule_ais" }, ais.ais_code, ""
+</div>
+
+div style="clear:both;height:0px;"
+  >br
+
+div class=sync_rule_entry_boxes
+  <% @s = "sync_rule_entry_boxes_#{ais.ais_code}" %>
+  <%= "<div id=\"#{@s}\">" %>
+
+    <% if ais.ais_code == "ApN" %>
+      div class=dimension_input
+        label for="apn_segment_id" | AppNexus Segment Id:
+        >br
+        = text_field "sync_rule[#{ais.ais_code}]", 'apn_segment_id'
+    <% else %>
+      div class=dimension_input
+        label for="unsecure_add" | Unsecure Add:
+        >br
+        = text_field "sync_rule[#{ais.ais_code}]", 'unsecure_add', :size => 150
+
+      div class=dimension_input
+        label for="unsecure_remove" | Unsecure Remove:
+        >br
+        = text_field "sync_rule[#{ais.ais_code}]", 'unsecure_remove', :size => 150
+
+      div class=dimension_input
+        label for="secure_add" | Secure Add:
+        >br
+        = text_field "sync_rule[#{ais.ais_code}]", 'secure_add', :size => 150
+
+      div class=dimension_input
+        label for="secure_remove" | Secure Remove:
+        >br
+        = text_field "sync_rule[#{ais.ais_code}]", 'secure_remove', :size => 150
+
+      div style="clear:both;height:0px;"
+        >br
+
+      div class=dimension_input
+        label for="period" | Period:
+        >br
+        = text_field "sync_rule[#{ais.ais_code}]", 'period', :size => 3
+
+</div>
+
+div style="clear:both;"
+  >br
+

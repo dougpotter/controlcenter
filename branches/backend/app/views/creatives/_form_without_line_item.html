@@ -1,0 +1,27 @@
+<%= error_messages_for :creative %>
+
+<% creative_number ||= 0 %>
+
+<div id="creative_form_without_line_item" class="creative_form_without_line_item"><div class="dimension_input"><label for='creative_code'>Creative Code:</label>
+<br />
+<%= text_field("creatives[#{creative_number}]", 'creative_code') %></div>
+
+<div class="dimension_input"><label for='name'>Name:</label>
+<br />
+<%= text_field("creatives[#{creative_number}]", 'name') %></div>
+
+<div class="dimension_input"><label for='media_type'>Media Type:</label>
+<br />
+<%= text_field("creatives[#{creative_number}]", 'media_type') %></div>
+
+<div class="dimension_input"><label for='creative_size_id'>Creative Size:</label>
+<br />
+<%= collection_select("creatives[#{creative_number}]", 'creative_size_id', @creative_sizes, :id, :height_width_string, :selected => @creative.creative_size_id) %>
+
+<br /></div>
+
+<div class="dimension_input"><label for='creative_image'>Image:</label>
+<br />
+<%= file_field "creatives[#{creative_number}]", "image" %></div>
+
+<div style='clear:both;'><br /></div></div>
