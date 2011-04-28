@@ -76,7 +76,7 @@ Given /^the standard ad-hoc campaign and associated entities exist$/ do
   When "the audience \"HNXT\" is associated with ad-hoc source \"bucket:/a/bucket\""
   When "the campaign \"ACODE\" is related to audience \"HNXT\""
   When "the campaign \"ACODE\" is related to line item \"ABC1\""
-  When "campaign \"ACODE\" is associated with ais \"AdX\""
+  When "campaign \"ACODE\" is associated with ais \"ApN\""
 end
 
 Given /^the secondary ad\-hoc campaign and associated entities exist$/ do
@@ -211,4 +211,6 @@ Then /^the edit campaign form should be properly populated$/ do
   Then "the \"S3 Bucket\" field should contain \"bucket:/a/bucket\""
   Then "I should see \"HNXT\""
   Then "the \"Audience Name\" field should contain \"Ford Connected\""
+  Then "I should see \"Inventory Sources\""
+  Then "the \"ApN\" checkbox should be checked"
 end

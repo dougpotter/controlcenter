@@ -14,6 +14,11 @@ div class=notice
     = render :partial => partial_string
   div style="clear: both;"
     >br
+
+  h1 | Inventory Sources
+
+  % for ais in @aises
+    = render :partial => 'sync_rule', :locals => { :ais => ais, :campaign => @campaign }
   = submit_tag "Save Edits"
 
 = button_to "Delete Campaign", { :action => "destroy", :id => @campaign.id }, { :class => "delete_button", :confirm => "Are you sure you want to delete this campaign? All creative associations (but not the actual creatives), ais associations (but not the ais), and audience associations (but not the audience) will also be deleted.", :method => "delete" }

@@ -40,7 +40,7 @@ Feature: Manage campaigns
 
     And I should see "Edit Campaign"
 
-  Scenario: show campaign
+  Scenario: edit campaign
     Given the standard ad-hoc campaign and associated entities exist
     When I am on the edit campaign page for ACODE
     Then the edit campaign form should be properly populated

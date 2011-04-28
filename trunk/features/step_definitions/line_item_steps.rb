@@ -50,5 +50,5 @@ Then /^the show line_item information should be properly populated$/ do
   And "I should see \"Ford Campaign\""
   And "I should see \"Ad-Hoc\""
   And "I should see \"ACODE\""
-  And "I should see \"Google Ad Exchange\""
+  And "I should see \"AppNexus\""
 end

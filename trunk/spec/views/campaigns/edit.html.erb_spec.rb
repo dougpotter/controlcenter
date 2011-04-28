@@ -13,6 +13,7 @@ describe "/campaigns/edit.html.erb" do
       returns(default_ofcfs_result)
     template.expects(:options_from_collection_for_select).
       returns(default_ofcfs_result)
+    assigns[:aises] = []
     assigns[:campaign] = @campaign
     assigns[:campaign_types] = @campaign_types
     render
@@ -28,6 +29,7 @@ describe "/campaigns/edit.html.erb" do
       returns(default_ofcfs_result)
     template.expects(:options_from_collection_for_select).
       returns(default_ofcfs_result)
+    assigns[:aises] = []
     assigns[:campaign] = @campaign
     assigns[:campaign_types] = @campaign_types
     render

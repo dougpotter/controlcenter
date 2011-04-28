@@ -32,7 +32,7 @@ h1 | Basics
 
   div class=sync_rules_on_campaign_setup
     % for @ais in @aises
-     = render :partial => 'sync_rule', :locals => { :ais => @ais }
+     = render :partial => 'sync_rule', :locals => { :ais => @ais, :campaign => @campaign }
 
   = submit_tag "submit"
 
