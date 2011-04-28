@@ -47,7 +47,7 @@ class CreativesController < ApplicationController
   def new
     @creative = Creative.new
     @creatives = Creative.all(:joins => :creative_size)
-    @campaigns = Campaign.all
+    @campaigns = []
     @creative_sizes = CreativeSize.all(:order => 'common_name')
     @partners = Partner.all
   end

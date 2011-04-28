@@ -15,6 +15,7 @@ Feature: Manage creatives
     And I should see "New Creative"
     And Then I remove creatives from Appnexus sandbox
 
+  @selenium
   Scenario: create a new creative with a campaign
     Given the standard ad-hoc campaign and associated entities exist
     And I am on the new creative page
