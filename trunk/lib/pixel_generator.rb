@@ -51,7 +51,7 @@ module PixelGenerator
     if options[:event_types].blank?
       event_types = [ :imp, :eng, :clk ]
     else
-      event_types = options[:event_types].to_a.map { |t| EVENT_TYPES[t] }
+      event_types = [ options[:event_types] ].flatten.map { |t| EVENT_TYPES[t] }
       event_types.compact!
     end
    
