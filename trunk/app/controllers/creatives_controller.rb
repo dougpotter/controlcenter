@@ -65,7 +65,7 @@ class CreativesController < ApplicationController
     end
 
     if !params[:creative][:campaigns].blank?
-      params[:creative][:campaigns].map! do |c|
+      params[:creative][:campaigns] = params[:creative][:campaigns].map do |c|
         Campaign.find(c)
       end
     end

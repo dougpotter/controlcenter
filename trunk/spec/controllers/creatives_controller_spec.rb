@@ -27,7 +27,6 @@ describe CreativesController do
     end
 
     it "should save a new creative associated with one campaign" do
-      @creative.expects(:campaigns).returns([])
       Creative.expects(:new).returns(@creative)
       campaign = mock("campaign")
       Campaign.expects(:find).with("1").returns(campaign)
@@ -40,7 +39,6 @@ describe CreativesController do
     it "should save a new creative associated with multiple campaigns" do
       campaign_one = mock("campaign_one")
       campaign_two = mock("campaign_two")
-      @creative.expects(:campaigns).twice.returns([], [campaign_one])
       Creative.expects(:new).returns(@creative)
       Campaign.expects(:find).twice.returns(campaign_one, campaign_two)
 
