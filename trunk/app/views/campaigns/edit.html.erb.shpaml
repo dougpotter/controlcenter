@@ -6,10 +6,11 @@ h1 | Edit Campaign
 div class=notice
  = notice
 
+
 % form_for @campaign do |f|
   = render :partial => 'form'  
   div id=audience_source_section
-    % partial_string = "audiences/form_for_" + @campaign_types.first.class.to_s.underscore
+    % partial_string = "audiences/form_for_" + @campaign.source_type.downcase.underscore + "_source"
     = render :partial => partial_string
   div style="clear: both;"
     >br

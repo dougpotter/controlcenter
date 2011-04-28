@@ -202,3 +202,13 @@ Given /^the campaign "([^"]*)" is related to audience "([^"]*)"$/ do |campaign_c
   Campaign.find_by_campaign_code(campaign_code).audience = 
     Audience.find_by_audience_code(audience_code)
 end
+
+Then /^the edit campaign form should be properly populated$/ do
+  Then "I should see \"Ad-Hoc\""
+  Then "I should see \"Ford Spring\" within \"select\#campaign_line_item\""
+  Then "the \"Campaign Name\" field should contain \"Ford Campaign\""
+  Then "the \"Campaign Code\" field should contain \"ACODE\""
+  Then "the \"S3 Bucket\" field should contain \"bucket:/a/bucket\""
+  Then "I should see \"HNXT\""
+  Then "the \"Audience Name\" field should contain \"Ford Connected\""
+end

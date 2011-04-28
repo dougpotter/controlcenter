@@ -3,7 +3,6 @@ Feature: Manage campaigns
   and ad ops specialist 
   will want to remove and view campaigns
 
-  #delete
   @selenium 
   Scenario: delete campaign
     Given the standard ad-hoc campaign and associated entities exist
@@ -14,7 +13,6 @@ Feature: Manage campaigns
     And I should not see "ACODE"
     And I should see "campaign deleted"
 
-  #show
   Scenario: show campaign
     Given the standard ad-hoc campaign and associated entities exist
     And the following creatives are associated with campaign "ACODE":
@@ -41,3 +39,8 @@ Feature: Manage campaigns
     And I should see the configured ad inventory sources for "ACODE"
 
     And I should see "Edit Campaign"
+
+  Scenario: show campaign
+    Given the standard ad-hoc campaign and associated entities exist
+    When I am on the edit campaign page for ACODE
+    Then the edit campaign form should be properly populated

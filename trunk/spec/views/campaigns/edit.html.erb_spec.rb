@@ -6,6 +6,7 @@ describe "/campaigns/edit.html.erb" do
   it "should render" do
     @campaign = stub_everything("Campaign")
     @campaign.expects(:class).times(4).returns(Campaign)
+    @campaign.expects(:source_type).times(2).returns("ad-hoc")
     @audience_source = stub_everything("Audience Source", :class => "AdHocSource")
     @campaign_types = [ @audience_source ]
     template.expects(:options_from_collection_for_select).
@@ -20,6 +21,7 @@ describe "/campaigns/edit.html.erb" do
   it "should include a Delete Campaign button" do
     @campaign = stub_everything("Campaign", :id => 1)
     @campaign.expects(:class).times(4).returns(Campaign)
+    @campaign.expects(:source_type).times(2).returns("ad-hoc")
     @audience_source = stub_everything("Audience Source", :class => "AdHocSource")
     @campaign_types = [ @audience_source ]
     template.expects(:options_from_collection_for_select).
