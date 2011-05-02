@@ -270,7 +270,6 @@ describe CampaignsController do
             :has_audience? => true
           )
           Campaign.expects(:find).returns(@campaign)
-          Audience.expects(:find_by_audience_code).with("ACODE").returns(nil)
           AdHocSource.expects(:new).
             with({'s3_bucket' => "bucket:/a/path"}).returns(@audience_source)
           do_update
@@ -278,7 +277,7 @@ describe CampaignsController do
       end
     end
 
-    context "an Retargeting campaign" do
+    context "a Retargeting campaign" do
       context "with a brand new source" do
         def do_update
           put :update, 
@@ -319,12 +318,15 @@ describe CampaignsController do
           @audience_source = mock("Audience Source")
           @audience = mock(
             "Audience", 
-            :update_source => true
+            :update_source => true,
+            :update_attributes => true
           )
-          @campaign = stub_everything("Campaign", :update_attributes => true)
+          @campaign = stub_everything(
+            "Campaign", 
+            :update_attributes => true,
+            :audience => @audience
+          )
           Campaign.expects(:find).returns(@campaign)
-          Audience.expects(:find_by_audience_code).with("ACODE").returns(nil)
-          Audience.expects(:create).returns(@audience)
           RetargetingSource.expects(:new).
             with({'referrer_regex' => "a.*regex"}).returns(@audience_source)
           do_update

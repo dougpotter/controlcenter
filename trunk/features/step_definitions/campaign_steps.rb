@@ -77,6 +77,7 @@ Given /^the standard ad-hoc campaign and associated entities exist$/ do
   When "the campaign \"ACODE\" is related to audience \"HNXT\""
   When "the campaign \"ACODE\" is related to line item \"ABC1\""
   When "campaign \"ACODE\" is associated with ais \"ApN\""
+  When "campaign \"ACODE\" has segment id \"123\" on ais \"ApN\""
 end
 
 Given /^the secondary ad\-hoc campaign and associated entities exist$/ do
@@ -213,4 +214,11 @@ Then /^the edit campaign form should be properly populated$/ do
   Then "the \"Audience Name\" field should contain \"Ford Connected\""
   Then "I should see \"Inventory Sources\""
   Then "the \"ApN\" checkbox should be checked"
+  Then "the \"AppNexus Segment Id\" field should contain \"123\""
+end
+
+Given /^campaign "([^"]*)" has segment id "([^"]*)" on ais "([^"]*)"$/ do |campaign_code, segment_id, ais_code|
+  campaign = Campaign.find_by_campaign_code(campaign_code)
+  ais = AdInventorySource.find_by_ais_code(ais_code)
+  campaign.configure_ais(ais, segment_id)
 end

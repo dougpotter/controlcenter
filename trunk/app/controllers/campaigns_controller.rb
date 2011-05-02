@@ -104,25 +104,22 @@ class CampaignsController < ApplicationController
     params[:campaign][:line_item] = 
       LineItem.find(params[:campaign][:line_item])
 
-    if @audience = Audience.find_by_audience_code(params[:audience][:audience_code]) && !@campaign.has_audience?
-      # attempt to use duplicate audience code for new audience code
-      redirect_to(
-        edit_campaign_url(@campaign.id), 
-        :notice => "Audience code #{params[:audience][:audience_code]} already" +
-        " exists, please choose a new one"
-      )
-      return
-    elsif @audience = @campaign.audience
-      # updating existing audience
-      @audience.update_attributes(params[:audience])
-    elsif params[:audience][:audience_code]
-      # associating brand new audience
-      @audience = Audience.create(params[:audience])
-    end
+    # process audience source params
+    params[:audience][:audience_source] = source_from_params
+      @campaign.audience.update_source(params[:audience][:audience_source])
 
-    @audience_source = source_from_params
-    @audience.update_source(@audience_source)
-    params[:campaign][:audience] = @audience
+    # process audience description
+    @campaign.audience.update_attributes(
+      :description => params[:audience][:description]
+    )
+
+    # process segment ids
+    if params[:sync_rules]
+      params[:sync_rules].each do |ais_code, rule|
+        ais = AdInventorySource.find_by_ais_code(ais_code)
+        @campaign.configure_ais(ais, rule[:appnexus_segment_id])
+      end
+    end
 
     if @campaign.update_attributes(params[:campaign])
         redirect_to(

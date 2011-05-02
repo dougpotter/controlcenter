@@ -44,3 +44,11 @@ Feature: Manage campaigns
     Given the standard ad-hoc campaign and associated entities exist
     When I am on the edit campaign page for ACODE
     Then the edit campaign form should be properly populated
+
+  Scenario: change segment id 
+    Given the standard ad-hoc campaign and associated entities exist
+    And I am on the edit campaign page for ACODE
+    And I fill in "88888" for "AppNexus Segment Id"
+    When I press "Save Edits"
+    And I am on the edit campaign page for ACODE
+    Then the "AppNexus Segment Id" field should contain "88888"

@@ -14,7 +14,7 @@ div class=sync_rule_entry_boxes
       div class=dimension_input
         label for="sync_rules_ApN_appnexus_segment_id" | AppNexus Segment Id:
         >br
-        = text_field "sync_rules[#{ais.ais_code}]", 'appnexus_segment_id'
+        = text_field "sync_rules[#{ais.ais_code}]", 'appnexus_segment_id', :value => campaign.segment_id_for(ais)
     <% else %>
       div class=dimension_input
         label for="unsecure_add" | Unsecure Add:
