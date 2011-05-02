@@ -129,6 +129,50 @@ describe Campaign do
     end
   end
 
+  context "\#configure_ais" do
+    before(:each) do
+      @campaign = Factory.create(:campaign)
+      @ais = Factory.create(:ad_inventory_source)
+      @campaign.configure_ais(@ais, "123")
+    end
+
+    it "on fresh association should associate the campaign and ais" do
+      @campaign.ad_inventory_sources.include?(@ais).should be_true
+    end
+
+    it "on fresh association should add add the segment id to the proper " +
+      "campaign_inventory_config" do
+      cic = @campaign.campaign_inventory_configs.select do |c| 
+        c.ad_inventory_source == @ais
+      end 
+      cic[0].segment_id.should == "123"
+    end
+
+    it "when updating old association should update segment_id" do
+      @campaign.configure_ais(@ais, "888")
+      cic = @campaign.campaign_inventory_configs.select do |c| 
+        c.ad_inventory_source == @ais
+      end 
+      cic[0].segment_id.should == "888"
+    end
+  end
+
+  context "\#segment_id_for" do
+    before(:each) do
+      @campaign = Factory.create(:campaign)
+      @ais = Factory.create(:ad_inventory_source)
+    end
+
+    it "should return the segment id for the ais passed in" do
+      @campaign.configure_ais(@ais, "123")
+      @campaign.segment_id_for(@ais).should == "123"
+    end
+
+    it "should return nil if the ais passed in is not yet configured" do
+      @campaign.segment_id_for(@ais).should == nil
+    end
+  end
+
   describe "with dimension cache" do 
     fixtures :creatives, 
       :campaigns, 

@@ -104,6 +104,44 @@ class Campaign < ActiveRecord::Base
     end
   end
 
+  def configure_ais(ais, segment_id)
+    cic = CampaignInventoryConfig.find(
+      :first,
+      :conditions => {
+        :ad_inventory_source_id => ais.id, 
+        :campaign_id => id }
+    )
+
+    if cic
+      # we're updating existing association
+      cic.update_attributes(:segment_id => segment_id)
+    else
+      # fresh association
+      ad_inventory_sources << ais
+      CampaignInventoryConfig.find(
+        :first, 
+        :conditions => { 
+          :ad_inventory_source_id => ais.id, 
+          :campaign_id => id }
+      ).update_attributes(:segment_id => segment_id)
+    end
+  end
+
+  def segment_id_for(ais)
+    cic = CampaignInventoryConfig.find(
+      :first, 
+      :conditions => { 
+        :ad_inventory_source_id => ais.id, 
+        :campaign_id => id }
+    )
+
+    if cic
+      cic.segment_id
+    else
+      nil
+    end
+  end
+
   class << self
     def generate_campaign_code
       CodeGenerator.generate_unique_code(
