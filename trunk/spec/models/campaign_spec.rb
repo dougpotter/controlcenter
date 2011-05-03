@@ -157,6 +157,35 @@ describe Campaign do
     end
   end
 
+  context "\#unconfigure_ais" do
+    before(:each) do
+      @campaign = Factory.create(:campaign)
+      @ais = Factory.create(:ad_inventory_source)
+    end
+
+    it "when passed an associated ais, should disassociate it and return the" +
+      "campaign inventory config" do
+      @campaign.configure_ais(@ais, "123")
+      cic = CampaignInventoryConfig.find(
+        :first,
+        :conditions => {
+          :ad_inventory_source_id => @ais.id,
+          :campaign_id => @campaign.id }
+      )
+      @campaign.unconfigure_ais(@ais).should == cic
+      CampaignInventoryConfig.find(
+        :first,
+        :conditions => {
+          :ad_inventory_source_id => @ais.id,
+          :campaign_id => @campaign.id }
+      ).should be_nil
+    end
+
+    it "when passed an unassociated ais, should return nil" do
+      @campaign.unconfigure_ais(@ais).should be_nil
+    end
+  end
+
   context "\#segment_id_for" do
     before(:each) do
       @campaign = Factory.create(:campaign)

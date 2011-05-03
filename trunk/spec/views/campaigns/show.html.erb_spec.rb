@@ -46,6 +46,8 @@ describe "/campaigns/show.html.erb" do
       :creatives => [ @creative1, @creative2 ],
       :aises => [ @ais1, @ais2]
     )
+    @campaign.expects(:segment_id_for).with(@ais1).returns("123")
+    @campaign.expects(:segment_id_for).with(@ais2).returns("456")
     assigns[:campaign] = @campaign
   end
 
@@ -83,12 +85,12 @@ describe "/campaigns/show.html.erb" do
     end
   end
 
-  it "should contain list of configured AISes with heading \"Configured Ad" +
+  it "should contain list of AISes with heading \"Configured Ad" +
     " Inventory Sources\"" do
     render
     response.should have_tag("h1", "Configured Ad Inventory Sources")
-    response.should have_tag("p", "Google AdX")
-    response.should have_tag("p", "Burst OX")
+    response.should have_tag("p", "Google AdX - 123")
+    response.should have_tag("p", "Burst OX - 456")
     end
 
   it "should contain a link to edit the campaign" do

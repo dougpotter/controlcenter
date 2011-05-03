@@ -127,6 +127,18 @@ class Campaign < ActiveRecord::Base
     end
   end
 
+  def unconfigure_ais(ais)
+    if cic = CampaignInventoryConfig.find(
+      :first,
+      :conditions => {
+        :ad_inventory_source_id => ais.id, 
+        :campaign_id => id })
+      cic.delete
+    else
+      nil
+    end
+  end
+
   def segment_id_for(ais)
     cic = CampaignInventoryConfig.find(
       :first, 

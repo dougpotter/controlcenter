@@ -235,9 +235,10 @@ describe CampaignsController do
               :audience_code => "ACODE",
               :audience_source => { 
                 :s3_bucket => "bucket:/a/path",
-                :type => "Ad-Hoc",
-              }
-            }
+                :type => "Ad-Hoc" }},
+            :sync_rules => {
+              :ApN => {
+                "appnexus_segment_id" => "12345" }}
         end
 
         before(:each) do
@@ -293,9 +294,10 @@ describe CampaignsController do
               :description => "an audience name",
               :audience_source => { 
                 :referrer_regex => "a\.*regex",
-                :type => "Retargeting"
-              }
-            }
+                :type => "Retargeting" }},
+            :sync_rules => {
+              :ApN => {
+                "appnexus_segment_id" => "12345" }}
         end
 
         before(:each) do

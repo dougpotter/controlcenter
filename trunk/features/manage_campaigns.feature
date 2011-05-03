@@ -52,3 +52,10 @@ Feature: Manage campaigns
     When I press "Save Edits"
     And I am on the edit campaign page for ACODE
     Then the "AppNexus Segment Id" field should contain "88888"
+
+  Scenario: disassociate segment id via edit page
+    Given the standard ad-hoc campaign and associated entities exist
+    And I am on the edit campaign page for ACODE
+    And I uncheck "ApN"
+    When I press "Save Edits"
+    Then I should not see "123"

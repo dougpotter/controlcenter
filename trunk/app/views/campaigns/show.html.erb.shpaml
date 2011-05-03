@@ -24,11 +24,18 @@ h1 | Creatives
   % for creative in @campaign.creatives
     = render :partial => "/creatives/thumb_and_description", :locals => { :creative => creative }
 
+div style="clear:both;"
+  >br
+
 h1 | Configured Ad Inventory Sources
 
-% for ais in @campaign.aises
-  p
-    = ais.name
+.configured_aises
+  % for ais in @campaign.aises
+    p
+      <%= "#{ais.name} - #{@campaign.segment_id_for(ais)}" %>
+
+div style="clear:both;"
+  >br
 
 = link_to "Edit Campaign", edit_campaign_path(@campaign)
 div style="clear: both;"
