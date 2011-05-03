@@ -114,10 +114,10 @@ class CampaignsController < ApplicationController
     )
 
     # process segment ids
-    if params[:sync_rules]
-      params[:sync_rules].each do |ais_code, rule|
+    if params[:aises_for_sync]
+      for ais_code in params[:aises_for_sync]
         ais = AdInventorySource.find_by_ais_code(ais_code)
-        @campaign.configure_ais(ais, rule[:appnexus_segment_id])
+        @campaign.configure_ais(ais, params[:sync_rules][ais][:appnexus_segment_id])
       end
     end
 
