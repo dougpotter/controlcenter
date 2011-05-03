@@ -10,7 +10,10 @@ div class=notice
 % form_for @campaign do |f|
   = render :partial => 'form'  
   div id=audience_source_section
-    % partial_string = "audiences/form_for_" + @campaign.source_type.downcase.underscore + "_source"
+    % if @campaign.source_type != "none"
+      % partial_string = "audiences/form_for_" + @campaign.source_type.downcase.underscore + "_source"
+    % else
+      % partial_string = "audiences/form_for_" + @campaign_types.first.display_name.downcase.underscore + "_source"
     = render :partial => partial_string
   div style="clear: both;"
     >br
