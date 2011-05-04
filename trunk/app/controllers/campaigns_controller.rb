@@ -89,7 +89,7 @@ class CampaignsController < ApplicationController
     params[:sync_rules].each do |ais_code, rule|
       ais = AdInventorySource.find_by_ais_code(ais_code)
       if params[:aises_for_sync] && params[:aises_for_sync].member?(ais_code)
-        @campaign.configure_ais(ais, rule[:appnexus_segment_id])
+        @campaign.configure_ais(ais, rule[:segment_id])
       else
         @campaign.unconfigure_ais(ais)
       end
