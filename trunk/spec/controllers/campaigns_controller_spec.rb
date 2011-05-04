@@ -83,32 +83,31 @@ describe CampaignsController do
 
           context "with invalid attributes" do
             before(:each) do
+              @line_item = mock("Line Item", :id => 1)
               @campaign = mock(
                 "Campaign", 
+                :line_item => @line_item,
                 :save => false
               ) 
-              @line_item = mock("Line Item")
-            end
-
-            it "should fail to save @campaign" do
+              @ais = mock("Ad Inventory Source")
               LineItem.expects(:find).with("1").returns(@line_item)
+              LineItem.expects(:all).returns([])
+              AdInventorySource.expects(:find_by_ais_code).returns(@ais)
+              AudienceSource.expects(:all).returns([])
               Campaign.expects(:new).with({
                 "name" => "A New Campaign",
                 "campaign_code" => "ACODE",
                 "line_item" => @line_item
               }).returns(@campaign)
+            end
+
+            it "should fail to save @campaign" do
               do_create
             end
 
             it "response should redirect to new campaign path" do
-              LineItem.expects(:find).with("1").returns(@line_item)
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
               do_create
-              response.should redirect_to(new_campaign_path)
+              response.should render_template(:new)
             end
           end
         end

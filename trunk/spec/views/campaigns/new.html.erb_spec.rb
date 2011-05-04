@@ -15,6 +15,7 @@ describe "campaigns/new.html.erb" do
     campaign_types = mock(
       :first => campaign_type
     )
+    campaign.expects(:errors).times(4).returns([])
     campaign.expects(:audience_sources).twice.returns([])
     campaign.expects(:ad_inventory_sources).twice.returns([])
     campaign.expects(:has_audience?).twice.returns(true)

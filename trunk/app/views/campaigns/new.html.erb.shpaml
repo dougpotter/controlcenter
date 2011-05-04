@@ -4,6 +4,8 @@
 .notice
   = notice
 
+= error_messages_for :campaign
+
 h1 | Basics
 
 % form_for @campaign, :html => { :multipart => true } do |f|

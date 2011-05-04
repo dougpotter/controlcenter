@@ -2,8 +2,8 @@ class CampaignsController < ApplicationController
   def new
     @campaign = Campaign.new
     @line_items = LineItem.all
-    @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
+    @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
     @creative_sizes = CreativeSize.all
     @creative = Creative.new
     params[:line_item_id] ? @selected_line_item = params[:line_item_id].to_i : nil
@@ -14,7 +14,11 @@ class CampaignsController < ApplicationController
     params[:campaign][:line_item] = LineItem.find(params[:campaign][:line_item])
     @campaign = Campaign.new(params[:campaign])
     if !@campaign.save
-      redirect_to(new_campaign_path, :notice => "failed to save campaign")
+      @line_items = LineItem.all
+      @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
+      @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
+      @selected_line_item = @campaign.line_item.id
+      render :action => :new, :notice => "failed to save campaign"
       return
     end
 
