@@ -132,9 +132,11 @@ describe CampaignsController do
 
           context "with valid attributes" do
             before(:each) do
+              @campaign_inventory_config = mock("Campaign Inventory Config")
               @campaign = mock(
                 "Campaign", 
                 :update_attributes => true,
+                :configure_ais => @campaign_inventory_config,
                 :save => true
               ) 
               @line_item = mock("Line Item")

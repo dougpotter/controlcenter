@@ -52,6 +52,14 @@ class CampaignsController < ApplicationController
       end
     end
 
+    # handle audience sync
+    if ais_codes = params[:aises_for_sync]
+      for ais_code in ais_codes
+        ais = AdInventorySource.find_by_ais_code(ais_code)
+        @campaign.configure_ais(ais, params[:sync_rules][ais_code][:segment_id])
+      end 
+    end
+
     redirect_to(
       campaign_path(@campaign), 
       :notice => "campaign successfully created")
@@ -78,7 +86,7 @@ class CampaignsController < ApplicationController
 
     # process audience source params
     params[:audience][:audience_source] = source_from_params
-      @campaign.audience.update_source(params[:audience][:audience_source])
+    @campaign.audience.update_source(params[:audience][:audience_source])
 
     # process audience description
     @campaign.audience.update_attributes(
@@ -96,10 +104,10 @@ class CampaignsController < ApplicationController
     end
 
     if @campaign.update_attributes(params[:campaign])
-        redirect_to(
-          campaign_path(@campaign.id), 
-          :notice => "campaign successfully updated"
-        )
+      redirect_to(
+        campaign_path(@campaign.id), 
+        :notice => "campaign successfully updated"
+      )
     else
       notice = "campaign update failed: "
       @campaign.errors.each do |attr,msg|

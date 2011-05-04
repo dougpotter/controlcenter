@@ -71,5 +71,7 @@ Feature: Manage campaigns
     And I fill in "AUDCOD" for "Audience Code"
     And I fill in "Audience Name" for "Audience Name"
     And I check "ApN"
+    And I fill in "54321" for "AppNexus Segment Id"
     When I press "submit"
     Then I should see "campaign successfully created"
+    And I should see "AppNexus - 54321"
