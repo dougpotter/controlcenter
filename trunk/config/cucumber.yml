@@ -1,12 +1,14 @@
 <%
 rerun = File.file?('rerun.txt') ? IO.read('rerun.txt') : ""
 rerun_opts = rerun.to_s.strip.empty? ? "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} features" : "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} #{rerun}"
-std_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} --strict --tags ~@wip --tags ~@selenium"
+std_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} --strict --tags ~@wip --tags ~@selenium --tags ~@appnexus"
 selenium_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} --strict --tags @selenium --tags ~@wip cucumber_mode=selenium"
 selenium_wip_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} --strict --tags @selenium --tags @wip cucumber_mode=selenium"
+appnexus_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} --strict --tags @appnexus --tags ~@wip" 
+appnexus_wip_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} --strict --tags @appnexus --tags @wip" 
 %>
 
-# runs all features EXCEPT those tagged @wip or @selenium
+# runs all features EXCEPT those tagged @wip, @selenium, or @appnexus
 default: <%= std_opts %> features
 wip: --tags @wip:3 --wip features 
 rerun: <%= rerun_opts %> --format rerun --out rerun.txt --strict --tags ~@wip
@@ -15,3 +17,8 @@ rerun: <%= rerun_opts %> --format rerun --out rerun.txt --strict --tags ~@wip
 selenium: <%= selenium_opts %> features
 # runs features tagged with both @selenium and @wip
 selenium_wip: <%= selenium_wip_opts %> features
+
+# runs features tagged with @appnexus and not @wip (all completed appnexus features)
+appnexus: <%= appnexus_opts %> features
+# runs features tagged with both @appnexus and @wip
+appnexus_wip: <%= appnexus_wip_opts %> features

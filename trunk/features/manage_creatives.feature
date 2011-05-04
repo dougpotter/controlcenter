@@ -3,6 +3,7 @@ Feature: Manage creatives
   an ad ops specialist
   wants to use XGCC for storing, viewing, associating, and removing creatives
 
+  @appnexus
   Scenario: Create a new creative without a campaign
     Given the standard ais, partner, line item, audience, creative size setup exists
     And I am on the new creative page
@@ -15,7 +16,7 @@ Feature: Manage creatives
     And I should see "New Creative"
     And Then I remove creatives from Appnexus sandbox
 
-  @selenium
+  @selenium @appnexus
   Scenario: create a new creative with a campaign
     Given the standard ad-hoc campaign and associated entities exist
     And I am on the new creative page
@@ -54,6 +55,7 @@ Feature: Manage creatives
     And I should see "Size: 250 x 300"
     And I should see "Campaigns: ACODE - Ford Campaign"
 
+  @appnexus
   Scenario: update creative
     Given the standard ad-hoc campaign and associated entities exist
     And the following creatives are associated with campaign "ACODE":

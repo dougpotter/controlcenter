@@ -44,6 +44,18 @@ begin
       t.profile = 'selenium_wip'
     end
 
+    Cucumber::Rake::Tast.new({:appnexus => 'db:test:prepare'}, 'Run features that interact with appnexus') do |t|
+      t.binary = vendored_cucumber_bin
+      t.fork = true # You may get faster startup if you set this to false
+      t.profile = 'appnexus'
+    end
+
+    Cucumber::Rake::Tast.new({:appnexus_wip => 'db:test:prepare'}, 'Run features that interact with appnexus') do |t|
+      t.binary = vendored_cucumber_bin
+      t.fork = true # You may get faster startup if you set this to false
+      t.profile = 'appnexus_wip'
+    end
+
     Cucumber::Rake::Task.new({ :migrate => 'db:migrate' }, 'migrate the cucumber database')
 
     desc 'Run all features'
