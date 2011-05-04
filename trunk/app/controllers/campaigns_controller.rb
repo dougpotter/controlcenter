@@ -52,35 +52,6 @@ class CampaignsController < ApplicationController
       end
     end
 
-    if params[:aises_for_sync]
-      # deal with audience source
-      @sync_params = {}
-
-      if @audience_source.class_name == "AdHocSource"
-        @sync_params["s3_xguid_list_prefix"] = @audience_source.s3_location
-        @sync_params["partner_code"] = @campaign.partner.partner_code
-        @sync_params["audience_code"] = params[:audience][:audience_code]
-        @sync_params["appnexus_segment_id"] = 
-          params[:sync_rules][:ApN][:apn_segment_id]
-      elsif @audience_source.class_name == "RetargetingSource"
-        render :text => "retargeting audience not yet supported"
-        return
-      else
-        render :text => "audience source not supported"
-        return
-      end
-
-
-      if @apn_params = params[:sync_rules].delete("ApN")
-        # sync audience with ApN
-        @sync_params.update(@apn_params)
-        if !create_and_run_apn_sync_job('appnexus-list-generate', @sync_params)
-          render :text => "invalid appnexus sync job"
-          return
-        end
-      end
-    end
-
     redirect_to(
       campaign_path(@campaign), 
       :notice => "campaign successfully created")

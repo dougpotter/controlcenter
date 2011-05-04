@@ -32,7 +32,7 @@ describe CampaignsController do
                 :audience_code => "AB17",
                 :description => "an audience name",
                 :audience_source => { 
-                  :s3_location => "/a/path/in/s3",
+                  :s3_bucket => "/a/path/in/s3",
                   :type => "Ad-Hoc" } },
               :sync_rules => { "ApN" => { :apn_segment_id => "" } }
           end
@@ -124,7 +124,7 @@ describe CampaignsController do
                 :audience_code => "AB17",
                 :description => "an audience name",
                 :audience_source => { 
-                  :s3_location => "/a/path/in/s3",
+                  :s3_bucket => "/a/path/in/s3",
                   :type => "Ad-Hoc" } },
               :sync_rules => { "ApN" => { :apn_segment_id => "ACODE" } },
               :aises_for_sync => [ "ApN" ]
@@ -132,19 +132,15 @@ describe CampaignsController do
 
           context "with valid attributes" do
             before(:each) do
-              @partner = mock("Partner", :partner_code => "ACODE")
               @campaign = mock(
                 "Campaign", 
                 :update_attributes => true,
-                :partner => @partner, 
                 :save => true
               ) 
               @line_item = mock("Line Item")
               @audience = mock("Audience", :update_source => true)
               @ad_hoc_source = mock(
-                "Ad Hoc Source", 
-                :s3_location => "a/location",
-                :class_name => "AdHocSource"
+                "Ad Hoc Source"
               )
               LineItem.expects(:find).with("1").returns(@line_item)
               Campaign.expects(:new).with({
@@ -158,53 +154,14 @@ describe CampaignsController do
             end
 
             it "should save @campaign" do
-              CampaignsController.any_instance.
-                expects(:create_and_run_apn_sync_job).returns(true)
               do_create
             end
 
             it "should create and run apn sync job" do
-              CampaignsController.any_instance.
-                expects(:create_and_run_apn_sync_job).returns(true)
               do_create
               response.should_not have_text("invalid appnexus sync job")
             end
 
-          end
-
-          context "with invalid apn sync params" do
-            before(:each) do
-              @partner = mock("Partner", :partner_code => "ACODE")
-              @campaign = mock(
-                "Campaign", 
-                :update_attributes => true,
-                :partner => @partner, 
-                :save => true
-              ) 
-              @line_item = mock("Line Item")
-              @audience = mock("Audience", :update_source => true)
-              @ad_hoc_source = mock(
-                "Ad Hoc Source", 
-                :s3_location => "a/location",
-                :class_name => "AdHocSource"
-              )
-              LineItem.expects(:find).with("1").returns(@line_item)
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
-              Audience.expects(:find_by_audience_code).with("AB17").returns(nil)
-              AdHocSource.expects(:new).returns(@ad_hoc_source)
-              Audience.expects(:new).returns(@audience)
-            end
-
-            it "should fail to create and run apn sync job" do
-              CampaignsController.any_instance.
-                expects(:create_and_run_apn_sync_job).returns(false)
-              do_create
-              response.should have_text("invalid appnexus sync job")
-            end
           end
         end
       end

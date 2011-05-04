@@ -59,3 +59,17 @@ Feature: Manage campaigns
     And I uncheck "ApN"
     When I press "Save Edits"
     Then I should not see "123"
+
+  Scenario: create new campaign
+    Given the standard ad-hoc campaign and associated entities exist
+    And I am on the new campaign page
+    And I select "Ford Spring" from "Line Item"
+    And I select "Ad-Hoc" from "Audience Type"
+    And I fill in "Second Campaign" for "Campaign Name"
+    And I fill in "NODE" for "Campaign Code"
+    And I fill in "bucket:/a/bucket" for "S3 Bucket"
+    And I fill in "AUDCOD" for "Audience Code"
+    And I fill in "Audience Name" for "Audience Name"
+    And I check "ApN"
+    When I press "submit"
+    Then I should see "campaign successfully created"
