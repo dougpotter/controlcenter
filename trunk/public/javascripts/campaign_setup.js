@@ -2,41 +2,35 @@ var root_url_regex = /((.*?)\/){3}/;
 var audience_source_form_url = location.href.match(root_url_regex)[0] + 
 "audiences/audience_source_form?source=";
 
-function toggleFieldsBinary(checkbox_1, fields_1, checkbox_2, fields_2) {
-  if (checkbox_1.checked) {
-    $(fields_1).setStyle('visibility', 'visible');
-    checkbox_2.setProperty('checked', '');
-    $(fields_2).setStyle('visibility', 'hidden');
-  }
-  else {
-    $(fields_1).setStyle('visibility', 'hidden');
-    checkbox_2.setProperty('checked', 'checked');
-    $(fields_2).setStyle('visibility', 'visible');
-  }
-}
-
 window.addEvent('domready', function() {
 
-  if ($('s3_checkbox_for_refresh') != null) {
-    $('s3_checkbox_for_refresh').addEvent('click', function () {
-      toggleFieldsBinary(
-        $('s3_checkbox_for_refresh'),
-        $('s3_field_for_refresh'),
-        $('s3_checkbox_for_rollback'),
-        $('s3_field_for_rollback'));
-      })
-  }
+    // handle visibility of refresh field and s3 bucket select
+    function toggleVisibility(checkbox, target) {
+      if (checkbox.checked) {
+        $(target).setStyle('visibility', 'visible');
+        $('s3_source_select').setStyle('opacity', 0.6);
+      }
+      else {
+        $(target).setStyle('visibility', 'hidden');
+        $('s3_source_select').setStyle('opacity', 1);
+      }
+    }
 
-  if ($('s3_checkbox_for_rollback') != null) {
-    $('s3_checkbox_for_rollback').addEvent('click', function() {
-      toggleFieldsBinary(
-        $('s3_checkbox_for_rollback'),
-        $('s3_field_for_rollback'),
-        $('s3_checkbox_for_refresh'),
-        $('s3_field_for_refresh'))
-      })
-  }
+    function toggleOpacity(checkbox, target) {
+      if (checkbox.checked) {
+        $(target).setStyle('opacity', 0.6);
+      }
+      else {
+        $(target).setStyle('opacity', 1);
+      }
+    }
 
+    if ($('refresh_checkbox') != null) {
+      $('refresh_checkbox').addEvent('click', function () {
+        toggleVisibility($('refresh_checkbox'), $('s3_source_field'));
+        toggleOpacity($('refresh_checkbox'), $('s3_source_select'));
+      })
+    }
 
     // attaches a funciton to the checkbox which changes visibility of the 
     // entry fields associated with that checkbox when the checkbox is clicked 

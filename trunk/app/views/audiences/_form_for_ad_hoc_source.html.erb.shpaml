@@ -1,35 +1,27 @@
 = hidden_field('audience[audience_source]', 'type', :value => "Ad-Hoc")
 
 % if !@campaign.audience_sources.blank?
-  .source_div style="float:left; height:120px;"
-    = "Current Source Location: #{@campaign.audience.latest_source.s3_bucket}"
+
+  div class=dimension_input id=s3_checkbox_for_rollback
+    label for="audience_description" | Name: 
     >br
+    = text_field 'audience', 'description', :value => @campaign.audience.description
+  div class=dimension_input id=s3_source_input
+    label for="s3_source_select" | S3 Bucket:
+    >br
+    = select('audience[audience_source]', 's3_bucket', options_from_audience_source_array(@campaign.audience_sources, @campaign.audience, @campaign.audience_sources.last), {}, { :id => "s3_source_select" })
 
-    div class=dimension_input
-      label for="s3_checkbox_for_refresh" | Refresh:
-      >br
-      = check_box("audience_action", "refresh", { :checked => true , :id => :s3_checkbox_for_refresh })
-    div class=dimension_input 
-      label for="s3_checkbox_for_rollback" | Rollback:
-      >br
-      = check_box("audience_action", "rollback", { :id => :s3_checkbox_for_rollback })
+  div class=dimension_input 
+    label for="refresh_checkbox" | Refresh: 
+    >br
+    = check_box("audience_action", "refresh", { :id => :refresh_checkbox})
+  div class=dimension_input id=s3_source_field
+    label for="s3_source_field" | New S3 Bucket: 
+    >br
+    = text_field 'audience[audience_source]', 's3_bucket'
 
-    div class=dimension_input id=s3_checkbox_for_rollback
-      label for="audience_description" | Audience Name: 
-      >br
-      = text_field 'audience', 'description', :value => @campaign.audience.description
-    
-    div id=s3_field_for_refresh 
-      label for="audience_audience_source_s3_bucket" | S3 Bucket: 
-      >br
-      = text_field 'audience[audience_source]', 's3_bucket'
-    div id=s3_field_for_rollback 
-      label for="audience_audience_source_s3_bucket" | S3 Bucket: 
-      >br
-      = select('audience[audience_source]', 's3_bucket', options_from_audience_source_array(@campaign.audience_sources, @campaign.audience, @campaign.audience_sources.last))
-
-    = hidden_field('audience[audience_source]', 'load_status', :value => @campaign.audience_sources.first.load_status)
-    = hidden_field('audience[audience_source]', 'beacon_load_id', :value => @campaign.audience_sources.first.beacon_load_id)
+  = hidden_field('audience[audience_source]', 'load_status', :value => @campaign.audience_sources.first.load_status)
+  = hidden_field('audience[audience_source]', 'beacon_load_id', :value => @campaign.audience_sources.first.beacon_load_id)
 
 
 % if @campaign.audience_sources.blank?

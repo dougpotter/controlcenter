@@ -380,15 +380,20 @@ table tbody {
  height: 25px;
 }
 
-#s3_field_for_refresh {
-  position: absolute;
-  float: left;
-  margin-top: 40px;
+#s3_source_input {
+  margin-left: 30px;
 }
 
-#s3_field_for_rollback {
-  position: absolute;
-  float: left;
-  margin-top: 40px;
+#refresh_div {
+  margin-left: 30px
+}
+
+#refresh_checkbox {
+  margin-left: 15px;
+  margin-top: 5px;
+}
+
+#s3_source_field {
+  margin-left: 10px;
   visibility: hidden;
 }
