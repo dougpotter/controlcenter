@@ -56,8 +56,6 @@ begin
       t.profile = 'appnexus_wip'
     end
 
-    Cucumber::Rake::Task.new({ :migrate => 'db:migrate' }, 'migrate the cucumber database')
-
     desc 'Run all features'
     task :all => [:ok, :wip]
   end
