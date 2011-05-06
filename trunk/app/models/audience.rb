@@ -67,6 +67,14 @@ class Audience < ActiveRecord::Base
     sources_in_order.last
   end
 
+  def iteration_for_source(audience_source)
+    AudienceManifest.first(
+      :conditions => {
+        :audience_id => id,
+        :audience_source_id => audience_source.id }
+    ).audience_iteration_number
+  end
+
   def update_source(audience_source)
     if self.audience_sources.blank? 
       self.audience_sources << audience_source

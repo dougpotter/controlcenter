@@ -2,7 +2,41 @@ var root_url_regex = /((.*?)\/){3}/;
 var audience_source_form_url = location.href.match(root_url_regex)[0] + 
 "audiences/audience_source_form?source=";
 
+function toggleFieldsBinary(checkbox_1, fields_1, checkbox_2, fields_2) {
+  if (checkbox_1.checked) {
+    $(fields_1).setStyle('visibility', 'visible');
+    checkbox_2.setProperty('checked', '');
+    $(fields_2).setStyle('visibility', 'hidden');
+  }
+  else {
+    $(fields_1).setStyle('visibility', 'hidden');
+    checkbox_2.setProperty('checked', 'checked');
+    $(fields_2).setStyle('visibility', 'visible');
+  }
+}
+
 window.addEvent('domready', function() {
+
+  if ($('s3_checkbox_for_refresh') != null) {
+    $('s3_checkbox_for_refresh').addEvent('click', function () {
+      toggleFieldsBinary(
+        $('s3_checkbox_for_refresh'),
+        $('s3_field_for_refresh'),
+        $('s3_checkbox_for_rollback'),
+        $('s3_field_for_rollback'));
+      })
+  }
+
+  if ($('s3_checkbox_for_rollback') != null) {
+    $('s3_checkbox_for_rollback').addEvent('click', function() {
+      toggleFieldsBinary(
+        $('s3_checkbox_for_rollback'),
+        $('s3_field_for_rollback'),
+        $('s3_checkbox_for_refresh'),
+        $('s3_field_for_refresh'))
+      })
+  }
+
 
     // attaches a funciton to the checkbox which changes visibility of the 
     // entry fields associated with that checkbox when the checkbox is clicked 
@@ -40,9 +74,9 @@ window.addEvent('domready', function() {
     // attach event listener audience type select which updates audience source
     // fields when appropriate
     var audience_type_selector = $('campaign_campaign_type');
-    audience_type_selector.addEvent('change', function() {
 
-      var audience_type= audience_type_selector.getSelected().getProperty('value');
+    if (audience_type_selector != null) {
+      audience_type_selector.addEvent('change', function() { var audience_type= audience_type_selector.getSelected().getProperty('value');
       var campaign_code = $('campaign_campaign_code').getProperty('value');
 
       var req = new Request.HTML({
@@ -54,7 +88,7 @@ window.addEvent('domready', function() {
             alert("Audience Source Error!\nCannot switch to type " + audience_type);
           }
         }
-    });
+      });
     req.send();
-  });
+  })}
 })

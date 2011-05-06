@@ -75,6 +75,7 @@ class CampaignsController < ApplicationController
     @selected_line_item = @campaign.line_item.id
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
     @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
+    @audience_sources = @campaign.audience.sources_in_order
   end
 
   def matching_source_types?(campaign, source)

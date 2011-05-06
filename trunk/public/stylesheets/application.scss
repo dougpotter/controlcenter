@@ -379,3 +379,16 @@ table tbody {
 .notice {
  height: 25px;
 }
+
+#s3_field_for_refresh {
+  position: absolute;
+  float: left;
+  margin-top: 40px;
+}
+
+#s3_field_for_rollback {
+  position: absolute;
+  float: left;
+  margin-top: 40px;
+  visibility: hidden;
+}
