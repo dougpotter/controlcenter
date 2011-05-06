@@ -40,10 +40,20 @@ Feature: Manage campaigns
 
     And I should see "Edit Campaign"
 
-  Scenario: edit campaign
+  Scenario: edit campaign form
     Given the standard ad-hoc campaign and associated entities exist
     When I am on the edit campaign page for ACODE
     Then the edit campaign form should be properly populated
+
+  @selenium @wip
+  Scenario: refresh audience
+    Given the standard ad-hoc campaign and associated entities exist
+    And I am on the edit campaign page for ACODE
+    And I check "Refresh"
+    And I fill in "bucket:/a/new/bucket" for "New S3 Bucket"
+    When I press "Save Edits"
+    Then I should see "campaign successfully updated"
+    And I should see "Version: 1"
 
   Scenario: change segment id 
     Given the standard ad-hoc campaign and associated entities exist

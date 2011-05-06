@@ -110,6 +110,18 @@ describe Audience do
         }.to change{ AudienceManifest.count }.by(1)
       end
 
+      it "should add a new audience manifest when passed a duplicate source" do
+        audience = Factory.create(:audience)
+        audience_source_1 = Factory.create(:ad_hoc_source)
+        audience_source_2 = Factory.create(:ad_hoc_source)
+        audience.update_source(audience_source_1)
+        audience.update_source(audience_source_2)
+        expect {
+          audience.update_source(audience_source_1)
+        }.to change{ AudienceManifest.count }.by(1)
+        audience.iteration_number.should == 2
+      end
+
       it "should raise exception if new audience source does not share type of existing audience source" do
         audience = Factory.create(:audience)
         audience_source1 = Factory.create(:ad_hoc_source)

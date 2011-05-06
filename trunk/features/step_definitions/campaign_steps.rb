@@ -210,7 +210,6 @@ Then /^the edit campaign form should be properly populated$/ do
   Then "the \"Campaign Name\" field should contain \"Ford Campaign\""
   Then "the \"Campaign Code\" field should contain \"ACODE\""
   Then "the \"S3 Bucket\" field should contain \"bucket:/a/bucket\""
-  Then "I should see \"HNXT\""
   Then "the \"Audience Name\" field should contain \"Ford Connected\""
   Then "I should see \"Inventory Sources\""
   Then "the \"ApN\" checkbox should be checked"
@@ -221,4 +220,8 @@ Given /^campaign "([^"]*)" has segment id "([^"]*)" on ais "([^"]*)"$/ do |campa
   campaign = Campaign.find_by_campaign_code(campaign_code)
   ais = AdInventorySource.find_by_ais_code(ais_code)
   campaign.configure_ais(ais, segment_id)
+end
+
+Given /^Debug$/ do
+  debugger
 end

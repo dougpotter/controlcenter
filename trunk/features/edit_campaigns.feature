@@ -13,7 +13,6 @@ Feature:
     And the "Campaign Name" field should contain "Ford Campaign"
     And the "Campaign Code" field should contain "ACODE"
     And the "S3 bucket" field should contain "bucket:/a/bucket"
-    And I should see "HNXT"
     And the "Audience Name" field should contain "Ford Connected"
 
   @selenium

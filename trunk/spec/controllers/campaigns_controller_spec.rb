@@ -187,12 +187,15 @@ describe CampaignsController do
               :campaign_type => "Ad-Hoc",
               :campaign_code => "ACODE",
               :line_item => "1" },
+            :audience_action => {
+              :refresh => "1" },
             :audience => {
               :id => "2",
               :description => "an audience name",
               :audience_code => "ACODE",
               :audience_source => { 
-                :s3_bucket => "bucket:/a/path",
+                :old_s3_bucket => "bucket:/a/path",
+                :new_s3_bucket => "bucket:/b/path",
                 :type => "Ad-Hoc" }},
             :sync_rules => {
               :ApN => {
@@ -230,7 +233,7 @@ describe CampaignsController do
           )
           Campaign.expects(:find).returns(@campaign)
           AdHocSource.expects(:new).
-            with({'s3_bucket' => "bucket:/a/path"}).returns(@audience_source)
+            with({'s3_bucket' => "bucket:/b/path"}).returns(@audience_source)
           do_update
         end
       end

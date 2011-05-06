@@ -139,6 +139,17 @@ class CampaignsController < ApplicationController
     source_type = params[:audience][:audience_source].delete(:type)
     case source_type
     when "Ad-Hoc"
+      if params[:action] == "update"
+        if params[:audience_action][:refresh] == "1"
+          params[:audience][:audience_source][:s3_bucket] = 
+            params[:audience][:audience_source].delete(:new_s3_bucket)
+          params[:audience][:audience_source].delete(:old_s3_bucket)
+        else
+          params[:audience][:audience_source][:s3_bucket] = 
+            params[:audience][:audience_source].delete(:old_s3_bucket)
+          params[:audience][:audience_source].delete(:new_s3_bucket)
+        end
+      end
       @audience_source = 
         AdHocSource.new(params[:audience].delete(:audience_source))
     when "Retargeting"

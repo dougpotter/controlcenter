@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110502170818) do
+ActiveRecord::Schema.define(:version => 20110505214447) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(:version => 20110502170818) do
     t.integer "audience_iteration_number", :null => false
   end
 
-  add_index "audience_manifests", ["audience_id", "audience_source_id"], :name => "unique_join_columns", :unique => true
+  add_index "audience_manifests", ["audience_id"], :name => "audience_manifests_audience_id_fk"
   add_index "audience_manifests", ["audience_source_id"], :name => "audience_manifests_audience_source_id_fk"
 
   create_table "audience_sources", :force => true do |t|

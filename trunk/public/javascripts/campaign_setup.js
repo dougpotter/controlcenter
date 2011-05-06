@@ -8,11 +8,9 @@ window.addEvent('domready', function() {
     function toggleVisibility(checkbox, target) {
       if (checkbox.checked) {
         $(target).setStyle('visibility', 'visible');
-        $('s3_source_select').setStyle('opacity', 0.6);
       }
       else {
         $(target).setStyle('visibility', 'hidden');
-        $('s3_source_select').setStyle('opacity', 1);
       }
     }
 
@@ -27,8 +25,8 @@ window.addEvent('domready', function() {
 
     if ($('refresh_checkbox') != null) {
       $('refresh_checkbox').addEvent('click', function () {
-        toggleVisibility($('refresh_checkbox'), $('s3_source_field'));
-        toggleOpacity($('refresh_checkbox'), $('s3_source_select'));
+        toggleVisibility($('refresh_checkbox'), $('s3_source_field_div'));
+        toggleOpacity($('refresh_checkbox'), $('s3_source_select_div'));
       })
     }
 
