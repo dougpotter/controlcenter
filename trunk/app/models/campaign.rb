@@ -108,8 +108,8 @@ class Campaign < ActiveRecord::Base
     cic = CampaignInventoryConfig.find(
       :first,
       :conditions => {
-        :ad_inventory_source_id => ais.id, 
-        :campaign_id => id }
+      :ad_inventory_source_id => ais.id, 
+      :campaign_id => id }
     )
 
     if cic
