@@ -283,7 +283,11 @@ module AppnexusClient
 
     def self.new_agent
       require 'curl'
+      begin
       @@agent = Curl::Easy.new(APN_CONFIG["api_root_url"] + "auth")
+      rescue Curl::Err::ConnectionFailedError
+        @@agent = Curl::Easy.new(APN_CONFIG["api_root_url"] + "auth")
+      end
       @@agent.enable_cookies = true
       @@agent.post_body = APN_CONFIG["authentication_hash"].to_json
       @@agent.http_post
