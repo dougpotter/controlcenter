@@ -63,16 +63,6 @@ set :local_scm_username, nil
 
 set :deploy_via, :remote_cache
 
-# URL of your source repository.
-set(:repository) do
-  if branch == 'trunk' || branch.index('/')
-    path = branch
-  else
-    path = "branches/#{branch}"
-  end
-  # Note: user@ specification here is ignored by subversion in some/all cases
-  "https://dev.xgraph.net/svn/xgraph/controlcenter/#{path}"
-end
 # Allowed branch specifications:
 #
 # A branch specification without slashes is taken to be a branch name, and
@@ -86,6 +76,17 @@ end
 # live => branches/live
 # branches/live => branches/live
 set :branch, ENV['BRANCH'] || "live"
+
+# URL of your source repository.
+set(:repository) do
+  if branch == 'trunk' || branch.index('/')
+    path = branch
+  else
+    path = "branches/#{branch}"
+  end
+  # Note: user@ specification here is ignored by subversion in some/all cases
+  "https://dev.xgraph.net/svn/xgraph/controlcenter/#{path}"
+end
 
 #if we use submodules
 #set :git_enable_submodules, 1
@@ -105,7 +106,7 @@ ssh_options[:port] = 22
 
 task :qa do
   set :application, 'backend.qa.xgraph.net'
-  set :branch, 'trunk'
+  set :branch, ENV['BRANCH'] || 'trunk'
 end
 
 # Environment for testing deployment - a dedicated user account on QA
