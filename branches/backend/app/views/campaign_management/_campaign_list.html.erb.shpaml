@@ -1,8 +1,0 @@
-div class=dimension_input
-  ul
-    % for campaign in @campaigns
-      li
-        = link_to campaign.campaign_code_and_description, edit_campaign_path(campaign)
-
-div style='clear:both;'
-  <%# %>

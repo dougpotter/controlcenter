@@ -1,9 +1,0 @@
-h1 | Edit Campaign
-
-% form_for @campaign, :url => campaign_path(:method => 'put') do |f|
-  = render :partial => 'form', :locals => {:f => f}
-  <div style='clear:both;'></div>
-  = submit_tag('Save Changes', :id => 'campaign_submit')
-
-div style='clear:both; height: 30px;'
-  >span
