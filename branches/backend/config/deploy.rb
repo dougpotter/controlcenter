@@ -2,7 +2,7 @@
 # CAP VARIABLES
 # =============================================================================
 # The name of your application. Used for directory and file names associated with the application.
-set :application, ENV["XGCC_APPLICATION"] || "control.xgraph.net"
+set :application, ENV["XGCC_APPLICATION"] || "backend.xgraph.net"
 set(:host) { ENV["XGCC_HOST"] || application }
 
 # Primary domain name of your application. Used as a default for all server roles.
