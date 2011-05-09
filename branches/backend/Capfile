@@ -1,6 +1,14 @@
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 
 # =============================================================================
+# ENVIRONMENT SHORTCUTS
+# =============================================================================
+
+ENV['XGCC_APPLICATION'] = ENV['app'] if ENV['app'] && !ENV['XGCC_APPLICATION']
+ENV['XGCC_HOST'] = ENV['host'] if ENV['host'] && !ENV['XGCC_HOST']
+ENV['XGCC_NO_CAP_MAILER'] = ENV['nomail'] if ENV['nomail'] && !ENV['XGCC_NO_CAP_MAILER']
+
+# =============================================================================
 # REQUIRED PLUGINS
 # =============================================================================
 
