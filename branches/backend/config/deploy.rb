@@ -104,13 +104,13 @@ ssh_options[:port] = 22
 # =============================================================================
 
 task :qa do
-  set :application, 'control.qa.xgraph.net'
+  set :application, 'backend.qa.xgraph.net'
   set :branch, 'trunk'
 end
 
 # Environment for testing deployment - a dedicated user account on QA
 task :deploy_test do
-  set :application, 'control.qa.xgraph.net'
+  set :application, 'backend.qa.xgraph.net'
   set :user, 'deploytest'
   set :deploy_to, "/home/#{user}/deployroot"
   set :use_sudo, false
