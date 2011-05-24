@@ -3,18 +3,6 @@ Feature:
   an ad ops specialist
   will want to be able to update relevant attributes of a campaign
 
-  Scenario: for a fully associated ad-hoc campaign, edit form should correclty populate 
-    Given the standard ad-hoc campaign and associated entities exist
-    And the audience "HNXT" is associated with ad-hoc source "bucket:/a/bucket"
-    And campaign "ACODE" is associated with audience "HNXT"
-    When I am on the edit campaign page for ACODE
-    Then I should see "Ford Spring" 
-    And I should see "Ad-Hoc"
-    And the "Campaign Name" field should contain "Ford Campaign"
-    And the "Campaign Code" field should contain "ACODE"
-    And the "S3 bucket" field should contain "bucket:/a/bucket"
-    And the "Audience Name" field should contain "Ford Connected"
-
   @selenium
   Scenario: for an ad-hoc campaign missing an audience, associating a new audience in edit UI
     Given the standard ad-hoc campaign and associated entities exist
