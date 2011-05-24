@@ -22,7 +22,6 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	margin-top: 0px;
 	background-color:#E6E6E6;
-  height:100%;
 }
 
 p {
@@ -39,11 +38,6 @@ h1 {
 	width: 960px;
 	margin: 0px auto 10px auto;
 	background-color: #FFFFFF;
-  height:100%;
-}
-
-#outer-wrap {
-  height:100%;
 }
 
 #html {
@@ -136,7 +130,6 @@ li#sub-menu a:hover {
 #content {
 	background-color:#F2F2F2;
 	width: 940px;
-	height: 100%;
 	margin-bottom: 0px;
 	padding: 10px;
 }
@@ -174,36 +167,25 @@ li#sub-menu a:hover {
 }
 
 #left_pane_campaign_dashboard {
-  float:left;
-  width:115px;
-  margin:11px;
-}
-
-#divider {
-  border-left: 1px;
-  border-right: 1px;
-  height: 95%;
-  width: 2px;
-  border-style: solid;
   float: left;
-  border-top: 0px;
-  border-bottom: 0px;
-  margin-left: 20px;
-  margin-right: 20px;
+  width: 115px;
+  margin: 11px;
 }
 
 #action_links {
   margin-top: 13px;
   li {
-    margin-top:5px;
-    margin-bottom:5px;
-    margin-left:3px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 3px;
   }
 }
 
 #right_pane_campaign_dashboard {
-  float:left;
-  margin:11px;
+  float: left;
+  margin: 11px;
+  border-left: double;
+  padding-left: 20px;
 }
 
 #edit_table_campaign_dashboard {

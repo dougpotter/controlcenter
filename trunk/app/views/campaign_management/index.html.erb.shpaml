@@ -17,9 +17,6 @@ div id=left_pane_campaign_dashboard
       li
         = link_to 'New Creative', new_creative_path
 
-<div id=divider></div>
-
-
 div id=right_pane_campaign_dashboard
   h1 | Active Campaigns
  
