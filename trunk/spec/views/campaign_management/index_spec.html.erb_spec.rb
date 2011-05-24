@@ -1,31 +1,17 @@
 require 'spec_helper'
 
 describe "campaign_management/index.html.erb" do
-  it "should render" do
-    template.expects(:options_from_collection_for_select).
-      returns("<option value=\"1\">A Partner</option>")
-    template.expects(:options_from_collection_for_select).
-      returns("<option value=\"1\">An AIS</option>")
-    campaign = mock("Campaign", 
-      :campaign_code_and_description => "ACODE - Description")
+  before(:each) do
+    campaign = mock("Campaign")
+    for method in [ :partner_name, :name, :campaign_code, :pretty_start_time, :pretty_end_time ]
+      campaign.expects(method).times(2).returns("string")
+    end
+    campaign.expects(:id).times(5).returns(1)
     campaigns = [ campaign ]
     assigns[:campaigns] = campaigns
-    render
   end
 
-  context "after successful campaign creation" do
-    it "should show campaign successfully created" do
-    template.expects(:options_from_collection_for_select).
-      returns("<option value=\"1\">A Partner</option>")
-    template.expects(:options_from_collection_for_select).
-      returns("<option value=\"1\">An AIS</option>")
-    campaign = mock("Campaign", 
-      :campaign_code_and_description => "ACODE - Description")
-    campaigns = [ campaign ]
-    assigns[:campaigns] = campaigns
-    flash[:notice] = "campaign successfully created"
+  it "should render" do
     render
-    response.should have_tag("div", "campaign successfully created")
-    end
   end
 end

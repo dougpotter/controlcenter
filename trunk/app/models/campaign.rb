@@ -55,6 +55,10 @@ class Campaign < ActiveRecord::Base
     line_item.partner
   end
 
+  def partner_name
+    partner.name
+  end
+
   def aises
     AdInventorySource.all(
       :joins => { :campaign_inventory_configs => :campaign },
@@ -152,6 +156,14 @@ class Campaign < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def pretty_start_time
+    start_time.strftime("%m-%d-%Y") unless !start_time
+  end
+
+  def pretty_end_time
+    end_time.strftime("%m-%d-%Y") unless !end_time
   end
 
   class << self

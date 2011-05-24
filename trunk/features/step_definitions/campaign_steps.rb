@@ -69,8 +69,8 @@ end
 Given /^the standard ad-hoc campaign and associated entities exist$/ do
   When "the standard ais, partner, line item, audience, creative size setup exists"
   Given "the following campaigns:", table(%{
-    |      name      | campaign_code | line_item_code | campaign_type |
-    |  Ford Campaign |     ACODE     |     ABC1       |    Ad-Hoc     |
+    |      name      | campaign_code | line_item_code | campaign_type |  start_time |   end_time  |
+    |  Ford Campaign |     ACODE     |     ABC1       |    Ad-Hoc     | "4/20/2000" | "6/20/2000" |
   })
 
   When "the audience \"HNXT\" is associated with ad-hoc source \"bucket:/a/bucket\""

@@ -22,6 +22,7 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	margin-top: 0px;
 	background-color:#E6E6E6;
+  height:100%;
 }
 
 p {
@@ -29,11 +30,24 @@ p {
 	font-size: 12px;
 }
 
+h1 {
+  font-size: 30px;
+}
+
 
 #wrapper {
 	width: 960px;
 	margin: 0px auto 10px auto;
 	background-color: #FFFFFF;
+  height:100%;
+}
+
+#outer-wrap {
+  height:100%;
+}
+
+#html {
+  height:100%;
 }
 
 
@@ -155,13 +169,45 @@ li#sub-menu a:hover {
 	text-decoration: underline;
 }
 
-#graph_selector_panel {
-  width: 750px;
-  padding: 5px;
+#campaign_action_links {
+  text-decoration: underline;
 }
 
-#graph_selector_panel a {
-  text-decoration: underline;
+#left_pane_campaign_dashboard {
+  float:left;
+  width:115px;
+  margin:11px;
+}
+
+#divider {
+  border-left: 1px;
+  border-right: 1px;
+  height: 95%;
+  width: 2px;
+  border-style: solid;
+  float: left;
+  border-top: 0px;
+  border-bottom: 0px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+#action_links {
+  margin-top: 13px;
+  li {
+    margin-top:5px;
+    margin-bottom:5px;
+    margin-left:3px;
+  }
+}
+
+#right_pane_campaign_dashboard {
+  float:left;
+  margin:11px;
+}
+
+#edit_table_campaign_dashboard {
+margin-top: 8px;
 }
 
 .param_selector_row {
@@ -374,10 +420,6 @@ table tbody {
 #creative_campaigns {
   width: 200px;
   height: 150px;
-}
-
-.notice {
- height: 25px;
 }
 
 #s3_source_select_div {
