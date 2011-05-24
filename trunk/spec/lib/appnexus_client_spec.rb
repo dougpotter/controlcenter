@@ -82,7 +82,7 @@ describe AppnexusClient do
       Creative.all_apn.should == creatives
       end
   end
-
+=begin
   describe "delete_all_apn" do
     it "should delete all creatives when called on Creative class" do
       @creative.save
@@ -180,4 +180,5 @@ describe AppnexusClient do
       end
     end
   end
+=end
 end
