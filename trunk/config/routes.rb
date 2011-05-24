@@ -29,7 +29,9 @@ ActionController::Routing::Routes.draw do |map|
   #     # Directs /admin/products/* to Admin::ProductsController (app/controllers/admin/products_controller.rb)
   #     admin.resources :products
   #   end
-  
+
+  map.connect '/campaigns/filtered_edit_table', :controller => 'campaigns', :action => 'filtered_edit_table'
+
   map.metrics_report '/home/metrics/report', :controller => 'landing_pages', :action => 'report'
   map.metrics_home "/home/metrics", :controller => "landing_pages", :action => "metrics" 
   map.update_form "/home/metrics/update_form", :controller => "landing_pages", :action => "update_form"

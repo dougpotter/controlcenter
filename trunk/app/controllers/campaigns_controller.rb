@@ -172,4 +172,39 @@ class CampaignsController < ApplicationController
 
     render :partial => "options_for_select", :locals => { :campaigns => @campaigns }
   end
+
+  def filtered_edit_table
+    if all = params[:ALL]
+      @filtered_campaigns = Campaign.all
+    elsif partner_name = params[:partner_name]
+      @filtered_campaigns = Campaign.find(
+        :all, 
+        :joins => { :line_item => :partner },  
+        :conditions => [ "partners.name = ? ", [partner_name] ])
+    elsif campaign_name = params[:name]
+      @filtered_campaigns = [ Campaign.find_by_name(campaign_name) ]
+    end 
+
+    @campaigns = Campaign.all
+
+    render :partial => "/layouts/edit_table", :locals => {
+      :collection => @filtered_campaigns,
+      :collection_for_filter_menu => @campaigns,
+      :header_names => [ 
+        "Partner", 
+        "Campaign Name", 
+        "Code", 
+        "Start Date", 
+        "End Date" ],
+      :fields => [
+        "partner_name", 
+        "name", 
+        "campaign_code", 
+        "pretty_start_time", 
+        "pretty_end_time" ],
+      :filter_menus => [ 0, 1 ], 
+      :width => "650", 
+      :class_name => "campaigns_summery",
+      :edit_path => campaign_path(1) }
+  end
 end
