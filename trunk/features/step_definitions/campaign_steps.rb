@@ -208,7 +208,7 @@ Then /^the edit campaign form should be properly populated$/ do
   Then "I should see \"Ad-Hoc\""
   Then "I should see \"Ford Spring\" within \"select\#campaign_line_item\""
   Then "the \"Campaign Name\" field should contain \"Ford Campaign\""
-  Then "the \"Campaign Code\" field should contain \"ACODE\""
+  Then "I should see \"ACODE\""
   Then "the \"S3 Bucket\" field should contain \"bucket:/a/bucket\""
   Then "the \"Audience Name\" field should contain \"Ford Connected\""
   Then "I should see \"Inventory Sources\""

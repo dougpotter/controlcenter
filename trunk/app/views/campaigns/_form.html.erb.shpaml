@@ -19,7 +19,10 @@ div class=dimension_input
 div class=dimension_input
   label for="campaign_campaign_code" | Campaign Code:
   >br 
-  = text_field('campaign', 'campaign_code')
+  % if @campaign.new_record?
+    = text_field('campaign', 'campaign_code')
+  % else
+    = @campaign.campaign_code
 
 div style="clear:both;"
   >br

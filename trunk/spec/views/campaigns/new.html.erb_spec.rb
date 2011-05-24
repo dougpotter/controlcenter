@@ -19,6 +19,7 @@ describe "campaigns/new.html.erb" do
     campaign.expects(:audience_sources).twice.returns([])
     campaign.expects(:ad_inventory_sources).twice.returns([])
     campaign.expects(:has_audience?).twice.returns(true)
+    campaign.expects(:new_record?).times(3).returns(true)
     adx = mock("adx")
     adx.expects(:ais_code).times(12).returns("ACODE")
     aises = [ adx ]
