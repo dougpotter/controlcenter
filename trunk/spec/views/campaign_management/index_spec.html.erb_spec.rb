@@ -4,7 +4,7 @@ describe "campaign_management/index.html.erb" do
   before(:each) do
     campaign = mock("Campaign")
     for method in [ :partner_name, :name, :campaign_code, :pretty_start_time, :pretty_end_time ]
-      campaign.expects(method).times(2).returns("string")
+      campaign.expects(method).times(3).returns("string")
     end
     campaign.expects(:id).times(5).returns(1)
     campaigns = [ campaign ]
