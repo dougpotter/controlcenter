@@ -119,34 +119,43 @@ filterMenus: function() {
   return filterMenus;
 },
 
+listItem: function(text, dataModelName, dataModelValue, dataUpdateUrl) {
+  var link = new Element('a', {
+    href: '#',
+    text: text,
+    'class': 'update_link',
+    'data-model_name': dataModelName,
+    'data-model_value': dataModelValue,
+    'data-update_url': dataUpdateUrl.
+      replace(/<(.*?)>/, dataModelName).
+      replace(/<(.*?)>/, dataModelValue)
+  });
+  return new Element('li').grab(link)
+},
+
 listOfLinksFor: function(header, requestEventFunction) {
   var serverObjectName = header.get('data-model_name');
   var listOfLinks = new Element('ul', { id: serverObjectName });
+
+  var allItem = this.listItem('ALL', 'ALL', 'ALL', this.options.updateUrlTemplate);
+  listOfLinks.grab(allItem);
+
   var headerIndex;
   $$('th').each(function(thisHeader, index) {
     if (thisHeader.get('id') == header.id) { headerIndex = index; }
   });
   var columnSelector = 'td:nth-child('+(headerIndex + 1)+')';
-
   var seenLinks = new Hash();
-
   $$(columnSelector).each(function(tableData) {
     var serverObjectValue = tableData.get('data-model_value');
     if (seenLinks.get(serverObjectValue) == null) {
       seenLinks.set(serverObjectValue, true);
-      var updateUrl = this.options.updateUrlTemplate.
-        replace(/<(.*?)>/, serverObjectName).
-        replace(/<(.*?)>/, serverObjectValue);
-      var link = new Element('a', { 
-        id: serverObjectValue,
-        href: '#',
-        text: tableData.get('text'),
-        'class': 'update_link',
-        'data-model_name': serverObjectName,
-        'data-model_value': serverObjectValue,
-        'data-update_url': updateUrl 
-      });
-      var listItem = new Element('li').grab(link)
+      var listItem = this.listItem(
+        tableData.get('text'), 
+        serverObjectName, 
+        serverObjectValue, 
+        this.options.updateUrlTemplate
+      );
       listOfLinks.grab(listItem);
     }
   }.bind(this));
