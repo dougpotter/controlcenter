@@ -62,7 +62,7 @@ describe "/campaigns/show.html.erb" do
 
   it "should contain heading of campaign code and description" do
     render
-    response.should have_tag("h1", "ABC - description")
+    response.should have_tag("h2", "ABC - description")
   end
 
   it "should contain description of campaign attributes" do
@@ -78,7 +78,7 @@ describe "/campaigns/show.html.erb" do
 
   it "should contain list - with heading \"Creatives\" - of associated creatives" do
     render
-    response.should have_tag("h1", "Creatives") 
+    response.should have_tag("h2", "Creatives") 
     response.should have_tag("div") do
       with_tag("img[src=\"/path/to/creative/1\"]")
       with_tag("img[src=\"/path/to/creative/2\"]")
@@ -88,7 +88,7 @@ describe "/campaigns/show.html.erb" do
   it "should contain list of AISes with heading \"Configured Ad" +
     " Inventory Sources\"" do
     render
-    response.should have_tag("h1", "Configured Ad Inventory Sources")
+    response.should have_tag("h2", "Configured Ad Inventory Sources")
     response.should have_tag("p", "Google AdX - 123")
     response.should have_tag("p", "Burst OX - 456")
     end

@@ -1,10 +1,10 @@
 .notice
   = notice
 
-h1 
+h2 
   <%= @campaign.campaign_code_and_description %>
 
-h1 | Campaign Information
+h2 | Campaign Information
 
 .campaign_description
   p
@@ -20,7 +20,7 @@ h1 | Campaign Information
   p
     Campaign Code: <%= @campaign.campaign_code %>
 
-h1 | Creatives
+h2 | Creatives
 
 .creative_thumbs
   % for creative in @campaign.creatives
@@ -29,7 +29,7 @@ h1 | Creatives
 div style="clear:both;"
   >br
 
-h1 | Configured Ad Inventory Sources
+h2 | Configured Ad Inventory Sources
 
 .configured_aises
   % for ais in @campaign.aises
