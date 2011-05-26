@@ -1,4 +1,4 @@
-var FilteredTable2 = new Class({
+var FilteredTable = new Class({
 Implements: [Options],
 
 options: {},
@@ -128,22 +128,27 @@ listOfLinksFor: function(header, requestEventFunction) {
   });
   var columnSelector = 'td:nth-child('+(headerIndex + 1)+')';
 
+  var seenLinks = new Hash();
+
   $$(columnSelector).each(function(tableData) {
     var serverObjectValue = tableData.get('data-model_value');
-    var updateUrl = this.options.updateUrlTemplate.
-      replace(/<(.*?)>/, serverObjectName).
-      replace(/<(.*?)>/, serverObjectValue);
-    var link = new Element('a', { 
-      id: serverObjectValue,
-      href: '#',
-      text: tableData.get('text'),
-      'class': 'update_link',
-      'data-model_name': serverObjectName,
-      'data-model_value': serverObjectValue,
-      'data-update_url': updateUrl 
-    });
-    var listItem = new Element('li').grab(link)
-    listOfLinks.grab(listItem);
+    if (seenLinks.get(serverObjectValue) == null) {
+      seenLinks.set(serverObjectValue, true);
+      var updateUrl = this.options.updateUrlTemplate.
+        replace(/<(.*?)>/, serverObjectName).
+        replace(/<(.*?)>/, serverObjectValue);
+      var link = new Element('a', { 
+        id: serverObjectValue,
+        href: '#',
+        text: tableData.get('text'),
+        'class': 'update_link',
+        'data-model_name': serverObjectName,
+        'data-model_value': serverObjectValue,
+        'data-update_url': updateUrl 
+      });
+      var listItem = new Element('li').grab(link)
+      listOfLinks.grab(listItem);
+    }
   }.bind(this));
 
   return listOfLinks;
