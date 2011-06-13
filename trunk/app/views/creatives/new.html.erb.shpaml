@@ -3,7 +3,7 @@
 
 h1 | New Creative
 
-.notice 
+.notice #notice
   = notice
 
 % form_for @creative, :html => { :multipart => true } do |f|

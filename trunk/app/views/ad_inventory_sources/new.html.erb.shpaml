@@ -1,7 +1,7 @@
 h1 | New AIS
 >br
 
-.notice
+.notice #notice
   = notice
 
 % form_for @ais do |f|

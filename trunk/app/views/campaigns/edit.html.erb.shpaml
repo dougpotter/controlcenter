@@ -3,7 +3,7 @@
 h1 | Edit Campaign
 >br
 
-div class=notice
+.notice #notice
  = notice
 
 

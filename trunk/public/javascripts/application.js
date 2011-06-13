@@ -109,3 +109,8 @@ function toggleHelp(helpKey) {
   var element = $(helpId);
   element.toggle();
 }
+
+// Expire flash notices
+window.addEvent('domready', function() {
+  (function() { new Fx.Tween($('notice'), { property: 'opacity' }).start(0).chain(function() { $('notice').tween('height', 0) }) }).delay(3000);
+})

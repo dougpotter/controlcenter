@@ -1,7 +1,7 @@
 <script src="/javascripts/campaign_setup.js" type="text/javascript"></script>
 <script src="/javascripts/creative_list.js" type="text/javascript"></script>
 
-.notice
+.notice #notice
   = notice
 
 = error_messages_for :campaign

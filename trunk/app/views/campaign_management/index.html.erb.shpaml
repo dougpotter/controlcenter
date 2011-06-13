@@ -1,7 +1,7 @@
 = javascript_include_tag "filtered_table"
 = javascript_include_tag "campaign_dashboard"
 
-<div class=notice></div>
+<div id=notice class=notice></div>
   
 div id=left_pane_campaign_dashboard
 

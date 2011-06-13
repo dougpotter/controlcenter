@@ -1,4 +1,4 @@
-.notice
+.notice #notice
   = notice
 
 h2 

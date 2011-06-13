@@ -9,7 +9,7 @@ Feature: Manage partners
       | Advertiser Name | Coca Cola |
     When I press "Create Advertiser"
     Then I should see "Coca Cola"
-    And I should see "123432"
+    And I should see "Coca Cola successfully created"
 
   Scenario: Edit partner
     Given the following partners:
