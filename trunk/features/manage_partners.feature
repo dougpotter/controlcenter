@@ -6,7 +6,6 @@ Feature: Manage partners
   Scenario: Create new partner
     Given I am on the new partner page
     And I fill in the following:
-      | Advertiser Code | 123432    |
       | Advertiser Name | Coca Cola |
     When I press "Create Advertiser"
     Then I should see "Coca Cola"

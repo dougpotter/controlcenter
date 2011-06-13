@@ -1,4 +1,4 @@
-= error_messages_for :partner
+= error_messages_for :partner, :header_message => "Advertiser did not save"
 
 div class=dimension_input
   label for="partner_partner_code" | Advertiser Code:

@@ -56,7 +56,7 @@ describe PartnersController, "create with invalid attributes" do
   it "should render new action" do
     Partner.expects(:new).with("partner_code" => "", "name" => "").returns(@partner)
     do_create
-    response.should be_redirect
+    response.should render_template(:new)
   end
 end
 

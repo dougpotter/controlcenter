@@ -199,6 +199,8 @@ margin-top: 8px;
 
 label {
   font-size: 12px;
+  width: 100%;
+  float: left;
 }
 
 .param_selector_row input {
@@ -420,4 +422,16 @@ table tbody {
 #s3_source_field_div {
   margin-left: 10px;
   visibility: hidden;
+}
+
+div.errorExplanation {
+  color: #D34C4C;
+}
+
+div.errorExplanation p {
+  display: none;
+}
+
+div.errorExplanation ul {
+  margin-bottom: 10px;
 }

@@ -17,10 +17,8 @@ class PartnersController < ApplicationController
         :notice => "#{@partner.name} successfully created"
       )
     else
-      redirect_to(
-        new_partner_path,
-        :notice => "failed to save new advertiser"
-      )
+      @partners = Partner.all
+      render :action => 'new'
     end
   end
 
