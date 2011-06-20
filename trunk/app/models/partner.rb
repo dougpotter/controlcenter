@@ -14,6 +14,7 @@ class Partner < ActiveRecord::Base
   has_many :campaigns
   has_many :line_items
 
+  validates_presence_of :partner_code, :name
   validates_uniqueness_of :partner_code
   def pid ; partner_code ; end
   

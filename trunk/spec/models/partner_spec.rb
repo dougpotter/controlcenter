@@ -19,7 +19,7 @@ describe Partner do
   it "should require non null partner_code (validations test)" do
     lambda {
       Factory.create(:partner, :partner_code => nil)
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.should raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "should require non null partner_code (db test)" do
