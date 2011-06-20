@@ -1,6 +1,7 @@
 class LineItemsController < ApplicationController
   def new
     @line_item = LineItem.new
+    @line_item.line_item_code = LineItem.generate_line_item_code
     @line_items = LineItem.all
     @partners = Partner.all
   end

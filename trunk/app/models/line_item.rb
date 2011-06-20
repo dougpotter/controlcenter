@@ -27,4 +27,16 @@ class LineItem < ActiveRecord::Base
   end
 
   acts_as_dimension
+
+
+  class << self
+    def generate_line_item_code
+      CodeGenerator.generate_unique_code(
+        self,
+        :line_item_code,
+        :length => 4,
+        :alphabet => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+      )   
+    end 
+  end
 end

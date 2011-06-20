@@ -10,7 +10,6 @@ Feature: Manage line_items
       | Ford |     11111    |
     And I am on the new line_item page
     And I fill in the following:
-      | Line Item Code | ABC12 |
       | Line Item Name | Ford Spring 2008 |
     And I select "February 1, 2010" as the "Start Time" date 
     And I select "April 1, 2010" as the "End Time" date
@@ -18,7 +17,6 @@ Feature: Manage line_items
     When I press "Create Line Item"
     Then I should see "line item successfully saved"
     And I should see "Ford Spring 2008"
-    And I should see "ABC12"
 
   Scenario: View line_item
     Given the standard ad-hoc campaign and associated entities exist
