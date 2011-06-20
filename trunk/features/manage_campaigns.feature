@@ -76,7 +76,6 @@ Feature: Manage campaigns
     And I select "Ford Spring" from "Line Item"
     And I select "Ad-Hoc" from "Audience Type"
     And I fill in "Second Campaign" for "Campaign Name"
-    And I fill in "NODE" for "Campaign Code"
     And I fill in "bucket:/a/bucket" for "S3 Bucket"
     And I fill in "AUDCOD" for "Audience Code"
     And I fill in "Audience Name" for "Audience Name"

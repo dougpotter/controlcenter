@@ -1,6 +1,7 @@
 class CampaignsController < ApplicationController
   def new
     @campaign = Campaign.new
+    @campaign.campaign_code = Campaign.generate_campaign_code
     @line_items = LineItem.all
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
     @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
