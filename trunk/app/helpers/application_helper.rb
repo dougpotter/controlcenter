@@ -48,4 +48,8 @@ module ApplicationHelper
     end
     content_tag(:div, content, :style => "clear:#{how}")
   end
+
+  def notice_that_fades(txt)
+    "<div id=\"notice\">#{txt}</div><script type=\"text/javascript\">window.addEvent('domready', function() {(function() { new Fx.Tween($('notice'), { property: 'opacity' }).start(0).chain(function() { $('notice').tween('height', 0) }) }).delay(3000);})</script>"
+  end
 end
