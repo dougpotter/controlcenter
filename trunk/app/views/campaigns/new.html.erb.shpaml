@@ -8,14 +8,23 @@
 
 h1 | Basics
 
+
 % form_for @campaign, :html => { :multipart => true } do |f|
-  = render :partial => 'form'
+  = render :partial => 'form', :locals => { :f => f }
   
   h1 | Audience Source
-  
+ 
+
   div id=audience_source_section
-    % partial_string = "audiences/form_for_" + @campaign_types.first.class.to_s.underscore
-    = render :partial => partial_string
+    % if @campaign.audience_sources.blank?
+      % partial_string = "audiences/form_for_" + @campaign_types.first.class.to_s.underscore
+    % if !@campaign.audience_sources.blank?
+      % partial_string = "audiences/form_for_" + @campaign.audience_sources[0].type.underscore
+  
+    = render :partial => partial_string, :locals => { :f => f }
+
+  div id=audience_source_updater
+    = audience_source_section_builder(@campaign_types, f)
 
   div class="style:clear;"
     >br
@@ -40,4 +49,3 @@ h1 | Basics
 
   div style="clear:both;"
     >br
-

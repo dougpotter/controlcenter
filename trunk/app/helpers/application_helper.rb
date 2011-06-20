@@ -50,6 +50,27 @@ module ApplicationHelper
   end
 
   def notice_that_fades(txt)
-    "<div id=\"notice\">#{txt}</div><script type=\"text/javascript\">window.addEvent('domready', function() {(function() { new Fx.Tween($('notice'), { property: 'opacity' }).start(0) }).delay(3000);})</script>"
+    "<div id=\"notice\">#{txt}</div><script type=\"text/javascript\">" +
+    "window.addEvent('domready', function() {" +
+    "(function() {" +
+    "new Fx.Tween($('notice'), { property: 'opacity' }).start(0) }" +
+    ").delay(3000);})</script>"
+  end
+
+  def audience_source_section_builder(campaign_types, f)
+    forms_markup = []
+    for campaign_type in campaign_types
+      campaign_type_str = campaign_type.class.to_s
+      markup_for_this_type = 
+        (render(
+          "/audiences/form_for_#{campaign_type_str.underscore}", 
+          :f => f)
+        ).inspect
+      forms_markup << "\'#{campaign_type_str}\':#{markup_for_this_type}"
+    end
+    forms_markup_js = "var forms_markup = { #{forms_markup.join(',')} };"
+
+    javascript_tag "#{forms_markup_js} function updateSourceSection(sourceType)"+
+      "{ $('audience_source_section').set('html', forms_markup[sourceType]); }"
   end
 end

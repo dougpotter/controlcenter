@@ -65,22 +65,11 @@ window.addEvent('domready', function() {
 
     // attach event listener audience type select which updates audience source
     // fields when appropriate
-    var audience_type_selector = $('campaign_campaign_type');
+    var audience_type_selector = $('campaign_audience_attributes_audience_sources_attributes_0_type');
 
     if (audience_type_selector != null) {
-      audience_type_selector.addEvent('change', function() { var audience_type= audience_type_selector.getSelected().getProperty('value');
-      var campaign_code = $('campaign_campaign_code').getProperty('value');
-
-      var req = new Request.HTML({
-        url: audience_source_form_url + audience_type + '&campaign_code=' + campaign_code,
-        method: 'get',
-        update: $("audience_source_section"),
-        onFailure: function(response) {
-          if (response.status == 403) { 
-            alert("Audience Source Error!\nCannot switch to type " + audience_type);
-          }
-        }
+      audience_type_selector.addEvent('change', function() { 
+        updateSourceSection(audience_type_selector.value);
       });
-    req.send();
-  })}
+    }
 })

@@ -1,26 +1,28 @@
-div class=dimension_input
-  label for="campaign_line_item" | Line Item:
+.dimension_input
+  = f.label :line_item_id, "Line Item"
   >br 
-  = select('campaign', 'line_item', none_option + options_from_collection_for_select(@line_items, 'id', 'name', @selected_line_item))
+  = select('campaign', 'line_item_id', none_option + options_from_collection_for_select(@line_items, 'id', 'name', @selected_line_item))
 
-div class=dimension_input
-  label for="campaign_campaign_type" | Audience Type:
+% f.fields_for :audience, @audience do |audience|
+  % audience.fields_for :audience_sources, @audience_source do |audience_source|
+    .dimension_input
+      = audience_source.label :type, "Audience Type"
+      >br 
+      % if !@campaign.has_audience?
+        = audience_source.select('type', options_from_collection_for_select(@campaign_types, :class_name, :display_name, @campaign.source_type))
+      % if @campaign.has_audience?
+        = @campaign.source_type
+
+.dimension_input
+  = f.label :name, "Campaign Name"
   >br 
-  % if !@campaign.has_audience?
-    = select('campaign', 'campaign_type', options_from_collection_for_select(@campaign_types, :class_name, :display_name, @campaign.source_type))
-  % if @campaign.has_audience?
-    = @campaign.source_type
+  = f.text_field 'name'
 
-div class=dimension_input
-  label for="campaign_name" | Campaign Name:
-  >br 
-  = text_field('campaign', 'name')
-
-div class=dimension_input
-  label for="campaign_campaign_code" | Campaign Code:
+.dimension_input
+  = f.label :campaign_code, "Campaign Code"
   >br 
   % if @campaign.new_record?
-    = text_field('campaign', 'campaign_code')
+    = f.text_field 'campaign_code'
   % else
     = @campaign.campaign_code
 

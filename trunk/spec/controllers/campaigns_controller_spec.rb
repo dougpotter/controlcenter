@@ -27,39 +27,24 @@ describe CampaignsController do
               :campaign => {
                 :name => "A New Campaign",
                 :campaign_code => "ACODE",
-                :line_item => "1" },
-              :audience => {
+                :line_item_id => "1" },
+              :audience_attributes => {
                 :audience_code => "AB17",
                 :description => "an audience name",
-                :audience_source => { 
-                  :s3_bucket => "/a/path/in/s3",
-                  :type => "Ad-Hoc" } },
+                :audience_source_attributes => { 
+                  "0" => {
+                    :s3_bucket => "/a/path/in/s3",
+                    :type => "Ad-Hoc" } } },
               :sync_rules => { "ApN" => { :apn_segment_id => "" } }
           end
 
           context "with valid attributes" do
             before(:each) do
               @partner = mock("Partner")
-              @campaign = mock(
-                "Campaign", 
-                :update_attributes => true,
-                :save => true
-              )
+              @campaign = mock("Campaign", :save => true)
               @line_item = mock("Line Item")
               @ad_hoc_source = mock("Ad Hoc Source")
-              LineItem.expects(:find).with("1").returns(@line_item)
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
-              Audience.expects(:find_by_audience_code).returns(nil)
-              AdHocSource.expects(:new).returns(@ad_hoc_source)
-              @audience = stub_everything("Audience", :update_source => true)
-              Audience.expects(:new).with(
-                "audience_code" => "AB17",
-                "description" => "an audience name"
-              ).returns(@audience)
+              Campaign.expects(:new).returns(@campaign)
             end
 
             it "should assign @campaign" do
@@ -83,29 +68,20 @@ describe CampaignsController do
 
           context "with invalid attributes" do
             before(:each) do
-              @line_item = mock("Line Item", :id => 1)
-              @campaign = mock(
-                "Campaign", 
-                :line_item => @line_item,
-                :save => false
-              ) 
+              @line_item = mock("Line Item")
+              @campaign = mock("Campaign", :save => false) 
               @ais = mock("Ad Inventory Source")
-              LineItem.expects(:find).with("1").returns(@line_item)
               LineItem.expects(:all).returns([])
               AdInventorySource.expects(:find_by_ais_code).returns(@ais)
               AudienceSource.expects(:all).returns([])
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
+              Campaign.expects(:new).returns(@campaign)
             end
 
             it "should fail to save @campaign" do
               do_create
             end
 
-            it "response should redirect to new campaign path" do
+            it "response should render new campaign action" do
               do_create
               response.should render_template(:new)
             end
@@ -119,12 +95,13 @@ describe CampaignsController do
                 :name => "A New Campaign",
                 :campaign_code => "ACODE",
                 :line_item => "1" },
-              :audience => {
+              :audience_attributes => {
                 :audience_code => "AB17",
                 :description => "an audience name",
-                :audience_source => { 
-                  :s3_bucket => "/a/path/in/s3",
-                  :type => "Ad-Hoc" } },
+                :audience_source_attributes => { 
+                  "0" => {
+                    :s3_bucket => "/a/path/in/s3",
+                    :type => "Ad-Hoc" } } },
               :sync_rules => { "ApN" => { :apn_segment_id => "ACODE" } },
               :aises_for_sync => [ "ApN" ]
           end
@@ -134,24 +111,14 @@ describe CampaignsController do
               @campaign_inventory_config = mock("Campaign Inventory Config")
               @campaign = mock(
                 "Campaign", 
-                :update_attributes => true,
                 :configure_ais => @campaign_inventory_config,
                 :save => true
               ) 
               @line_item = mock("Line Item")
-              @audience = mock("Audience", :update_source => true)
               @ad_hoc_source = mock(
                 "Ad Hoc Source"
               )
-              LineItem.expects(:find).with("1").returns(@line_item)
-              Campaign.expects(:new).with({
-                "name" => "A New Campaign",
-                "campaign_code" => "ACODE",
-                "line_item" => @line_item
-              }).returns(@campaign)
-              Audience.expects(:find_by_audience_code).with("AB17").returns(nil)
-              AdHocSource.expects(:new).returns(@ad_hoc_source)
-              Audience.expects(:new).returns(@audience)
+              Campaign.expects(:new).returns(@campaign)
             end
 
             it "should save @campaign" do
@@ -189,22 +156,18 @@ describe CampaignsController do
               :line_item => "1" },
             :audience_action => {
               :refresh => "1" },
-            :audience => {
+            :audience_attributes => {
               :id => "2",
               :description => "an audience name",
               :audience_code => "ACODE",
-              :audience_source => { 
-                :old_s3_bucket => "bucket:/a/path",
-                :new_s3_bucket => "bucket:/b/path",
-                :type => "Ad-Hoc" }},
+              :audience_source_attributes => { 
+                "0" => {
+                  :old_s3_bucket => "bucket:/a/path",
+                  :new_s3_bucket => "bucket:/b/path",
+                  :type => "Ad-Hoc" } } },
             :sync_rules => {
               :ApN => {
                 "appnexus_segment_id" => "12345" }}
-        end
-
-        before(:each) do
-          @line_item = stub_everything("LineItem")
-          LineItem.expects(:find).with("1").returns(@line_item)
         end
 
         it "should update attributes of campaign passed in params[:id]" do
@@ -219,21 +182,12 @@ describe CampaignsController do
         end
 
         it "should update audience source s3_bucket and nothing more" do
-          @audience_source = mock("Audience Source")
-          @audience = mock(
-            "Audience", 
-            :update_attributes => true,
-            :update_source => true
-          )
           @campaign = stub_everything(
             "Campaign", 
-            :audience => @audience,
             :update_attributes => true,
             :has_audience? => true
           )
           Campaign.expects(:find).returns(@campaign)
-          AdHocSource.expects(:new).
-            with({'s3_bucket' => "bucket:/b/path"}).returns(@audience_source)
           do_update
         end
       end
@@ -248,14 +202,15 @@ describe CampaignsController do
               :name => "name",
               :campaign_type => "Ad-Hoc",
               :campaign_code => "ACODE",
-              :line_item => "1" },
-            :audience => {
+              :line_item_id => "1" },
+            :audience_attributes => {
               :id => "2",
               :audience_code => "ACODE",
               :description => "an audience name",
-              :audience_source => { 
-                :referrer_regex => "a\.*regex",
-                :type => "Retargeting" }},
+              :audience_source_attributes => { 
+                "0" => {
+                  :referrer_regex => "a\.*regex",
+                  :type => "Retargeting" } } },
             :sync_rules => {
               :ApN => {
                 "appnexus_segment_id" => "12345" }}
@@ -263,7 +218,6 @@ describe CampaignsController do
 
         before(:each) do
           @line_item = stub_everything("LineItem")
-          LineItem.expects(:find).with("1").returns(@line_item)
         end
 
         it "should update attributes of campaign passed in params[:id]" do
@@ -279,19 +233,11 @@ describe CampaignsController do
 
         it "should update audience source information" do
           @audience_source = mock("Audience Source")
-          @audience = mock(
-            "Audience", 
-            :update_source => true,
-            :update_attributes => true
-          )
           @campaign = stub_everything(
             "Campaign", 
-            :update_attributes => true,
-            :audience => @audience
+            :update_attributes => true
           )
           Campaign.expects(:find).returns(@campaign)
-          RetargetingSource.expects(:new).
-            with({'referrer_regex' => "a.*regex"}).returns(@audience_source)
           do_update
         end
       end

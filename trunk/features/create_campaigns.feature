@@ -23,8 +23,8 @@ Feature:
     And I am on the new campaign page
     And I fill in ad-hoc campaign information
     When I press "submit"
-    Then I should be on "the new campaign page for ANB6"
-    And I should see "audience code HNXT already exists, please choose a new one"
+    Then I should be on "the campaigns page"
+    And I should see "Audience code has already been taken"
 
   @selenium 
   Scenario: Click new creative

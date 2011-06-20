@@ -3,8 +3,10 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.new
     @campaign.campaign_code = Campaign.generate_campaign_code
     @line_items = LineItem.all
+    @audience = Audience.new
+    @audience_source = RetargetingSource.new
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
-    @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
+    @campaign_types = AudienceSource.all(:select => "DISTINCT(type)").sort
     @creative_sizes = CreativeSize.all
     @creative = Creative.new
     params[:line_item_id] ? @selected_line_item = params[:line_item_id].to_i : nil
@@ -12,34 +14,14 @@ class CampaignsController < ApplicationController
 
   def create
     # build new campaign
-    params[:campaign][:line_item] = LineItem.find(params[:campaign][:line_item])
     @campaign = Campaign.new(params[:campaign])
     if !@campaign.save
       @line_items = LineItem.all
       @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
       @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
-      @selected_line_item = @campaign.line_item.id
-      render :action => :new, :notice => "failed to save campaign"
+      @creative_sizes = CreativeSize.all
+      render :new
       return
-    end
-
-    if @audience = Audience.find_by_audience_code(params[:audience][:audience_code])
-      # duplicate audience code
-      redirect_to(
-        new_campaign_path, 
-        :notice => "audience code #{@audience.audience_code} already exists," +
-        " please choose a new one"
-      )
-      return
-    else
-      # build new audience and source and associate them
-      @audience_source = source_from_params
-      @audience = Audience.new(params[:audience])
-      @audience.update_source(@audience_source)
-      if !@campaign.update_attributes({:audience => @audience})
-        redirect_to(new_campaign_path, :notice => "failed to save audience")
-        return
-      end
     end
 
     # associate creatives with campaign
@@ -87,17 +69,7 @@ class CampaignsController < ApplicationController
 
   def update
     @campaign = Campaign.find(params[:id])
-    params[:campaign][:line_item] = 
-      LineItem.find(params[:campaign][:line_item])
-
-    # process audience source params
-    params[:audience][:audience_source] = source_from_params
-    @campaign.audience.update_source(params[:audience][:audience_source])
-
-    # process audience description
-    @campaign.audience.update_attributes(
-      :description => params[:audience][:description]
-    )
+    @campaign.update_attributes(params[:campaign])
 
     # process segment ids
     params[:sync_rules].each do |ais_code, rule|

@@ -29,6 +29,8 @@ class Audience < ActiveRecord::Base
   validates_presence_of :audience_code
   validates_uniqueness_of :audience_code
 
+  accepts_nested_attributes_for :audience_sources
+
   acts_as_dimension
   business_index :audience_code, :aka => "aid"
 

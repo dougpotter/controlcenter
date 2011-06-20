@@ -44,29 +44,6 @@ class AudiencesController < ApplicationController
     end
   end
 
-  def audience_source_form
-    partial_translation = {
-      "AdHocSource" => 'form_for_ad_hoc_source',
-      "RetargetingSource" => 'form_for_retargeting_source'
-    }
-
-    if !params[:campaign_code].blank?
-      # must ensure consistent source
-      @campaign = Campaign.find_by_campaign_code(params[:campaign_code])
-      if @campaign.consistent_source(params[:source])
-        # consistent sourced, render tempalte
-        render :partial => partial_translation[params[:source]]
-      else
-        # in consistent sources, return error
-        render :nothing => true, :status => :forbidden
-      end
-    else
-      # we're on campaign edit, campaign doesn't have a source yet
-      @campaign = Campaign.new
-      render :partial => partial_translation[params[:source]]
-    end
-  end
-
   def index_by_advertiser
     @audiences = []
     if params[:partner_id] == ""
@@ -81,6 +58,13 @@ class AudiencesController < ApplicationController
     end
     @audiences.flatten!
     puts @audiences.size
-    render :partial => 'layouts/edit_table', :locals => { :collection => @audiences, :header_names => ["Audience Code", "Description"], :fields => ["audience_code", "description"], :class_name => "audience_summary", :width => "500", :edit_path => edit_audience_path(1) }
+    render :partial => 'layouts/edit_table', 
+      :locals => { 
+        :collection => @audiences, 
+        :header_names => ["Audience Code", "Description"], 
+        :fields => ["audience_code", "description"], 
+        :class_name => "audience_summary", 
+        :width => "500", 
+        :edit_path => edit_audience_path(1) }
   end
 end

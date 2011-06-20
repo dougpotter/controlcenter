@@ -1,6 +1,6 @@
 = hidden_field('audience[audience_source]', 'type', :value => "Ad-Hoc")
 
-% if !@campaign.audience_sources.blank?
+% if !@campaign.audience_sources.blank? && !@campaign.new_record?
 
   div class=dimension_input id=s3_checkbox_for_rollback
     label for="audience_description" | Audience Name: 
@@ -25,22 +25,15 @@
   = hidden_field('audience[audience_source]', 'load_status', :value => @campaign.audience_sources.first.load_status)
   = hidden_field('audience[audience_source]', 'beacon_load_id', :value => @campaign.audience_sources.first.beacon_load_id)
 
-
 % if @campaign.audience_sources.blank?
-  div class=dimension_input
-    label for="audience_audience_source_s3_bucket" | S3 Bucket: 
-    >br
-    = text_field 'audience[audience_source]', 's3_bucket'
-
-  div class=dimension_input
-    label for="audience_audience_code" | Audience Code: 
-    >br
-    = text_field 'audience', 'audience_code'
-
-  div class=dimension_input
-    label for="audience_description" | Audience Name: 
-    >br
-    = text_field 'audience', 'description'
-
-div style='clear:both;'
-  >br
+  % f.fields_for :audience, @audience do |audience|
+    % audience.fields_for :audience_sources, @audience_source do |audience_source|
+      .dimension_input
+        = audience_source.label :s3_bucket, "S3 Bucket"
+        = audience_source.text_field :s3_bucket
+    .dimension_input
+      = audience.label :audience_code, "Audience Code"
+      = audience.text_field :audience_code
+    .dimension_input
+      = audience.label :description, "Audience Name"
+      = audience.text_field :description
