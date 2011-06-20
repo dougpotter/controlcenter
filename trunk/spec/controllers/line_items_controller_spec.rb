@@ -83,7 +83,7 @@ describe LineItemsController do
         do_create
       end
 
-      it "should be redirect" do
+      it "should re-render new" do
         LineItem.expects(:new).with({
           "name" => "Ford Spring",
           "line_item_code" => "AB12",
@@ -92,7 +92,7 @@ describe LineItemsController do
           "partner_id" => 1
         }).returns(@line_item)
         do_create
-        response.should be_redirect
+        response.should render_template(:new)
       end
     end
   end

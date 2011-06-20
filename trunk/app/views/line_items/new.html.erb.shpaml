@@ -2,8 +2,7 @@
 
 h1 | New Line Item
 
-.notice #notice
-  = notice
+= notice_that_fades(flash[:notice])
 
 % form_for @line_item, :html => { :multipart => true } do |f|
   = render :partial => 'form'

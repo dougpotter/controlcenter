@@ -11,7 +11,9 @@ class LineItemsController < ApplicationController
     if @line_item.save
       redirect_to(new_line_item_path, :notice => "line item successfully saved")
     else
-      redirect_to(new_line_item_path)
+      @line_items = LineItem.all
+      @partners = Partner.all
+      render :action => 'new'
     end
   end
 

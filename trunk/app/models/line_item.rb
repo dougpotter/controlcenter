@@ -19,7 +19,7 @@ class LineItem < ActiveRecord::Base
   has_many :creatives, :through => :creatives_line_items, :dependent => :destroy
   belongs_to :partner
 
-  validates_presence_of :partner_id
+  validates_presence_of :partner_id, :line_item_code, :name
   validates_uniqueness_of :line_item_code
 
   def partner_name
