@@ -21,6 +21,8 @@ class LineItem < ActiveRecord::Base
 
   validates_presence_of :partner_id, :line_item_code, :name
   validates_uniqueness_of :line_item_code
+  validates_as_increasing :start_time, :end_time,
+    :message => "must follow start time"
 
   def partner_name
     self.partner.name

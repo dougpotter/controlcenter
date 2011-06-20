@@ -54,8 +54,9 @@ module CustomValidations
     # Configuration Options:
     # :allow_nil - skips validation if either attribute is nil
 
-    def validates_as_increasing(first_attr, second_attr)
-      configuration = { :message => "attribute fails to increase in value" }
+    def validates_as_increasing(first_attr, second_attr, options = {})
+      configuration = { 
+        :message => options[:message] || "attribute fails to increase in value" }
 
       validates_each(first_attr) do |record, attr_name, value|
         next if (record.send(first_attr).nil? || record.send(second_attr).nil?)
