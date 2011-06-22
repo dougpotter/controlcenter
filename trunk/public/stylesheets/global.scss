@@ -1,0 +1,151 @@
+/**********************************************************************************
+* Table of Contents
+*
+* Element Styles
+* Structure 
+* Nave Bar
+* Footer
+* Forms
+*
+**********************************************************************************/
+
+
+/**********************************************************************************
+* Element Styles
+**********************************************************************************/
+
+a {
+  color: black;
+  text-decoration: none; }
+
+a:hover {
+  color: $dark_grey; }
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-top: 0px;
+  background-color: $medium_grey; }
+
+p {
+  color: $off_black;
+  font-size: 12px; }
+
+h1 {
+  font-size: 30px; }
+
+/**********************************************************************************
+* Structure 
+**********************************************************************************/
+
+#wrapper {
+  width: 960px;
+  margin: 0px auto 10px auto;
+  background-color: white; }
+
+#html {
+  height:100%; }
+
+#header {
+  height: 68px;
+  width: 960px;
+  background-color: white; }
+
+#main {
+  height: 10px;
+  width: 960px;
+  background:url(/images/bg-home.png);
+  background-position: top left;
+  background-repeat: none; }
+
+#content {
+  background-color: $light_grey;
+  width: 940px;
+  margin-bottom: 0px;
+  padding: 10px; }
+
+/**********************************************************************************
+* Nav Bar
+**********************************************************************************/
+
+.logo {
+  float: left;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 75px; }
+
+ul.nav {
+  float: left;
+  margin-top: 28px;
+  margin-left: 20px; }
+
+.nav li {
+  color: $dark_blue;
+  font-weight: bold;
+  font-size: 14px;
+  float: left;
+  margin-left: 30px; }
+
+.nav li, .nav li a { 
+  color: $dark_blue;
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: none; }
+
+.nav li a:hover {
+  color: $light_blue;
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: none; }
+
+.nav li.current a { 
+  color: $light_blue;
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: none;
+  background-image:url(/images/triangle.png);
+  background-repeat: no-repeat;
+  background-position: 50% 30px;
+  padding-bottom: 60px; }
+
+/**********************************************************************************
+* Footer 
+**********************************************************************************/
+
+#footer {
+  width: 960px;
+  height: 26px;
+  background-color: $dark_grey;
+  margin-top: -15px; }
+
+#footer p { 
+  text-align: center;
+  font-size: 10px;
+  line-height: 26px;
+  color: white; }
+
+#footer p a { 
+  text-align: center;
+  font-size: 10px;
+  color: white; 
+  text-decoration: none; }
+
+#footer p a:hover {
+  text-align: center;
+  font-size: 10px;
+  color: $light_blue;
+  text-decoration: underline; }
+
+/**********************************************************************************
+* Forms
+**********************************************************************************/
+
+label {
+  font-size: 12px;
+  width: 100%;
+  float: left; }
+
+.bilevel_input, .dimension_input {
+  float: left;
+  padding: 0px 5px 5px 0px; }
+
+
