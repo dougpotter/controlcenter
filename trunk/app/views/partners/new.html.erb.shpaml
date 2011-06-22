@@ -1,7 +1,7 @@
 h1 | New Advertiser
->br
 
-= notice_that_fades(flash[:notice])
+.notice
+  = notice_that_fades(notice)
 
 % form_for @partner do |f|
   = render :partial => 'form'
