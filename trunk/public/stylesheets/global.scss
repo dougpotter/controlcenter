@@ -6,6 +6,7 @@
 * Nave Bar
 * Footer
 * Forms
+* Summary Tables
 *
 **********************************************************************************/
 
@@ -32,6 +33,9 @@ p {
 
 h1 {
   font-size: 30px; }
+
+table tbody {
+  font-size: 13px; }
 
 /**********************************************************************************
 * Structure 
@@ -148,4 +152,23 @@ label {
   float: left;
   padding: 0px 5px 5px 0px; }
 
+div.errorExplanation {
+  color: $red; }
 
+div.errorExplanation p, div.errorExplanation h2 {
+  display: none; }
+
+div.errorExplanation ul {
+  margin-bottom: 10px; }
+
+#notice {
+  height: 20px;
+  color: $red; }
+
+/**********************************************************************************
+* Summary Tables
+**********************************************************************************/
+
+#summary_table th {
+  font-size: 15px;
+  font-weight: bold; }

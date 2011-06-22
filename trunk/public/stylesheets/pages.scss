@@ -1,0 +1,133 @@
+/**********************************************************************************
+* Table of Contents
+*
+* Campaign Dashboard
+* Campaign New/Edit
+* Creatie New/Show/Edit
+*
+**********************************************************************************/
+
+/**********************************************************************************
+* Campaign Dashboard
+**********************************************************************************/
+
+#left_pane_campaign_dashboard {
+  float: left;
+  width: 115px;
+  margin: 11px; }
+
+#action_links li {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 3px; }
+
+#right_pane_campaign_dashboard {
+  float: left;
+  margin: 11px;
+  border-left: double;
+  padding-left: 20px; }
+
+#edit_table_campaign_dashboard {
+  margin-top: 8px; }
+
+/**********************************************************************************
+* Campaign New/Edit
+**********************************************************************************/
+
+.sync_rule_checkbox_and_label label {
+  float: left;
+  font-size: 15px;
+  margin-top: 4px;
+  width: 30px; }
+
+.sync_rule_entry_boxes label {
+  min-width: 30px; }
+
+.sync_rule_ais {
+  float:left;
+  margin-left: 20px;
+  margin-top: 7px; }
+
+.sync_rule_checkbox_and_label {
+  width: 80px; }
+
+.sync_rules_on_campaign_setup {
+  visibility: visible; }
+
+#audience_source_section {
+  height: 36px; }
+
+.remove_creative_link {
+  float: left;
+  padding-top: 12px;
+  padding-right: 8px;
+  padding-left: 1px;
+  font-size: 21px;
+  height: 40px; }
+
+.add_creative_link {
+  font-size: 18px; }
+
+#s3_source_select_div {
+  margin-left: 30px; }
+
+#refresh_div {
+  margin-left: 30px
+}
+
+#refresh_checkbox {
+  margin-left: 15px;
+  margin-top: 5px; }
+
+#s3_source_field_div {
+  margin-left: 10px;
+  visibility: hidden; }
+
+/**********************************************************************************
+* Creative New/Show/Edit
+**********************************************************************************/
+
+.pixel_list {
+  margin-bottom: 20px;
+  margin-left: 0px 20px 0px 20px; }
+
+.pixel_list h1 {
+  font-size: 15px; }
+
+.pixel_list h2 {
+  padding-top: 9px 0px 4px 0px;
+  font-size: 14px; }
+
+.pixel_list h3 {
+  font-size: 14px;
+  text-indent: 7px; }
+
+.pixel_list .pixel {
+  font-size: 12px;
+  padding-top: 1px 0px 3px 0px;
+  text-indent: 7px; }
+
+.creative_image_panel {
+  float: left; }
+
+#creative_image {
+  position: relative;
+  padding: 15px; }
+
+.creative_details {
+  padding-bottom: 10px; }
+
+.pixels_for_creative {
+  width: 800px; }
+
+.green {
+  color: white;
+  background-color: $green; }
+
+.red {
+  color: black;
+  background-color: $red; }
+
+#creative_campaigns {
+  width: 200px;
+  height: 150px; }
