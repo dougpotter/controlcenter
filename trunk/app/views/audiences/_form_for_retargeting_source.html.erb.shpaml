@@ -3,7 +3,7 @@
     = audience.label :audience_code, "Audience Code"
     = audience.text_field :audience_code
 
-  % audience.fields_for :audience_sources, @audience_source do |audience_source|
+  % audience.fields_for :retargeting_source_attributes, @audience_source do |audience_source|
     .dimension_input
       = audience_source.label :request_regex, "Request Regex"
       = audience_source.text_field :request_regex

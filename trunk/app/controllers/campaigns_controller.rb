@@ -4,7 +4,7 @@ class CampaignsController < ApplicationController
     @campaign.campaign_code = Campaign.generate_campaign_code
     @line_items = LineItem.all
     @audience = Audience.new
-    @audience_source = RetargetingSource.new
+    @audience_source = AdHocSource.new
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
     @campaign_types = AudienceSource.all(:select => "DISTINCT(type)").sort
     @creative_sizes = CreativeSize.all
@@ -59,12 +59,7 @@ class CampaignsController < ApplicationController
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
     @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
     @audience_sources = @campaign.audience.sources_in_order
-  end
-
-  def matching_source_types?(campaign, source)
-    if campaign.audience.latest_source.class.to_s ==source.class.to_s
-      return true
-    end
+    @audience_source = @campaign.audience.latest_source
   end
 
   def update

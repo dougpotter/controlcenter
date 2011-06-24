@@ -29,10 +29,28 @@ class Audience < ActiveRecord::Base
   validates_presence_of :audience_code
   validates_uniqueness_of :audience_code
 
-  accepts_nested_attributes_for :audience_sources
 
   acts_as_dimension
   business_index :audience_code, :aka => "aid"
+
+  def ad_hoc_source_attributes=(attributes)
+    new_s3_bucket = attributes.delete("new_s3_bucket")
+    old_s3_bucket = attributes.delete("old_s3_bucket")
+    if !new_s3_bucket.blank?
+      audience_source = 
+        AdHocSource.new(attributes.merge(:s3_bucket => new_s3_bucket))
+    elsif !old_s3_bucket.blank?
+      audience_source = 
+        AdHocSource.new(attributes.merge(:s3_bucket => old_s3_bucket))
+    else
+      audience_source = AdHocSource.new(attributes)
+    end
+    self.update_source(audience_source)
+  end
+
+  def retargeting_source_attributes=(attributes)
+    self.update_source(RetargetingSource.new(attributes))
+  end
 
   def audience_code_and_description
     "#{audience_code} - #{description}"
@@ -91,6 +109,30 @@ class Audience < ActiveRecord::Base
       raise "audience of type #{self.source_type} cannot be changed to audience of type #{audience_source.class}"
     end
   end
+
+=begin
+  def audience_source_attributes=(attributes)
+    debugger
+    new_source = attributes["0"].delete("new_s3_bucket")
+    old_source = attributes["0"].delete("old_s3_bucket")
+    if !new_source.blank?
+      attributes["0"][:s3_bucket] = new_source
+    elsif !old_source.blank?
+      attributes["0"][:s3_bucket] = old_source
+    end
+
+    if attributes[:type] == "Ad-Hoc"
+      audience_source = 
+        AdHocSource.new(attributes["0"])
+    elsif attributes[:type] == "Retargeting"
+      audience_source = 
+        RetargetingSource.new(attributes["0"])
+    else
+      raise "Unrecognized audience type"
+    end
+    self.update_source(audience_source)
+  end
+=end
 
   class << self
     def generate_audience_code

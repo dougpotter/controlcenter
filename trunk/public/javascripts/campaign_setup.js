@@ -65,7 +65,7 @@ window.addEvent('domready', function() {
 
     // attach event listener audience type select which updates audience source
     // fields when appropriate
-    var audience_type_selector = $('campaign_audience_attributes_audience_sources_attributes_0_type');
+    var audience_type_selector = $('audience_source_type');
 
     if (audience_type_selector != null) {
       audience_type_selector.addEvent('change', function() { 

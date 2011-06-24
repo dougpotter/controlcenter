@@ -1,33 +1,35 @@
-= hidden_field('audience[audience_source]', 'type', :value => "Ad-Hoc")
-
 % if !@campaign.audience_sources.blank? && !@campaign.new_record?
 
-  div class=dimension_input id=s3_checkbox_for_rollback
-    label for="audience_description" | Audience Name: 
-    >br
-    = text_field 'audience', 'description', :value => @campaign.audience.description
+  % f.fields_for :audience, @audience do |audience|
 
-  div class=dimension_input id=s3_source_select_div
-    label for="s3_source_select" | S3 Bucket:
-    >br
-    = select('audience[audience_source]', 'old_s3_bucket', options_from_audience_source_array(@campaign.audience_sources, @campaign.audience, @campaign.audience_sources.last), {}, { :id => "s3_source_select" })
+    .dimension_input
+      = audience.label :description, "Audience Name"
+      = audience.text_field :description
 
-  div class=dimension_input 
-    label for="refresh_checkbox" | Refresh: 
-    >br
-    = check_box("audience_action", "refresh", { :id => :refresh_checkbox})
+    % audience.fields_for :ad_hoc_source_attributes, @audience_source do |audience_source|
 
-  div class=dimension_input id=s3_source_field_div
-    label for="s3_source_field" | New S3 Bucket: 
-    >br
-    = text_field 'audience[audience_source]', 'new_s3_bucket', :id => :s3_source_field
+      .dimension_input#s3_source_select_div
+        = audience_source.label 's3_bucket', "S3 Bucket", { :for => "campaign_audience_attributes_ad_hoc_source_atributes_old_s3_bucket" }
+        = audience_source.select("s3_bucket", options_from_audience_source_array(@campaign.audience_sources, @campaign.audience, @campaign.audience_sources.last), {}, { :id => "campaign_audience_attributes_ad_hoc_source_atributes_old_s3_bucket", :name => "campaign[audience_attributes][ad_hoc_source_attributes][old_s3_bucket]"})
 
-  = hidden_field('audience[audience_source]', 'load_status', :value => @campaign.audience_sources.first.load_status)
-  = hidden_field('audience[audience_source]', 'beacon_load_id', :value => @campaign.audience_sources.first.beacon_load_id)
+      .dimension_input
+        label for="refresh_checkbox" | Refresh: 
+        >br
+        = check_box("audience_action", "refresh", { :id => :refresh_checkbox})
+
+      .dimension_input#s3_source_field_div
+        = label :s3_bucket, "New S3 Bucket", {}, :name => "campaign_audience_attributes_ad_hoc_source_attributes_new_s3_bucket"
+        = text_field "campaign", "new_s3_bucket", { :id => "campaign_audience_attributes_ad_hoc_source_attributes_new_s3_bucket", :name => "campaign[audience_attributes][ad_hoc_source_attributes][new_s3_bucket]" }
+
+      = hidden_field('audience[audience_source]', 'load_status', :value => @campaign.audience_sources.first.load_status)
+      = hidden_field('audience[audience_source]', 'beacon_load_id', :value => @campaign.audience_sources.first.beacon_load_id)
+      = hidden_field('campaign', 'type', :value => @campaign.source_type)
+
+
 
 % if @campaign.audience_sources.blank?
   % f.fields_for :audience, @audience do |audience|
-    % audience.fields_for :audience_sources, @audience_source do |audience_source|
+    % audience.fields_for :ad_hoc_source_attributes, @audience_source do |audience_source|
       .dimension_input
         = audience_source.label :s3_bucket, "S3 Bucket"
         = audience_source.text_field :s3_bucket

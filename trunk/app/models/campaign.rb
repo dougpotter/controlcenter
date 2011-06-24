@@ -110,6 +110,14 @@ class Campaign < ActiveRecord::Base
     end
   end
 
+  def s3_bucket
+    self.audience.latest_source.s3_bucket
+  end
+
+  def new_s3_bucket
+    nil
+  end
+
   def configure_ais(ais, segment_id)
     cic = CampaignInventoryConfig.find(
       :first,
