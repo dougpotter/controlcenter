@@ -17,9 +17,7 @@
   margin: 11px; }
 
 #action_links li {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  margin-left: 3px; }
+  margin-top: 5px 0px 5px 3px; }
 
 #right_pane_campaign_dashboard {
   float: left;
@@ -45,8 +43,7 @@
 
 .sync_rule_ais {
   float:left;
-  margin-left: 20px;
-  margin-top: 7px; }
+  margin-top: 7px 20px 0px 0px; }
 
 .sync_rule_checkbox_and_label {
   width: 80px; }
@@ -59,9 +56,7 @@
 
 .remove_creative_link {
   float: left;
-  padding-top: 12px;
-  padding-right: 8px;
-  padding-left: 1px;
+  padding-top: 12px 8px 0px 1px;
   font-size: 21px;
   height: 40px; }
 
@@ -76,8 +71,7 @@
 }
 
 #refresh_checkbox {
-  margin-left: 15px;
-  margin-top: 5px; }
+  margin-top: 5px 0px 0px 15px; }
 
 #s3_source_field_div {
   margin-left: 10px;
@@ -88,8 +82,7 @@
 **********************************************************************************/
 
 .pixel_list {
-  margin-bottom: 20px;
-  margin-left: 0px 20px 0px 20px; }
+  margin-left: 0px 20px 20px 20px; }
 
 .pixel_list h1 {
   font-size: 15px; }
