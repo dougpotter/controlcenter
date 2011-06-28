@@ -73,4 +73,37 @@ module ApplicationHelper
     javascript_tag "#{forms_markup_js} function updateSourceSection(sourceType)"+
       "{ $('audience_source_section').set('html', forms_markup[sourceType]); }"
   end
+
+  # creative must be an array containing one creative
+  def creative_form_builder(new_campaign, new_creative, f)
+    form_template = ""
+    fields_for :campaign, new_campaign do |campaign_form|
+      campaign_form.fields_for :creatives, new_creative do |creative_form|
+        form_template = (render "/creatives/form_without_line_item", :creative_fields => creative_form, :creative_number => 0).inspect
+      end
+    end
+
+    js_string = <<-eos
+      function insertCreativeForm() { 
+        var formNumber = "0";
+        if ($$('.creative_form_without_line_item').length != 0) {
+          formNumber = 
+            $$('.creative_form_without_line_item').getLast().get('data-number')
+        }
+        var regex_bracket = new RegExp("\\\\[0\\\\]", "g")
+        var regex_underscore = new RegExp("_0_", "g");
+        var regex_data_number = new RegExp("data-number=\\"0\\"", "g");
+        var regex_parens = new RegExp("\\\\(0\\\\)", "g");
+        var form_number = (parseInt(formNumber) + 1).toString();
+        var form_markup = 
+          #{form_template}.replace(regex_bracket, "["+form_number+"]").
+          replace(regex_underscore, "_"+form_number+"_").
+          replace(regex_data_number, "data-number=\\""+form_number+"\\"").
+          replace(regex_parens, "("+form_number+")");
+        var el = new Element('div').set('html', form_markup).getFirst();
+        $('add_creative_link').grab(el, 'before'); 
+      };
+    eos
+    return javascript_tag "#{js_string}"
+  end
 end

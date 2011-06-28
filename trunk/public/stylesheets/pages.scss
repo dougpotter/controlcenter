@@ -124,3 +124,10 @@
 #creative_campaigns {
   width: 200px;
   height: 150px; }
+
+.creative_form_without_line_item {
+  float: left; 
+  height: 115px;
+  margin: 15px 0px 0px 0px;
+  .dimension_input {
+    height: 45px; } }

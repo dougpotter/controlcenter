@@ -31,10 +31,11 @@ h1 | Basics
 
   h1 | Creatives
 
-  <div id=new_creatives></div>
-  <%= link_to_function "+", { :title => "add_creative", :class => "add_creative_link" } do |page|
-    page.call :newCreativeForm
-    end %>
+  = creative_form_builder(@campaign, @creative, f)
+
+  <div id=new_creatives></div>  <%= link_to_function "+", { :title => "add_creative", :class => "add_creative_link", :id => "add_creative_link" } do |page|
+      page.call :insertCreativeForm
+      end %>
 
   div class="style:clear;"
     >br

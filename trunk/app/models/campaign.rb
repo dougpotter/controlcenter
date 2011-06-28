@@ -33,6 +33,7 @@ class Campaign < ActiveRecord::Base
   after_save :cache_relationships
 
   accepts_nested_attributes_for :audience
+  accepts_nested_attributes_for :creatives
 
   acts_as_dimension
   business_index :campaign_code, :aka => "cid"

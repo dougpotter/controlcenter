@@ -20,23 +20,9 @@ class CampaignsController < ApplicationController
       @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
       @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
       @creative_sizes = CreativeSize.all
+      @creative = Creative.new
       render :new
       return
-    end
-
-    # associate creatives with campaign
-    if !params[:creatives].nil?
-      params[:creatives].each do |number,attributes|
-        @creative = Creative.new(attributes)
-        @creative.campaigns << @campaign
-        if !@creative.save
-          redirect_to(
-            campaign_management_index_path, 
-            :notice => "failed to save one or more creatives"
-          )
-          return
-        end
-      end
     end
 
     # handle audience sync
@@ -53,9 +39,14 @@ class CampaignsController < ApplicationController
   end
 
   def edit
+    @new_campaign = Campaign.new
     @campaign = Campaign.find(params[:id])
+    @partner = @campaign.partner
     @line_items = LineItem.all
     @selected_line_item = @campaign.line_item.id
+    @creative = Creative.new
+    @creatives = @campaign.creatives
+    @creative_sizes = CreativeSize.all
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
     @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
     @audience_sources = @campaign.audience.sources_in_order
@@ -76,22 +67,9 @@ class CampaignsController < ApplicationController
       end
     end
 
-    if @campaign.update_attributes(params[:campaign])
-      redirect_to(
-        campaign_path(@campaign.id), 
-        :notice => "campaign successfully updated"
-      )
-    else
-      notice = "campaign update failed: "
-      @campaign.errors.each do |attr,msg|
-        notice += attr + " " + msg + ";"
-      end
-      notice = notice[0..-2]
-      redirect_to(
-        edit_campaign_url, 
-        { :id => @campaign.id, :notice => notice }
-      )
-    end
+    redirect_to(
+      campaign_path(@campaign),
+      :notice => "campaign updated")
   end
 
   def destroy
