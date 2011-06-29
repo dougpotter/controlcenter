@@ -26,7 +26,7 @@ h1 | Basics
   div id=audience_source_updater
     = audience_source_section_builder(@campaign_types, f)
 
-  div class="style:clear;"
+  div style="clear:both;"
     >br
 
   h1 | Creatives
@@ -37,7 +37,7 @@ h1 | Basics
       page.call :insertCreativeForm
       end %>
 
-  div class="style:clear;"
+  div style="clear:both;"
     >br
 
   h1 | Ad Inventory Sources
