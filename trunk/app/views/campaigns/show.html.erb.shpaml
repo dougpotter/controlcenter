@@ -20,11 +20,12 @@ h2 | Campaign Information
   p
     Campaign Code: <%= @campaign.campaign_code %>
 
+div style="clear:both;"
+  >br
+
 h2 | Creatives
 
-.creative_thumbs
-  % for creative in @campaign.creatives
-    = render :partial => "/creatives/thumb_and_description", :locals => { :creative => creative }
+= render :partial => "/creatives/thumb_list"
 
 div style="clear:both;"
   >br
@@ -32,7 +33,7 @@ div style="clear:both;"
 h2 | Configured Ad Inventory Sources
 
 .configured_aises
-  % for ais in @campaign.aises
+  % for ais in @campaign.ad_inventory_sources
     p
       <%= "#{ais.name} - #{@campaign.segment_id_for(ais)}" %>
 

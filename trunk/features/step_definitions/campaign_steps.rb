@@ -183,7 +183,7 @@ Given /^campaign "([^"]*)" is associated with ais "([^"]*)"$/ do |campaign_code,
 end
 
 Then /^I should see the configured ad inventory sources for "([^"]*)"$/ do |campaign_code|
-  for ais in Campaign.find_by_campaign_code(campaign_code).aises do
+  for ais in Campaign.find_by_campaign_code(campaign_code).ad_inventory_sources do
     Then "I should see \"#{ais.name}\""
   end
 end

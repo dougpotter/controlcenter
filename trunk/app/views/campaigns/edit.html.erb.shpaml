@@ -8,7 +8,7 @@ h1 | Edit Campaign
  = notice
 
 
-% form_for @campaign do |f|
+% form_for @campaign, :html => { :multipart => true } do |f|
   = render :partial => 'form', :locals => { :f => f }
   h1 | Audience 
   div id=audience_source_section

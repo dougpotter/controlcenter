@@ -62,13 +62,6 @@ class Campaign < ActiveRecord::Base
     partner.name
   end
 
-  def aises
-    AdInventorySource.all(
-      :joins => { :campaign_inventory_configs => :campaign },
-      :conditions => { :campaigns => { :id => self.id } }
-    )
-  end
-
   def has_audience?
     if self.audience
       return true

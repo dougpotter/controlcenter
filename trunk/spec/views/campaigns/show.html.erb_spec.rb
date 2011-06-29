@@ -44,11 +44,13 @@ describe "/campaigns/show.html.erb" do
       :campaign_code => "CACO",
       :campaign_type => "Ad-Hoc",
       :creatives => [ @creative1, @creative2 ],
-      :aises => [ @ais1, @ais2]
+      :ad_inventory_sources => [ @ais1, @ais2]
     )
     @campaign.expects(:segment_id_for).with(@ais1).returns("123")
     @campaign.expects(:segment_id_for).with(@ais2).returns("456")
+    @creatives = [ @creative1, @creative2 ]
     assigns[:campaign] = @campaign
+    assigns[:creatives] = @creatives
   end
 
   it "should render" do

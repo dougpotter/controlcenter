@@ -41,7 +41,7 @@ describe CampaignsController do
           context "with valid attributes" do
             before(:each) do
               @partner = mock("Partner")
-              @campaign = mock("Campaign", :save => true)
+              @campaign = mock("Campaign", :save => true, :creatives => [])
               @line_item = mock("Line Item")
               @ad_hoc_source = mock("Ad Hoc Source")
               Campaign.expects(:new).returns(@campaign)
@@ -69,7 +69,7 @@ describe CampaignsController do
           context "with invalid attributes" do
             before(:each) do
               @line_item = mock("Line Item")
-              @campaign = mock("Campaign", :save => false) 
+              @campaign = mock("Campaign", :save => false, :creatives => []) 
               @ais = mock("Ad Inventory Source")
               LineItem.expects(:all).returns([])
               AdInventorySource.expects(:find_by_ais_code).returns(@ais)
@@ -112,6 +112,7 @@ describe CampaignsController do
               @campaign = mock(
                 "Campaign", 
                 :configure_ais => @campaign_inventory_config,
+                :creatives => [],
                 :save => true
               ) 
               @line_item = mock("Line Item")
@@ -136,9 +137,10 @@ describe CampaignsController do
     end
   end
 
-  describe "show" do
+  describe "show with no creatives" do
     it "should find the creative passed in params[:id]" do
-      Campaign.expects(:find).with("1")
+      @campaign = mock("Campaign", :creatives => [])
+      Campaign.expects(:find).with("1").returns(@campaign)
       get :show, :id => 1
     end
   end
