@@ -85,7 +85,7 @@ describe ImpressionCount do
       :line_items, 
       :ad_inventory_sources, 
       :audiences, 
-      :campaigns_creatives, 
+      :campaign_creatives, 
       :campaign_inventory_configs
 
     it "should create new instance with valid attributes" do

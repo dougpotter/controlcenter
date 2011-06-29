@@ -208,7 +208,7 @@ describe Campaign do
       :line_items, 
       :ad_inventory_sources, 
       :audiences, 
-      :campaigns_creatives, 
+      :campaign_creatives, 
       :campaign_inventory_configs,
       :creative_sizes
 

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe AppnexusClient do
   fixtures :creatives,
     :creative_inventory_configs,
-    :campaigns_creatives,
+    :campaign_creatives,
     :campaigns,
     :campaign_inventory_configs,
     :creative_sizes,

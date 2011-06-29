@@ -107,7 +107,7 @@ describe Creative do
   describe "ae_pixels method" do
     fixtures :creatives,
       :creative_inventory_configs,
-      :campaigns_creatives,
+      :campaign_creatives,
       :campaigns, 
       :campaign_inventory_configs,
       :ad_inventory_sources,
@@ -139,7 +139,7 @@ describe Creative do
   describe "configured? method" do
     fixtures :creatives,
       :creative_inventory_configs,
-      :campaigns_creatives,
+      :campaign_creatives,
       :campaigns, 
       :campaign_inventory_configs,
       :ad_inventory_sources
@@ -173,7 +173,7 @@ describe Creative do
   describe "configure method" do
     fixtures :creatives,
       :creative_inventory_configs,
-      :campaigns_creatives,
+      :campaign_creatives,
       :campaigns, 
       :campaign_inventory_configs
 
@@ -212,7 +212,7 @@ describe Creative do
   describe "#apn_json method" do
     fixtures :creatives,
       :creative_inventory_configs,
-      :campaigns_creatives,
+      :campaign_creatives,
       :campaigns, 
       :campaign_inventory_configs,
       :creative_sizes

@@ -2,7 +2,7 @@ require 'spec_helper'
 describe PixelGenerator do
   fixtures :creatives,
     :creative_inventory_configs,
-    :campaigns_creatives,
+    :campaign_creatives,
     :campaigns, 
     :campaign_inventory_configs,
     :ad_inventory_sources,

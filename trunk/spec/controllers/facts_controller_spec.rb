@@ -14,7 +14,7 @@ describe FactsController do
       DimensionCache.seed_relationships
     end
 
-    fixtures :creatives, :campaigns, :line_items, :ad_inventory_sources, :audiences, :campaigns_creatives, :campaign_inventory_configs
+    fixtures :creatives, :campaigns, :line_items, :ad_inventory_sources, :audiences, :campaign_creatives, :campaign_inventory_configs
     it "should successfully create given known values and relationships" do
       post 'create',
         :click_count => "1000",

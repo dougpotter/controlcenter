@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110505214447) do
+ActiveRecord::Schema.define(:version => 20110629145516) do
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -46,6 +46,14 @@ ActiveRecord::Schema.define(:version => 20110505214447) do
   add_index "audiences", ["audience_code"], :name => "index_audiences_on_audience_code", :unique => true
   add_index "audiences", ["campaign_id"], :name => "index_audiences_on_campaign_id", :unique => true
 
+  create_table "campaign_creatives", :force => true do |t|
+    t.integer "campaign_id", :null => false
+    t.integer "creative_id", :null => false
+  end
+
+  add_index "campaign_creatives", ["campaign_id"], :name => "campaigns_creatives_campaign_id_fk"
+  add_index "campaign_creatives", ["creative_id"], :name => "campaigns_creatives_creative_id_fk"
+
   create_table "campaign_inventory_configs", :force => true do |t|
     t.integer "campaign_id",            :null => false
     t.integer "ad_inventory_source_id", :null => false
@@ -66,14 +74,6 @@ ActiveRecord::Schema.define(:version => 20110505214447) do
 
   add_index "campaigns", ["campaign_code"], :name => "index_campaigns_on_campaign_code", :unique => true
   add_index "campaigns", ["line_item_id"], :name => "campaigns_line_item_id_fk"
-
-  create_table "campaigns_creatives", :id => false, :force => true do |t|
-    t.integer "campaign_id", :null => false
-    t.integer "creative_id", :null => false
-  end
-
-  add_index "campaigns_creatives", ["campaign_id"], :name => "campaigns_creatives_campaign_id_fk"
-  add_index "campaigns_creatives", ["creative_id"], :name => "campaigns_creatives_creative_id_fk"
 
   create_table "campaigns_geographies", :id => false, :force => true do |t|
     t.integer "campaign_id",  :null => false
@@ -502,13 +502,13 @@ ActiveRecord::Schema.define(:version => 20110505214447) do
 
   add_foreign_key "audiences", "campaigns", :name => "audiences_campaign_id_fk"
 
+  add_foreign_key "campaign_creatives", "campaigns", :name => "campaigns_creatives_campaign_id_fk"
+  add_foreign_key "campaign_creatives", "creatives", :name => "campaigns_creatives_creative_id_fk"
+
   add_foreign_key "campaign_inventory_configs", "ad_inventory_sources", :name => "ad_inventory_sources_campaigns_ad_inventory_source_id_fk"
   add_foreign_key "campaign_inventory_configs", "campaigns", :name => "ad_inventory_sources_campaigns_campaign_id_fk"
 
   add_foreign_key "campaigns", "line_items", :name => "campaigns_line_item_id_fk"
-
-  add_foreign_key "campaigns_creatives", "campaigns", :name => "campaigns_creatives_campaign_id_fk"
-  add_foreign_key "campaigns_creatives", "creatives", :name => "campaigns_creatives_creative_id_fk"
 
   add_foreign_key "campaigns_geographies", "campaigns", :name => "campaigns_geographies_campaign_id_fk"
   add_foreign_key "campaigns_geographies", "geographies", :name => "campaigns_geographies_geography_id_fk"

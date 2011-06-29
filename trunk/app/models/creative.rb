@@ -27,7 +27,9 @@ class Creative < ActiveRecord::Base
   has_many :creative_inventory_configs, :dependent => :delete_all
   has_many :campaign_inventory_configs, :through => :creative_inventory_configs
 
-  has_and_belongs_to_many :campaigns
+  has_many :campaign_creatives
+  has_many :campaigns, :through => :campaign_creatives
+
   has_s3_attachment :image, "test-creatives", ":attachment/:id/:style/:filename"
 
   validates_presence_of :creative_code, :creative_size_id, :partner_id
