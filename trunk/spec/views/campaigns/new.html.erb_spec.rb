@@ -43,6 +43,7 @@ describe "campaigns/new.html.erb" do
       :creative_size_id => 1,
       :landing_page_url => "http://xgraph.com"
     )
+    creative.expects(:errors).times(13).returns([])
     creative_sizes = [ 
       mock("Creative Size", :id => 1, :height_width_string => "h") ]
     assigns[:aises] = aises
