@@ -13,8 +13,10 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    # build new campaign
     @campaign = Campaign.new(params[:campaign])
+    for creative in @campaign.creatives
+      creative.partner_id = @campaign.line_item.partner.id
+    end
     if !@campaign.save
       @line_items = LineItem.all
       @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
@@ -79,6 +81,7 @@ class CampaignsController < ApplicationController
 
   def show
     @campaign = Campaign.find(params[:id])
+    @creatives = @campaign.creatives
   end
 
   def source_from_params
