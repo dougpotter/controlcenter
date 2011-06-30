@@ -2,6 +2,16 @@ require 'spec_helper'
 
 describe CampaignsController do
 
+  fixtures :campaigns,
+    :creatives,
+    :campaign_creatives,
+    :audiences,
+    :ad_inventory_sources,
+    :creative_inventory_configs,
+    :creative_sizes,
+    :line_items,
+    :partners
+
   context "destroy" do
     it "should destroy the campaign with id passed in params[:id]" do
       @campaign = Factory.create(:campaign)
@@ -155,18 +165,16 @@ describe CampaignsController do
               :name => "name",
               :campaign_type => "Ad-Hoc",
               :campaign_code => "ACODE",
-              :line_item => "1" },
+              :line_item_id => "1",
+              :audience_attributes => {
+                :id => "2",
+                :description => "an audience name",
+                :audience_code => "ACODE",
+                :ad_hoc_source_attributes => { 
+                  :old_s3_bucket => "bucket:/a/path",
+                  :new_s3_bucket => "bucket:/b/path" } } },
             :audience_action => {
               :refresh => "1" },
-            :audience_attributes => {
-              :id => "2",
-              :description => "an audience name",
-              :audience_code => "ACODE",
-              :audience_source_attributes => { 
-                "0" => {
-                  :old_s3_bucket => "bucket:/a/path",
-                  :new_s3_bucket => "bucket:/b/path",
-                  :type => "Ad-Hoc" } } },
             :sync_rules => {
               :ApN => {
                 "appnexus_segment_id" => "12345" }}
@@ -191,6 +199,55 @@ describe CampaignsController do
           )
           Campaign.expects(:find).returns(@campaign)
           do_update
+        end
+
+        context "with a creative disassociation" do
+          def do_update
+            put :update,
+              :id => 1,
+              :campaign => { 
+                :name => "name",
+                :campaign_type => "Ad-Hoc",
+                :campaign_code => "ACODE",
+                :line_item_id => "1",
+                :creatives_attributes => {
+                 "0" => {
+                    :name => "A Name",
+                    :media_type => "Flash",
+                    :id => "1",
+                    :creative_code => "ACODE",
+                    :partner_id => "1",
+                    :landing_page_url => "google.com",
+                    :creative_size_id => "1" },
+                 "1" => {
+                    :id => "2",
+                    :_disassociate => "true" } },
+                :audience_attributes => {
+                  :id => "1",
+                  :description => "an audience name",
+                  :ad_hoc_source_attributes => { 
+                    :old_s3_bucket => "bucket:/a/path",
+                    :new_s3_bucket => "" } } },
+              :audience_action => {
+                :refresh => "1" },
+              :sync_rules => {
+                :ApN => {
+                  "appnexus_segment_id" => "12345" }}
+          end
+
+          it "should not disassociate any creatives not marked for disassociation" do
+            do_update
+            Campaign.find(1).creatives.collect { 
+              |c| c.id 
+            }.member?(1).should be_true
+          end
+
+          it "should disassociate any creatives marked for disassociation" do
+            do_update
+            Campaign.find(1).creatives.collect { 
+              |c| c.id 
+            }.member?(0).should be_false
+          end
         end
       end
     end

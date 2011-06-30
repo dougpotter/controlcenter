@@ -7,3 +7,8 @@ ad_inventory_source_two:
   id: 2
   name: OpenX
   ais_code: OX
+
+ad_inventory_source_three:
+  id: 3
+  name: Appnexus
+  ais_code: ApN

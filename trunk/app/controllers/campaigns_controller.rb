@@ -57,7 +57,9 @@ class CampaignsController < ApplicationController
 
   def update
     @campaign = Campaign.find(params[:id])
+    disassociate_necessary_creatives if params[:campaign][:creatives_attributes]
     @campaign.update_attributes(params[:campaign])
+    
 
     # process segment ids
     params[:sync_rules].each do |ais_code, rule|
@@ -72,6 +74,18 @@ class CampaignsController < ApplicationController
     redirect_to(
       campaign_path(@campaign),
       :notice => "campaign updated")
+  end
+
+  def disassociate_necessary_creatives
+    params[:campaign][:creatives_attributes].each do |num,attrs|
+      if !attrs[:_disassociate].blank? && creative_id = attrs[:id]
+        association = CampaignCreative.all(
+          :joins => [ :campaign, :creative], 
+          :conditions => [ "campaigns.id = ? AND creatives.id = ?", params[:id], creative_id ] )
+        association.first.delete
+        params[:campaign][:creatives_attributes].delete(num)
+      end
+    end
   end
 
   def destroy
