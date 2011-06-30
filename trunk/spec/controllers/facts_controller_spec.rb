@@ -34,7 +34,7 @@ describe FactsController do
         :start_time => Time.now.to_s, 
         :end_time => Time.now.to_s,
         :duration_in_minutes => 100,
-        :creative_code => "AA12",
+        :creative_code => "AABB",
         :campaign_code => "ABC1",
         :line_item_code => "ABCD",
         :ais_code => "AdX",
