@@ -34,3 +34,5 @@ div class="creative_form_without_line_item" id="creative_form_without_line_item<
         = creative_fields.text_field "landing_page_url", :size => 101 
       % if @partner 
         = creative_fields.hidden_field "partner_id", :value => @partner.id
+      % if !creative_fields.object.new_record?
+        = creative_fields.hidden_field "existing_record", :value => "true"

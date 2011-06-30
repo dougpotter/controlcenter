@@ -27,7 +27,7 @@ h1 | Edit Campaign
 
     = render :partial => "creatives/form_list", :locals => { :f => f }
 
-    = creative_form_builder(@new_campaign, @creative, f)
+    = creative_form_builder(@new_campaign, @creative)
 
   h1 | Inventory Sources
 

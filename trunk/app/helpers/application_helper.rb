@@ -75,11 +75,11 @@ module ApplicationHelper
   end
 
   # creative must be an array containing one creative
-  def creative_form_builder(new_campaign, new_creative, f)
+  def creative_form_builder(new_campaign, new_creative)
     form_template = ""
     fields_for :campaign, new_campaign do |campaign_form|
       campaign_form.fields_for :creatives, new_creative do |creative_form|
-        form_template = (render "/creatives/form_without_line_item", :creative_fields => creative_form, :creative_number => 0).inspect
+        form_template = (render "/creatives/form_without_line_item", :creative_fields => creative_form, :creative_number => 0, :creative => new_creative).inspect
       end
     end
 

@@ -31,7 +31,7 @@ h1 | Basics
 
   h1 | Creatives
 
-  = creative_form_builder(@campaign, @creative, f)
+  = creative_form_builder(@campaign, @creative)
 
   <div id=new_creatives></div>  <%= link_to_function "+", { :title => "add_creative", :class => "add_creative_link", :id => "add_creative_link" } do |page|
       page.call :insertCreativeForm

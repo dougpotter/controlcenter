@@ -13,8 +13,7 @@ describe "/campaigns/edit.html.erb" do
     @campaign_types = [ @audience_source ]
     template.expects(:options_from_collection_for_select).
       returns(default_ofcfs_result)
-    template.expects(:collection_select).
-      returns(default_ofcfs_result)
+    template.expects(:creative_form_builder).returns("some javascript")
     assigns[:aises] = []
     assigns[:campaign] = @campaign
     assigns[:campaign_types] = @campaign_types
