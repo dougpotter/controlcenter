@@ -163,7 +163,8 @@ module AppnexusClient
           return true
         else
           self.errors.add_to_base(
-            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
+            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"] + 
+            " at Appnexus"
           )
           return false
         end
@@ -178,7 +179,8 @@ module AppnexusClient
           return true
         else
           error_msg = 
-            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
+            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"] +
+            " at Appnexus"
           self.errors.add_to_base(
             error_msg
           )
