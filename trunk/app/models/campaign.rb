@@ -64,6 +64,14 @@ class Campaign < ActiveRecord::Base
     partner.name
   end
 
+  def audience_iteration_number
+    if self.has_audience?
+      self.audience.iteration_number
+    else
+      nil
+    end
+  end
+
   def has_audience?
     if self.audience
       return true

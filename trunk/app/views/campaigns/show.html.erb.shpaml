@@ -14,7 +14,7 @@ h2 | Campaign Information
   p
     Audience: <%= @campaign.audience.audience_code_and_description if @campaign.audience %>
   p
-    Version: <%= @campaign.audience.iteration_number %>
+    Version: <%= @campaign.audience_iteration_number %>
   p
     Campaign Name: <%= @campaign.name %>
   p

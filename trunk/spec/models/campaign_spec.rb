@@ -202,6 +202,26 @@ describe Campaign do
     end
   end
 
+  context "\#audience_iteration_number" do
+    it "should return the audience iteration number if campaign has an audience" +
+      " with a source" do
+      @campaign = Factory.create(:campaign)
+      @audience = Factory.create(:audience)
+      @audience_source = Factory.create(:ad_hoc_source)
+      @audience.audience_sources << @audience_source
+      @campaign.audience = @audience
+
+      @campaign.audience_iteration_number.should == 0
+    end
+
+    it "should return nil if the campaign is missing an audience" do
+      # NOTE: this should only happen in legacy data situations
+      @campaign = Factory.create(:campaign)
+      
+      @campaign.audience_iteration_number.should be_nil
+    end
+  end
+
   describe "with dimension cache" do 
     fixtures :creatives, 
       :campaigns, 
