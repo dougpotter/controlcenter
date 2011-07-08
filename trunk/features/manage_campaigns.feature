@@ -38,7 +38,6 @@ Feature: Manage campaigns
     And I should see "Configured Ad Inventory Sources"
     And I should see the configured ad inventory sources for "ACODE"
 
-    And I should see "Edit Campaign"
 
   Scenario: edit campaign form
     Given the standard ad-hoc campaign and associated entities exist

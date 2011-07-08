@@ -95,8 +95,10 @@ describe "/campaigns/show.html.erb" do
     response.should have_tag("p", "Burst OX - 456")
     end
 
-  it "should contain a link to edit the campaign" do
+  it "should contain a button to edit the campaign" do
     render
-    response.should have_tag("a", "Edit Campaign")
+    response.should have_tag("div") do
+      with_tag("input[value=\"Edit Campaign\"]")
+    end
   end
 end

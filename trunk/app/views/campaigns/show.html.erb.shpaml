@@ -40,6 +40,9 @@ h2 | Configured Ad Inventory Sources
 div style="clear:both;"
   >br
 
-= link_to "Edit Campaign", edit_campaign_path(@campaign)
+= button_to "Edit Campaign", { :action => "edit", :id => @campaign.id }, :method => "get"
+= button_to "Delete Campaign", { :action => "destroy", :id => @campaign.id }, { :class => "delete_button", :confirm => "Are you sure you want to delete this campaign? All creative associations (but not the actual creatives), ais associations (but not the ais), and audience associations (but not the audience) will also be deleted.", :method => "delete" }
+
+
 div style="clear: both;"
   >br
