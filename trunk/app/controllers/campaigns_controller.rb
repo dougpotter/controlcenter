@@ -59,7 +59,6 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.find(params[:id])
     disassociate_necessary_creatives if params[:campaign][:creatives_attributes]
     @campaign.update_attributes(params[:campaign])
-    
 
     # process segment ids
     params[:sync_rules].each do |ais_code, rule|
