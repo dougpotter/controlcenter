@@ -111,7 +111,7 @@ filterMenus: function() {
   var filterMenus = [];
 
   headersWithFilters.each(function(header, index) {
-    var filterMenu = this.filterMenuFor(header, this.menuBackgroundColor);
+    var filterMenu = this.filterMenuFor(header, this.options.menuBackgroundColor);
     var listOfLinks = this.listOfLinksFor(header);
     filterMenu.grab(listOfLinks);
     filterMenus[index] = filterMenu;
@@ -175,7 +175,7 @@ filterMenuFor: function(header, menuBackgroundColor) {
       border: 'double',
       'z-index': '2', 
       position: 'absolute',
-      background: menuBackgroundColor,
+      'background-color': menuBackgroundColor,
       'font-size': '12px',
       'padding-left': '5px',
       'padding-right': '5px',
