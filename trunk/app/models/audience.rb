@@ -57,9 +57,13 @@ class Audience < ActiveRecord::Base
   end
 
   def iteration_number
-    self.audience_manifests.sort_by { |man|
-      man.audience_iteration_number
-    }.last.audience_iteration_number
+    if !self.audience_manifests.blank?
+      self.audience_manifests.sort_by { |man|
+        man.audience_iteration_number
+      }.last.audience_iteration_number
+    else
+      return nil
+    end
   end
 
   def sources_in_order

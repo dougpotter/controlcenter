@@ -88,6 +88,13 @@ describe Audience do
       audience.audience_sources[-1].destroy
       audience.iteration_number.should == 0
     end
+
+    it "should return nil if there are no sources associated with this audience" do
+      # NOTE: this should never happen going forward, but due to legacy data issues
+      # there is a chance it will be a use case
+      audience = Factory.create(:audience)
+      audience.iteration_number.should be_nil
+    end
   end
 
   context "\#update_source" do
