@@ -27,8 +27,10 @@ class Creative < ActiveRecord::Base
   has_many :creative_inventory_configs, :dependent => :delete_all
   has_many :campaign_inventory_configs, :through => :creative_inventory_configs
 
-  has_many :campaign_creatives
+  has_many :campaign_creatives, :dependent => :delete_all
   has_many :campaigns, :through => :campaign_creatives
+
+  accepts_nested_attributes_for :campaigns
 
   has_s3_attachment :image, "test-creatives", ":attachment/:id/:style/:filename"
 

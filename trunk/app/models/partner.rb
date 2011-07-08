@@ -11,7 +11,6 @@
 # Partner is defined as a client on whose behalf we execute Campaigns
 class Partner < ActiveRecord::Base
   has_many :partner_beacon_requests
-  has_many :campaigns
   has_many :line_items
 
   validates_presence_of :partner_code, :name
@@ -24,6 +23,12 @@ class Partner < ActiveRecord::Base
 
   acts_as_dimension
   business_index :partner_code, :aka => "pid"
+
+  def campaigns 
+    Campaign.all(
+      :joins => { :line_item => :partner},
+      :conditions => [ "partners.id = ?", self.id ] )
+  end
   
   class << self
     def generate_partner_code

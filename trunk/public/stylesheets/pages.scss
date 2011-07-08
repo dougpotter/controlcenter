@@ -121,9 +121,17 @@
   color: black;
   background-color: $red; }
 
-#creative_campaigns {
-  width: 200px;
-  height: 150px; }
+form#new_creative, form.edit_creative {
+  padding: 15px;
+  .campaigns_multi_select {
+    float: left;
+    select {
+      width: 200px;
+      height: 150px; } } 
+  input[type=submit] {
+    margin-top: 10px;
+    float: left;
+    clear: both; } }
 
 .creative_form_without_line_item {
   float: left; 
@@ -131,3 +139,6 @@
   margin: 15px 0px 0px 0px;
   .dimension_input {
     height: 45px; } }
+
+.button-to {
+  padding: 15px; }

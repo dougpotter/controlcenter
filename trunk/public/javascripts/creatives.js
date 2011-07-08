@@ -16,12 +16,12 @@ var injectFileField = function() {
 
 // filter campaigns by partner
 window.addEvent('domready', function() {
-  $('creative_partner').addEvent('change', function() {
-    var partner_id = $('creative_partner').getProperty('value');
+  $('creative_partner_id').addEvent('change', function() {
+    var partner_id = $('creative_partner_id').getProperty('value');
     var request = new Request.HTML({
       url: campaign_form_url + partner_id,
       method: 'get',
-      update: $('creative_campaigns')
+      update: $('creative_campaign_ids')
     })
 
     request.send();

@@ -6,9 +6,7 @@ describe CreativesController do
     before(:each) do
       @creative = mock(
         "Creative",
-        :attributes= => {},
-        :save_apn! => true,
-        :save! => true
+        :save => true
       )
 
       @basic_create_hash = {
@@ -28,22 +26,11 @@ describe CreativesController do
 
     it "should save a new creative associated with one campaign" do
       Creative.expects(:new).returns(@creative)
-      campaign = mock("campaign")
-      Campaign.expects(:find).with("1").returns(campaign)
-
-      @basic_create_hash[:creative].merge!(:campaigns => "1" )
-
       post :create, @basic_create_hash
     end
 
     it "should save a new creative associated with multiple campaigns" do
-      campaign_one = mock("campaign_one")
-      campaign_two = mock("campaign_two")
       Creative.expects(:new).returns(@creative)
-      Campaign.expects(:find).twice.returns(campaign_one, campaign_two)
-
-      @basic_create_hash[:creative].merge!(:campaigns => [ "1", "2" ])
-
       post :create, @basic_create_hash 
     end
 

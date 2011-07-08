@@ -1,0 +1,2 @@
+<!-- This is used to update campaign multi-select on the new creative form -->
+= options_from_collection_for_select(campaigns, :id, :name)

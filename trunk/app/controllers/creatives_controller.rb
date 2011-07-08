@@ -47,47 +47,31 @@ class CreativesController < ApplicationController
   def new
     @creative = Creative.new
     @creatives = Creative.all(:joins => :creative_size)
-    @campaigns = []
     @creative_sizes = CreativeSize.all(:order => 'common_name')
     @partners = Partner.all
+    @campaigns = @partners.first.campaigns
   end
 
   def create
     require 'image_spec'
 
-    @creative = Creative.new
     if params[:creative][:image]
       creative_image = ImageSpec.new(params[:creative][:image])
-      params[:creative][:creative_size] = CreativeSize.find_by_height_and_width(
+      params[:creative][:creative_size_id] = CreativeSize.find_by_height_and_width(
         creative_image.height,
         creative_image.width
-      )
-    end
-
-    if !params[:creative][:campaigns].blank?
-      params[:creative][:campaigns] = params[:creative][:campaigns].map do |c|
-        Campaign.find(c)
-      end
-    end
-
-
-    if params[:creative][:partner].blank?
-      params[:creative][:partner] = nil
-    else
-      params[:creative][:partner] = Partner.find(params[:creative][:partner])
+      ).id
     end
 
     params[:creative][:creative_code] = Creative.generate_creative_code
 
-    @creative.attributes = params[:creative]
-
-    begin
-      @creative.save!
-      @creative.save_apn!
+    @creative = Creative.new(params[:creative])
+    if @creative.save #&& @creative.save_apn
       redirect_to(new_creative_path, :notice => "creative successfully created")
-    rescue
-      @creatives = Creative.all(:joins => :creative_size)
-      @campaigns = Campaign.all
+    else
+      @creative.destroy
+      @creatives = Creative.all
+      @campaigns = Partner.find(params[:creative][:partner_id]).campaigns
       @creative_sizes = CreativeSize.all(:order => 'common_name')
       @partners = Partner.all
       render :action => "new"
@@ -136,7 +120,7 @@ class CreativesController < ApplicationController
   def edit
     @creative = Creative.find(params[:id])
     @creative_sizes = CreativeSize.all
-    @campaigns = Campaign.all
+    @campaigns = @creative.partner.campaigns
     @partners = Partner.all
   end
 
@@ -144,19 +128,12 @@ class CreativesController < ApplicationController
     require 'image_spec'
 
     @creative = Creative.find(params[:id])
-    if !params[:creative][:campaigns].blank?
-      params[:creative][:campaigns] = 
-        [ Campaign.find(params[:creative].delete("campaigns")) ].flatten
-    end
     if params[:creative][:image] 
       creative_image = ImageSpec.new(params[:creative][:image])
       params[:creative][:creative_size] = CreativeSize.find_by_height_and_width(
         creative_image.height,
         creative_image.width
       )
-    else
-      params[:creative][:creative_size] = 
-        @creative_size = CreativeSize.find(@creative.creative_size)
     end
 
     if params[:campaign_inventory_config]
@@ -169,13 +146,10 @@ class CreativesController < ApplicationController
       end    
     end
 
-    params[:creative][:partner] = Partner.find(params[:creative][:partner])
-
-    if @creative.update_attributes(params[:creative]) && 
-      @creative.update_attributes_apn
+    if @creative.update_attributes(params[:creative])
       redirect_to(new_creative_path, :notice => "creative successfully updated")
     else
-      redirect_to(new_creative_path, :notice => "something's wrong")
+      render :action => :edit
     end
   end
 

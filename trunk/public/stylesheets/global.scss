@@ -148,9 +148,12 @@ label {
   width: 100%;
   float: left; }
 
-.bilevel_input, .dimension_input {
+.dimension_input {
   float: left;
   padding: 0px 5px 5px 0px; }
+
+.bilevel_input {
+  height: 45px; } 
 
 div.errorExplanation {
   color: $red; }
