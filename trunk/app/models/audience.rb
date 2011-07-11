@@ -114,30 +114,6 @@ class Audience < ActiveRecord::Base
     end
   end
 
-=begin
-  def audience_source_attributes=(attributes)
-    debugger
-    new_source = attributes["0"].delete("new_s3_bucket")
-    old_source = attributes["0"].delete("old_s3_bucket")
-    if !new_source.blank?
-      attributes["0"][:s3_bucket] = new_source
-    elsif !old_source.blank?
-      attributes["0"][:s3_bucket] = old_source
-    end
-
-    if attributes[:type] == "Ad-Hoc"
-      audience_source = 
-        AdHocSource.new(attributes["0"])
-    elsif attributes[:type] == "Retargeting"
-      audience_source = 
-        RetargetingSource.new(attributes["0"])
-    else
-      raise "Unrecognized audience type"
-    end
-    self.update_source(audience_source)
-  end
-=end
-
   class << self
     def generate_audience_code
       CodeGenerator.generate_unique_code(
