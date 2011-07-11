@@ -3,7 +3,7 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.new
     @campaign.campaign_code = Campaign.generate_campaign_code
     @line_items = LineItem.all
-    @audience = Audience.new
+    @audience = Audience.new(:audience_code => Audience.generate_audience_code)
     @audience_source = AdHocSource.new
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
     @campaign_types = AudienceSource.all(:select => "DISTINCT(type)").sort
