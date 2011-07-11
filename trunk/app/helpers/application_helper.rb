@@ -85,7 +85,7 @@ module ApplicationHelper
 
     js_string = <<-eos
       function insertCreativeForm() { 
-        var formNumber = "0";
+        var formNumber = 0;
         if ($$('.creative_form_without_line_item').length != 0) {
           formNumber = 
             $$('.creative_form_without_line_item').getLast().get('data-number')
@@ -94,14 +94,17 @@ module ApplicationHelper
         var regex_underscore = new RegExp("_0_", "g");
         var regex_data_number = new RegExp("data-number=\\"0\\"", "g");
         var regex_parens = new RegExp("\\\\(0\\\\)", "g");
-        var form_number = (parseInt(formNumber) + 1).toString();
+        var formNumber = (parseInt(formNumber) + 1).toString();
         var form_markup = 
-          #{form_template}.replace(regex_bracket, "["+form_number+"]").
-          replace(regex_underscore, "_"+form_number+"_").
-          replace(regex_data_number, "data-number=\\""+form_number+"\\"").
-          replace(regex_parens, "("+form_number+")");
+          #{form_template}.replace(regex_bracket, "["+formNumber+"]").
+          replace(regex_underscore, "_"+formNumber+"_").
+          replace(regex_data_number, "data-number=\\""+formNumber+"\\"").
+          replace(regex_parens, "("+formNumber+")");
         var el = new Element('div').set('html', form_markup).getFirst();
+        el.set('style', 'visibility:hidden;');
         $('add_creative_link').grab(el, 'before'); 
+        setCreativeCode(formNumber);
+        el.set('style', 'visibility:visible;');
       };
     eos
     return javascript_tag "#{js_string}"

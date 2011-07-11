@@ -161,4 +161,8 @@ class CreativesController < ApplicationController
     @creative = Creative.find(params[:id]).destroy
     redirect_to(new_creative_path, :notice => "creative deleted")
   end
+
+  def creative_code
+    render :text => Creative.generate_creative_code
+  end
 end
