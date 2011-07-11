@@ -15,17 +15,17 @@ var removeCreativeForm = function(creative_num) {
 }
 
 
-function setCreativeCode(formNumber) {
-  var creativeCode = newValidCreativeCode();
+function setCreativeCode(formNumber, creativeCodeUrl) {
+  var creativeCode = newValidCreativeCode(creativeCodeUrl);
   $("creative_form_without_line_item["+formNumber+"]").
     getElement("#campaign_creatives_attributes_"+formNumber+"_creative_code").
     set('value', creativeCode);
 }
 
-function newValidCreativeCode() {
+function newValidCreativeCode(creativeCodeUrl) {
   var creativeCode;
   var request = new Request({
-    url: '../creatives/creative_code', 
+    url: creativeCodeUrl,
     async: false,
     onSuccess: function(response) {
       creativeCode = response;

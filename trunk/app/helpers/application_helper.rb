@@ -103,7 +103,7 @@ module ApplicationHelper
         var el = new Element('div').set('html', form_markup).getFirst();
         el.set('style', 'visibility:hidden;');
         $('add_creative_link').grab(el, 'before'); 
-        setCreativeCode(formNumber);
+        setCreativeCode(formNumber, \"#{creative_code_url}\");
         el.set('style', 'visibility:visible;');
       };
     eos
