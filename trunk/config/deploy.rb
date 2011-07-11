@@ -145,6 +145,12 @@ define_configuration_tasks(:workflows, %w(
 define_configuration_tasks(:schedule, %w(schedule.rb))
 
 # =============================================================================
+# APPNEXUS CONFIGURATION
+# =============================================================================
+
+define_configuration_tasks(:appnexus, %w(appnexus.yml))
+
+# =============================================================================
 # DATABASE TASKS
 # =============================================================================
 after "deploy:update_code", "db:symlink"
