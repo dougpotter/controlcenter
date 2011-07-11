@@ -24,9 +24,14 @@ div class="creative_form_without_line_item" id="creative_form_without_line_item<
         = creative_fields.collection_select "creative_size_id", @creative_sizes, :id, :height_width_string
 
       .dimension_input
-        = creative_fields.label "image", "Image:"
-        >br 
-        = creative_fields.file_field "image"
+
+        % if creative_fields.object.has_clean_image?
+          #creative_image 
+            = image_tag_for_show(creative_fields.object)
+        % else
+          = creative_fields.label "image", "Image:"
+          >br 
+          = creative_fields.file_field "image"
 
       .dimension_input
         = creative_fields.label "landing_page_url"
