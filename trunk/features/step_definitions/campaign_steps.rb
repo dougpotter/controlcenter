@@ -166,8 +166,8 @@ end
 
 Then /^I should see the associated creatives for campaign "([^"]*)"$/ do |campaign_code|
   for creative in Campaign.find_by_campaign_code(campaign_code).creatives
-    Then "I should see \"BCODE - bname\""
-    Then "I should see \"CCODE - cname\""
+    Then "I should see \"BCODE - 160x600_8F_Interim_final.gif\""
+    Then "I should see \"CCODE - 160x600_8F_Interim_final.gif\""
   end
 end
 

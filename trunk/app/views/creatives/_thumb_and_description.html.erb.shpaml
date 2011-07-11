@@ -1,3 +1,4 @@
-= image_tag(creative.image.url, :width => 300)
-p 
-  = creative.creative_code_and_name
+.creative_thumb_and_description
+  p 
+    = creative.creative_code_and_name
+  = image_tag_for_campaign_show(creative)

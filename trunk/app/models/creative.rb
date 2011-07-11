@@ -80,7 +80,7 @@ class Creative < ActiveRecord::Base
     if self.name == ""
       creative_code
     else
-      "#{creative_code} - #{self.name}"
+      "#{creative_code} - #{self.image_file_name}"
     end
   end
 

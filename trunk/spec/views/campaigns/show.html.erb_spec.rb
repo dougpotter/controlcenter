@@ -6,17 +6,27 @@ describe "/campaigns/show.html.erb" do
       "Image1",
       :url => "/path/to/creative/1"
     )
+    @creative_size1 = stub_everything(
+      "CreativeSize1", 
+      :common_name => "Wide Skyscraper"
+    )
     @creative1 = stub_everything(
       "Creative1",
-      :image => @image1
+      :image => @image1, 
+      :creative_size => @creative_size1
     )
     @image2 = stub_everything(
       "Image2",
       :url => "/path/to/creative/2"
     )
+    @creative_size2 = stub_everything(
+      "CreativeSize2", 
+      :common_name => "Leaderboard"
+    )
     @creative2 = stub_everything(
       "Creative2",
-      :image => @image2
+      :image => @image2,
+      :creative_size => @creative_size2
     )
     @line_item = stub_everything(
       "Line Item",

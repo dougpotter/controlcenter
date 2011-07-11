@@ -27,7 +27,8 @@ div class="creative_form_without_line_item" id="creative_form_without_line_item<
 
         % if creative_fields.object.has_clean_image?
           #creative_image 
-            = image_tag_for_show(creative_fields.object)
+            % if request.url.match(edit_campaign_url)
+              = image_tag_for_campaign_edit(creative_fields.object)
         % else
           = creative_fields.label "image", "Image:"
           >br 
