@@ -23,7 +23,7 @@ GEM
       term-ansicolor (~> 1.0.5)
     cucumber-rails (0.3.2)
       cucumber (>= 0.8.0)
-    curb (0.7.8)
+    curb (0.7.15)
     daemons (1.1.0)
     database_cleaner (0.6.3)
     diff-lcs (1.1.2)
@@ -82,7 +82,7 @@ PLATFORMS
 DEPENDENCIES
   bson_ext (= 1.1.5)
   cucumber-rails (= 0.3.2)
-  curb (= 0.7.8)
+  curb
   database_cleaner (= 0.6.3)
   factory_girl (= 1.3.2)
   fastercsv (= 1.5.3)

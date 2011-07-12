@@ -1,5 +1,5 @@
 task :migrate => 'db:migrate'
-task :ci => %W(db:migrate shpaml:compile bundle\sinstall spec cucumber db:migrate:cucumber)
+task :ci => %W(db:migrate shpaml:compile bundler:install spec cucumber db:migrate:cucumber)
 
 # Override default rake task to compile templates before running specs.
 # This must happen after rspec tasks get defined (in other words, after
