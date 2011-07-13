@@ -89,7 +89,11 @@ class Creative < ActiveRecord::Base
   end
 
   def has_clean_image?
-    return !self.image.nil? && !self.image.to_file.nil? && !self.image.dirty?
+    begin
+      return !self.image.to_file.nil? && !self.image.dirty?
+    rescue
+      return false
+    end
   end
 
   def has_dirty_image?
