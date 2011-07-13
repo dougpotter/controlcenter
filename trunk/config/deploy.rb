@@ -254,17 +254,17 @@ namespace :deploy do
   namespace :web do
     desc 'Start thins'
     task :start do
-      run "thin start -C #{thin_config}"
+      run "bundle exec thin start -C #{thin_config}"
     end
     
     desc 'Stop thins'
     task :stop do
-      run "thin stop -C #{thin_config}"
+      run "bundle exec thin stop -C #{thin_config}"
     end
     
     desc 'Restart thins'
     task :restart do
-      run "thin restart -C #{thin_config}"
+      run "bundle exec thin restart -C #{thin_config}"
     end
   end
   
