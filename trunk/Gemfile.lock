@@ -11,6 +11,10 @@ GEM
     activeresource (2.3.8)
       activesupport (= 2.3.8)
     activesupport (2.3.8)
+    aws-s3 (0.6.2)
+      builder
+      mime-types
+      xml-simple
     bson (1.1.5)
     bson_ext (1.1.5)
     builder (2.1.2)
@@ -36,6 +40,7 @@ GEM
     gherkin (2.3.3)
       json (~> 1.4.6)
     json (1.4.6)
+    mime-types (1.16)
     mocha (0.9.9)
       rake
     mongo (1.1.5)
@@ -77,11 +82,13 @@ GEM
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
       rack-test (>= 0.5.3)
+    xml-simple (1.0.12)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  aws-s3 (= 0.6.2)
   bson_ext (= 1.1.5)
   cucumber-rails (= 0.3.2)
   curb
