@@ -34,7 +34,7 @@ module ApplicationHelper
   def id_if_exists(model)
     begin
       id = model.id
-    rescue RuntimeError
+    rescue 
       id = nil
     end
     return id
