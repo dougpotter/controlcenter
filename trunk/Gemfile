@@ -23,5 +23,6 @@ group :test do
   gem 'selenium-client', '1.2.18'
   gem 'webrat', '0.7.3'
   gem 'mocha', '0.9.9'
+  gem 'ruby-debug','0.10.3'
 end
 
