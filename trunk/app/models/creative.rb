@@ -67,7 +67,7 @@ class Creative < ActiveRecord::Base
   end
 
   def size_name
-    creative_size.common_name
+    self.creative_size.common_name
   end
 
   def campaign_descriptions
