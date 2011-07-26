@@ -65,7 +65,6 @@ class AkamaiExtractWorkflow < Workflow::ExtractBase
   end
   
   def perform_extraction(source_path)
-    validate_source_url_for_extraction!(source_path)
     upload(source_path, s3_bucket, build_s3_path(source_path))
     
     possibly_record_source_url_extracted(source_path)

@@ -9,11 +9,7 @@ module Workflow
         # extractable files. therefore we catch and ignore extraction in progress
         # and file already extracted workflow errors
         files.each do |file|
-          begin
-            extract_if_fully_uploaded(file)
-          rescue Workflow::FileExtractionInProgress, Workflow::FileAlreadyExtracted
-            # igrore
-          end
+          try_extract(file)
         end
       end
       
@@ -21,10 +17,20 @@ module Workflow
         list_data_source_files
       end
       
-      def extract_if_fully_uploaded(file_url)
-        if fully_uploaded?(file_url)
-          extract(file_url)
+      def try_extract(file_url)
+        begin
+          check_and_extract(file_url)
+        rescue Workflow::FileExtractionInProgress,
+          Workflow::FileAlreadyExtracted, Workflow::FileNotReady
+          # igrore
         end
+      end
+      
+      def check_and_extract(file_url)
+        validate_source_url_for_extraction!(file_url)
+        validate_fully_uploaded!(file_url)
+        
+        extract(file_url)
       end
       
       def extract(file_url)

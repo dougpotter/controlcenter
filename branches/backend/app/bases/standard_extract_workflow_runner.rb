@@ -44,7 +44,7 @@ class StandardExtractWorkflowRunner < StandardWorkflowRunner
             puts file
           end
         elsif ext_params[:extract]
-          # Note: use extract here, not extract_if_fully_uploaded; attempts
+          # Note: use extract here, not check_and_extract; attempts
           # to extract files which are not fully uploaded will raise exceptions
           # and/or cause the process to exit with an error.
           workflow.extract(ext_params[:extract])

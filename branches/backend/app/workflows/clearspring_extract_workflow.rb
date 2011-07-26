@@ -15,7 +15,6 @@ class ClearspringExtractWorkflow < Workflow::ExtractBase
   private
   
   def perform_extraction(file_url)
-    validate_source_url_for_extraction!(file_url)
     local_path = download(file_url)
     split_paths = split(local_path)
     split_paths.each do |path|
