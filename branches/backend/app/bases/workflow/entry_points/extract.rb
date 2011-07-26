@@ -27,7 +27,7 @@ module Workflow
       end
       
       def check_and_extract(file_url)
-        validate_source_url_for_extraction!(file_url)
+        validate_should_download_url!(file_url)
         validate_fully_uploaded!(file_url)
         
         extract(file_url)

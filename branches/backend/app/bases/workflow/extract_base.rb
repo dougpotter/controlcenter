@@ -14,7 +14,7 @@ module Workflow
     
     private
     
-    def validate_source_url_for_extraction!(url)
+    def validate_should_download_url!(url)
       unless should_download_url?(url)
         raise Workflow::FileSpecMismatch, "Url does not match download parameters: #{url}"
       end
