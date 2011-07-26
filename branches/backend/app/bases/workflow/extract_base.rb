@@ -5,6 +5,13 @@ module Workflow
     
     expose_params :channel, :date, :hour, :s3_bucket
     
+    class << self
+      def not_extracted_check_cost
+        # db lookup
+        100
+      end
+    end
+    
     private
     
     def validate_source_url_for_extraction!(url)
