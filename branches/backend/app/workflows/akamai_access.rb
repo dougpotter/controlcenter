@@ -10,6 +10,14 @@ module AkamaiAccess
     def data_provider_name
       'Akamai'
     end
+    
+    def fully_uploaded_check_cost
+      50
+    end
+    
+    def should_download_url_check_cost
+      10
+    end
   end
   
   module InstanceMethods

@@ -10,6 +10,14 @@ module ClearspringAccess
     def data_provider_name
       'Clearspring'
     end
+    
+    def fully_uploaded_check_cost
+      500
+    end
+    
+    def should_download_url_check_cost
+      5
+    end
   end
   
   module InstanceMethods
