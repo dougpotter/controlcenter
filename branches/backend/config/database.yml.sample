@@ -4,7 +4,7 @@ development: &defaults
   database: xgcc_development
   username: root
   password:
-  socket: /tmp/mysql.sock
+  #socket: /tmp/mysql.sock
 
 test:
   <<: *defaults
