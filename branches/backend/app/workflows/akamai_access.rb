@@ -92,7 +92,7 @@ module AkamaiAccess
     # Readiness heuristic - for now we consider a file to be fully uploaded
     # if it was modified over 2 hours ago.
     def fully_uploaded?(path)
-      get_source_time(path)
+      get_source_time(path) < Time.now - 2.hours
     end
     
     # -----
