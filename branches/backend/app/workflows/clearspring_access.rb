@@ -48,6 +48,16 @@ module ClearspringAccess
     
     # -----
     
+    # Readiness heuristic - for now we consider a file to be fully uploaded
+    # if it was modified over 2 hours ago.
+    def fully_uploaded?(file_url)
+      retry_network_errors(@network_error_retry_options) do
+        @http_client.get_url_time(file_url) < Time.now - 2.hours
+      end
+    end
+    
+    # -----
+    
     def build_data_source_url
       unless data_source_root = params[:data_source_root]
         raise ArgumentError, "data_source_root is not specified in params - data source url will not be usable"
