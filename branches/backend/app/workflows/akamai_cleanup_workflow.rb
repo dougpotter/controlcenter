@@ -1,11 +1,6 @@
 class AkamaiCleanupWorkflow < Workflow::CleanupBase
   include AkamaiAccess
   
-  def initialize(params)
-    super(params)
-    initialize_params(params)
-  end
-  
   # Cleanup only known channels.
   #
   # We do not extract files from channels we do not know about, therefore

@@ -58,8 +58,9 @@ module Workflow
       end
     end
     
-    def initialize(options={})
-      initialize_logger(options)
+    def initialize(params={})
+      initialize_params(params)
+      initialize_logger(params)
     end
     
     private

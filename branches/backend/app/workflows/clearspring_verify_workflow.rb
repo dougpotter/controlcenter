@@ -3,7 +3,6 @@ class ClearspringVerifyWorkflow < Workflow::VerifyBase
   
   def initialize(params)
     super(params)
-    initialize_params(params)
     @http_client = create_http_client(@params)
     @parser = WebParser.new
     @s3_client = create_s3_client(@params)

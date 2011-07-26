@@ -3,7 +3,6 @@ class AkamaiVerifyWorkflow < Workflow::VerifyBase
   
   def initialize(params)
     super(params)
-    initialize_params(params)
     @s3_client = create_s3_client(@params)
   end
   

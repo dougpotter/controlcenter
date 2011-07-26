@@ -6,7 +6,6 @@ class ClearspringExtractWorkflow < Workflow::ExtractBase
   
   def initialize(params)
     super(params)
-    initialize_params(params)
     @http_client = create_http_client(@params)
     @parser = WebParser.new
     @gzip_transformer = GzipSplitter.new(:debug => @params[:debug], :logger => @logger)

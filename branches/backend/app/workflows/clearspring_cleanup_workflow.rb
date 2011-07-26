@@ -1,11 +1,6 @@
 class ClearspringCleanupWorkflow < Workflow::CleanupBase
   include ClearspringAccess
   
-  def initialize(params)
-    super(params)
-    initialize_params(params)
-  end
-  
   def cleanup
     if params[:downloaded]
       cleanup_dir(params[:download_root_dir], params.merge(:age => params[:downloaded_age]))
