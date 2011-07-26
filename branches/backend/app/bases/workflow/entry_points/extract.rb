@@ -27,8 +27,9 @@ module Workflow
       end
       
       def check_and_extract(file_url)
-        validate_should_download_url!(file_url)
-        validate_fully_uploaded!(file_url)
+        @unlocked_checks.each do |check|
+          send("validate_#{check}!", file_url)
+        end
         
         extract(file_url)
       end

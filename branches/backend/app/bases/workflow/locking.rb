@@ -26,8 +26,10 @@ module Workflow
       # by extraction process. if we used special marker files then
       # extraction could be brought outside of the critical section.
       Semaphore::Arbitrator.instance.lock(options) do
-        validate_fully_uploaded!(remote_url)
-        validate_not_extracted!(remote_url)
+        @locked_checks.each do |check|
+          send("validate_#{check}!", remote_url)
+        end
+        
         yield
       end
     rescue Semaphore::ResourceBusy
