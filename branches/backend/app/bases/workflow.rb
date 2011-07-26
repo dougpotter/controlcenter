@@ -28,6 +28,10 @@ module Workflow
   # a valid data provider file for some reason
   class DataProviderFileBogus < WorkflowError; end
   
+  # Tried to extract a data provider but the data provider
+  # is not in the database
+  class DataProviderMissing < WorkflowError; end
+  
   class << self
     attr_accessor :default_logger
   end

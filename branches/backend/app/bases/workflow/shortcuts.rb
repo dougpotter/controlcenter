@@ -89,7 +89,14 @@ module Workflow
       end
       
       def data_provider
-        @data_provider ||= DataProvider.find_by_name(options[:data_provider_name])
+        unless @data_provider
+          name = options[:data_provider_name]
+          @data_provider = DataProvider.find_by_name(name)
+          unless @data_provider
+            raise DataProviderMissing, "#{name} data provider does not exist in the database"
+          end
+        end
+        @data_provider
       end
       
       def channels
