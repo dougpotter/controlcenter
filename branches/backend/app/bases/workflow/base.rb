@@ -38,6 +38,7 @@ module Workflow
   # files to us (as opposed to us downloading files from data source).
   class Base
     include ::Workflow::Logger
+    include ::Workflow::Cache
     include DebugPrint
     include Locking
     include Persistence

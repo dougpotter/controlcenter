@@ -22,13 +22,19 @@ module ClearspringAccess
     def list_all_data_source_files
       with_process_status(:action => 'listing files') do
         url = build_data_source_url
-        page_text = retry_network_errors(@network_error_retry_options) do
-          @http_client.fetch(url + '/')
-        end
-        files = @parser.parse_any_httpd_file_list(page_text)
-        absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
         
-        possibly_record_source_urls_discovered(absolute_file_urls)
+        # in process cache
+        unless absolute_file_urls = self.cache["absolute_file_urls:#{url}"]
+          page_text = retry_network_errors(@network_error_retry_options) do
+            @http_client.fetch(url + '/')
+          end
+          files = @parser.parse_any_httpd_file_list(page_text)
+          absolute_file_urls = files.map { |file| build_absolute_url(url, file) }
+          
+          possibly_record_source_urls_discovered(absolute_file_urls)
+          
+          self.cache["absolute_file_urls:#{url}"] = absolute_file_urls
+        end
         
         absolute_file_urls
       end
