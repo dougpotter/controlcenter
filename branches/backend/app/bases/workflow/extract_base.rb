@@ -13,6 +13,21 @@ module Workflow
       end
     end
     
+    def validate_fully_uploaded!(url)
+      unless fully_uploaded?(url)
+        raise Workflow::FileNotReady, "File is not ready to be extracted: #{url}"
+      end
+    end
+    
+    def validate_not_extracted!(url)
+      unless not_extracted?(url)
+        if params[:debug]
+          debug_print "File is already extracted: #{url}"
+        end
+        raise Workflow::FileAlreadyExtracted, "File is already extracted: #{url}"
+      end
+    end
+    
     # -----
     
     # Unlike downloading, uploading is common to all data sources.

@@ -18,7 +18,7 @@ module Workflow
         options[:debug_callback] = debug_callback
       end
       
-      # ok_to_extract? needs to be in a critical section for each file,
+      # validate_not_extracted needs to be in a critical section for each file,
       # otherwise two processes may check e.g. local caches simultaneously
       # and both decide to process the same file.
       #
@@ -26,17 +26,9 @@ module Workflow
       # by extraction process. if we used special marker files then
       # extraction could be brought outside of the critical section.
       Semaphore::Arbitrator.instance.lock(options) do
-        unless fully_uploaded?(remote_url)
-          raise Workflow::FileNotReady, "File is not ready to be extracted: #{remote_url}"
-        end
-        if ok_to_extract?(remote_url)
-          yield
-        else
-          if params[:debug]
-            debug_print "File is already extracted: #{remote_url}"
-          end
-          raise Workflow::FileAlreadyExtracted, "File is already extracted: #{remote_url}"
-        end
+        validate_fully_uploaded!(remote_url)
+        validate_not_extracted!(remote_url)
+        yield
       end
     rescue Semaphore::ResourceBusy
       # someone else is processing the file, do nothing
