@@ -22,7 +22,12 @@ module ClearspringAccess
   
   module InstanceMethods
     def should_download_url?(url)
-      File.basename(url).starts_with?(prefix_to_download)
+      date, hour = determine_label_date_hour_from_data_provider_file(url)
+      if params[:hour]
+        date == params[:date] && hour == params[:hour]
+      else
+        date == params[:date]
+      end
     end
     
     private
