@@ -2,11 +2,18 @@ require 'ostruct'
 require 'yaml'
 
 class AppConfigReader
+  class ConfigLoadError < StandardError; end
+  
+  class ConfigFileNotExists < ConfigLoadError; end
+  
+  class EnvConfigNotExists < ConfigLoadError; end
+  
   def initialize(component)
     @component = component
   end
   
-  def apply!(config_mod="#{@component.camelize}Configuration".constantize)
+  def apply!(config_mod=nil)
+    config_mod ||= "#{@component.camelize}Configuration".constantize
     config_path = "#{RAILS_ROOT}/config/#{@component}.yml"
     if File.exist?(config_path)
       all_settings = YAML.load_file(config_path)
@@ -16,8 +23,10 @@ class AppConfigReader
           config_mod.send("#{key}=", value)
         end
       else
-        warn "Notice: no #{@component} settings found for #{RAILS_ENV} environment"
+        raise EnvConfigNotExists, "No #{@component} settings found for #{RAILS_ENV} environment"
       end
+    else
+      raise ConfigFileNotExists, "#{config_path} does not exist"
     end
   end
 end
