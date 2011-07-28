@@ -112,12 +112,22 @@ module ClearspringAccess
     end
     
     def determine_label_date_hour_from_data_provider_file(path)
-      date_and_hour_from_path(path)
-    rescue ArgumentError => exc
-      new_message = "Failed to determine label date/hour from data provider file: #{exc.message}"
-      converted_exc = Workflow::DataProviderFileBogus.new(new_message)
-      converted_exc.set_backtrace(exc.backtrace)
-      raise converted_exc
+      begin
+        date, hour = date_and_hour_from_path(path)
+      rescue ArgumentError => exc
+        new_message = "Failed to determine label date/hour from data provider file: #{exc.message}"
+        converted_exc = Workflow::DataProviderFileBogus.new(new_message)
+        converted_exc.set_backtrace(exc.backtrace)
+        raise converted_exc
+      end
+      
+      hour += channel.update_interval / 3600
+      if hour >= 24
+        date = (Time.parse(date) + 86400).strftime('%Y%m%d')
+        hour -= 24
+      end
+      
+      [date, hour]
     end
     
     def determine_name_date_from_data_provider_file(path)

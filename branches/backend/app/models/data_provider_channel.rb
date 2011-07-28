@@ -20,6 +20,19 @@ class DataProviderChannel < ActiveRecord::Base
   
   named_scope :hourly, :conditions => ['update_frequency = ?', UPDATES_HOURLY]
   
+  def update_interval
+    case self.update_frequency
+    when UPDATES_HOURLY
+      3600
+    when UPDATES_DAILY
+      86400
+    when nil
+      nil
+    else
+      raise ArgumentError, "Update frequency unknown: #{self.update_frequency}"
+    end
+  end
+  
   private
   
   validates_presence_of :name
