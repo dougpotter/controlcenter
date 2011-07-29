@@ -29,7 +29,7 @@ class ClearspringVerifyWorkflow < Workflow::VerifyBase
     end
   end
   
-  # See comment in Workflow::VerifyBase for how preesnce verification works.
+  # See comment in Workflow::VerifyBase for how presence verification works.
   def compute_criteria_to_check
     if params[:hour]
       hours = [params[:hour]]
