@@ -75,7 +75,7 @@ set :deploy_via, :remote_cache
 # trunk => trunk
 # live => branches/live
 # branches/live => branches/live
-set :branch, ENV['BRANCH'] || "live"
+set :branch, ENV['BRANCH'] || "backend"
 
 # URL of your source repository.
 set(:repository) do
@@ -106,7 +106,7 @@ ssh_options[:port] = 22
 
 task :qa do
   set :application, 'backend.qa.xgraph.net'
-  set :branch, ENV['BRANCH'] || 'trunk'
+  set :branch, ENV['BRANCH'] || 'backend'
 end
 
 # Environment for testing deployment - a dedicated user account on QA
