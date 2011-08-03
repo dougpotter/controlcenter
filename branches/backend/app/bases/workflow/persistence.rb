@@ -47,26 +47,6 @@ module Workflow
     end
     
     def note_data_provider_file_discovered(file_url)
-      # Determine label date and hour from file name.
-      # Currently we only do this for discovered files because the only
-      # consumer of that information, presently, is extraction of files
-      # that are uploaded/made available late compared to their label time.
-      begin
-        date, hour = determine_label_date_hour_from_data_provider_file(file_url)
-      rescue DataProviderFileBogus
-        # We were unable to determine date/hour from the file name.
-        # Record the file anyway so that it can be looked at by a human/
-        # when reviewing extraction status.
-        date = hour = nil
-      end
-
-      begin
-        name_date = determine_name_date_from_data_provider_file(file_url)
-      rescue DataProviderFileBogus
-        # same situation as with bogus label date/hour
-        name_date = nil
-      end
-      
       # Discovered is the initial status. We never want to change status
       # from another status to discovered. Here, only create a file object
       # if it does not already exist.
@@ -78,6 +58,26 @@ module Workflow
             file.save!
           end
         else
+          # Determine label date and hour from file name.
+          # Currently we only do this for discovered files because the only
+          # consumer of that information, presently, is extraction of files
+          # that are uploaded/made available late compared to their label time.
+          begin
+            date, hour = determine_label_date_hour_from_data_provider_file(file_url)
+          rescue DataProviderFileBogus
+            # We were unable to determine date/hour from the file name.
+            # Record the file anyway so that it can be looked at by a human/
+            # when reviewing extraction status.
+            date = hour = nil
+          end
+
+          begin
+            name_date = determine_name_date_from_data_provider_file(file_url)
+          rescue DataProviderFileBogus
+            # same situation as with bogus label date/hour
+            name_date = nil
+          end
+
           file = DataProviderFile.create!(
             :url => file_url,
             :data_provider_channel => channel,
