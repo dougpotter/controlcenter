@@ -25,10 +25,16 @@ module AkamaiAccess
     
     def list_all_data_source_files
       dir = source_dir_for_channel
-      entries = useful_directory_entries(dir)
-      absolute_paths = entries.map { |entry| File.join(dir, entry) }
-      
-      possibly_record_source_urls_discovered(absolute_paths)
+
+      # in process cache
+      unless absolute_paths = self.cache["absolute_paths:#{dir}"]
+        entries = useful_directory_entries(dir)
+        absolute_paths = entries.map { |entry| File.join(dir, entry) }
+        
+        possibly_record_source_urls_discovered(absolute_paths)
+
+        self.cache["absolute_paths:#{dir}"] = absolute_paths
+      end
       
       absolute_paths
     end
