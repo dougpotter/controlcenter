@@ -177,7 +177,7 @@ module AkamaiAccess
       date, start_hour, end_hour = date_and_hours_from_path(path)
       date
     rescue ArgumentError => exc
-      new_message = "Failed to determine label date/hour range from data provider file: #{exc.message}"
+      new_message = "Failed to determine name date/hour range from data provider file: #{exc.message}"
       converted_exc = Workflow::DataProviderFileBogus.new(new_message)
       converted_exc.set_backtrace(exc.backtrace)
       raise converted_exc
