@@ -59,6 +59,13 @@ module Workflow
         # when reviewing extraction status.
         date = hour = nil
       end
+
+      begin
+        name_date = determine_name_date_from_data_provider_file(file_url)
+      rescue DataProviderFileBogus
+        # same situation as with bogus label date/hour
+        name_date = nil
+      end
       
       # Discovered is the initial status. We never want to change status
       # from another status to discovered. Here, only create a file object
@@ -71,7 +78,6 @@ module Workflow
             file.save!
           end
         else
-          name_date = determine_name_date_from_data_provider_file(file_url)
           file = DataProviderFile.create!(
             :url => file_url,
             :data_provider_channel => channel,
