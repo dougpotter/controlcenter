@@ -302,3 +302,10 @@ Factory.define :audience_manifest do |a|
   a.audience_id { Factory(:audience).id }
   a.audience_source_id { Factory(:ad_hoc_source).id }
 end
+
+Factory.define :action_tag do |a|
+  a.name "Name"
+  a.sequence(:sid) { |i| 100 + i }
+  a.url "http://google.com"
+  a.partner_id { Factory(:partner).id }
+end

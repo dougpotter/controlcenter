@@ -28,4 +28,11 @@ describe Partner do
       p.save(false)
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
+
+  it "should accept nested attributes for action tags" do 
+    p = Factory.create(:partner)
+    Factory.create(
+      :partner, 
+      :action_tags_attributes => { "0" => Factory.build(:action_tag, :partner_id => p.id).attributes })
+  end
 end

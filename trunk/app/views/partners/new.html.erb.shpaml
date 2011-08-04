@@ -14,18 +14,7 @@ h1 | New Advertiser
 
     = image_tag("plus_sign.png", :width => 30, :id => "add_action_tag")
 
-  % fields_for @action_tag do |action_tag|
-    .dimension_input
-      = action_tag.label("name", "Name")
-      = action_tag.text_field("name")
-
-    .dimension_input
-      = action_tag.label("sid", "SID")
-      = action_tag.text_field("sid", :size => 5, :maxlength => 5)
-
-    .dimension_input
-      = action_tag.label("url", "URL")
-      = action_tag.text_field("url", :size => 100)
+  = render :partial => "action_tag_fields", :locals => { :f => f }
 
   = submit_tag('Create Advertiser')
 

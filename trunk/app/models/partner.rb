@@ -12,9 +12,13 @@
 class Partner < ActiveRecord::Base
   has_many :partner_beacon_requests
   has_many :line_items
+  has_many :action_tags
 
   validates_presence_of :partner_code, :name
   validates_uniqueness_of :partner_code
+
+  accepts_nested_attributes_for :action_tags
+
   def pid ; partner_code ; end
   
   def partner_code_and_name

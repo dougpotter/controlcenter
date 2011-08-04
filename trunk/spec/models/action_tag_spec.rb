@@ -1,0 +1,24 @@
+require 'spec_helper'
+
+describe ActionTag do
+  it "should create new action tag with valid attributes" do
+    p = Factory.create(:partner)
+    a = Factory.build(:action_tag, :partner_id => p.id)
+    a.save
+  end
+
+  [:name, :sid, :url, :partner_id].each do |attr|
+    it "should fail to save if #{attr} is blank (validations test)" do
+      lambda {
+        Factory.create(:action_tag, attr => nil)
+      }.should raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it "should fail to save if #{attr} is blank (db test)" do
+      lambda {
+        a = Factory.build(:action_tag, attr => nil)
+        a.save(false)
+      }.should raise_error(ActiveRecord::StatementInvalid)
+    end
+  end
+end
