@@ -33,4 +33,11 @@ describe ActionTag do
       Factory.create(:action_tag, :sid => 1234)
     }.should raise_error(ActiveRecord::RecordInvalid)
   end
+
+  it "should not allow duplicate sids" do
+    lambda {
+      Factory.create(:action_tag, :sid => 12345)
+      Factory.create(:action_tag, :sid => 12345)
+    }.should raise_error(ActiveRecord::RecordInvalid)
+  end
 end
