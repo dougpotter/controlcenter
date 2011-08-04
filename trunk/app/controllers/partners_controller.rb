@@ -7,6 +7,7 @@ class PartnersController < ApplicationController
   def new
     @partners = Partner.all
     @partner = Partner.new
+    @action_tag = ActionTag.new
   end
 
   def create

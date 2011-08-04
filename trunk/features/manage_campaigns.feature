@@ -44,7 +44,7 @@ Feature: Manage campaigns
     When I am on the edit campaign page for ACODE
     Then the edit campaign form should be properly populated
 
-  @selenium @wip
+  @selenium 
   Scenario: refresh audience
     Given the standard ad-hoc campaign and associated entities exist
     And I am on the edit campaign page for ACODE

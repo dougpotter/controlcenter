@@ -9,7 +9,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110629145516) do
+ActiveRecord::Schema.define(:version => 20110804155457) do
+
+  create_table "action_tags", :force => true do |t|
+    t.string  "name",       :null => false
+    t.integer "sid",        :null => false
+    t.string  "url",        :null => false
+    t.integer "partner_id", :null => false
+  end
+
+  add_index "action_tags", ["partner_id"], :name => "action_tags_partner_id_fk"
 
   create_table "ad_inventory_sources", :force => true do |t|
     t.string "name"
@@ -496,6 +505,8 @@ ActiveRecord::Schema.define(:version => 20110629145516) do
   create_table "zips", :force => true do |t|
     t.string "zip_code", :null => false
   end
+
+  add_foreign_key "action_tags", "partners", :name => "action_tags_partner_id_fk"
 
   add_foreign_key "audience_manifests", "audience_sources", :name => "audience_manifests_audience_source_id_fk"
   add_foreign_key "audience_manifests", "audiences", :name => "audience_manifests_audience_id_fk"
