@@ -21,4 +21,16 @@ describe ActionTag do
       }.should raise_error(ActiveRecord::StatementInvalid)
     end
   end
+
+  it "should fail to save with sid of length 6" do
+    lambda {
+      Factory.create(:action_tag, :sid => 123456)
+    }.should raise_error(ActiveRecord::RecordInvalid)
+  end
+
+  it "should fail to save with sid of length 4" do
+    lambda {
+      Factory.create(:action_tag, :sid => 1234)
+    }.should raise_error(ActiveRecord::RecordInvalid)
+  end
 end

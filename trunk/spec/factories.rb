@@ -305,7 +305,7 @@ end
 
 Factory.define :action_tag do |a|
   a.name "Name"
-  a.sequence(:sid) { |i| 100 + i }
+  a.sequence(:sid) { |i| 10000 + i }
   a.url "http://google.com"
   a.partner_id { Factory(:partner).id }
 end
