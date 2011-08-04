@@ -35,7 +35,7 @@ end
 describe PartnersController, "create with invalid attributes" do
 
   before(:each) do
-    @partner = mock(:save => false)
+    @partner = mock("Partner", :save => false)
   end
 
   def do_create
