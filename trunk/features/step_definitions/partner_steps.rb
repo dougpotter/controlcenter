@@ -16,3 +16,7 @@ end
 Then /^I should see the following partners:$/ do |expected_partners_table|
   expected_partners_table.diff!(tableish('table tr', 'td,th'))
 end
+
+Then /^I press the action tag plus sign$/ do 
+  click_button "add_action_tag"
+end

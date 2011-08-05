@@ -8,13 +8,17 @@ h1 | New Advertiser
 % form_for @partner do |f|
   = render :partial => 'form'
 
-  .action_tags
+  .action_tags_heading
     h1.inline_heading 
       Action Tags
 
-    = image_tag("plus_sign.png", :width => 30, :id => "add_action_tag")
+    = action_tag_form_builder(f)
 
-  = render :partial => "action_tag_fields", :locals => { :f => f }
+
+    <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
+
+  <div id="action_tags_forms"></div>
+
 
   = submit_tag('Create Advertiser')
 

@@ -1,12 +1,13 @@
-% f.fields_for :action_tags, @action_tags do |action_tag|
-  .dimension_input      
-    = action_tag.label("name", "Name")      
-    = action_tag.text_field("name")    
+.action_tag_form data-index="<%= form_index %>"
+  % f.fields_for :action_tags, @action_tags do |action_tag|
+    .dimension_input      
+      = action_tag.label("name", "Name")      
+      = action_tag.text_field("name")    
 
-  .dimension_input      
-    = action_tag.label("sid", "SID")      
-    = action_tag.text_field("sid", :size => 5, :maxlength => 5)    
+    .dimension_input      
+      = action_tag.label("sid", "SID")      
+      = action_tag.text_field("sid", :size => 5, :maxlength => 5)    
 
-  .dimension_input      
-    = action_tag.label("url", "URL")      
-    = action_tag.text_field("url", :size => 100)
+    .dimension_input      
+      = action_tag.label("url", "URL")      
+      = action_tag.text_field("url", :size => 100)

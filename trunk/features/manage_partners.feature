@@ -11,9 +11,10 @@ Feature: Manage partners
     Then I should see "Coca Cola"
     And I should see "Coca Cola successfully created"
 
-  #@selenium @wip
+  @selenium 
   Scenario: Create new partner with action tag
     Given I am on the new partner page
+    And I press the action tag plus sign
     And I fill in the following:
       | Advertiser Name |       Coca Cola         |
       |      Name       |       sitewide          |
