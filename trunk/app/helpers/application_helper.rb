@@ -90,16 +90,7 @@ module ApplicationHelper
           formNumber = 
             $$('.creative_form_without_line_item').getLast().get('data-number')
         }
-        var regex_bracket = new RegExp("\\\\[0\\\\]", "g")
-        var regex_underscore = new RegExp("_0_", "g");
-        var regex_data_number = new RegExp("data-number=\\"0\\"", "g");
-        var regex_parens = new RegExp("\\\\(0\\\\)", "g");
-        var formNumber = (parseInt(formNumber) + 1).toString();
-        var form_markup = 
-          #{form_template}.replace(regex_bracket, "["+formNumber+"]").
-          replace(regex_underscore, "_"+formNumber+"_").
-          replace(regex_data_number, "data-number=\\""+formNumber+"\\"").
-          replace(regex_parens, "("+formNumber+")");
+        var form_markup = setNestedFormIndex(#{form_template}, formNumber);
         var el = new Element('div').set('html', form_markup).getFirst();
         el.set('style', 'visibility:hidden;');
         $('add_creative_link').grab(el, 'before'); 
