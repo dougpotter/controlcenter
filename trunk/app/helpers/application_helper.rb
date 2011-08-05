@@ -85,16 +85,16 @@ module ApplicationHelper
 
     js_string = <<-eos
       function insertCreativeForm() { 
-        var formNumber = 0;
+        var formIndex = 0;
         if ($$('.creative_form_without_line_item').length != 0) {
-          formNumber = 
+          formIndex = 
             $$('.creative_form_without_line_item').getLast().get('data-number')
         }
-        var form_markup = setNestedFormIndex(#{form_template}, formNumber);
+        var form_markup = setNestedFormIndex(#{form_template}, formIndex);
         var el = new Element('div').set('html', form_markup).getFirst();
         el.set('style', 'visibility:hidden;');
         $('add_creative_link').grab(el, 'before'); 
-        setCreativeCode(formNumber, \"#{creative_code_url}\");
+        setCreativeCode(formIndex, \"#{creative_code_url}\");
         el.set('style', 'visibility:visible;');
       };
     eos
