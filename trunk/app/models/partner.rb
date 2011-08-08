@@ -12,7 +12,7 @@
 class Partner < ActiveRecord::Base
   has_many :partner_beacon_requests
   has_many :line_items
-  has_many :action_tags
+  has_many :action_tags, :dependent => :destroy
 
   validates_presence_of :partner_code, :name
   validates_uniqueness_of :partner_code
