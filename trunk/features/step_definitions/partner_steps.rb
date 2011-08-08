@@ -20,3 +20,10 @@ end
 Then /^I press the action tag plus sign$/ do 
   click_button "add_action_tag"
 end
+
+Given /^"([^"]*)" has the following action tags:$/ do |partner_name, action_tags|
+  partner_id = Partner.find_by_name(partner_name).id
+  for action_tag in action_tags.hashes
+    ActionTag.create!(action_tag.merge(:partner_id => partner_id))
+  end
+end

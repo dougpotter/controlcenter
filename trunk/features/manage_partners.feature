@@ -45,11 +45,17 @@ Feature: Manage partners
     Given the following partners:
       |   name    | partner_code |
       | Coca Cola |    123432    |
+    And "Coca Cola" has the following action tags:
+      |   name    |  sid   |           url            |
+      | sitewide  | 12345  |  http://coke.com/thanks  |
     And I am on the new partner page
-    When I follow "Coca Cola"
+    When I am on the edit partner page for 123432
     Then I should see "Edit Advertiser"
     And the "Advertiser Code" field should contain "123432"
     And the "Advertiser Name" field should contain "Coca Cola"
+    And the "Name" field should contain "sitewide"
+    And the "SID" field should contain "12345"
+    And the "URL" field should contain "http://coke.com/thanks"
 
   @selenium 
   Scenario: Remove partner 

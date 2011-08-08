@@ -3,6 +3,20 @@ h1 | Edit Advertiser
 
 % form_for @partner do |f|
   = render :partial => 'form'
+
+  .action_tags_heading
+    h1.inline_heading 
+      Action Tags
+
+    = action_tag_form_builder(f, @action_tag_for_form_builder)
+
+
+    <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
+
+  <div id="action_tags_forms">
+    = render :partial => "action_tag_section", :locals => { :f => f } 
+  </div>
+
   = submit_tag 'Save Edits'
 
 = button_to "Delete Advertiser", { :action => "destroy", :id => @partner.id }, { :class => "delete_button", :confirm => "Are you sure you want to delete this advertiser?", :method => "delete" }
