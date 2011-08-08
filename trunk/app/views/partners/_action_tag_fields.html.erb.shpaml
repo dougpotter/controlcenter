@@ -1,4 +1,5 @@
 .action_tag_form data-index="<%= form_index %>"
+  <input class="action_tag_minus_sign" type="image" src="/images/minus_sign.png" />
   % f.fields_for :action_tags, @action_tags do |action_tag|
     .dimension_input      
       = action_tag.label("name", "Name")      

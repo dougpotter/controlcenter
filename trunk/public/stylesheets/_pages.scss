@@ -4,6 +4,7 @@
 * Campaign Dashboard
 * Campaign New/Edit
 * Creatie New/Show/Edit
+* Partner New
 *
 **********************************************************************************/
 
@@ -154,3 +155,15 @@ form#new_creative, form.edit_creative {
   margin: 15px 0px 0px 0px;
   .dimension_input {
     height: 45px; } }
+
+/**********************************************************************************
+* Partner New
+**********************************************************************************/
+
+.action_tag_form {
+  overflow: auto; }
+
+.action_tag_minus_sign {
+  width: 15px;
+  float: left;
+  padding: 15px; }
