@@ -113,13 +113,13 @@ function toggleHelp(helpKey) {
 function setNestedFormIndex(formText, index) {
   var regex_bracket = new RegExp("\\\[0\\\]", "g");
   var regex_underscore = new RegExp("_0_", "g");
-  var regex_data_number = new RegExp("data-number=\"0\"", "g");
+  var regex_data_number = new RegExp("data-index=\"0\"", "g");
   var regex_parens = new RegExp("\\\(0\\\)", "g");
   var formNumber = (index).toString();
   var form_markup = 
   formText.replace(regex_bracket, "["+formNumber+"]").
   replace(regex_underscore, "_"+formNumber+"_").
-  replace(regex_data_number, "data-number=\""+formNumber+"\"").
+  replace(regex_data_number, "data-index=\""+formNumber+"\"").
   replace(regex_parens, "("+formNumber+")");
   return form_markup;
 }
