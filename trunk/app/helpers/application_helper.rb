@@ -116,4 +116,33 @@ module ApplicationHelper
       end
     end
   end
+
+  def nested_model_form_builder(context, model_str)
+    form_markup = ""
+    model_sym = model_str.to_sym
+    model_plural_sym = model_str.pluralize.to_sym
+    model_object = ActiveRecord.const_get(model_str.classify).new
+    context.fields_for model_plural_sym, model_object do |new_context|
+      form_markup = escape_javascript(
+        render :partial =>  
+          "#{model_str}_fields", 
+            :locals => { 
+              :f => context,  
+              :form_index => 1,  
+              model_sym => new_context
+      })
+    end
+
+    javascript = javascript_tag(
+      <<-eos
+      window.addEvent('domready', function() {
+        $('add_action_tag').addEvent('click', function(e) {
+          e.stop();
+          appendActionTagForm("#{form_markup}", "#{sid_url}");
+        }); 
+      })
+      eos
+    )
+    return javascript
+  end
 end
