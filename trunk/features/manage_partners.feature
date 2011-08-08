@@ -11,7 +11,7 @@ Feature: Manage partners
     Then I should see "Coca Cola"
     And I should see "Coca Cola successfully created"
 
-  @selenium 
+  @selenium @wip
   Scenario: Create new partner with action tag
     Given I am on the new partner page
     And I press the action tag plus sign
@@ -22,6 +22,24 @@ Feature: Manage partners
       |      URL        |   http://cocacola.com   |
     When I press "Create Advertiser"
     Then I should see "Coca Cola successfully created"
+
+  @selenium @wip
+  Scenario: Create new partner with invalid action tags (duplicate SIDs)
+    Given I am on the new partner page
+    And I press the action tag plus sign
+    And I fill in the following:
+      | Advertiser Name |       Coca Cola         |
+      |      Name       |       sitewide          |
+      |      SID        |         12345           |
+      |      URL        |   http://cocacola.com   |
+    And I press the action tag plus sign
+    And I fill in the following:
+      | Advertiser Name |       Coca Cola         |
+      |      Name       |       conversion        |
+      |      SID        |         12345           |
+      |      URL        | http://cocacola.com/ty  |
+    When I press "Create Advertiser"
+    Then I should see "Invalid action tag"
 
   Scenario: Edit partner
     Given the following partners:

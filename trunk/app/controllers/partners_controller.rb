@@ -7,7 +7,7 @@ class PartnersController < ApplicationController
   def new
     @partners = Partner.all
     @partner = Partner.new
-    @action_tags = ActionTag.new 
+    @action_tag_for_form_builder = ActionTag.new
   end
 
   def extract_action_tags
@@ -52,8 +52,11 @@ class PartnersController < ApplicationController
       if @partner.action_tags << action_tag
         # do nothing
       else
+        @partner.delete
+        @partner = Partner.new(@partner.attributes)
         @partners = Partner.all
-        render :action => "new", :notice => "invalid action tag"
+        flash[:notice] = "Invalid action tag"
+        render :action => "new"
         return
       end
     end

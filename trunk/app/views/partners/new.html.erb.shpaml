@@ -12,12 +12,14 @@ h1 | New Advertiser
     h1.inline_heading 
       Action Tags
 
-    = action_tag_form_builder(f)
+    = action_tag_form_builder(f, @action_tag_for_form_builder)
 
 
     <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
 
-  <div id="action_tags_forms"></div>
+  <div id="action_tags_forms">
+    = render :partial => "action_tag_section", :locals => { :f => f }
+  </div>
 
 
   = submit_tag('Create Advertiser')

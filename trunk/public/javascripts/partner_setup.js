@@ -1,6 +1,7 @@
 var appendActionTagForm = function(rawFormMarkup) {
   var newFormIndex = indexOfLast($$('.action_tag_form'));
   var cleanFormMarkup = setNestedFormIndex(rawFormMarkup, newFormIndex);
+  var temp = Elements.from(cleanFormMarkup)[0];
   $('action_tags_forms').grab(Elements.from(cleanFormMarkup)[0]);
 
   $$('.action_tag_minus_sign').each(function(minus_icon, index) {
