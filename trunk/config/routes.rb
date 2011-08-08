@@ -30,6 +30,7 @@ ActionController::Routing::Routes.draw do |map|
   #     admin.resources :products
   #   end
 
+  map.sid '/action_tags/sid', :controller => "action_tags", :action => "sid"
   map.creative_code '/creatives/creative_code', :controller => "creatives", :action => "creative_code"
   map.connect '/campaigns/filtered_edit_table', :controller => 'campaigns', :action => 'filtered_edit_table'
 

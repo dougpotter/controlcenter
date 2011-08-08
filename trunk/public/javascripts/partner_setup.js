@@ -1,8 +1,17 @@
-var appendActionTagForm = function(rawFormMarkup) {
+var appendActionTagForm = function(rawFormMarkup, sid_url) {
   var newFormIndex = indexOfLast($$('.action_tag_form'));
   var cleanFormMarkup = setNestedFormIndex(rawFormMarkup, newFormIndex);
-  var temp = Elements.from(cleanFormMarkup)[0];
-  $('action_tags_forms').grab(Elements.from(cleanFormMarkup)[0]);
+  var markup = Elements.from(cleanFormMarkup)[0];
+  var newSid;
+  var req = new Request({
+    url: sid_url,
+    async: false,
+    onSuccess: function(response) { newSid = response }
+  }).send();
+  markup.getElement(
+    '#partner_action_tags_attributes_' + newFormIndex.toString() + '_sid'
+  ).set('value', newSid);
+  $('action_tags_forms').grab(markup);
 
   $$('.action_tag_minus_sign').each(function(minus_icon, index) {
     minus_icon.removeEvents();
