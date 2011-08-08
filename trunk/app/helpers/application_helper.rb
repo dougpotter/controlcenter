@@ -100,4 +100,20 @@ module ApplicationHelper
     eos
     return javascript_tag "#{js_string}"
   end
+
+  # constructs div just like error message div from error_messages_for except it is
+  # for errors on the object passed in
+  def error_messages_on(object)
+    if object
+      content_tag :div, { :class => "errorExplanation", :id => "errorExplanation"} do
+        content_tag(:h2, "#{object.class} did not save") +
+        content_tag(:p, "There were problems with the following fields") +
+        content_tag(:ul) do
+          for message in object.errors.full_messages
+            content_tag(:li, message)
+          end
+        end
+      end
+    end
+  end
 end
