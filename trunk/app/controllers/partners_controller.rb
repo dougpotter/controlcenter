@@ -52,7 +52,7 @@ class PartnersController < ApplicationController
       if @partner.action_tags << action_tag
         # do nothing
       else
-        @partner.delete
+        @partner.destroy
         @partner = Partner.new(@partner.attributes)
         @partners = Partner.all
         flash[:notice] = "Invalid action tag"
@@ -70,14 +70,27 @@ class PartnersController < ApplicationController
     @partner = Partner.find(params[:id])
   end
 
+  def noticeOnSuccess(partner)
+    notice = "#{Partner.name} successfully updated"
+    notice += "<ul>"
+    for attrs in params[:partner][:action_tags_attributes].values
+      if attrs["_destroy"]
+        notice += "<li>#{ActionTag.find(attrs[:id]).name} tag removed</li>"
+      end
+    end
+    notice += "</ul>"
+    return notice
+  end
+
   def update
     @partner = Partner.find(params[:id])
+
+    notice = noticeOnSuccess(@partner)
     if @partner.update_attributes(params[:partner])
-      redirect_to(
-        :action => 'new',
-        :notice => "#{@partner.name} successfully updated"
-      )
+      flash[:notice] = notice
+      redirect_to(:action => 'new')
     else
+      flash[:notice] = "Update failed"
       render :action => 'edit', :id => @partner
     end
   end

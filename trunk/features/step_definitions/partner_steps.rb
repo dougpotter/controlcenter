@@ -27,3 +27,7 @@ Given /^"([^"]*)" has the following action tags:$/ do |partner_name, action_tags
     ActionTag.create!(action_tag.merge(:partner_id => partner_id))
   end
 end
+
+When /^I press the first action tag minus sign$/ do
+  click_button "action_tag_minus_sign_1"
+end

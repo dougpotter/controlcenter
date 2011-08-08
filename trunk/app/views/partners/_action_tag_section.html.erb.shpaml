@@ -1,4 +1,4 @@
-% form_index ||= 0
+% form_index ||= 1
 
 % f.fields_for :action_tags, @action_tags do |action_tag|
   = render :partial => "action_tag_fields", :locals => { :form_index => form_index, :action_tag => action_tag }

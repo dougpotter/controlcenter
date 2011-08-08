@@ -17,7 +17,7 @@ class Partner < ActiveRecord::Base
   validates_presence_of :partner_code, :name
   validates_uniqueness_of :partner_code
 
-  accepts_nested_attributes_for :action_tags
+  accepts_nested_attributes_for :action_tags, :allow_destroy => true
 
   def pid ; partner_code ; end
   

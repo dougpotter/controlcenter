@@ -11,7 +11,7 @@ Feature: Manage partners
     Then I should see "Coca Cola"
     And I should see "Coca Cola successfully created"
 
-  @selenium @wip
+  @selenium
   Scenario: Create new partner with action tag
     Given I am on the new partner page
     And I press the action tag plus sign
@@ -23,7 +23,7 @@ Feature: Manage partners
     When I press "Create Advertiser"
     Then I should see "Coca Cola successfully created"
 
-  @selenium @wip
+  @selenium 
   Scenario: Create new partner with invalid action tags (duplicate SIDs)
     Given I am on the new partner page
     And I press the action tag plus sign
@@ -35,20 +35,19 @@ Feature: Manage partners
     And I press the action tag plus sign
     And I fill in the following:
       | Advertiser Name |       Coca Cola         |
-      |      Name       |       conversion        |
-      |      SID        |         12345           |
-      |      URL        | http://cocacola.com/ty  |
+      |      partner_action_tags_attributes_2_name |       conversion        |
+      |      partner_action_tags_attributes_2_sid |         12345           |
+      |      partner_action_tags_attributes_2_url | http://cocacola.com/ty  |
     When I press "Create Advertiser"
     Then I should see "Invalid action tag"
 
-  Scenario: Edit partner
+  Scenario: Edit partner (basic form population check)
     Given the following partners:
       |   name    | partner_code |
       | Coca Cola |    123432    |
     And "Coca Cola" has the following action tags:
       |   name    |  sid   |           url            |
       | sitewide  | 12345  |  http://coke.com/thanks  |
-    And I am on the new partner page
     When I am on the edit partner page for 123432
     Then I should see "Edit Advertiser"
     And the "Advertiser Code" field should contain "123432"
@@ -56,6 +55,19 @@ Feature: Manage partners
     And the "Name" field should contain "sitewide"
     And the "SID" field should contain "12345"
     And the "URL" field should contain "http://coke.com/thanks"
+
+  @selenium 
+  Scenario: Edit partner (remove action tag)
+    Given the following partners:
+      |   name    | partner_code |
+      | Coca Cola |    123432    |
+    And "Coca Cola" has the following action tags:
+      |   name    |  sid   |           url            |
+      | sitewide  | 12345  |  http://coke.com/thanks  |
+    And I am on the edit partner page for 123432
+    When I press the first action tag minus sign
+    And I press "Save Edits"
+    Then I should see "sitewide tag removed"
 
   @selenium 
   Scenario: Remove partner 

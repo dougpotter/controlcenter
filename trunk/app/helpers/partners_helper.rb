@@ -7,7 +7,7 @@ module PartnersHelper
           "action_tag_fields", 
             :locals => { 
               :f => f, 
-              :form_index => 0, 
+              :form_index => 1, 
               :action_tag => action_tag 
       })
     end
