@@ -122,7 +122,9 @@ module ApplicationHelper
     model_sym = model_str.to_sym
     model_plural_sym = model_str.pluralize.to_sym
     model_object = ActiveRecord.const_get(model_str.classify).new
+    context_string = ""
     context.fields_for model_plural_sym, model_object do |new_context|
+      context_string = new_context.object_name[0..-4]
       form_markup = escape_javascript(
         render :partial =>  
           "#{model_str}_fields", 
@@ -141,6 +143,7 @@ module ApplicationHelper
           appendNestedForm({
             modelName: "#{model_str}",
             modelNamePlural: "#{model_str.pluralize}",
+            contextString: "#{context_string}",
             formMarkup: "#{form_markup}", 
             sidUrl: "#{sid_url}"
           });

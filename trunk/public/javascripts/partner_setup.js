@@ -8,8 +8,9 @@ var appendNestedForm = function(options) {
     async: false,
     onSuccess: function(response) { newSid = response }
   }).send();
+  var contextStringUnderscore = options.contextString.replace(/(\]|\[)/g, "_");
   markup.getElement(
-    '#partner_action_tags_attributes_' + newFormIndex.toString() + '_sid'
+    '#'+contextStringUnderscore + newFormIndex.toString() + '_sid'
   ).set('value', newSid);
   $(options.modelNamePlural+'_forms').grab(markup);
 
