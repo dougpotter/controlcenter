@@ -145,7 +145,9 @@ module ApplicationHelper
             modelNamePlural: "#{model_str.pluralize}",
             contextString: "#{context_string}",
             formMarkup: "#{form_markup}", 
-            sidUrl: "#{sid_url}"
+            populate: [
+              [ "sid", "#{sid_url}" ]
+            ]
           });
         }); 
       })
@@ -158,7 +160,7 @@ module ApplicationHelper
               index: minusIcon.get('data-index'),
               formType: "#{model_str}",
               contextString: "#{context_string}",
-              contextUnderscore: "#{context_string.gsub(/\[|\]/, "_")}"
+              contextStringUnderscore: "#{context_string.gsub(/\[|\]/, "_")}"
             });
           }); 
         }); 

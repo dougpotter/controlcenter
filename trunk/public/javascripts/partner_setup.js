@@ -2,16 +2,22 @@ var appendNestedForm = function(options) {
   var newFormIndex = indexOfLast($$('.'+options.modelName+'_form'));
   var cleanFormMarkup = setNestedFormIndex(options.formMarkup, newFormIndex);
   var markup = Elements.from(cleanFormMarkup)[0];
-  var newSid;
-  var req = new Request({
-    url: options.sidUrl,
-    async: false,
-    onSuccess: function(response) { newSid = response }
-  }).send();
+
   var contextStringUnderscore = options.contextString.replace(/(\]|\[)/g, "_");
-  markup.getElement(
-    '#'+contextStringUnderscore + newFormIndex.toString() + '_sid'
-  ).set('value', newSid);
+  
+  options.populate.each(function(tuple, index) {
+    var value;
+    var req = new Request({
+      url: tuple[1],
+      async: false,
+      onSuccess: function(response) { value = response }
+    }).send();
+
+    markup.getElement(
+      '#'+contextStringUnderscore + newFormIndex.toString() + '_' + tuple[0]
+    ).set('value', value);
+  });
+
   $(options.modelNamePlural+'_forms').grab(markup);
 
   $$('.'+options.modelName+'_minus_sign').each(function(minus_icon, index) {
@@ -22,7 +28,7 @@ var appendNestedForm = function(options) {
         index: minus_icon.get('data-index'),
         formType: options.modelName,
         contextString: options.contextString,
-        contextUnderscore: contextStringUnderscore
+        contextStringUnderscore: contextStringUnderscore
       });
     });
   });
