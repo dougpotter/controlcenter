@@ -138,7 +138,7 @@ module ApplicationHelper
     javascript = javascript_tag(
       <<-eos
       window.addEvent('domready', function() {
-        $('add_action_tag').addEvent('click', function(e) {
+        $('add_#{model_str}').addEvent('click', function(e) {
           e.stop();
           appendNestedForm({
             modelName: "#{model_str}",
