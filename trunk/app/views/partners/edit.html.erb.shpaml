@@ -10,8 +10,7 @@ h1 | Edit Advertiser
     h1.inline_heading 
       Action Tags
 
-    = nested_model_form_builder(f, "action_tag")
-
+    = nested_model_form_builder(f, "action_tag", :populate => { "sid" => sid_url })
 
     <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
 

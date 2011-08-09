@@ -117,7 +117,7 @@ module ApplicationHelper
     end
   end
 
-  def nested_model_form_builder(context, model_str)
+  def nested_model_form_builder(context, model_str, options = {})
     form_markup = ""
     model_sym = model_str.to_sym
     model_plural_sym = model_str.pluralize.to_sym
@@ -145,9 +145,7 @@ module ApplicationHelper
             modelNamePlural: "#{model_str.pluralize}",
             contextString: "#{context_string}",
             formMarkup: "#{form_markup}", 
-            populate: [
-              [ "sid", "#{sid_url}" ]
-            ]
+            populate: #{options[:populate].to_a.inspect.to_s}
           });
         }); 
       })
