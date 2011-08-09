@@ -18,7 +18,7 @@ var appendNestedForm = function(options) {
     minus_icon.removeEvents();
     minus_icon.addEvent('click', function(e) { 
       e.stop();
-      removeForm(minus_icon.get('data-index'));
+      removeForm({ index: minus_icon.get('data-index') });
     });
   });
 }
@@ -32,15 +32,15 @@ var indexOfLast = function(collection) {
 
 
 // Removes from the DOM the action tag form with data-index value of index.
-var removeForm = function(index) {
+var removeForm = function(options) {
   var hiddenRemoveField = new Element('input', {
     type: 'hidden',
-    id: 'partner_action_tags_attributes_'+index+'__destroy',
-    name: 'partner[action_tags_attributes]['+index+'][_destroy]',
+    id: 'partner_action_tags_attributes_'+options.index+'__destroy',
+    name: 'partner[action_tags_attributes]['+options.index+'][_destroy]',
     value: true 
   })
   var tagToBeRemoved = $$(".action_tag_form").filter(function(form) {
-      if (form.get('data-index') == index) { return true; }
+      if (form.get('data-index') == options.index) { return true; }
       else { return false; }
   })[0];
   hiddenRemoveField.replaces(tagToBeRemoved);
