@@ -44,19 +44,9 @@ var removeForm = function(options) {
     name: options.contextString +'['+ options.index+'][_destroy]',
     value: true 
   })
-  var tagToBeRemoved = $$("."+options.formType+"_form").filter(function(form) {
+  var formToBeRemoved = $$("."+options.formType+"_form").filter(function(form) {
       if (form.get('data-index') == options.index) { return true; }
       else { return false; }
   })[0];
-  hiddenRemoveField.replaces(tagToBeRemoved);
+  hiddenRemoveField.replaces(formToBeRemoved);
 }
-
-window.addEvent('domready', function() {
-  $$('.action_tag_minus_sign').each(function(minusIcon, index) {
-    minusIcon.addEvent('click', function(e) {
-      e.stop();
-      removeForm(minusIcon.get('data-index'));
-    });
-  });
-})
-

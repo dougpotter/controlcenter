@@ -149,6 +149,20 @@ module ApplicationHelper
           });
         }); 
       })
+
+      window.addEvent('domready', function() {
+        $$('.#{model_str}_minus_sign').each(function(minusIcon, index) {
+          minusIcon.addEvent('click', function(e) {
+            e.stop();
+            removeForm({
+              index: minusIcon.get('data-index'),
+              formType: "#{model_str}",
+              contextString: "#{context_string}",
+              contextUnderscore: "#{context_string.gsub(/\[|\]/, "_")}"
+            });
+          }); 
+        }); 
+      })
       eos
     )
     return javascript
