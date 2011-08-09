@@ -139,6 +139,8 @@ module ApplicationHelper
         $('add_action_tag').addEvent('click', function(e) {
           e.stop();
           appendNestedForm({
+            modelName: "#{model_str}",
+            modelNamePlural: "#{model_str.pluralize}",
             formMarkup: "#{form_markup}", 
             sidUrl: "#{sid_url}"
           });

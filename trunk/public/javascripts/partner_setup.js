@@ -1,5 +1,5 @@
 var appendNestedForm = function(options) {
-  var newFormIndex = indexOfLast($$('.action_tag_form'));
+  var newFormIndex = indexOfLast($$('.'+options.modelName+'_form'));
   var cleanFormMarkup = setNestedFormIndex(options.formMarkup, newFormIndex);
   var markup = Elements.from(cleanFormMarkup)[0];
   var newSid;
@@ -11,9 +11,9 @@ var appendNestedForm = function(options) {
   markup.getElement(
     '#partner_action_tags_attributes_' + newFormIndex.toString() + '_sid'
   ).set('value', newSid);
-  $('action_tags_forms').grab(markup);
+  $(options.modelNamePlural+'_forms').grab(markup);
 
-  $$('.action_tag_minus_sign').each(function(minus_icon, index) {
+  $$('.'+options.modelName+'_minus_sign').each(function(minus_icon, index) {
     minus_icon.removeEvents();
     minus_icon.addEvent('click', function(e) { 
       e.stop();
