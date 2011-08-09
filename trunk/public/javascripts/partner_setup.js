@@ -1,10 +1,10 @@
-var appendActionTagForm = function(rawFormMarkup, sid_url) {
+var appendNestedForm = function(options) {
   var newFormIndex = indexOfLast($$('.action_tag_form'));
-  var cleanFormMarkup = setNestedFormIndex(rawFormMarkup, newFormIndex);
+  var cleanFormMarkup = setNestedFormIndex(options.formMarkup, newFormIndex);
   var markup = Elements.from(cleanFormMarkup)[0];
   var newSid;
   var req = new Request({
-    url: sid_url,
+    url: options.sidUrl,
     async: false,
     onSuccess: function(response) { newSid = response }
   }).send();

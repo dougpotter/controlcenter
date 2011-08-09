@@ -138,7 +138,10 @@ module ApplicationHelper
       window.addEvent('domready', function() {
         $('add_action_tag').addEvent('click', function(e) {
           e.stop();
-          appendActionTagForm("#{form_markup}", "#{sid_url}");
+          appendNestedForm({
+            formMarkup: "#{form_markup}", 
+            sidUrl: "#{sid_url}"
+          });
         }); 
       })
       eos
