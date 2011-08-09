@@ -130,7 +130,7 @@ module ApplicationHelper
           "#{model_str}_fields", 
             :locals => { 
               :f => context,  
-              :form_index => 1,  
+              :form_index => 0,  
               model_sym => new_context
       })
     end

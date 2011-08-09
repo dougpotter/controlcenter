@@ -6,14 +6,14 @@ h1 | New Advertiser
   = notice_that_fades(notice)
 
 % form_for @partner do |f|
+  = nested_model_form_builder(f, "action_tag", :populate => { "sid" => sid_url })
+
+% form_for @partner do |f|
   = render :partial => 'form'
 
   .action_tags_heading
     h1.inline_heading 
       Action Tags
-
-    = nested_model_form_builder(f, "action_tag", :populate => { "sid" => sid_url })
-
 
     <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
 
