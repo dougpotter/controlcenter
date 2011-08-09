@@ -1,3 +1,6 @@
+// Adds fields in a nested form. Relies on a few conventions in HTML:
+// - all fields sets will be placed in a div of format
+//    UNDERSCORED_PLURAL_MODEL_NAME_forms (e.g. action_tags_forms)
 var appendNestedForm = function(options) {
   var newFormIndex = indexOfLast($$('.'+options.modelName+'_form'));
   var cleanFormMarkup = setNestedFormIndex(options.formMarkup, newFormIndex);
@@ -42,7 +45,9 @@ var indexOfLast = function(collection) {
 }
 
 
-// Removes from the DOM the action tag form with data-index value of index.
+// Removes form fields from the DOM which are in the div named FORM_TYPES_forms and
+// having data-index value of index. Replaces those fields with a hidden field that
+// will, on form submission, reomve the element from the database.
 var removeForm = function(options) {
   var hiddenRemoveField = new Element('input', {
     type: 'hidden',
