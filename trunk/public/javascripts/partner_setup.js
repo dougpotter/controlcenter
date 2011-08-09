@@ -3,8 +3,8 @@
 //    UNDERSCORED_PLURAL_MODEL_NAME_forms (e.g. action_tags_forms)
 var appendNestedForm = function(options) {
   var newFormIndex = indexOfLast($$('.'+options.modelName+'_form'));
-  var cleanFormMarkup = setNestedFormIndex(options.formMarkup, newFormIndex);
-  var markup = Elements.from(cleanFormMarkup)[0];
+  var numberedFormMarkup = setNestedFormIndex(options.formMarkup, newFormIndex);
+  var domForm = Elements.from(numberedFormMarkup)[0];
 
   var contextStringUnderscore = options.contextString.replace(/(\]|\[)/g, "_");
   
@@ -16,12 +16,12 @@ var appendNestedForm = function(options) {
       onSuccess: function(response) { value = response }
     }).send();
 
-    markup.getElement(
+    domForm.getElement(
       '#'+contextStringUnderscore + newFormIndex.toString() + '_' + tuple[0]
     ).set('value', value);
   });
 
-  $(options.modelNamePlural+'_forms').grab(markup);
+  $(options.modelNamePlural+'_forms').grab(domForm);
 
   $$('.'+options.modelName+'_minus_sign').each(function(minus_icon, index) {
     minus_icon.removeEvents();
