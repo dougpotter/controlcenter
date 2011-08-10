@@ -1,0 +1,5 @@
+% form_index ||= 0
+
+% f.fields_for :conversion_pixels do |conversion_pixel|  
+  = render :partial => "conversion_pixel_fields", :locals => { :form_index => form_index, :conversion_pixel => conversion_pixel }
+  % form_index += 1

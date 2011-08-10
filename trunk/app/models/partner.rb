@@ -13,11 +13,13 @@ class Partner < ActiveRecord::Base
   has_many :partner_beacon_requests
   has_many :line_items
   has_many :action_tags, :dependent => :destroy
+  has_many :conversion_pixels
 
   validates_presence_of :partner_code, :name
   validates_uniqueness_of :partner_code
 
   accepts_nested_attributes_for :action_tags, :allow_destroy => true
+  accepts_nested_attributes_for :conversion_pixels, :allow_destroy => true
 
   def pid ; partner_code ; end
   

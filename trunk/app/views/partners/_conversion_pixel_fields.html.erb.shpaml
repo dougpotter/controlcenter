@@ -1,0 +1,17 @@
+.conversion_pixel_form data-index="<%= form_index %>"
+  = error_messages_on(conversion_pixel.object)
+  <input data-index="<%= form_index %>" id="conversion_pixel_minus_sign_<%= form_index %>" class="conversion_pixel_minus_sign" type="image" src="/images/minus_sign.png" />
+  .dimension_input
+    = conversion_pixel.label "name", "Name"
+    >br
+    = conversion_pixel.text_field "name"
+
+  .dimension_input
+    = conversion_pixel.label "Request Regex"
+    >br
+    = conversion_pixel.text_field "request_regex"
+
+  .dimension_input
+    = conversion_pixel.label "Referrer Regex"
+    >br
+    = conversion_pixel.text_field "referrer_regex"

@@ -9,10 +9,10 @@ describe "partners/new.html.erb" do
     partner = mock(
       "partner",
       :partner_code => "",
-      :id => 1,
       :name => ""
     )
-    partner.expects(:class).times(4).returns(Partner)
+    partner.expects(:class).times(8).returns(Partner)
+    partner.expects(:id).times(2).returns(1)
     template.expects(:error_messages_for).returns("")
     assigns[:partners] = partners
     assigns[:partner] = partner
