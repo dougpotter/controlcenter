@@ -7,7 +7,6 @@ class PartnersController < ApplicationController
   def new
     @partners = Partner.all
     @partner = Partner.new
-    @action_tag_for_form_builder = ActionTag.new
   end
 
   def extract_action_tags
