@@ -72,15 +72,29 @@ describe AppnexusClient do
   end
 
   describe "all_apn" do
-    it "should return an array of all creatives in the Appnexus sandbox" do
-      agent = AppnexusClient::API.new_agent
-      agent.url = Creative.apn_action_url(:index)
-      agent.http_get
-      creatives = 
-        ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
+    context "when called on Creative" do
+      it "should return an array of all creatives in the Appnexus sandbox" do
+        agent = AppnexusClient::API.new_agent
+        agent.url = Creative.apn_action_url(:index)
+        agent.http_get
+        creatives = 
+          ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
 
-      Creative.all_apn.should == creatives
+        Creative.all_apn.should == creatives
+        end
+    end
+
+    context "when called on Partner" do
+      it "should return an array of all the partners in the Appnexus sandbox" do
+        agent = AppnexusClient::API.new_agent
+        agent.url = Partner.apn_action_url(:index)
+        agent.http_get
+        partners = 
+          ActiveSupport::JSON.decode(agent.body_str)["response"]["advertisers"]
+
+        Partner.all_apn.should == partners
       end
+    end
   end
 =begin
   describe "delete_all_apn" do
