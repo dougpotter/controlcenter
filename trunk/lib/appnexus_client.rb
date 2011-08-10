@@ -254,6 +254,8 @@ module AppnexusClient
       end
     end
 
+    # Module level methods
+
     def self.issue_get(object, *filters)
       url = "#{APN_CONFIG[:api_root_url]}#{object}"
       if !filters.empty?
