@@ -7,29 +7,36 @@ describe PartnersController, "create with valid attributes" do
   end
 
   def do_create
-    post :create, :partner => {"partner_code" => "ABCD", "name" => "partner name"}
+    post :create, :partner => {
+      "partner_code" => "ABCD", 
+      "name" => "partner name" }
   end
 
   it "should assign @partner" do
-    Partner.expects(:new).with("partner_code" => "ABCD", "name" => "partner name").returns(@partner)
+    Partner.expects(:new).with(
+      "partner_code" => "ABCD", "name" => "partner name"
+    ).returns(@partner)
     @partner.expects(:name).returns("partner name")
     do_create
     assigns(:partner).should == @partner
   end
 
   it "should save @partner" do
-    Partner.expects(:new).with("partner_code" => "ABCD", "name" => "partner name").returns(@partner)
+    Partner.expects(:new).with(
+      "partner_code" => "ABCD", "name" => "partner name"
+    ).returns(@partner)
     @partner.expects(:name).returns("partner name")
     do_create
   end
 
   it "should be redirect" do
-    Partner.expects(:new).with("partner_code" => "ABCD", "name" => "partner name").returns(@partner)
+    Partner.expects(:new).with(
+      "partner_code" => "ABCD", "name" => "partner name"
+    ).returns(@partner)
     @partner.expects(:name).returns("partner name")
     do_create
     response.should be_redirect
   end
-
 end
 
 describe PartnersController, "create with invalid attributes" do
@@ -43,18 +50,24 @@ describe PartnersController, "create with invalid attributes" do
   end
 
   it "should assign @partner" do
-    Partner.expects(:new).with("partner_code" => "", "name" => "").returns(@partner)
+    Partner.expects(:new).with(
+      "partner_code" => "", "name" => ""
+    ).returns(@partner)
     do_create
     assigns(:partner).should == @partner
   end
 
   it "should fail to save @partner" do
-    Partner.expects(:new).with("partner_code" => "", "name" => "").returns(@partner)
+    Partner.expects(:new).with(
+      "partner_code" => "", "name" => ""
+    ).returns(@partner)
     do_create
   end
 
   it "should render new action" do
-    Partner.expects(:new).with("partner_code" => "", "name" => "").returns(@partner)
+    Partner.expects(:new).with(
+      "partner_code" => "", "name" => ""
+    ).returns(@partner)
     do_create
     response.should render_template(:new)
   end
