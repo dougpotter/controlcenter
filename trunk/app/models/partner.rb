@@ -30,6 +30,17 @@ class Partner < ActiveRecord::Base
   acts_as_dimension
   business_index :partner_code, :aka => "pid"
 
+  acts_as_apn_object :apn_attr_map => {
+    :name => "name",
+    :code => "partner_code" },
+    :non_method_attr_map => {
+      :state => "active" },
+    :apn_wrapper => "advertiser",
+    :urls => {
+      :index => "advertiser",
+      :new => "advertiser",
+      :delete_by_apn_ids => "advertiser?id=##apn_id##" }
+
   def campaigns 
     Campaign.all(
       :joins => { :line_item => :partner},

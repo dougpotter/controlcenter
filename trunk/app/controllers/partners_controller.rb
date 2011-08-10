@@ -33,13 +33,27 @@ class PartnersController < ApplicationController
     return answer
   end
 
+  def extract_conversion_pixels
+    pixel_hashes = params[:partner].delete("conversion_pixels_attributes")
+    pixels = []
+
+    if pixel_hashes
+      for pixel_hash in pixel_hashes.values
+        pixels << ConversionPixel.new(pixel_hash)
+      end
+    end
+
+    return pixels
+  end
+
   def create
     @action_tags = extract_action_tags
+    @conversion_pixels = extract_conversion_pixels
 
     @partner = Partner.new(params[:partner])
 
     # if partner doesn't save, bail
-    if !@partner.save
+    if !@partner.save || !@partner.save_apn
       @partners = Partner.all
       render :action => "new"
       return
@@ -59,6 +73,22 @@ class PartnersController < ApplicationController
         return
       end
     end
+
+    # associate conversion pixels with new partner
+    for pixel in @conversion_pixels
+      pixel.partner_code = @partner.partner_code
+      if pixel.save_apn
+        # do nothing
+      else
+        @partner.destroy
+        @partner = Partner.new(@partner.attributes)
+        @partners = Partner.all
+        flash[:notice] = "Invalid conversion pixel"
+        render :action => "new"
+        return
+      end
+    end
+
     redirect_to(
       new_partner_path,
       :notice => "#{@partner.name} successfully created"

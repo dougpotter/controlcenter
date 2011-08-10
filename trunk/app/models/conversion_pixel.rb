@@ -16,17 +16,4 @@ class ConversionPixel < ActiveRecord::Base
     :urls => {
       :new => "pixel?advertiser_code=##partner_code##",
       :index => "pixel?advertiser_code=##partner_code##" }
-
-
-  def save(*args)
-    true
-  end
-
-
-  def partner_code
-    a = AppnexusClient::API.new_agent
-    a.url = "#{APN_CONFIG["api_root_url"]}/pixel?"
-  end
-
-    
 end
