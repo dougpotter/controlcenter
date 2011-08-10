@@ -1,6 +1,32 @@
-// Adds fields in a nested form. Relies on a few conventions in HTML:
-// - all fields sets will be placed in a div of format
-//    UNDERSCORED_PLURAL_MODEL_NAME_forms (e.g. action_tags_forms)
+// Adds fields in a nested form. Options should be an object consisting of these 
+// key value pairs:
+//
+// modelName: the name of the model in quesiton, string, underscored, singular
+// modelNamePlural: the name of the model in question, string, underscored, plural
+// contextString: the Rails-convention string which forms the context portion
+//                of the id attributes on these inputs.
+//                e.g. partner[action_tags_attributes] would be the contextString
+//                for an input with name partner[action_tags_attributes][0][url]
+// formMarkup: a JS-escaped string consisting of a div enclosing a removal input 
+//             and the form markup. all should have index value 0.
+// populate: an array of tuple arrays comprised of name-url combinations. the name
+//           is the name of the field which should be pre-populated, and the url
+//           is the url at which a legal text value for pre-population will be 
+//           returned.
+//           e.g. [ [ "sid", "http://control.xgraph.net/action_tags/sid" ] ]
+//
+// Relies on a few conventions in HTML. For these
+// examples, I will pretend the model in question is the ActionTag. Pluralization,
+// underscoring, etc when naming form elements and divs should all be done in like
+// fashion for models of other names. Also, I will use a # to mean 'a number', not
+// the literal pund sign:
+// - somewhere on the page should be an image input with id="add_action_tag"
+// - all fields sets will be placed in a div with id="action_tags_forms"
+// - the field sets themselves should be wrapped in a div with
+//   class="action_tag_form" and data-index=#
+// - inside that div wrapper (of field sets) should also be an image input with
+//   id="action_tag_minus_sign_#" where # matches the data-index value of the 
+//   enclosing div
 var appendNestedForm = function(options) {
   var newFormIndex = indexOfLast($$('.'+options.modelName+'_form'));
   var numberedFormMarkup = setNestedFormIndex(options.formMarkup, newFormIndex);
