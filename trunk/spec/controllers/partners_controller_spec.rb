@@ -27,7 +27,34 @@ describe PartnersController, "create partner with valid attributes" do
     end
   end
 
-  context "and action tags with valid attributes and no conversion pixels" do
+  context "and valid action tags and no conversion pixels" do
+    def do_create
+      post :create, :partner => {
+        "partner_code" => "12345",
+        "name" => "partner name",
+        "action_tags_attributes" => {
+          "0" => {
+            "name" => "sitewide",
+            "sid" => "54321", 
+            "url" => "http://a.url" } } }
+    end
+
+    it "should associate the action tag with the partner" do
+      @action_tag = mock("ActionTag", :partner_id= => 1)
+      ActionTag.expects(:new).returns(@action_tag)
+      @action_tags_collection = mock("action_tags_collection")
+      @action_tags_collection.expects("<<").with(@action_tag).returns([@action_tag])
+      @partner = mock(
+        "Partner", 
+        :save => true, 
+        :save_apn => true, 
+        :id => 1, 
+        :action_tags => @action_tags_collection,
+        :name => "partner name"
+      )
+      Partner.expects(:new).returns(@partner)
+      do_create
+    end
   end
 end
 
