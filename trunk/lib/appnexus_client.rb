@@ -122,6 +122,11 @@ module AppnexusClient
 
       def delete_all_apn
 
+        if RAILS_ENV == "production"
+          raise "ATTEMPTING TO DELETE PRODUCTION DATA AT APPNEXUS." +
+            " THIS MUST BE DONE THROUGH THE APPNEXUS UI" 
+        end
+
         objects = all_apn
 
         agent = AppnexusClient::API.new_agent
