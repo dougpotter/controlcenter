@@ -117,6 +117,8 @@ module ApplicationHelper
     end
   end
 
+  # This method is responsible for constructing the form builder which uses + and -
+  # signs to add/remove form fields for adding nested objects.
   def nested_model_form_builder(context, model_str, options = {})
     form_markup = ""
     model_sym = model_str.to_sym
