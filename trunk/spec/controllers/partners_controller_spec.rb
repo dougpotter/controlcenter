@@ -133,56 +133,67 @@ describe PartnersController, "create partner with valid attributes" do
         do_create
         response.should redirect_to(new_partner_url)
       end
+    end
 
-      context "and valid conversion pixel" do
-        def do_create
-          post :create, :partner => { 
-          "partner_code" => "12345",
-          "name" => "partner name",
-          "action_tags_attributes" => {
-            "0" => {
-              "name" => "sitewide",
-              "sid" => "54321", 
-              "url" => "http://a.url" } },
-          "conversion_pixels_attributes" => {
-            "0" => {
-              "name" => "conv pixel name",
-              "referrer regex" => "a regex for referrer",
-              "request regex" => "a regex for requests" } } }
-        end
-
-        it "should associate action tags"
-
-        it "should associate conversion pixels"
-
-        it "should be redirect"
-
+    context "and valid conversion pixel" do
+      def do_create
+        post :create, :partner => { 
+        "partner_code" => "12345",
+        "name" => "partner name",
+        "action_tags_attributes" => {
+          "0" => {
+            "name" => "sitewide",
+            "sid" => "54321", 
+            "url" => "http://a.url" } },
+        "conversion_pixels_attributes" => {
+          "0" => {
+            "name" => "conv pixel name",
+            "referrer_regex" => "a regex for referrer",
+            "request_regex" => "a regex for requests" } } }
       end
 
-      context "and invalid conversion pixel" do
-        def do_create
-          post :create, :partner => { 
-          "partner_code" => "12345",
-          "name" => "partner name",
-          "action_tags_attributes" => {
-            "0" => {
-              "name" => "sitewide",
-              "sid" => "54321", 
-              "url" => "http://a.url" } },
-          "conversion_pixels_attributes" => {
-            "0" => {
-              "name" => "conv pixel name",
-              "referrer regex" => "",
-              "request regex" => "" } } }
-        end
-
-        it "should fail to save conversion pixel"
-
-        it "should render new action"
-
+      before(:each) do
+        mock_and_stub_action_tag_association
+        @partner.expects(:partner_code).returns("12345")
+        @conversion_pixel = mock(
+          "ConversionPixel", :save_apn => true, :partner_code= => "12345")
+        ConversionPixel.expects(:new).returns(@conversion_pixel)
       end
-    end # and valid action tags
-  end
+
+      it "should associate action tags and conversion pixels" do
+        do_create
+      end
+
+      it "should be redirect" do
+        do_create
+        response.should redirect_to(new_partner_url)
+      end
+
+    end
+
+    context "and invalid conversion pixel" do
+      def do_create
+        post :create, :partner => { 
+        "partner_code" => "12345",
+        "name" => "partner name",
+        "action_tags_attributes" => {
+          "0" => {
+            "name" => "sitewide",
+            "sid" => "54321", 
+            "url" => "http://a.url" } },
+        "conversion_pixels_attributes" => {
+          "0" => {
+            "name" => "conv pixel name",
+            "referrer regex" => "",
+            "request regex" => "" } } }
+      end
+
+      it "should fail to save conversion pixel"
+
+      it "should render new action"
+
+    end
+  end # and valid action tags
 end
 
 describe PartnersController, "create partner only with invalid attributes" do
