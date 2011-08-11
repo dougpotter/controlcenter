@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe PartnersController, "create partner with valid attributes" do
+  before(:each) do
+    @partner = mock("Partner", :save => true, :save_apn => true)
+    Partner.expects(:new).returns(@partner)
+  end
+
   context "and no action tags" do
     context "or conversion pixels" do
-      before(:each) do
-        @partner = mock("Partner", :save => true, :save_apn => true, :name => "name")
-        Partner.expects(:new).returns(@partner)
-      end
-
       after(:each) do
         Partner.delete_all_apn
       end
@@ -16,6 +16,10 @@ describe PartnersController, "create partner with valid attributes" do
         post :create, :partner => {
           "partner_code" => "12345", 
           "name" => "partner name" }
+      end
+
+      before(:each) do
+        @partner.expects(:name).returns("partner name")
       end
 
       it "should save @partner at xgcc and apn" do
@@ -33,16 +37,32 @@ describe PartnersController, "create partner with valid attributes" do
         post :create, :partner => { 
           "partner_code" => "12345",
           "name" => "partner name",
-          "converion_pixels_attributes" => { 
+          "conversion_pixels_attributes" => { 
             "0" => {
               "name" => "conv pixel name",
               "request_regex" => "a regex for request",
               "referrer_regex" => "a regex for referrer" } } }
       end
 
-      it "should associate conversion pixel" 
+      before(:each) do
+        @partner.expects(:name).returns("partner name")
+        @partner.expects(:partner_code).returns("12345")
+        @conversion_pixel = mock(
+          "ConversionPixel", 
+          :partner_code= => "12345",
+          :save_apn => true
+        )
+        ConversionPixel.expects(:new).returns(@conversion_pixel)
+      end
 
-      it "should be redirect"
+      it "should associate conversion pixel" do
+        do_create
+      end
+
+      it "should be redirect" do
+        do_create
+        response.should redirect_to(new_partner_url)
+      end
 
     end
 
@@ -51,7 +71,7 @@ describe PartnersController, "create partner with valid attributes" do
         post :create, :partner => { 
           "partner_code" => "12345",
           "name" => "partner name",
-          "converion_pixels_attributes" => {
+          "conversion_pixels_attributes" => {
             "0" => { 
               "name" => "conv pixel name",
               "request_regex" => "a regex for request",
@@ -82,15 +102,10 @@ describe PartnersController, "create partner with valid attributes" do
         @action_tag = mock("ActionTag")
         ActionTag.expects(:new).returns(@action_tag)
         @action_tags_collection = mock("action_tags_collection")
-        @action_tags_collection.expects("<<").with(@action_tag).returns([@action_tag])
-        @partner = mock(
-          "Partner", 
-          :save => true, 
-          :save_apn => true, 
-          :action_tags => @action_tags_collection,
-          :name => "partner name"
-        )
-        Partner.expects(:new).returns(@partner)
+        @action_tags_collection.expects("<<").
+          with(@action_tag).returns([@action_tag])
+        @partner.expects(:action_tags).returns(@action_tags_collection)
+        @partner.expects(:name).returns("partner name")
         do_create
       end
 
