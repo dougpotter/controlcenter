@@ -34,7 +34,7 @@ describe PartnersController, "create partner with valid attributes" do
         do_create
         response.should redirect_to(new_partner_url)
       end
-    end # or conversion pixels
+    end # or conversion pixel
 
     context "and valid conversion pixel" do
       def do_create
@@ -100,7 +100,7 @@ describe PartnersController, "create partner with valid attributes" do
         response.should render_template(:new)
       end
     end
-  end # and no action tags
+  end # and no action tag
 
   context "and valid action tag" do
     def mock_and_stub_action_tag_association
@@ -212,7 +212,7 @@ describe PartnersController, "create partner with valid attributes" do
       end
 
     end
-  end # and valid action tags
+  end # and valid action tag
 end
 
 describe PartnersController, "create partner only with invalid attributes" do
