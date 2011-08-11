@@ -99,6 +99,16 @@ describe PartnersController, "create partner with valid attributes" do
   end # and no action tags
 
   context "and valid action tag" do
+    def mock_and_stub_action_tag_association
+        @action_tag = mock("ActionTag")
+        ActionTag.expects(:new).returns(@action_tag)
+        @action_tags_collection = mock("action_tags_collection")
+        @action_tags_collection.expects("<<").
+          with(@action_tag).returns([@action_tag])
+        @partner.expects(:action_tags).returns(@action_tags_collection)
+        @partner.expects(:name).returns("partner name")
+    end
+
     context "and no conversion pixel" do
       def do_create
         post :create, :partner => {
@@ -112,13 +122,7 @@ describe PartnersController, "create partner with valid attributes" do
       end
 
       before(:each) do
-        @action_tag = mock("ActionTag")
-        ActionTag.expects(:new).returns(@action_tag)
-        @action_tags_collection = mock("action_tags_collection")
-        @action_tags_collection.expects("<<").
-          with(@action_tag).returns([@action_tag])
-        @partner.expects(:action_tags).returns(@action_tags_collection)
-        @partner.expects(:name).returns("partner name")
+        mock_and_stub_action_tag_association
       end
 
       it "should associate the action tag with the partner" do
