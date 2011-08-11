@@ -2,7 +2,8 @@ Feature: Manage partners
   In order to provide a reposity of advertising partners
   an ad ops specialist
   wants to manage advertising parterns in XGCC
-  
+
+  @clean_partners_from_apn_sandbox
   Scenario: Create new partner
     Given I am on the new partner page
     And I fill in the following:
