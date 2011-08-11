@@ -98,8 +98,8 @@ describe PartnersController, "create partner with valid attributes" do
     end
   end # and no action tags
 
-  context "and valid action tags" do
-    context "and no conversion pixels" do
+  context "and valid action tag" do
+    context "and no conversion pixel" do
       def do_create
         post :create, :partner => {
           "partner_code" => "12345",
@@ -111,7 +111,7 @@ describe PartnersController, "create partner with valid attributes" do
               "url" => "http://a.url" } } }
       end
 
-      it "should associate the action tag with the partner" do
+      before(:each) do
         @action_tag = mock("ActionTag")
         ActionTag.expects(:new).returns(@action_tag)
         @action_tags_collection = mock("action_tags_collection")
@@ -119,10 +119,18 @@ describe PartnersController, "create partner with valid attributes" do
           with(@action_tag).returns([@action_tag])
         @partner.expects(:action_tags).returns(@action_tags_collection)
         @partner.expects(:name).returns("partner name")
+      end
+
+      it "should associate the action tag with the partner" do
         do_create
       end
 
-      context "and valid conversion pixels" do
+      it "should be redirect" do
+        do_create
+        response.should redirect_to(new_partner_url)
+      end
+
+      context "and valid conversion pixel" do
         def do_create
           post :create, :partner => { 
           "partner_code" => "12345",
