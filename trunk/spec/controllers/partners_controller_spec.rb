@@ -6,6 +6,14 @@ describe PartnersController, "create partner with valid attributes" do
     Partner.expects(:new).returns(@partner)
   end
 
+  def mock_and_stub_object_reset_for_new_render
+    @partner.expects(:destroy).returns("true")
+    @partner.expects(:attributes).returns({ "a" => "hash" })
+    Partner.expects(:new).
+      with({ "a" => "hash" }).returns(mock("Partner (new from old attrs)"))
+    Partner.expects(:all).returns([ mock("Partner (one of pre-existing)") ])
+  end
+
   context "and no action tags" do
     context "or conversion pixels" do
       def do_create
@@ -76,11 +84,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         @partner.expects(:partner_code).returns("12345")
-        @partner.expects(:destroy).returns(@partner)
-        @partner.expects(:attributes).returns({ "a" => "hash" })
-        Partner.expects(:new).
-          with({ "a" => "hash" }).returns(mock("Partner (new from old attrs)"))
-        Partner.expects(:all).returns([ mock("Partner (one of pre-existing)") ])
+        mock_and_stub_object_reset_for_new_render
         @conversion_pixel = mock(
           "ConversionPixel", :partner_code= => "12345", :save_apn => false
         )
@@ -106,7 +110,6 @@ describe PartnersController, "create partner with valid attributes" do
         @action_tags_collection.expects("<<").
           with(@action_tag).returns([@action_tag])
         @partner.expects(:action_tags).returns(@action_tags_collection)
-        @partner.expects(:name).returns("partner name")
     end
 
     context "and no conversion pixel" do
@@ -123,6 +126,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_action_tag_association
+        @partner.expects(:name).returns("partner name")
       end
 
       it "should associate the action tag with the partner" do
@@ -158,6 +162,7 @@ describe PartnersController, "create partner with valid attributes" do
         @conversion_pixel = mock(
           "ConversionPixel", :save_apn => true, :partner_code= => "12345")
         ConversionPixel.expects(:new).returns(@conversion_pixel)
+        @partner.expects(:name).returns("partner name")
       end
 
       it "should associate action tags and conversion pixels" do
@@ -188,9 +193,23 @@ describe PartnersController, "create partner with valid attributes" do
             "request regex" => "" } } }
       end
 
-      it "should fail to save conversion pixel"
+      before(:each) do
+        mock_and_stub_action_tag_association
+        mock_and_stub_object_reset_for_new_render
+        @partner.expects(:partner_code).returns("12345")
+        @conversion_pixel = mock(
+          "ConversionPixel", :save_apn => false, :partner_code= => "12345")
+        ConversionPixel.expects(:new).returns(@conversion_pixel)
+      end
 
-      it "should render new action"
+      it "should fail to save conversion pixel" do
+        do_create
+      end
+
+      it "should render new action" do
+        do_create
+        response.should render_template(:new)
+      end
 
     end
   end # and valid action tags
