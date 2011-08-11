@@ -8,10 +8,6 @@ describe PartnersController, "create partner with valid attributes" do
 
   context "and no action tags" do
     context "or conversion pixels" do
-      after(:each) do
-        Partner.delete_all_apn
-      end
-
       def do_create
         post :create, :partner => {
           "partner_code" => "12345", 
@@ -74,14 +70,31 @@ describe PartnersController, "create partner with valid attributes" do
           "conversion_pixels_attributes" => {
             "0" => { 
               "name" => "conv pixel name",
-              "request_regex" => "a regex for request",
-              "referrer_regex" => "a regex for referrer" } } }
+              "request_regex" => "",
+              "referrer_regex" => "" } } }
       end
 
-      it "should fail to save conversion pixel"
+      before(:each) do
+        @partner.expects(:partner_code).returns("12345")
+        @partner.expects(:destroy).returns(@partner)
+        @partner.expects(:attributes).returns({ "a" => "hash" })
+        Partner.expects(:new).
+          with({ "a" => "hash" }).returns(mock("Partner (new from old attrs)"))
+        Partner.expects(:all).returns([ mock("Partner (one of pre-existing)") ])
+        @conversion_pixel = mock(
+          "ConversionPixel", :partner_code= => "12345", :save_apn => false
+        )
+        ConversionPixel.expects(:new).returns(@conversion_pixel)
+      end
 
-      it "should render new action"
+      it "should fail to save conversion pixel" do
+        do_create
+      end
 
+      it "should render new action" do
+        do_create
+        response.should render_template(:new)
+      end
     end
   end # and no action tags
 
