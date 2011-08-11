@@ -237,13 +237,20 @@ describe PartnersController, "create partner only with invalid attributes" do
   end
 
   describe PartnersController, "destroy" do
+    def do_delete
+      delete :destroy, :id => 1
+    end
 
-    it "should call destroy on the partner whose id is passed in params[:id]"
+    before(:each) do
+      Partner.expects(:destroy).with('1')
+    end
+
+    it "should call destroy on the partner whose id is passed in params[:id]" do
+      do_delete
+    end
 
     it "should redirect to new partner page" do
-      pending
-      @partner = Factory.create(:partner)
-      delete :destroy, :id => @partner.id
+      do_delete
       response.should redirect_to(new_partner_url)
     end
   end
