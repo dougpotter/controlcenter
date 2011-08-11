@@ -61,7 +61,6 @@ class PartnersController < ApplicationController
 
     #associate action tags with new partner
     for action_tag in @action_tags
-      action_tag.partner_id = @partner.id
       if @partner.action_tags << action_tag
         # do nothing
       else
