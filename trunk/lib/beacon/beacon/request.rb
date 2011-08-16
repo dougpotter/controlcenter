@@ -11,13 +11,19 @@ module Beacon
       request(:post, path)
     end
 
-    def request(method, path)
+    def put(path, data)
+      request(:put, path, { :put_data => data })
+    end
+
+    def request(method, path, options = {})
       url = "#{endpoint}#{path}"
       case method.to_sym
       when :get
         response = connection.http_get(url).body_str
       when :post
         response = connection.http_post(url).body_str
+      when :put
+        response = connection.http_put(url, options[:put_data].url_encode).body_str
       end
       parse_json(response)
     end
