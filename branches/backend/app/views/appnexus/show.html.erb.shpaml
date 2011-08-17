@@ -55,9 +55,24 @@ table
       = @job.state[:appnexus_list_location]
   
   tr
-    th | EMR jobflow id
+    th | EMR jobflow ID
     td
       = @job.state[:emr_jobflow_id]
+  
+  tr
+    th | AppNexus filename
+    td
+      = @job.state[:output_filename]
+  
+  tr
+    th | Output list size (in lines)
+    td
+      = @job.state[:output_line_count]
+  
+  tr
+    th | Output list size (in bytes)
+    td
+      = @job.state[:output_byte_count]
 
 = clear
 

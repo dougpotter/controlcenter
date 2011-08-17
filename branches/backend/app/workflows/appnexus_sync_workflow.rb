@@ -110,8 +110,10 @@ class AppnexusSyncWorkflow
     unless files.length == 1
       raise "Multiple files found: #{files.join(', ')}"
     end
+    state = {}
     get_file(bucket, files[0]) do |f|
       filename = determine_appnexus_filename(params)
+      state[:filename] = filename
       remote_path = params[:sftp_path]
       unless remote_path
         raise Workflow::ConfigurationError, "sftp_path not specified for appnexus workflow"
@@ -124,12 +126,27 @@ class AppnexusSyncWorkflow
       end
       Net::SFTP.start(params[:sftp_host], params[:sftp_username], options) do |sftp|
         sftp.file.open(remote_path, 'w') do |remote_f|
+          line_count = 0
+          trailing_eol = false
+          byte_count = 0
+          
           while chunk = f.read(65536)
             remote_f.write(chunk)
+            
+            byte_count += chunk.length
+            line_count += chunk.count("\n")
+            trailing_eol = chunk[-1] == "\n"
           end
+          
+          if byte_count > 0 && !trailing_eol
+            line_count += 1
+          end
+          state[:line_count] = line_count
+          state[:byte_count] = byte_count
         end
       end
     end
+    state
   end
   
   private

@@ -34,9 +34,12 @@ class AppnexusSyncJob < Job
             result = workflow.check_create_list(job_id)
             case result[:success]
             when true
-              workflow.upload_list(self.state[:appnexus_list_location])
+              upload_state = workflow.upload_list(self.state[:appnexus_list_location])
               self.status = COMPLETED
               self.completed_at = Time.now.utc
+              [:filename, :line_count, :byte_count].each do |key|
+                self.state["output_#{key}".to_sym] = upload_state[key]
+              end
               save!
             when false
               msg = "Failing job because check_create_list returned false"
