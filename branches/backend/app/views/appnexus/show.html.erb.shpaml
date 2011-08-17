@@ -43,6 +43,21 @@ table
       td
         pre style='overflow:scroll;width:80%'
           = @job.state[:diagnostics]
+  
+  tr
+    th | Lookup location
+    td
+      = @job.state[:lookup_location]
+  
+  tr
+    th | Output location
+    td
+      = @job.state[:appnexus_list_location]
+  
+  tr
+    th | EMR jobflow id
+    td
+      = @job.state[:emr_jobflow_id]
 
 = clear
 
