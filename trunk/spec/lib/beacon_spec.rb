@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+
 describe Beacon do
   before(:all) do
     @b = Beacon.new
@@ -7,12 +8,39 @@ describe Beacon do
             "http://aa.qa.xgraph.net/api/audiences"
     ).body_str))
     @audiences_in_order = @audiences_as_mash.audiences.sort { |x,y| x.id <=> y.id }
+    @agent = Curl::Easy.new
+  end
+
+  def by_id
+    return Proc.new { |x,y| x.id <=> y.id }
   end
 
   def last_audience_id
     @audiences_in_order.last.id
   end
 
+  def audience_id_with_sync_rules
+    for audience in @audiences_in_order
+      if sync_rules(audience.id) && audience.type = 'xguid-conditional'
+        return audience.id
+      end
+    end
+    raise "No audience has sync rules"
+  end
+
+  def sync_rules(audience_id)
+    c = Curl::Easy.new(
+      "http://aa.qa.xgraph.net/api/audiences/NUM/sync_rules".
+      gsub("NUM", "#{audience_id}"))
+    c.http_get
+    Hashie::Mash.new(JSON.parse(c.body_str)).sync_rules
+  end
+
+  def sync_rule_id
+    sync_rules(audience_id_with_sync_rules).sort(&by_id).first.id
+  end
+
+  ## Audience 
   context "audience admin" do
 
     it "#audiences should return a hash of all audiences" do
@@ -56,35 +84,11 @@ describe Beacon do
     end
   end
 
+  ## Sync Rules
   context "sync rules admin" do
 
-    # returns the ID of an audience with sync rules
-    def audience_id_with_sync_rules
-      for audience in @audiences_in_order
-        if sync_rules(audience.id) && audience.type = 'xguid-conditional'
-          return audience.id
-        end
-      end
-      raise "No audience has sync rules"
-    end
-
-    def sync_rules(audience_id)
-      c = Curl::Easy.new(
-        "http://aa.qa.xgraph.net/api/audiences/NUM/sync_rules".
-        gsub("NUM", "#{audience_id}"))
-      c.http_get
-      Hashie::Mash.new(JSON.parse(c.body_str)).sync_rules
-    end
-
-    def sync_rule_id
-      sync_rules(audience_id_with_sync_rules).sort(&by_id).first.id
-    end
-
-    def by_id
-      return Proc.new { |x,y| x.id <=> y.id }
-    end
-
-    it "#sync_rules(audience_id) should return all the sync rules for the audience" do
+    it "#sync_rules(audience_id) should return all the sync rules for the"+
+    " audience" do
       audience_id = audience_id_with_sync_rules
       rules_in_order = sync_rules(audience_id).sort(&by_id)
       @b.sync_rules(audience_id).sync_rules.sort(&by_id).should == rules_in_order
@@ -115,9 +119,10 @@ describe Beacon do
 
     it "#sync_rule(audience_id, sync_rule_id) should return the details of a" +
     " single sync rule" do
-      agent = Curl::Easy.new("http://aa.qa.xgraph.net/api/audiences/#{audience_id_with_sync_rules}/sync_rules/#{sync_rule_id}")
-      agent.http_get
-      resp = Hashie::Mash.new(JSON.parse(agent.body_str))
+      @agent.url = "http://aa.qa.xgraph.net/api/audiences"+
+        "/#{audience_id_with_sync_rules}/sync_rules/#{sync_rule_id}"
+      @agent.http_get
+      resp = Hashie::Mash.new(JSON.parse(@agent.body_str))
       @b.sync_rule(audience_id_with_sync_rules, sync_rule_id).should == resp
     end
 
@@ -141,6 +146,113 @@ describe Beacon do
       sync_rule_count = sync_rules_in_order.size
       @b.delete_sync_rule(audience_id, last_sync_rule_id).should == ""
       @b.sync_rules(audience_id).sync_rules.size.should == sync_rule_count - 1
+    end
+  end
+
+  # Request Conditions
+  context "request condition admin" do
+
+    before(:all) do
+      @b.new_audience({ 
+        :name => "new", 
+        :audience_type => "request-conditional", 
+        :active => "true" })
+      @audience_id = @b.audiences.audiences.sort(&by_id).last.id
+    end
+
+    def request_conditions(audience_id)
+      @agent = Curl::Easy.new(
+        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/request_conditions")
+      @agent.http_get
+      Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions
+    end
+
+    def audience_id_with_request_condition
+      for audience in @audiences_in_order
+        if audience["type"] == 'request-conditional' && 
+          !request_conditions(audience.id).blank?
+          return audience.id
+        end
+      end
+      raise "No audience has request conditions"
+    end
+
+    it "#request_conditions(audience_id) should return Hashie::Mash object" +
+    " containing request conditions associated with this audience if it is a"+
+    " request-conditional type audience"  do
+      @agent.url = 
+        "http://aa.qa.xgraph.net/api/audiences/#{@audience_id}/request_conditions"
+      @agent.http_get
+      proper_response = Hashie::Mash.new(JSON.parse(@agent.body_str))
+      @b.request_conditions(@audience_id).should == proper_response
+    end
+
+    it "#request_conditions(audience_id) should return message saying" +
+    " 'Audience # is not request-conditional' if the audience requested is not"+
+    " of type request-conditional" do
+      audience_id = audience_id_with_sync_rules
+      @b.request_conditions(audience_id).should == 
+        "Audience #{audience_id} is not request-conditional"
+    end
+
+    it "#new_request_conditions(audience_id) should create a new request condition"+
+      " for the audience" do
+      @agent.url = 
+        "http://aa.qa.xgraph.net/api/audiences/#{@audience_id}/request_conditions"
+      @agent.http_get
+      count = Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions.size
+      @b.new_request_condition(
+        @audience_id, 
+        :request_url_regex => "/aregexyo/", 
+        :referrer_url_regex => "/anotheregexyo/"
+      ).should == ""
+      @agent.http_get
+      new_count = 
+        Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions.size
+      new_count.should == count + 1
+    end
+
+    it "#request_condition(audience_id, request_condition_id) should return"+
+      " details for the request condition with the given id" do
+      audience_id = audience_id_with_request_condition
+      request_condition_id = request_conditions(audience_id).sort(&by_id).last.id
+      @agent.url = 
+        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/"+
+        "request_conditions/#{request_condition_id}"
+      @agent.http_get
+      proper_response = Hashie::Mash.new(JSON.parse(@agent.body_str))
+      @b.request_condition(audience_id, request_condition_id).should ==
+        proper_response
+    end
+
+    it "#update_request_condition(audience_id, request_condition_id) should update"+
+      " the request condition" do
+      audience_id = audience_id_with_request_condition
+      request_condition_id = request_conditions(audience_id).sort(&by_id).last.id
+      time_as_int = Time.now.to_i
+      @b.update_request_condition(
+        audience_id, 
+        request_condition_id, 
+        :request_url_regex => "/anewtime#{time_as_int}/")
+      @agent.url = 
+        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/"+
+        "request_conditions/#{request_condition_id}"
+      @agent.http_get
+      Hashie::Mash.new(JSON.parse(@agent.body_str)).request_url_regex.should ==
+        "/anewtime#{time_as_int}/"
+    end
+
+    it "#delete_request_condition(audience_id, request_condition_id) should delete"+
+      " the request condition" do
+      audience_id = audience_id_with_request_condition
+      request_condition_id = request_conditions(audience_id).sort(&by_id).last.id
+      @b.delete_request_condition(audience_id, request_condition_id)
+      @agent.url = 
+        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/"+
+        "request_conditions/#{request_condition_id}"
+      @agent.http_get
+      @agent.body_str.should == 
+        "Request condition with id #{request_condition_id} not found"
     end
   end
 end
