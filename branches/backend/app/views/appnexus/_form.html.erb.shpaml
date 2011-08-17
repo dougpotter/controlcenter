@@ -67,3 +67,15 @@ div class=field_block
   = f.text_field 'instance_count'
 
 = clear :both, :br
+
+div class=field_block
+  = f.label 'keep_emr_alive', 'Keep EMR Alive'
+  = f.check_box 'keep_emr_alive'
+
+= clear :both, :br
+
+div class=field_block
+  = f.label 'enable_emr_debugging', 'Enable EMR Debugging'
+  = f.check_box 'enable_emr_debugging'
+
+= clear :both, :br

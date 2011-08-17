@@ -73,6 +73,16 @@ table
     th | Output list size (in bytes)
     td
       = @job.state[:output_byte_count]
+  
+  tr
+    th | Keep EMR alive
+    td
+      = @job_parameters.keep_emr_alive ? 'Yes' : 'No'
+  
+  tr
+    th | Enable EMR debugging
+    td
+      = @job_parameters.enable_emr_debugging ? 'Yes' : 'No'
 
 = clear
 

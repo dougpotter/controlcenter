@@ -49,6 +49,9 @@ class AppnexusSyncParameters < ActiveRecord::Base
   validates_presence_of :instance_count
   validates_numericality_of :instance_count
   
+  column :keep_emr_alive, :boolean
+  column :enable_emr_debugging, :boolean
+  
   def initialize(options={})
     workflow_config = AppnexusSyncWorkflow.configuration
     default_options = HashWithIndifferentAccess.new(

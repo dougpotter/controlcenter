@@ -38,6 +38,14 @@ class AppnexusSyncWorkflow
       '--log-uri', emr_params[:log_url],
       '--num-instances', emr_params[:instance_count],
       '--instance-type', emr_params[:instance_type],
+    ]
+    if params[:keep_emr_alive]
+      cmd << '--alive'
+    end
+    if params[:enable_emr_debugging]
+      cmd << '--enable-debugging'
+    end
+    cmd += [
       '--jar', emr_params[:code_url],
       '--main-class', emr_params[:main_class],
       '--arg', emr_params[:temp_dir],
