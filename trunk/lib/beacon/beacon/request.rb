@@ -15,6 +15,10 @@ module Beacon
       request(:put, path, { :put_data => data })
     end
 
+    def delete(path)
+      request(:delete, path)
+    end
+
     def request(method, path, options = {})
       url = "#{endpoint}#{path}"
       case method.to_sym
@@ -24,6 +28,8 @@ module Beacon
         response = connection.http_post(url).body_str
       when :put
         response = connection.http_put(url, options[:put_data].url_encode).body_str
+      when :delete
+        response = connection.http_delete(url).body_str
       end
       parse_json(response)
     end
