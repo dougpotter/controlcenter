@@ -18,6 +18,7 @@ doc/debug.rtf
 log/*.log
 public/attachments
 public/compiled/stylesheets/*.css
+public/javascripts/all.js
 tmp/cache/*
 tmp/pids/*
 tmp/sass-cache/*
