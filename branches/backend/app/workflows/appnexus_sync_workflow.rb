@@ -113,6 +113,9 @@ class AppnexusSyncWorkflow
     get_file(bucket, files[0]) do |f|
       filename = determine_appnexus_filename(params)
       remote_path = params[:sftp_path]
+      unless remote_path
+        raise Workflow::ConfigurationError, "sftp_path not specified for appnexus workflow"
+      end
       remote_path += '/' if remote_path && remote_path[-1] != ?/
       remote_path += filename
       options = {}

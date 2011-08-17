@@ -2,6 +2,9 @@ module Workflow
   # Base class for workflow errors
   class WorkflowError < StandardError; end
   
+  # Incorrect or missing workflow configuration
+  class ConfigurationError < WorkflowError; end
+  
   # Another process had begun extracting the requested file.
   # Extraction may be actively proceeding, or the other process
   # may have died but its lock timeout had not yet passed.
