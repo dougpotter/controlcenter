@@ -136,7 +136,7 @@ class AppnexusSyncWorkflow
   # configuration files.
   def build_emr_parameters(params)
     bucket, path = params[:s3_xguid_list_prefix].split(':', 2)
-    input_url = "s3n://#{bucket}/#{path}/"
+    input_url = "s3n://#{bucket}/#{path}"
     bucket, path = params[:output_prefix].split(':', 2)
     timestamp = Time.now
     hour = timestamp.hour
