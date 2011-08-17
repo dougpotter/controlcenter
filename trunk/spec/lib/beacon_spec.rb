@@ -21,7 +21,7 @@ describe Beacon do
 
   def audience_id_with_sync_rules
     for audience in @audiences_in_order
-      if sync_rules(audience.id) && audience.type = 'xguid-conditional'
+      if audience["type"] == 'xguid-conditional' && sync_rules(audience.id)
         return audience.id
       end
     end
@@ -40,9 +40,26 @@ describe Beacon do
     sync_rules(audience_id_with_sync_rules).sort(&by_id).first.id
   end
 
+  def audience_id_with_request_condition
+    for audience in @audiences_in_order
+      if audience["type"] == 'request-conditional' && 
+        !request_conditions(audience.id).blank?
+        return audience.id
+      end
+    end
+    raise "No audience has request conditions"
+  end
+
+  def request_conditions(audience_id)
+    @agent = Curl::Easy.new(
+      "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/request_conditions")
+    @agent.http_get
+    Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions
+  end
+
   ## Audience 
   context "audience admin" do
-
+=begin
     it "#audiences should return a hash of all audiences" do
       beacon_response = @b.audiences.audiences.sort { |x,y| x.id <=> y.id }
       beacon_response == @audiencnes_in_order
@@ -82,10 +99,12 @@ describe Beacon do
       @b.update_audience(@audiences_in_order.last.id, "Mog", "false")
       @b.audience(@audiences_in_order.last.id).name.should == "Mog"
     end
+=end
   end
 
   ## Sync Rules
   context "sync rules admin" do
+=begin
 
     it "#sync_rules(audience_id) should return all the sync rules for the"+
     " audience" do
@@ -147,6 +166,7 @@ describe Beacon do
       @b.delete_sync_rule(audience_id, last_sync_rule_id).should == ""
       @b.sync_rules(audience_id).sync_rules.size.should == sync_rule_count - 1
     end
+=end
   end
 
   # Request Conditions
@@ -159,24 +179,7 @@ describe Beacon do
         :active => "true" })
       @audience_id = @b.audiences.audiences.sort(&by_id).last.id
     end
-
-    def request_conditions(audience_id)
-      @agent = Curl::Easy.new(
-        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/request_conditions")
-      @agent.http_get
-      Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions
-    end
-
-    def audience_id_with_request_condition
-      for audience in @audiences_in_order
-        if audience["type"] == 'request-conditional' && 
-          !request_conditions(audience.id).blank?
-          return audience.id
-        end
-      end
-      raise "No audience has request conditions"
-    end
-
+=begin
     it "#request_conditions(audience_id) should return Hashie::Mash object" +
     " containing request conditions associated with this audience if it is a"+
     " request-conditional type audience"  do
@@ -253,6 +256,68 @@ describe Beacon do
       @agent.http_get
       @agent.body_str.should == 
         "Request condition with id #{request_condition_id} not found"
+    end
+=end
+  end
+
+  ## Load Operations
+  context "load operation admin" do
+
+    def load_operations(audience_id)
+      @agent.url = 
+        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/load_operations"
+      @agent.http_get
+      Hashie::Mash.new(JSON.parse(@agent.body_str)).load_operations
+    end
+    
+    def audience_id_with_load_operations
+      for audience in @audiences_in_order
+        if audience["type"] == 'xguid-conditional' && 
+          !load_operations(audience.id).blank?
+          return audience.id
+        end
+      end
+      raise "No audience has load operations"
+    end
+
+    it "#load_operations(audience_id) should return all load operations for the"+
+    " audience" do
+      audience_id = audience_id_with_load_operations
+      los_in_order = load_operations(audience_id).sort(&by_id)
+      proper_response = los_in_order
+      @b.load_operations(audience_id).load_operations.sort(&by_id).should == 
+        proper_response
+    end
+
+    it "#load_operations(audience_id) should return an error string if the"+
+    " if the audience id provided does not belong to an xguid-conditional"+
+    " audience" do
+      audience_id = audience_id_with_request_condition
+      @b.load_operations(audience_id).should == 
+        "Audience #{audience_id} is not xguid-conditional"
+    end
+
+    it "#new_load_operation(audience_id) should create a new load operation" do
+      audience_id = audience_id_with_load_operations
+      count = load_operations(audience_id).size
+      @b.new_load_operation(audience_id, "xg-live/prefix")
+      @agent.url = 
+        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/load_operations"
+      @agent.http_get
+      new_count = Hashie::Mash.new(JSON.parse(@agent.body_str)).load_operations.size
+      new_count.should == count + 1
+    end
+
+    it "#load_operation(audience_id, load_operation_id) should return details of"+
+    " of the load operation" do
+      audience_id = audience_id_with_load_operations
+      load_operation_id = load_operations(audience_id).sort(&by_id).first.id
+      @agent.url = 
+        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/load_operations"+
+        "/#{load_operation_id}"
+      @agent.http_get
+      proper_response = Hashie::Mash.new(JSON.parse(@agent.body_str))
+      @b.load_operation(audience_id, load_operation_id).should == proper_response
     end
   end
 end
