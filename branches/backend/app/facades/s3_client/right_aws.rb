@@ -50,6 +50,14 @@ class S3Client::RightAws < S3Client::Base
     end
   end
   
+  def get_stream(bucket, remote_path)
+    map_exceptions(exception_map, "#{bucket}:#{remote_path}") do
+      @s3.get(bucket, remote_path) do |chunk|
+        yield chunk
+      end
+    end
+  end
+  
   def put_file(bucket, remote_path, local_path)
     if @debug
       debug_print "S3put #{local_path} -> #{bucket}:#{remote_path}"
