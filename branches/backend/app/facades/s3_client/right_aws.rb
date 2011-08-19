@@ -78,14 +78,28 @@ class S3Client::RightAws < S3Client::Base
   end
   
   def list_bucket_items(bucket, prefix=nil)
-    entries = list_bucket_entries(bucket, prefix)
-    entries.map { |entry| create_item(entry) }
+    if block_given?
+      list_bucket_entries(bucket, prefix) do |entry|
+        item = create_item(entry)
+        yield item
+      end
+    else
+      entries = list_bucket_entries(bucket, prefix)
+      entries.map { |entry| create_item(entry) }
+    end
   end
   
   # optimization method
   def list_bucket_files(bucket, prefix=nil)
-    entries = list_bucket_entries(bucket, prefix)
-    entries.map { |entry| entry[:key] }
+    if block_given?
+      list_bucket_entries(bucket, prefix).each do |entry|
+        key = entry[:key]
+        yield key
+      end
+    else
+      entries = list_bucket_entries(bucket, prefix)
+      entries.map { |entry| entry[:key] }
+    end
   end
   
   # prefix is a "directory" name
@@ -126,20 +140,38 @@ class S3Client::RightAws < S3Client::Base
   end
   
   def list_bucket_entries(bucket, prefix)
-    all_entries = []
-    # apparently prefix is required
-    @s3.incrementally_list_bucket(bucket, :prefix => prefix) do |response|
-      all_entries += response[:contents]
+    if block_given?
+      @s3.incrementally_list_bucket(bucket, :prefix => prefix) do |response|
+        response[:contents].each do |entry|
+          yield entry
+        end
+      end
+      nil
+    else
+      all_entries = []
+      # apparently prefix is required
+      @s3.incrementally_list_bucket(bucket, :prefix => prefix) do |response|
+        all_entries += response[:contents]
+      end
+      all_entries
     end
-    all_entries
   end
   
   def list_bucket_subentries(bucket, prefix, delimiter)
-    all_subentries = []
-    @s3.incrementally_list_bucket(bucket, :prefix => prefix, :delimiter => delimiter) do |response|
-      all_subentries += response[:common_prefixes]
+    if block_given?
+      @s3.incrementally_list_bucket(bucket, :prefix => prefix, :delimiter => delimiter) do |response|
+        response[:common_prefixes].each do |entry|
+          yield entry
+        end
+      end
+      nil
+    else
+      all_subentries = []
+      @s3.incrementally_list_bucket(bucket, :prefix => prefix, :delimiter => delimiter) do |response|
+        all_subentries += response[:common_prefixes]
+      end
+      all_subentries
     end
-    all_subentries
   end
   
   def exception_map
