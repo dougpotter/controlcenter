@@ -134,23 +134,16 @@ class AppnexusSyncWorkflow
       end
       Net::SFTP.start(params[:sftp_host], params[:sftp_username], options) do |sftp|
         sftp.file.open(remote_path, 'w') do |remote_f|
-          line_count = 0
-          trailing_eol = false
-          byte_count = 0
+          counter = ByteLineCounter.new
           
           while chunk = f.read(65536)
             remote_f.write(chunk)
             
-            byte_count += chunk.length
-            line_count += chunk.count("\n")
-            trailing_eol = chunk[-1] == "\n"
+            counter.update(chunk)
           end
           
-          if byte_count > 0 && !trailing_eol
-            line_count += 1
-          end
-          state[:line_count] = line_count
-          state[:byte_count] = byte_count
+          state[:line_count] = counter.line_count
+          state[:byte_count] = counter.byte_count
         end
       end
     end
