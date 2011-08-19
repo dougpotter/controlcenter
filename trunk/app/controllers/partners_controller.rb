@@ -76,9 +76,7 @@ class PartnersController < ApplicationController
     # associate conversion pixels with new partner
     for pixel in @conversion_pixels
       pixel.partner_code = @partner.partner_code
-      if pixel.save_apn
-        # do nothing
-      else
+      if !pixel.save_apn || !pixel.save_beacon
         @partner.destroy
         @partner = Partner.new(@partner.attributes)
         @partners = Partner.all

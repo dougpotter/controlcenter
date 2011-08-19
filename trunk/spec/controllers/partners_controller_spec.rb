@@ -54,7 +54,8 @@ describe PartnersController, "create partner with valid attributes" do
         @conversion_pixel = mock(
           "ConversionPixel", 
           :partner_code= => "12345",
-          :save_apn => true
+          :save_apn => true,
+          :save_beacon => true
         )
         ConversionPixel.expects(:new).returns(@conversion_pixel)
       end
@@ -160,7 +161,11 @@ describe PartnersController, "create partner with valid attributes" do
         mock_and_stub_action_tag_association
         @partner.expects(:partner_code).returns("12345")
         @conversion_pixel = mock(
-          "ConversionPixel", :save_apn => true, :partner_code= => "12345")
+          "ConversionPixel", 
+          :save_apn => true, 
+          :partner_code= => "12345",
+          :save_beacon => true
+        )
         ConversionPixel.expects(:new).returns(@conversion_pixel)
         @partner.expects(:name).returns("partner name")
       end

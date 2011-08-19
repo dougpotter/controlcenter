@@ -12,6 +12,6 @@
     = conversion_pixel.text_field "request_regex"
 
   .dimension_input
-    = conversion_pixel.label "Referrer Regex"
+    = conversion_pixel.label "Referer Regex"
     >br
-    = conversion_pixel.text_field "referrer_regex"
+    = conversion_pixel.text_field "referer_regex"
