@@ -7,10 +7,6 @@ require 'beacon/request'
 module Beacon
   extend Configuration
 
-  def hi
-    puts "HI"
-  end
-
   class << self
     # Alias for Beacon::Client.new
     #
