@@ -26,11 +26,23 @@ class AppnexusSyncJob < Job
       self.state[:lookup_location] = result[:lookup_location]
       save!
     when PROCESSING
+      unless self.state[:input_line_count] && self.state[:input_byte_count]
+        workflow = AppnexusSyncWorkflow.new(self.parameters)
+        workflow.lock(self.id) do
+          reload
+          input_state = workflow.obtain_input_size(self.parameters['s3_xguid_list_prefix'])
+          self.state[:input_line_count] = input_state[:line_count]
+          self.state[:input_byte_count] = input_state[:byte_count]
+          save!
+        end
+      end
+      
       # we better have the jobflow id
       if job_id = self.state[:emr_jobflow_id]
         begin
           workflow = AppnexusSyncWorkflow.new(self.parameters)
           workflow.lock(self.id) do
+            reload
             result = workflow.check_create_list(job_id)
             case result[:success]
             when true

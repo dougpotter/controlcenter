@@ -25,6 +25,20 @@ class AppnexusSyncWorkflow
     @params = config.update(parameters)
   end
   
+  def obtain_input_size(s3_xguid_list_prefix)
+    bucket, prefix = s3_xguid_list_prefix.split(':', 2)
+    counter = ByteLineCounter.new
+    s3_client.list_bucket_files(bucket, prefix).each do |file|
+      s3_client.get_stream(bucket, file) do |chunk|
+        counter.update(chunk)
+      end
+    end
+    {
+      :line_count => counter.line_count,
+      :byte_count => counter.byte_count,
+    }
+  end
+  
   # Launches a map-reduce job to create appnexus list to upload.
   # The list is made up of appnexus user ids and appnexus segment id pairs.
   # It is obtained by joining xguids to xguid-appnexus user id map.
@@ -151,6 +165,10 @@ class AppnexusSyncWorkflow
   end
   
   private
+  
+  def s3_client
+    @s3_client ||= create_s3_client(params)
+  end
   
   # Builds parameters for EMR job generating appnexus list given a merge of
   # user-supplied parameters (via XGCC ui) and defaults specified in XGCC
