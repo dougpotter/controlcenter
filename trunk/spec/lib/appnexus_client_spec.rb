@@ -9,6 +9,35 @@ describe AppnexusClient do
     :creative_sizes,
     :partners
 
+  before(:all) do
+    @a = Curl::Easy.new
+    @a.url = "http://hb.sand-08.adnxs.net/auth"
+    @a.enable_cookies = true
+    @a.post_body = APN_CONFIG["authentication_hash"].to_json
+    @a.http_post
+
+    # create test advertiser if it does not already exist
+    @a.url = APN_CONFIG["api_root_url"] + "advertiser?code=77777"
+    @a.http_get
+    if JSON.parse(@a.body_str)["response"]["error"] == "advertiser not found"
+      @a.url = APN_CONFIG['api_root_url'] + 'advertiser'
+      @a.post_body = attrs = { "advertiser" => { 
+        :name => "Test Advertiser", :code => "77777" } }.to_json
+      @a.http_post
+    end
+
+    # associate a conversion pixel with test advertiser if one deosn't already exist
+    @a.url = APN_CONFIG["api_root_url"] + "pixel?advertiser_code=77777"
+    @a.http_get
+    if JSON.parse(@a.body_str)["response"]["pixels"].blank?
+      @a.post_body = { :pixel => {
+        :code => "77777",
+        :name => "conversion for test advertiser",
+        :state => "active" } }.to_json
+      @a.http_post
+    end
+  end
+
   before(:each) do
     @creative = Creative.new({
       :creative_size_id => CreativeSize.find_by_height_and_width("90", "728").id,
@@ -70,7 +99,6 @@ describe AppnexusClient do
       @creative.apn_action_url(:new).should == proper_url
     end
   end
-
   describe "all_apn" do
     context "when called on Creative" do
       it "should return an array of all creatives in the Appnexus sandbox" do
@@ -93,6 +121,16 @@ describe AppnexusClient do
           ActiveSupport::JSON.decode(agent.body_str)["response"]["advertisers"]
 
         Partner.all_apn.should == partners
+      end
+    end
+
+    context "when called on ConversionPixel" do
+      it "should return an array of all the converison pixels in Appnexus" do
+        @a.url = APN_CONFIG["api_root_url"] + "pixel?advertiser_code=77777"
+        @a.http_get
+        conversion_pixels = JSON.parse(@a.body_str)["response"]["pixels"]
+        
+        ConversionPixel.all_apn("advertiser_code" => 77777).should == conversion_pixels
       end
     end
   end

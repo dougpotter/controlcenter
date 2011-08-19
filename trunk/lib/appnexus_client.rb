@@ -99,9 +99,13 @@ module AppnexusClient
         return url
       end
 
-      def all_apn
+      def all_apn(*substitutions)
         agent = AppnexusClient::API.new_agent
-        agent.url = apn_action_url(:index)
+        if substitutions.blank?
+          agent.url = apn_action_url(:index)
+        else
+          agent.url = apn_action_url(:index, substitutions[0].values)
+        end
         agent.http_get
 
         ActiveSupport::JSON.decode(
@@ -114,20 +118,24 @@ module AppnexusClient
         necessary_attributes = url.scan(/(?:\?|\&)(.+?)=/).flatten
         substitutions = []
         for attribute in necessary_attributes
-          substitutions << object_hash[attribute]
+          substitutions << object_hash[attribute.to_s]
         end
 
         apn_action_url(:delete_by_apn_ids, substitutions)
       end
 
-      def delete_all_apn
+      def delete_all_apn(*filter)
 
         if RAILS_ENV == "production"
           raise "ATTEMPTING TO DELETE PRODUCTION DATA AT APPNEXUS." +
             " THIS MUST BE DONE THROUGH THE APPNEXUS UI" 
         end
 
-        objects = all_apn
+        if filter
+          objects = all_apn(filter[0]).map { |o| o.merge(filter[0]) }
+        else
+          objects = all_apn
+        end
 
         agent = AppnexusClient::API.new_agent
 
@@ -136,13 +144,13 @@ module AppnexusClient
           agent.http_delete
         end
 
-        if all_apn.size == 0
-          return true
+        debugger
+        if filter
+          return all_apn(filter[0]).size == 0
         else
-          return false
+          return all_apn.size == 0
         end
       end
-
     end
 
 
