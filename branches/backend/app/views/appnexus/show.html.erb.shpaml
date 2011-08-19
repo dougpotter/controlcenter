@@ -45,6 +45,16 @@ table
           = @job.state[:diagnostics]
   
   tr
+    th | Input list size (in lines)
+    td
+      = @job.state[:input_line_count]
+  
+  tr
+    th | Input list size (in bytes)
+    td
+      = @job.state[:input_byte_count]
+  
+  tr
     th | Lookup location
     td
       = @job.state[:lookup_location]
