@@ -8,7 +8,7 @@ module Beacon
       # @example  Return all request conditions for audience with beacon ID 4
       #   Beacon.new.request_conditions(4)  # => <#Hashie::Mash request_conditions=[<#Hashie::Mash id=15 referer_url_regex=nil request_url_regex="/aregexyo/">]>
       def request_conditions(audience_id)
-        get("api/audiences/#{audience_id}/request_conditions")
+        get("audiences/#{audience_id}/request_conditions")
       end
 
       # Returns the empty string if successful
@@ -21,7 +21,7 @@ module Beacon
       #   Beacon.new.new_request_condition(2, :referrer_regex => "/a.*reg/")
       def new_request_condition(audience_id, *options)
         post(
-          "api/audiences/#{audience_id}/request_conditions?#{options[0].url_encode}"
+          "audiences/#{audience_id}/request_conditions?#{options[0].url_encode}"
         )
       end
 
@@ -33,7 +33,7 @@ module Beacon
       #   Beacon.new.request_condition(21, 3) # => <#Hashie::Mash id=3 referer_url_regex=nil request_url_regex="/aregexyo/">
       def request_condition(audience_id, request_condition_id)
         get(
-          "api/audiences/#{audience_id}/request_conditions/#{request_condition_id}"
+          "audiences/#{audience_id}/request_conditions/#{request_condition_id}"
         )
       end
 
@@ -49,7 +49,7 @@ module Beacon
       #   Beacon.new.update_request_condition(3, 99, :request_url_regex => nil, :referrer_url_regex => "/a different one/")
       def update_request_condition(audience_id, request_condition_id, *options)
         put(
-          "api/audiences/#{audience_id}/request_conditions/#{request_condition_id}",
+          "audiences/#{audience_id}/request_conditions/#{request_condition_id}",
           options[0]
         )
       end
@@ -62,7 +62,7 @@ module Beacon
       #   Beacon.new.delete_request_condition(1, 12)
       def delete_request_condition(audience_id, request_condition_id)
         delete(
-          "api/audiences/#{audience_id}/request_conditions/#{request_condition_id}"
+          "audiences/#{audience_id}/request_conditions/#{request_condition_id}"
         )
       end
 

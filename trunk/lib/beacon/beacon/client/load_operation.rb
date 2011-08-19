@@ -8,7 +8,7 @@ module Beacon
       # @example  Return all load operations for audience with beacon ID 1
       #   Beacon.new.load_operations(1)
       def load_operations(audience_id)
-        get("api/audiences/#{audience_id}/load_operations")
+        get("audiences/#{audience_id}/load_operations")
       end
 
       # Returns the empty string on success
@@ -19,7 +19,7 @@ module Beacon
       #   Beacon.new.load_operation(888, "xg-live-haddop:16122/model-tsv")
       def new_load_operation(audience_id, s3_bucket)
         post(
-          "api/audiences/#{audience_id}/load_operations?"+
+          "audiences/#{audience_id}/load_operations?"+
           "#{{:s3_xguid_list_prefix => s3_bucket}.url_encode}"
         )
       end
@@ -31,7 +31,7 @@ module Beacon
       # @example  Retrieve details of load operation with beacon ID 21 (associated with audience 2)
       #   Beacon.new.load_operation(2, 21)  # => <#Hashie::Mash load_operations=[<#Hashie::Mash id=6 s3_xguid_list_prefix="xg-live/prefix" status="pending">]>
       def load_operation(audience_id, load_operation_id)
-        get("api/audiences/#{audience_id}/load_operations/#{load_operation_id}")
+        get("audiences/#{audience_id}/load_operations/#{load_operation_id}")
       end
     end
   end

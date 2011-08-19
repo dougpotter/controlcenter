@@ -7,7 +7,7 @@ module Beacon
       # @example Return all audiences
       #   Beacon.new.audiences  # => <#Hashie::Mash audiences=[<#Hashie::Mash active=true id=47 name="F50B" type="xguid-conditional">]>
       def audiences
-        get("api/audiences")
+        get("audiences")
       end
 
       # Returns a Hashie::Mash of the audience with the provided id
@@ -16,7 +16,7 @@ module Beacon
       # @example Get the audience with id 18 as Hashie::Mash object
       #   Beacon.new.audience(18)
       def audience(id)
-        get("api/audiences/#{id}")
+        get("audiences/#{id}")
       end
 
       # Returns a blank string if successful
@@ -28,7 +28,7 @@ module Beacon
       # @example Create a new active audience named '64R1' with type 'xguid-conditional'
       #   Beacon.new.new_audience({:name => '64R1', :audience_type => 'xguid-conditional', :active => 'true'})
       def new_audience(query_hsh)
-        post("api/audiences?#{query_hsh.url_encode}")
+        post("audiences?#{query_hsh.url_encode}")
       end
 
       # Returns a blank string if successful
@@ -39,7 +39,7 @@ module Beacon
       # @example Update audience with id 19 to have be active and have name 'E4M2'
       #   Beacon.new.update_audience(19, 'E4M2', 'true')
       def update_audience(id, name, active)
-        put("api/audiences/#{id}", { :name => name, :active => active })
+        put("audiences/#{id}", { :name => name, :active => active })
       end
 
     end

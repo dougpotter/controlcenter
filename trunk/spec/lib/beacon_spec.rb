@@ -4,8 +4,9 @@ require 'spec_helper'
 describe Beacon do
   before(:all) do
     @b = Beacon.new
+    @api_root = BEACON_CONFIG[:api_root_url]
     @audiences_as_mash = Hashie::Mash.new(JSON.parse(Curl::Easy.http_get(
-            "http://aa.qa.xgraph.net/api/audiences"
+            @api_root + "audiences"
     ).body_str))
     @audiences_in_order = @audiences_as_mash.audiences.sort { |x,y| x.id <=> y.id }
     @agent = Curl::Easy.new
@@ -30,7 +31,7 @@ describe Beacon do
 
   def sync_rules(audience_id)
     c = Curl::Easy.new(
-      "http://aa.qa.xgraph.net/api/audiences/NUM/sync_rules".
+      @api_root + "audiences/NUM/sync_rules".
       gsub("NUM", "#{audience_id}"))
     c.http_get
     Hashie::Mash.new(JSON.parse(c.body_str)).sync_rules
@@ -52,7 +53,7 @@ describe Beacon do
 
   def request_conditions(audience_id)
     @agent = Curl::Easy.new(
-      "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/request_conditions")
+      @api_root + "audiences/#{audience_id}/request_conditions")
     @agent.http_get
     Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions
   end
@@ -67,7 +68,7 @@ describe Beacon do
     it "#audience(#) should return the audience with id of #" do
       correct_audience = 
         Hashie::Mash.new(JSON.parse(Curl::Easy.http_get(
-          "http://aa.qa.xgraph.net/api/audiences/19"
+          @api_root + "audiences/19"
       ).body_str))
       @b.audience(19).should == correct_audience
     end
@@ -135,7 +136,7 @@ describe Beacon do
 
     it "#sync_rule(audience_id, sync_rule_id) should return the details of a" +
     " single sync rule" do
-      @agent.url = "http://aa.qa.xgraph.net/api/audiences"+
+      @agent.url = @api_root + "audiences"+
         "/#{audience_id_with_sync_rules}/sync_rules/#{sync_rule_id}"
       @agent.http_get
       resp = Hashie::Mash.new(JSON.parse(@agent.body_str))
@@ -180,7 +181,7 @@ describe Beacon do
     " containing request conditions associated with this audience if it is a"+
     " request-conditional type audience"  do
       @agent.url = 
-        "http://aa.qa.xgraph.net/api/audiences/#{@audience_id}/request_conditions"
+        @api_root + "audiences/#{@audience_id}/request_conditions"
       @agent.http_get
       proper_response = Hashie::Mash.new(JSON.parse(@agent.body_str))
       @b.request_conditions(@audience_id).should == proper_response
@@ -197,7 +198,7 @@ describe Beacon do
     it "#new_request_conditions(audience_id) should create a new request condition"+
       " for the audience" do
       @agent.url = 
-        "http://aa.qa.xgraph.net/api/audiences/#{@audience_id}/request_conditions"
+        @api_root + "audiences/#{@audience_id}/request_conditions"
       @agent.http_get
       count = Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions.size
       @b.new_request_condition(
@@ -216,7 +217,7 @@ describe Beacon do
       audience_id = audience_id_with_request_condition
       request_condition_id = request_conditions(audience_id).sort(&by_id).last.id
       @agent.url = 
-        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/"+
+        @api_root + "audiences/#{audience_id}/"+
         "request_conditions/#{request_condition_id}"
       @agent.http_get
       proper_response = Hashie::Mash.new(JSON.parse(@agent.body_str))
@@ -234,7 +235,7 @@ describe Beacon do
         request_condition_id, 
         :request_url_regex => "/anewtime#{time_as_int}/")
       @agent.url = 
-        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/"+
+        @api_root + "audiences/#{audience_id}/"+
         "request_conditions/#{request_condition_id}"
       @agent.http_get
       Hashie::Mash.new(JSON.parse(@agent.body_str)).request_url_regex.should ==
@@ -247,7 +248,7 @@ describe Beacon do
       request_condition_id = request_conditions(audience_id).sort(&by_id).last.id
       @b.delete_request_condition(audience_id, request_condition_id)
       @agent.url = 
-        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/"+
+        @api_root + "audiences/#{audience_id}/"+
         "request_conditions/#{request_condition_id}"
       @agent.http_get
       @agent.body_str.should == 
@@ -260,7 +261,7 @@ describe Beacon do
 
     def load_operations(audience_id)
       @agent.url = 
-        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/load_operations"
+        @api_root + "audiences/#{audience_id}/load_operations"
       @agent.http_get
       Hashie::Mash.new(JSON.parse(@agent.body_str)).load_operations
     end
@@ -297,7 +298,7 @@ describe Beacon do
       count = load_operations(audience_id).size
       @b.new_load_operation(audience_id, "xg-live/prefix")
       @agent.url = 
-        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/load_operations"
+        @api_root + "audiences/#{audience_id}/load_operations"
       @agent.http_get
       new_count = Hashie::Mash.new(JSON.parse(@agent.body_str)).load_operations.size
       new_count.should == count + 1
@@ -308,7 +309,7 @@ describe Beacon do
       audience_id = audience_id_with_load_operations
       load_operation_id = load_operations(audience_id).sort(&by_id).first.id
       @agent.url = 
-        "http://aa.qa.xgraph.net/api/audiences/#{audience_id}/load_operations"+
+        @api_root + "audiences/#{audience_id}/load_operations"+
         "/#{load_operation_id}"
       @agent.http_get
       proper_response = Hashie::Mash.new(JSON.parse(@agent.body_str))
