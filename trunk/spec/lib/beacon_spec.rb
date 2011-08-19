@@ -59,7 +59,6 @@ describe Beacon do
 
   ## Audience 
   context "audience admin" do
-=begin
     it "#audiences should return a hash of all audiences" do
       beacon_response = @b.audiences.audiences.sort { |x,y| x.id <=> y.id }
       beacon_response == @audiencnes_in_order
@@ -99,12 +98,10 @@ describe Beacon do
       @b.update_audience(@audiences_in_order.last.id, "Mog", "false")
       @b.audience(@audiences_in_order.last.id).name.should == "Mog"
     end
-=end
   end
 
   ## Sync Rules
   context "sync rules admin" do
-=begin
 
     it "#sync_rules(audience_id) should return all the sync rules for the"+
     " audience" do
@@ -166,7 +163,6 @@ describe Beacon do
       @b.delete_sync_rule(audience_id, last_sync_rule_id).should == ""
       @b.sync_rules(audience_id).sync_rules.size.should == sync_rule_count - 1
     end
-=end
   end
 
   # Request Conditions
@@ -179,7 +175,7 @@ describe Beacon do
         :active => "true" })
       @audience_id = @b.audiences.audiences.sort(&by_id).last.id
     end
-=begin
+
     it "#request_conditions(audience_id) should return Hashie::Mash object" +
     " containing request conditions associated with this audience if it is a"+
     " request-conditional type audience"  do
@@ -257,7 +253,6 @@ describe Beacon do
       @agent.body_str.should == 
         "Request condition with id #{request_condition_id} not found"
     end
-=end
   end
 
   ## Load Operations
