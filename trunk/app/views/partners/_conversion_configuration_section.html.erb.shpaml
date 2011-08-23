@@ -1,0 +1,5 @@
+% form_index ||= 0
+
+% f.fields_for :conversion_configurations do |conversion_configuration|  
+  = render :partial => "conversion_configuration_fields", :locals => { :form_index => form_index, :conversion_configuration => conversion_configuration }
+  % form_index += 1

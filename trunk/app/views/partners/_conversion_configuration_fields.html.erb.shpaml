@@ -1,0 +1,17 @@
+.conversion_configuration_form data-index="<%= form_index %>"
+  = error_messages_on(conversion_configuration.object)
+  <input data-index="<%= form_index %>" id="conversion_configuration_minus_sign_<%= form_index %>" class="conversion_configuration_minus_sign" type="image" src="/images/minus_sign.png" />
+  .dimension_input
+    = conversion_configuration.label "name", "Name"
+    >br
+    = conversion_configuration.text_field "name"
+
+  .dimension_input
+    = conversion_configuration.label "Request Regex"
+    >br
+    = conversion_configuration.text_field "request_regex"
+
+  .dimension_input
+    = conversion_configuration.label "Referer Regex"
+    >br
+    = conversion_configuration.text_field "referer_regex"

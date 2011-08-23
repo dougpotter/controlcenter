@@ -7,7 +7,7 @@ h1 | New Advertiser
 
 % form_for @partner do |f|
   = nested_model_form_builder(f, "action_tag", :populate => { "sid" => sid_url })
-  = nested_model_form_builder(f, "conversion_pixel")
+  = nested_model_form_builder(f, "conversion_configuration")
 
 % form_for @partner do |f|
   = render :partial => 'form'
@@ -22,12 +22,12 @@ h1 | New Advertiser
     = render :partial => "action_tag_section", :locals => { :f => f }
   </div>
 
-  .conversion_pixels_heading
+  .conversion_configuration_heading
     h1.inline_heading | Conversion Pixels
-    <input id="add_conversion_pixel" type="image" src="/images/plus_sign.png" width=30 />
+    <input id="add_conversion_configuration" type="image" src="/images/plus_sign.png" width=30 />
  
-  <div id="conversion_pixels_forms">
-    = render :partial => "conversion_pixel_section", :locals => { :f => f }
+  <div id="conversion_configurations_forms">
+    = render :partial => "conversion_configuration_section", :locals => { :f => f }
   </div>
 
   <div style="clear:both;"></div>
