@@ -76,7 +76,7 @@ describe Beacon do
     it "#new_audience with hash of legal params should create a new audience" do
       last_id = @audiences_in_order.last.id
       @b.new_audience({
-        :name => "a new audience", :audience_type => "global", :active => "false"
+        :name => "a new audience", :audience_type => "global"
       })
       @b.audiences.audiences.sort { |x,y| x.id <=> y.id }.last.id.should ==
         last_id + 1
@@ -84,7 +84,7 @@ describe Beacon do
 
     it "#new_audience should return error message with illegal attribute name" do
       @b.new_audience({
-        :name => "a new audience", :type => "global", :active => "false"
+        :name => "a new audience", :type => "global"
       }).should == "Invalid value for audience type: null"
     end
 
@@ -94,7 +94,7 @@ describe Beacon do
 
     it "#update_audience should update the audience" do
       @b.new_audience(
-        :name => "michael", :audience_type => "global", :active => "false"
+        :name => "michael", :audience_type => "global"
       )
       @b.update_audience(@audiences_in_order.last.id, "Mog", "false")
       @b.audience(@audiences_in_order.last.id).name.should == "Mog"
@@ -172,8 +172,7 @@ describe Beacon do
     before(:all) do
       @b.new_audience({ 
         :name => "new", 
-        :audience_type => "request-conditional", 
-        :active => "true" })
+        :audience_type => "request-conditional" })
       @audience_id = @b.audiences.audiences.sort(&by_id).last.id
     end
 

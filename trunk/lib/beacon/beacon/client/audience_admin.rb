@@ -24,9 +24,8 @@ module Beacon
       # @param query_hsh [Hash] A hash consisting of attribute_name => attribute_value pairs for the new audience
       # @option query_hash [String] :name the name of the new audience
       # @option query_hash [String] :audience_type the type of the new audience: 'global', 'xguid-conditional', 'request-conditional'
-      # @option query_hash [String] :active whether the new audience is active or not: 'true' or 'false'
-      # @example Create a new active audience named '64R1' with type 'xguid-conditional'
-      #   Beacon.new.new_audience({:name => '64R1', :audience_type => 'xguid-conditional', :active => 'true'})
+      # @example Create a new audience named '64R1' with type 'xguid-conditional'
+      #   Beacon.new.new_audience({:name => '64R1', :audience_type => 'xguid-conditional' })
       def new_audience(query_hsh)
         post("audiences?#{query_hsh.url_encode}")
       end

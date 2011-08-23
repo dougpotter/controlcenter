@@ -26,9 +26,8 @@ class ConversionPixel < ActiveRecord::Base
     @b = Beacon.new
     new_audience_response = @b.new_audience(
       :name => self.name, 
-      :active => "true",
       :audience_type => "request-conditional",
-      :pid => self.partner_id
+      :pid => self.partner_code
     ) 
 
     if new_audience_response != ''
