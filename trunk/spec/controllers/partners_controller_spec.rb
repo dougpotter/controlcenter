@@ -41,7 +41,7 @@ describe PartnersController, "create partner with valid attributes" do
         post :create, :partner => { 
           "partner_code" => "12345",
           "name" => "partner name",
-          "conversion_pixels_attributes" => { 
+          "conversion_configurations_attributes" => { 
             "0" => {
               "name" => "conv pixel name",
               "request_regex" => "a regex for request",
@@ -50,14 +50,15 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         @partner.expects(:name).returns("partner name")
-        @partner.expects(:partner_code).returns("12345")
-        @conversion_pixel = mock(
-          "ConversionPixel", 
-          :partner_code= => "12345",
+        @audience_source = mock("AudienceSource")
+        @conversion_configuration = mock(
+          "ConversionConfiguration", 
+          :audience_source= => @audience_source,
+          :partner= => @partner,
           :save_apn => true,
           :save_beacon => true
         )
-        ConversionPixel.expects(:new).returns(@conversion_pixel)
+        ConversionConfiguration.expects(:new).returns(@conversion_configuration)
       end
 
       it "should associate conversion pixel" do
@@ -76,7 +77,7 @@ describe PartnersController, "create partner with valid attributes" do
         post :create, :partner => { 
           "partner_code" => "12345",
           "name" => "partner name",
-          "conversion_pixels_attributes" => {
+          "conversion_configurations_attributes" => {
             "0" => { 
               "name" => "conv pixel name",
               "request_regex" => "",
@@ -84,12 +85,15 @@ describe PartnersController, "create partner with valid attributes" do
       end
 
       before(:each) do
-        @partner.expects(:partner_code).returns("12345")
         mock_and_stub_object_reset_for_new_render
-        @conversion_pixel = mock(
-          "ConversionPixel", :partner_code= => "12345", :save_apn => false
+        @audience_source = mock("AudienceSource")
+        @conversion_configuration = mock(
+          "ConversionConfiguration", 
+          :partner= => @partner, 
+          :save_apn => false,
+          :audience_source= => @audience_source
         )
-        ConversionPixel.expects(:new).returns(@conversion_pixel)
+        ConversionConfiguration.expects(:new).returns(@conversion_configuration)
       end
 
       it "should fail to save conversion pixel" do
@@ -150,7 +154,7 @@ describe PartnersController, "create partner with valid attributes" do
             "name" => "sitewide",
             "sid" => "54321", 
             "url" => "http://a.url" } },
-        "conversion_pixels_attributes" => {
+        "conversion_configurations_attributes" => {
           "0" => {
             "name" => "conv pixel name",
             "referrer_regex" => "a regex for referrer",
@@ -159,14 +163,15 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_action_tag_association
-        @partner.expects(:partner_code).returns("12345")
-        @conversion_pixel = mock(
-          "ConversionPixel", 
+        @audience_source = mock("AudienceSource")
+        @conversion_configuration = mock(
+          "ConversionConfiguration", 
           :save_apn => true, 
-          :partner_code= => "12345",
+          :audience_source= => @audience_source,
+          :partner= => @partner,
           :save_beacon => true
         )
-        ConversionPixel.expects(:new).returns(@conversion_pixel)
+        ConversionConfiguration.expects(:new).returns(@conversion_configuration)
         @partner.expects(:name).returns("partner name")
       end
 
@@ -191,7 +196,7 @@ describe PartnersController, "create partner with valid attributes" do
             "name" => "sitewide",
             "sid" => "54321", 
             "url" => "http://a.url" } },
-        "conversion_pixels_attributes" => {
+        "conversion_configurations_attributes" => {
           "0" => {
             "name" => "conv pixel name",
             "referrer regex" => "",
@@ -201,10 +206,13 @@ describe PartnersController, "create partner with valid attributes" do
       before(:each) do
         mock_and_stub_action_tag_association
         mock_and_stub_object_reset_for_new_render
-        @partner.expects(:partner_code).returns("12345")
-        @conversion_pixel = mock(
-          "ConversionPixel", :save_apn => false, :partner_code= => "12345")
-        ConversionPixel.expects(:new).returns(@conversion_pixel)
+        @audience_source = mock("AudienceSource")
+        @conversion_configuration = mock(
+          "ConversionConfiguration", 
+          :audience_source= => @audience_source,
+          :save_apn => false, 
+          :partner= => @partner)
+        ConversionConfiguration.expects(:new).returns(@conversion_configuration)
       end
 
       it "should fail to save conversion pixel" do

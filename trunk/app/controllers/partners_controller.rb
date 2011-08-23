@@ -33,22 +33,27 @@ class PartnersController < ApplicationController
     return answer
   end
 
-  def extract_conversion_pixels
-    pixel_hashes = params[:partner].delete("conversion_pixels_attributes")
-    pixels = []
+  def extract_conversion_configurations
+    config_hashes = params[:partner].delete("conversion_configurations_attributes")
+    configs = []
 
-    if pixel_hashes
-      for pixel_hash in pixel_hashes.values
-        pixels << ConversionPixel.new(pixel_hash)
+    if config_hashes
+      for config_hash in config_hashes.values
+        audience_source = RetargetingSource.new(
+          :request_regex => config_hash.delete('request_regex'),
+          :referrer_regex => config_hash.delete('referer_regex'))
+        conversion_configuration = ConversionConfiguration.new(config_hash)
+        conversion_configuration.audience_source = audience_source
+        configs << conversion_configuration 
       end
     end
 
-    return pixels
+    return configs
   end
 
   def create
     @action_tags = extract_action_tags
-    @conversion_pixels = extract_conversion_pixels
+    @conversion_configs = extract_conversion_configurations
 
     @partner = Partner.new(params[:partner])
 
@@ -74,13 +79,13 @@ class PartnersController < ApplicationController
     end
 
     # associate conversion pixels with new partner
-    for pixel in @conversion_pixels
-      pixel.partner_code = @partner.partner_code
-      if !pixel.save_apn || !pixel.save_beacon
+    for config in @conversion_configs
+      config.partner = @partner
+      if !config.save_apn || !config.save_beacon
         @partner.destroy
         @partner = Partner.new(@partner.attributes)
         @partners = Partner.all
-        flash[:notice] = "Invalid conversion pixel"
+        flash[:notice] = "Invalid conversion configuration"
         render :action => "new"
         return
       end
