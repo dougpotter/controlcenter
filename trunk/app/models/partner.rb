@@ -39,6 +39,7 @@ class Partner < ActiveRecord::Base
     :urls => {
       :index => "advertiser",
       :new => "advertiser",
+      :view => "advertiser?code=##partner_code##",
       :delete_by_apn_ids => "advertiser?id=##apn_id##" }
 
   def campaigns 
