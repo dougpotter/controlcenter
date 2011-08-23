@@ -144,7 +144,6 @@ module AppnexusClient
           agent.http_delete
         end
 
-        debugger
         if filter
           return all_apn(filter[0]).size == 0
         else
