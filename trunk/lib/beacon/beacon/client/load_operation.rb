@@ -11,7 +11,7 @@ module Beacon
         get("audiences/#{audience_id}/load_operations")
       end
 
-      # Returns the empty string on success
+      # Returns the beacon ID of the newly create load operation when successful 
       #
       # @param audience_id [Integer,String] The beacon id of the audience for which this load operation is being created
       # @param s3_bucket [String] A string indicating the location, in S3, of the list of xguids for this audience

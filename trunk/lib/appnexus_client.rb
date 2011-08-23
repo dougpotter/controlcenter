@@ -165,7 +165,9 @@ module AppnexusClient
           json_hash[apn_attribute] = self.send(method)
         end
 
-        json_hash.merge!(self.class.apn_mappings[:non_method_attr_map])
+        if self.class.apn_mappings[:non_method_attr_map]
+          json_hash.merge!(self.class.apn_mappings[:non_method_attr_map])
+        end
 
         return ActiveSupport::JSON.encode(
           self.class.apn_mappings[:apn_wrapper] => json_hash

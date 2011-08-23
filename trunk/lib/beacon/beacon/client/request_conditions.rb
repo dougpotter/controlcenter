@@ -11,7 +11,7 @@ module Beacon
         get("audiences/#{audience_id}/request_conditions")
       end
 
-      # Returns the empty string if successful
+      # Returns the beacon ID of the newly created request condition when successful
       #
       # @param audience_id [Integer,String] The beacon ID for the audience in question
       # @param options [Hash] An hash of :attr => "value" pairs. Must contain at least on :attr => "value" pair.

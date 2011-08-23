@@ -23,22 +23,32 @@ module Beacon
       url = "#{endpoint}#{path}"
       case method.to_sym
       when :get
-        response = connection.http_get(url).body_str
+        response = connection.http_get(url)
       when :post
-        response = connection.http_post(url).body_str
+        response = connection.http_post(url)
       when :put
-        response = connection.http_put(url, options[:put_data].url_encode).body_str
+        response = connection.http_put(url, options[:put_data].url_encode)
       when :delete
-        response = connection.http_delete(url).body_str
+        response = connection.http_delete(url)
       end
       parse_json(response)
     end
 
     def parse_json(response)
-      begin
-        return Hashie::Mash.new(JSON.parse(response))
-      rescue JSON::ParserError
-        return response
+      protocol_header, protocol, response_code, response_message = 
+        response.header_str.split(/\r\n/)[0].match(
+          /(HTTP\/1\.1) (\d\d\d) (.+)/
+        ).to_a
+      if response_code == "201"
+        return response.header_str.split(/\r\n/)[4].match(/.*\/(\d+)/)[1]
+      elsif response_code == "200" && response.body_str == ""
+        return ""
+      elsif response_code == "200" && response.body_str != ""
+        return Hashie::Mash.new(JSON.parse(response.body_str))
+      elsif response_code == "422"
+        return response.body_str
+      else
+        return response.body_str
       end
     end
   end

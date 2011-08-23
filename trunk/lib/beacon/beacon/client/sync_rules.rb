@@ -11,7 +11,7 @@ module Beacon
         get("audiences/#{audience_id}/sync_rules")
       end
 
-      # Returns blank string if successful
+      # Returns beacon ID of the newly created sync rule when successful
       #
       # @param audience_id [Integer,String] The beacon id of the audience to which this pixel should be associated
       # @param sync_period [Integer,String] The number of days that may pass since the last sync action, during which time a user my abe considered synchronized within the scope of this sync rule. 

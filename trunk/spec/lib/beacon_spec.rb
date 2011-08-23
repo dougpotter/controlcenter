@@ -5,11 +5,13 @@ describe Beacon do
   before(:all) do
     @b = Beacon.new
     @api_root = BEACON_CONFIG[:api_root_url]
-    @audiences_as_mash = Hashie::Mash.new(JSON.parse(
-      Curl::Easy.http_get(@api_root + "audiences").body_str
-    ))
-    @audiences_in_order = @audiences_as_mash.audiences.sort { |x,y| x.id <=> y.id }
     @agent = Curl::Easy.new
+  end
+
+  def audiences_in_order
+    Hashie::Mash.new(JSON.parse(
+      Curl::Easy.http_get(@api_root + "audiences").body_str
+    )).audiences.sort { |x,y| x.id <=> y.id }
   end
 
   def by_id
@@ -17,11 +19,11 @@ describe Beacon do
   end
 
   def last_audience_id
-    @audiences_in_order.last.id
+    audiences_in_order.last.id
   end
 
   def audience_id_with_sync_rules
-    for audience in @audiences_in_order
+    for audience in audiences_in_order
       if audience["type"] == 'xguid-conditional' && sync_rules(audience.id)
         return audience.id
       end
@@ -42,7 +44,7 @@ describe Beacon do
   end
 
   def audience_id_with_request_condition
-    for audience in @audiences_in_order
+    for audience in audiences_in_order
       if audience["type"] == 'request-conditional' && 
         !request_conditions(audience.id).blank?
         return audience.id
@@ -62,7 +64,7 @@ describe Beacon do
   context "audience admin" do
     it "#audiences should return a hash of all audiences" do
       beacon_response = @b.audiences.audiences.sort { |x,y| x.id <=> y.id }
-      beacon_response == @audiencnes_in_order
+      beacon_response == audiences_in_order
     end
 
     it "#audience(#) should return the audience with id of #" do
@@ -74,7 +76,7 @@ describe Beacon do
     end
 
     it "#new_audience with hash of legal params should create a new audience" do
-      last_id = @audiences_in_order.last.id
+      last_id = audiences_in_order.last.id
       @b.new_audience({
         :name => "a new audience", :audience_type => "global"
       })
@@ -92,17 +94,27 @@ describe Beacon do
       @b.new_audience({}).should == "Audience name was not given"
     end
 
+    it "#new_audience should return beacon ID of new audience" do
+      last_id = audiences_in_order.last.id.to_i
+      return_value = @b.new_audience({
+        :name => "a new audience", :audience_type => "global"
+      })
+      return_value.should == (last_id + 1).to_s
+    end
+
     it "#update_audience should update the audience" do
       @b.new_audience(
         :name => "michael", :audience_type => "global"
       )
-      @b.update_audience(@audiences_in_order.last.id, "Mog", "false")
-      @b.audience(@audiences_in_order.last.id).name.should == "Mog"
+      @b.update_audience(audiences_in_order.last.id, "Mog", "false")
+      @b.audience(audiences_in_order.last.id).name.should == "Mog"
     end
   end
 
+
   ## Sync Rules
   context "sync rules admin" do
+    
 
     it "#sync_rules(audience_id) should return all the sync rules for the"+
     " audience" do
@@ -111,16 +123,16 @@ describe Beacon do
       @b.sync_rules(audience_id).sync_rules.sort(&by_id).should == rules_in_order
     end
 
-    it "#new_sync_rule with all, legal arguments should create a new sync rule" +
-    " for audience with id == audience_id" do
-      @b.new_sync_rule(
+    it "#new_sync_rule with all legal arguments should return id of new sync rule" do
+      id = @b.new_sync_rule(
         audience_id_with_sync_rules, 
         7, 
         "http://ib.adnxs.com/seg?add=12345",
         "http://ib.adnxs.com/seg?remove=12345",
         "https://secure.ib.adnxs.com/seg?remove=12345",
         "https://secure.ib.adnxs.com/seg?remove=12345"
-      ).should == ""
+      )
+      id.should == sync_rules(audience_id_with_sync_rules).sort(&by_id).last.id.to_s
     end
 
     it "#new_sync_rule with missing arguments should raise error" do
@@ -200,11 +212,12 @@ describe Beacon do
         @api_root + "audiences/#{@audience_id}/request_conditions"
       @agent.http_get
       count = Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions.size
-      @b.new_request_condition(
+      id = @b.new_request_condition(
         @audience_id, 
         :request_url_regex => "/aregexyo/", 
         :referrer_url_regex => "/anotheregexyo/"
-      ).should == ""
+      )
+      id.should == request_conditions(@audience_id).sort(&by_id).last.id.to_s
       @agent.http_get
       new_count = 
         Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions.size
@@ -266,7 +279,7 @@ describe Beacon do
     end
     
     def audience_id_with_load_operations
-      for audience in @audiences_in_order
+      for audience in audiences_in_order
         if audience["type"] == 'xguid-conditional' && 
           !load_operations(audience.id).blank?
           return audience.id

@@ -19,7 +19,7 @@ module Beacon
         get("audiences/#{id}")
       end
 
-      # Returns a blank string if successful
+      # Returns new beacon ID of the newly created audience when successful
       #
       # @param query_hsh [Hash] A hash consisting of attribute_name => attribute_value pairs for the new audience
       # @option query_hash [String] :name the name of the new audience
@@ -30,7 +30,7 @@ module Beacon
         post("audiences?#{query_hsh.url_encode}")
       end
 
-      # Returns a blank string if successful
+      # Returns empty string if successful
       #
       # @param id [Integer, String] A beacon id for the audience to be updated
       # @param name [String] The new name of the audience (can be same as old)
