@@ -60,6 +60,14 @@ describe AppnexusClient do
       }.should raise_error
     end
 
+    it "should raise an error when there is no URL defined for action passed" do
+      lambda {
+        Creative.apn_action_url(:something)
+      }.should raise_error(
+        RuntimeError, 
+        "Appnexus action URL undefined for something")
+    end
+
     it "should correctly compile array when passed an array of one substitution" do
       proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
       Creative.apn_action_url(:new, ["8675309"]).should ==

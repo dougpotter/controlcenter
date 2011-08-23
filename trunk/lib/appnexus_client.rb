@@ -82,18 +82,22 @@ module AppnexusClient
       attr_accessor :apn_mappings
 
       def apn_action_url(action, *substitutions)
-        substitutions = [substitutions].flatten
-        substitutions.map! { |subs| subs.to_s }
-        matcher = /\#\#(.+?)\#\#/
-        url = APN_CONFIG["api_root_url"] + apn_mappings[:urls][action]
-        macros = url.scan(matcher).size
-        if macros != substitutions.size
-          raise "number of macros and number of substitutions in AppNexus URL" + 
-            " don't agree"
-        else
-          while url.match(matcher)
-            url.sub!(matcher, substitutions.shift)
+        if path = apn_mappings[:urls][action]
+          substitutions = [substitutions].flatten
+          substitutions.map! { |subs| subs.to_s }
+          matcher = /\#\#(.+?)\#\#/
+          url = APN_CONFIG["api_root_url"] + apn_mappings[:urls][action]
+          macros = url.scan(matcher).size
+          if macros != substitutions.size
+            raise "number of macros and number of substitutions in AppNexus URL" + 
+              " don't agree"
+          else
+            while url.match(matcher)
+              url.sub!(matcher, substitutions.shift)
+            end
           end
+        else
+          raise "Appnexus action URL undefined for #{action}"
         end
 
         return url
@@ -255,7 +259,11 @@ module AppnexusClient
       end
 
       def apn_action_url(action)
-        url = APN_CONFIG["api_root_url"] + self.class.apn_mappings[:urls][action]
+        if self.class.apn_mappings[:urls][action]
+          url = APN_CONFIG["api_root_url"] + self.class.apn_mappings[:urls][action]
+        else
+          raise "Appnexus action URL undefined for #{action}"
+        end
         return compile_url(url)
       end
 
