@@ -5,9 +5,9 @@ describe Beacon do
   before(:all) do
     @b = Beacon.new
     @api_root = BEACON_CONFIG[:api_root_url]
-    @audiences_as_mash = Hashie::Mash.new(JSON.parse(Curl::Easy.http_get(
-            @api_root + "audiences"
-    ).body_str))
+    @audiences_as_mash = Hashie::Mash.new(JSON.parse(
+      Curl::Easy.http_get(@api_root + "audiences").body_str
+    ))
     @audiences_in_order = @audiences_as_mash.audiences.sort { |x,y| x.id <=> y.id }
     @agent = Curl::Easy.new
   end
