@@ -44,7 +44,7 @@ class AppnexusSyncWorkflow
   # It is obtained by joining xguids to xguid-appnexus user id map.
   # Currently the work is done by elastic map reduce.
   def launch_create_list
-    emr_params = build_emr_parameters(params)
+    emr_params = build_emr_parameters
     
     cmd = params[:emr_command] + [
       '--create',
@@ -173,7 +173,7 @@ class AppnexusSyncWorkflow
   # Builds parameters for EMR job generating appnexus list given a merge of
   # user-supplied parameters (via XGCC ui) and defaults specified in XGCC
   # configuration files.
-  def build_emr_parameters(params)
+  def build_emr_parameters(params=self.params)
     bucket, path = S3PrefixSpecification.parse_prefix_str(params[:s3_xguid_list_prefix])
     input_url = "s3n://#{bucket}/#{path}"
     bucket, path = S3PrefixSpecification.parse_prefix_str(params[:output_prefix])
