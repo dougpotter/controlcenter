@@ -12,7 +12,7 @@ development:
   sftp_username: apnsftp
   #sftp_private_key_path: /path/to/key.pem
   sftp_path: inbound
-  log_url: "s3n://xg-test-abulo/appnexus/logs"
+  log_uri: "s3n://xg-test-abulo/appnexus/logs"
   code_url: "s3n://xg-test-abulo/appnexus/code/mapreduce.jar"
   output_prefix: "xg-test-abulo:appnexus/audience-output"
   lookup_prefix: "xg-test-abulo:appnexus/lookup"
@@ -24,7 +24,7 @@ production:
   #sftp_username: xgraph
   #sftp_private_key_path: /path/to/key.pem
   #sftp_path: inbound
-  #log_url: "s3n://xg-data-export/appnexus/logs"
+  #log_uri: "s3n://xg-data-export/appnexus/logs"
   #code_url: "s3n://xg-data-export/appnexus/code/mapreduce.jar"
   #output_prefix: "xg-data-export:appnexus/audience-output"
   #lookup_prefix: "xg-data-export:appnexus/lookup"

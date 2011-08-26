@@ -23,6 +23,8 @@ class AppnexusSyncWorkflow
       end
     end
     @params = config.update(parameters)
+    # compat stuff
+    @params[:log_uri] ||= @params[:log_url]
   end
   
   def obtain_input_size(s3_xguid_list_prefix)
@@ -49,7 +51,7 @@ class AppnexusSyncWorkflow
     cmd = params[:emr_command] + [
       '--create',
       '--name', emr_params[:name],
-      '--log-uri', emr_params[:log_url],
+      '--log-uri', emr_params[:log_uri],
       '--num-instances', emr_params[:instance_count],
       '--instance-type', emr_params[:instance_type],
     ]
@@ -87,7 +89,7 @@ class AppnexusSyncWorkflow
       :appnexus_list_location => appnexus_list_location,
       :lookup_location => lookup_location,
       :emr_jobflow_id => job_id,
-      :emr_log_uri => emr_params[:log_url],
+      :emr_log_uri => emr_params[:log_uri],
     }
   end
   
@@ -188,7 +190,7 @@ class AppnexusSyncWorkflow
     # keep the keys arranged in the same order as arguments to emr command
     {
       :name => 'appnexus-list-generate',
-      :log_url => params[:log_url],
+      :log_uri => params[:log_uri],
       :instance_count => params[:instance_count],
       :instance_type => params[:instance_type],
       :code_url => params[:code_url],
