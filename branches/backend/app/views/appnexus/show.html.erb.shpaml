@@ -93,6 +93,14 @@ table
     th | Enable EMR debugging
     td
       = @job_parameters.enable_emr_debugging ? 'Yes' : 'No'
+  
+  tr
+    th | Log files
+    td
+      % if @log_files
+        = render :partial => 'log_files'
+      % else
+        (None)
 
 = clear
 

@@ -14,7 +14,9 @@ class S3PrefixSpecification
   # s3n://bucket/path
   def self.parse_uri_str(str)
     uri = URI.parse(str)
-    [uri.host, uri.path]
+    bucket = uri.host
+    path = uri.path[1...uri.path.length]
+    [bucket, path]
   end
   
   def self.from_prefix_str(str)

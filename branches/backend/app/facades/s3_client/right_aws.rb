@@ -130,6 +130,10 @@ class S3Client::RightAws < S3Client::Base
     entries
   end
   
+  def signed_file_url(bucket, path, expires)
+    @s3.get_link(bucket, path, expires)
+  end
+  
   private
   
   def create_item(entry)

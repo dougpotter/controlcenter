@@ -1,0 +1,4 @@
+ul
+  % for name, bucket, path in @log_files
+    li
+      = link_to h(name), appnexus_sync_log_path(:bucket => bucket, :path => path)

@@ -45,6 +45,8 @@ ActionController::Routing::Routes.draw do |map|
     :controller => 'appnexus', :action => 'create', :conditions => {:method => :post}
   map.appnexus_sync '/appnexus/sync/:id',
     :controller => 'appnexus', :action => 'show'
+  map.appnexus_sync_log '/appnexus/log',
+    :controller => 'appnexus', :action => 'show_log'
 
   # You can have the root of your site routed with map.root -- just remember to delete public/index.html.
   map.root :controller => "extraction",

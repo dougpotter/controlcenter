@@ -84,7 +84,13 @@ class AppnexusSyncJob < Job
     end
   end
   
-  def log_uri
-    self.state[:emr_log_uri]
+  def emr_log_uri
+    if (log_uri = self.state[:emr_log_uri]) &&
+      (job_flow_id = self.state[:emr_jobflow_id])
+    then
+      File.join(log_uri, job_flow_id)
+    else
+      nil
+    end
   end
 end

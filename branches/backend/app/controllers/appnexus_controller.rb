@@ -22,5 +22,20 @@ class AppnexusController < ApplicationController
   def show
     @job = AppnexusSyncJob.find(params[:id])
     @job_parameters = AppnexusSyncParameters.new(@job.parameters)
+    if emr_log_uri = @job.emr_log_uri
+      s3_client = S3Client::RightAws.new
+      bucket, path = S3PrefixSpecification.parse_uri_str(emr_log_uri)
+      @log_files = s3_client.list_bucket_files(bucket, path)
+      @log_files.map! do |file|
+        name = file[path.length+1...file.length]
+        [name, bucket, file]
+      end
+    end
+  end
+  
+  def show_log
+    s3_client = S3Client::RightAws.new
+    url = s3_client.signed_file_url(params[:bucket], params[:path], 1.hour)
+    redirect_to url
   end
 end
