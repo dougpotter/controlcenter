@@ -1,3 +1,5 @@
+autoload :URI, 'uri'
+
 class S3PrefixSpecification
   attr_reader :bucket, :path
   
@@ -5,12 +7,23 @@ class S3PrefixSpecification
     @bucket, @path = bucket, path
   end
   
-  def self.parse(str)
+  def self.parse_prefix_str(str)
     str.split(':', 2)
   end
   
-  def self.from_str(str)
-    bucket, path = parse(str)
+  # s3n://bucket/path
+  def self.parse_uri_str(str)
+    uri = URI.parse(str)
+    [uri.host, uri.path]
+  end
+  
+  def self.from_prefix_str(str)
+    bucket, path = parse_prefix_str(str)
+    new(bucket, path)
+  end
+  
+  def self.from_uri_str(str)
+    bucket, path = parse_uri_str(str)
     new(bucket, path)
   end
 end

@@ -26,7 +26,7 @@ class AppnexusSyncWorkflow
   end
   
   def obtain_input_size(s3_xguid_list_prefix)
-    bucket, prefix = S3PrefixSpecification.parse(s3_xguid_list_prefix)
+    bucket, prefix = S3PrefixSpecification.parse_prefix_str(s3_xguid_list_prefix)
     counter = ByteLineCounter.new
     s3_client.list_bucket_files(bucket, prefix).each do |file|
       s3_client.get_stream(bucket, file) do |chunk|
@@ -123,7 +123,7 @@ class AppnexusSyncWorkflow
   def upload_list(appnexus_list_location)
     require 'net/sftp'
     require 'digest/md5'
-    bucket, prefix = S3PrefixSpecification.parse(appnexus_list_location)
+    bucket, prefix = S3PrefixSpecification.parse_prefix_str(appnexus_list_location)
     files = find_files(bucket, prefix)
     if files.empty?
       raise "AppNexus list generation produced no output files"
@@ -174,9 +174,9 @@ class AppnexusSyncWorkflow
   # user-supplied parameters (via XGCC ui) and defaults specified in XGCC
   # configuration files.
   def build_emr_parameters(params)
-    bucket, path = S3PrefixSpecification.parse(params[:s3_xguid_list_prefix])
+    bucket, path = S3PrefixSpecification.parse_prefix_str(params[:s3_xguid_list_prefix])
     input_url = "s3n://#{bucket}/#{path}"
-    bucket, path = S3PrefixSpecification.parse(params[:output_prefix])
+    bucket, path = S3PrefixSpecification.parse_prefix_str(params[:output_prefix])
     timestamp = Time.now
     hour = timestamp.hour
     hour_range = "#{'%02d' % hour}00-#{'%02d' % ((hour + 1) % 24)}00"
@@ -294,7 +294,7 @@ class AppnexusSyncWorkflow
   end
   
   def determine_lookup_url(params)
-    bucket, path = S3PrefixSpecification.parse(params[:lookup_prefix])
+    bucket, path = S3PrefixSpecification.parse_prefix_str(params[:lookup_prefix])
     lookup_start_date = params[:lookup_start_date]
     lookup_end_date = params[:lookup_end_date]
     if lookup_start_date && lookup_end_date
