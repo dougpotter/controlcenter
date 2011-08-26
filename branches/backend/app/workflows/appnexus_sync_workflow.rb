@@ -87,6 +87,7 @@ class AppnexusSyncWorkflow
       :appnexus_list_location => appnexus_list_location,
       :lookup_location => lookup_location,
       :emr_jobflow_id => job_id,
+      :emr_log_uri => emr_params[:log_url],
     }
   end
   

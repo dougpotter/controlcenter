@@ -22,6 +22,7 @@ class AppnexusSyncJob < Job
       workflow = AppnexusSyncWorkflow.new(self.parameters.update(options))
       result = workflow.launch_create_list
       self.state[:emr_jobflow_id] = result[:emr_jobflow_id]
+      self.state[:emr_log_uri] = result[:emr_log_uri]
       self.state[:appnexus_list_location] = result[:appnexus_list_location]
       self.state[:lookup_location] = result[:lookup_location]
       save!
@@ -81,5 +82,9 @@ class AppnexusSyncJob < Job
         save!
       end
     end
+  end
+  
+  def log_uri
+    self.state[:emr_log_uri]
   end
 end
