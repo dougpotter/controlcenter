@@ -247,7 +247,7 @@ module AppnexusClient
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
           return true
         else
-          return true
+          return false
         end
       end
 
