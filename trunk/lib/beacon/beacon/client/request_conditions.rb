@@ -16,9 +16,9 @@ module Beacon
       # @param audience_id [Integer,String] The beacon ID for the audience in question
       # @param options [Hash] An hash of :attr => "value" pairs. Must contain at least on :attr => "value" pair.
       # @option options [String] :request_url_regex (nil) The regex on which requests will be matched for this request condition
-      # @option options [String] :referrer_url_regex (nil) The regex on which referrer URLs will be matched for this request condition
+      # @option options [String] :referer_url_regex (nil) The regex on which referer URLs will be matched for this request condition
       # @example  Create a new request condition
-      #   Beacon.new.new_request_condition(2, :referrer_regex => "/a.*reg/")
+      #   Beacon.new.new_request_condition(2, :referer_regex => "/a.*reg/")
       def new_request_condition(audience_id, *options)
         post(
           "audiences/#{audience_id}/request_conditions?#{options[0].url_encode}"
@@ -43,10 +43,10 @@ module Beacon
       # @param request_condition_id [Integer,String] The beacon ID of the request condition to be updated
       # @param options [Hash] The hash containing the new attribute values in the formmat :attr => "value"
       # @option options [String] :request_url_regex (nil) The regex on which requests will be matched for this request condition
-      # @option options [String] :referrer_url_regex (nil) The regex on which referrer URLs will be matched for this request condition
+      # @option options [String] :referer_url_regex (nil) The regex on which referer URLs will be matched for this request condition
       #
       # @example Update request condition with beacon ID 99 (associated with audience 3)
-      #   Beacon.new.update_request_condition(3, 99, :request_url_regex => nil, :referrer_url_regex => "/a different one/")
+      #   Beacon.new.update_request_condition(3, 99, :request_url_regex => nil, :referer_url_regex => "/a different one/")
       def update_request_condition(audience_id, request_condition_id, *options)
         put(
           "audiences/#{audience_id}/request_conditions/#{request_condition_id}",
