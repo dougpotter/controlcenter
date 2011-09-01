@@ -112,9 +112,12 @@ module AppnexusClient
         end
         agent.http_get
 
-        ActiveSupport::JSON.decode(
+
+        result = ActiveSupport::JSON.decode(
           agent.body_str
         )["response"][@apn_mappings[:apn_wrapper].pluralize]
+
+        result ? result : []
       end
 
       def delete_url(object_hash)
