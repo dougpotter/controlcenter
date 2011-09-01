@@ -213,4 +213,16 @@ describe Audience do
         audience.latest_source.should == audience_source
     end
   end
+
+  context "\#partner" do
+    it "should return the parter of an audience with no campaigns but a conversion"+
+      " audience at beacon" do
+     
+      partner = Factory.create(:partner) 
+      audience = Factory.create(:audience, :campaign_id => nil) 
+      audience.save_beacon(partner.partner_code)
+
+      audience.partner.should == partner
+    end
+  end
 end

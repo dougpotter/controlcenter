@@ -47,6 +47,37 @@ class Partner < ActiveRecord::Base
       :joins => { :line_item => :partner},
       :conditions => [ "partners.id = ?", self.id ] )
   end
+
+  def request_conditions
+    results = []
+    for audience in Beacon.new.audiences.audiences
+      if audience['pid'] == self.partner_code
+        req_conds = Beacon.new.request_conditions(audience['id']).request_conditions
+        req_conds = req_conds.each { |rc| rc["audience_id"] = audience['id'] }
+        results << req_conds
+      end
+    end
+    return results.flatten
+  end
+
+  def conversion_configurations
+    results = []
+
+    for pixel in ConversionPixel.all_apn(:advertier_code => partner_code)
+      for req_cond in request_conditions
+        if pixel['code'] == 
+          Audience.find_by_beacon_id(req_cond.audience_id).audience_code
+          results << ConversionConfiguration.new(
+            :name => pixel['name'], 
+            :request_regex => req_cond.request_url_regex,
+            :referer_regex => req_cond.referer_url_regex,
+            :pixel_code => pixel["code"])
+        end
+      end
+    end
+
+    return results
+  end
   
   class << self
     def generate_partner_code

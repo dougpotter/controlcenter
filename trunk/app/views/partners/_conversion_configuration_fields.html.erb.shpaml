@@ -15,3 +15,5 @@
     = conversion_configuration.label "Referer Regex"
     >br
     = conversion_configuration.text_field "referer_regex"
+
+= conversion_configuration.hidden_field "pixel_code"

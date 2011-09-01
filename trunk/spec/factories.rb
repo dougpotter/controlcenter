@@ -309,10 +309,3 @@ Factory.define :action_tag do |a|
   a.url "http://google.com"
   a.partner_id { Factory(:partner).id }
 end
-
-Factory.define :conversion_configuration do |c|
-  c.name "Name"
-  c.sequence(:conversion_configuration_code) { |i| "AB#{i}UP" }
-  c.partner_id { Factory(:partner).id }
-  c.audience_source_id { Factory(:retargeting_source).id }
-end

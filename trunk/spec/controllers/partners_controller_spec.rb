@@ -50,15 +50,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         @partner.expects(:name).returns("partner name")
-        @audience_source = mock("AudienceSource")
-        @conversion_configuration = mock(
-          "ConversionConfiguration", 
-          :audience_source= => @audience_source,
-          :partner= => @partner,
-          :save_apn => true,
-          :save_beacon => true
-        )
-        ConversionConfiguration.expects(:new).returns(@conversion_configuration)
+        controller.expects(:create_new_conversion_config).returns(true)
       end
 
       it "should associate conversion pixel" do
@@ -86,14 +78,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_object_reset_for_new_render
-        @audience_source = mock("AudienceSource")
-        @conversion_configuration = mock(
-          "ConversionConfiguration", 
-          :partner= => @partner, 
-          :save_apn => false,
-          :audience_source= => @audience_source
-        )
-        ConversionConfiguration.expects(:new).returns(@conversion_configuration)
+        controller.expects(:create_new_conversion_config).returns(false)
       end
 
       it "should fail to save conversion pixel" do
@@ -163,16 +148,8 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_action_tag_association
-        @audience_source = mock("AudienceSource")
-        @conversion_configuration = mock(
-          "ConversionConfiguration", 
-          :save_apn => true, 
-          :audience_source= => @audience_source,
-          :partner= => @partner,
-          :save_beacon => true
-        )
-        ConversionConfiguration.expects(:new).returns(@conversion_configuration)
         @partner.expects(:name).returns("partner name")
+        controller.expects(:create_new_conversion_config).returns(true)
       end
 
       it "should associate action tags and conversion pixels" do
@@ -206,13 +183,7 @@ describe PartnersController, "create partner with valid attributes" do
       before(:each) do
         mock_and_stub_action_tag_association
         mock_and_stub_object_reset_for_new_render
-        @audience_source = mock("AudienceSource")
-        @conversion_configuration = mock(
-          "ConversionConfiguration", 
-          :audience_source= => @audience_source,
-          :save_apn => false, 
-          :partner= => @partner)
-        ConversionConfiguration.expects(:new).returns(@conversion_configuration)
+        controller.expects(:create_new_conversion_config).returns(false)
       end
 
       it "should fail to save conversion pixel" do

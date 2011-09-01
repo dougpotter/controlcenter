@@ -33,6 +33,30 @@ class Audience < ActiveRecord::Base
   acts_as_dimension
   business_index :audience_code, :aka => "aid"
 
+  def save_beacon(partner_code)
+    self.beacon_id = Beacon.new.new_audience(
+      :name => description, 
+      :audience_type => 'request-conditional',
+      :pid => partner_code)
+
+    if beacon_id == 0
+      return false
+    else
+      return self.save
+    end
+  end
+
+  def partner
+    if campaign
+      return campaign.partner
+    elsif beacon_id
+      pid = Beacon.new.audience(beacon_id).pid
+      return Partner.find_by_partner_code(pid)
+    else
+      return nil
+    end
+  end
+
   def ad_hoc_source_attributes=(attributes)
     new_s3_bucket = attributes.delete("new_s3_bucket")
     old_s3_bucket = attributes.delete("old_s3_bucket")
