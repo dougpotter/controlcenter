@@ -1,4 +1,4 @@
-.conversion_configuration_form data-index="<%= form_index %>"
+.conversion_configuration_form data-index="<%= form_index %>" data-new_record="<%= conversion_configuration.object.new_record? %>"
   = error_messages_on(conversion_configuration.object)
   <input data-index="<%= form_index %>" id="conversion_configuration_minus_sign_<%= form_index %>" class="conversion_configuration_minus_sign" type="image" src="/images/minus_sign.png" />
   .dimension_input
