@@ -191,7 +191,7 @@ class PartnersController < ApplicationController
   def extract_conv_config_params 
     if conv_configs = params[:partner].
       delete("conversion_configurations_attributes")
-      return values.map { |conv_config| Hashie::Mash.new(conv_config) }
+      return conv_configs.values.map { |conv_config| Hashie::Mash.new(conv_config) }
     else
       return []
     end
