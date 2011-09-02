@@ -35,7 +35,7 @@ h1 | New Advertiser
   = submit_tag('Create Advertiser')
 
 
-h1 | Edit Existing Advertiser
+h1.edit_existing_advertiser_heading | Edit Existing Advertiser
 >br
 
 div id=summary_table
