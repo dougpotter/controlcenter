@@ -85,5 +85,6 @@ var removeForm = function(options) {
       if (form.get('data-index') == options.index) { return true; }
       else { return false; }
   })[0];
-  hiddenRemoveField.replaces(formToBeRemoved);
+  if (formToBeRemoved.get('data-new_record') == 'true') { formToBeRemoved.destroy() }
+  else { hiddenRemoveField.replaces(formToBeRemoved); }
 }

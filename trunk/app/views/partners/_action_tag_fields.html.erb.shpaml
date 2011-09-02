@@ -1,4 +1,4 @@
-.action_tag_form data-index="<%= form_index %>" 
+.action_tag_form data-index="<%= form_index %>" data-new_record="<%= action_tag.object.new_record? %>"
   = error_messages_on(action_tag.object)
   <input data-index="<%= form_index %>" id="action_tag_minus_sign_<%= form_index %>" class="action_tag_minus_sign" type="image" src="/images/minus_sign.png" />
   .dimension_input      
