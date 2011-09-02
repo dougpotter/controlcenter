@@ -11,9 +11,10 @@
 # Partner is defined as a client on whose behalf we execute Campaigns
 class Partner < ActiveRecord::Base
   has_many :partner_beacon_requests
-  has_many :line_items
+  has_many :line_items, :dependent => :destroy
   has_many :action_tags, :dependent => :destroy
   has_many :conversion_configurations
+  has_many :creatives, :dependent => :destroy
 
   validates_presence_of :partner_code, :name
   validates_uniqueness_of :partner_code
