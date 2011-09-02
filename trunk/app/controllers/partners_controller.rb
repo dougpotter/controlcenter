@@ -188,11 +188,17 @@ class PartnersController < ApplicationController
     return notice
   end
 
-  def handle_conversion_configurations
-    conv_configs = params[:partner].
-      delete("conversion_configurations_attributes").
-      values.map { |conv_config| Hashie::Mash.new(conv_config) }
+  def extract_conv_config_params 
+    if conv_configs = params[:partner].
+      delete("conversion_configurations_attributes")
+      return values.map { |conv_config| Hashie::Mash.new(conv_config) }
+    else
+      return []
+    end
+  end
 
+  def handle_conversion_configurations
+    conv_configs = extract_conv_config_params
     for conv_config in conv_configs
       if new_config?(conv_config)
         create_new_conversion_config(Partner.find(params[:id]), conv_config)
