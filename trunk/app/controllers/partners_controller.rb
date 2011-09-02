@@ -215,7 +215,7 @@ class PartnersController < ApplicationController
   end
 
   def destroy_config?(conv_config)
-    conv_config["_destroy"]
+    conv_config["_destroy"] == "true"
   end
 
   def destroy_config(conv_config)

@@ -67,11 +67,13 @@ class Partner < ActiveRecord::Base
       for req_cond in request_conditions
         if pixel['code'] == 
           Audience.find_by_beacon_id(req_cond.audience_id).audience_code
-          results << ConversionConfiguration.new(
+          c = ConversionConfiguration.new(
             :name => pixel['name'], 
             :request_regex => req_cond.request_url_regex,
             :referer_regex => req_cond.referer_url_regex,
             :pixel_code => pixel["code"])
+          c.instance_variable_set(:@new_record, false)
+          results << c
         end
       end
     end
