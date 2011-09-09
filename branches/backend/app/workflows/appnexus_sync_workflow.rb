@@ -63,6 +63,12 @@ class AppnexusSyncWorkflow
     if params[:enable_emr_debugging]
       # this is achieved by prepending special steps to the step list
       # http://docs.amazonwebservices.com/ElasticMapReduce/latest/DeveloperGuide/index.html?DebuggingEnable.html
+      options[:steps] << {
+        :jar => 's3://us-east-1.elasticmapreduce/libs/script-runner/script-runner.jar',
+        :args => 's3://us-east-1.elasticmapreduce/libs/state-pusher/0.1/fetch',
+        :name => 'Setup Hadoop Debugging',
+        :action_on_failure => 'TERMINATE_JOB_FLOW',
+      }
     end
     options[:steps] << {
       :jar => emr_params[:code_url],
