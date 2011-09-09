@@ -1,5 +1,4 @@
 common: &common
-  emr_command: ['/path/to/elastic-mapreduce-ruby/elastic-mapreduce']
   appnexus_member_id: 356
   list_create_ttl: 0
   list_create_instance_type: m1.large

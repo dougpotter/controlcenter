@@ -48,38 +48,38 @@ class AppnexusSyncWorkflow
   def launch_create_list
     emr_params = build_emr_parameters
     
-    cmd = params[:emr_command] + [
-      '--create',
-      '--name', emr_params[:name],
-      '--log-uri', emr_params[:log_uri],
-      '--num-instances', emr_params[:instance_count],
-      '--instance-type', emr_params[:instance_type],
-    ]
+    options = {
+      :name => emr_params[:name],
+      :log_uri => emr_params[:log_uri],
+      :instance_count => emr_params[:instance_count],
+      :master_instance_type => emr_params[:instance_type],
+      :slave_instance_type => emr_params[:instance_type],
+      :hadoop_version => '0.20',
+      :steps => [],
+    }
     if params[:keep_emr_alive]
-      cmd << '--alive'
+      options[:keep_job_alive_when_no_steps] = true
     end
     if params[:enable_emr_debugging]
-      cmd << '--enable-debugging'
+      # this is achieved by prepending special steps to the step list
+      # http://docs.amazonwebservices.com/ElasticMapReduce/latest/DeveloperGuide/index.html?DebuggingEnable.html
     end
-    cmd += [
-      '--jar', emr_params[:code_url],
-      '--main-class', emr_params[:main_class],
-      '--arg', emr_params[:temp_dir],
-      '--arg', emr_params[:input_url],
-      '--arg', emr_params[:lookup_url],
-      '--arg', emr_params[:appnexus_segment_id],
-      '--arg', emr_params[:audience_code],
-      '--arg', emr_params[:ttl],
-      '--arg', emr_params[:appnexus_member_id],
-      '--arg', emr_params[:output_url],
-      '--step-name', emr_params[:step_name],
-    ]
-    output = run(cmd)
-    if output =~ /^Created job flow (j-\w+)$/
-      job_id = $1
-    else
-      raise "Output did not contain job id: #{output}"
-    end
+    options[:steps] << {
+      :jar => emr_params[:code_url],
+      :main_class => emr_params[:main_class],
+      :name => emr_params[:step_name],
+      :args => [
+        emr_params[:temp_dir],
+        emr_params[:input_url],
+        emr_params[:lookup_url],
+        emr_params[:appnexus_segment_id],
+        emr_params[:audience_code],
+        emr_params[:ttl],
+        emr_params[:appnexus_member_id],
+        emr_params[:output_url],
+      ],
+    }
+    job_flow_id = emr_client.run_job_flow(options)
     
     # derive output location from s3 url
     appnexus_list_location = s3_url_to_location(emr_params[:output_url])
@@ -88,27 +88,15 @@ class AppnexusSyncWorkflow
     {
       :appnexus_list_location => appnexus_list_location,
       :lookup_location => lookup_location,
-      :emr_jobflow_id => job_id,
+      :emr_jobflow_id => job_flow_id,
       :emr_log_uri => emr_params[:log_uri],
     }
   end
   
   # Checks whether the map-reduce job to create appnexus list has finished.
-  def check_create_list(job_id)
-    cmd = params[:emr_command].dup
-    cmd += [
-      '--describe',
-      '--jobflow', job_id
-    ]
-    output = run(cmd)
-    # output is json but we can read it with yaml to avoid additional
-    # dependencies
-    info = YAML.load(output)
-    begin
-      job_state = info['JobFlows'][0]['ExecutionStatusDetail']['State'].downcase
-    rescue NoMethodError
-      raise "Job state not found in job info: #{info}"
-    end
+  def check_create_list(job_flow_id)
+    info = emr_client.describe_job_flows(job_flow_id).first
+    job_state = info[:state].downcase
     result = {:state => job_state}
     result[:success] = case job_state
     when 'completed', 'shutting_down'
@@ -171,6 +159,14 @@ class AppnexusSyncWorkflow
   
   def s3_client
     @s3_client ||= create_s3_client(params)
+  end
+  
+  def emr_client
+    if @emr_client.nil?
+      require 'right_aws'
+      @emr_client = RightAws::EmrInterface.new
+    end
+    @emr_client
   end
   
   # Builds parameters for EMR job generating appnexus list given a merge of

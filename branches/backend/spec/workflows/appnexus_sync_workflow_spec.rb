@@ -111,10 +111,8 @@ describe AppnexusSyncWorkflow do
   describe :launch_create_list do
     def sensible_default_parameters
       {
-        # need emr_command since we use it to build command line to invoke.
         # we stub run method, allowing the built command line to have nil
         # arguments
-        :emr_command => ['doit'],
         :s3_xguid_list_prefix => 'test:input/path',
         :output_prefix => 'test:output/path',
         :lookup_prefix => 'test:lookup/path',
