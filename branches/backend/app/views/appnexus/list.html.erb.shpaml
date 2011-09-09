@@ -1,3 +1,7 @@
+p
+  = link_to 'Previous', appnexus_sync_list_path(@prev_year, @prev_month)
+  = link_to 'Next', appnexus_sync_list_path(@next_year, @next_month)
+
 h2 | AppNexus status
 
 p

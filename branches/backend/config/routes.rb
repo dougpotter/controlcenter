@@ -39,6 +39,10 @@ ActionController::Routing::Routes.draw do |map|
   
   map.appnexus_sync_index '/appnexus/sync',
     :controller => 'appnexus', :action => 'index', :conditions => {:method => :get}
+  map.appnexus_sync_list_impl '/appnexus/sync/:year/:month',
+    :controller => 'appnexus', :action => 'list',
+    :conditions => {:method => :get},
+    :year => /\d{4}/, :month => /\d\d/
   map.new_appnexus_sync '/appnexus/sync/new',
     :controller => 'appnexus', :action => 'new'
   map.create_appnexus_sync '/appnexus/sync',

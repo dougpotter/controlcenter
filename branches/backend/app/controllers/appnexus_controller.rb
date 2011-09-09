@@ -1,7 +1,12 @@
 # Rename this controller to AppnexusSyncController if other actions are needed.
 class AppnexusController < ApplicationController
   def index
-    @jobs = AppnexusSyncJob.all(:order => 'created_at desc')
+    now = Time.now
+    do_list(now.year, now.month)
+  end
+  
+  def list
+    do_list(params[:year].to_i, params[:month].to_i)
   end
   
   def new
@@ -37,5 +42,32 @@ class AppnexusController < ApplicationController
     s3_client = S3Client::RightAws.new
     url = s3_client.signed_file_url(params[:bucket], params[:path], 1.hour)
     redirect_to url
+  end
+  
+  private
+  
+  def do_list(year, month)
+    @year, @month = year, month
+    if month == 1
+      @prev_year = year - 1
+      @prev_month = 1
+    else
+      @prev_year = year
+      @prev_month = month - 1
+    end
+    if month == 12
+      @next_year = year + 1
+      @next_month = 1
+    else
+      @next_year = year
+      @next_month = month + 1
+    end
+    
+    start_date = Time.utc(year, month)
+    end_date =  Time.utc(@next_year, @next_month)
+    @jobs = AppnexusSyncJob.all(:order => 'created_at desc',
+      :conditions => ['created_at >= ? and created_at < ?', start_date, end_date])
+    
+    render :action => 'list'
   end
 end

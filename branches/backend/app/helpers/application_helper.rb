@@ -39,4 +39,8 @@ module ApplicationHelper
     end
     content_tag(:div, content, :style => "clear:#{how}")
   end
+  
+  def appnexus_sync_list_path(year, month)
+    appnexus_sync_list_impl_path(year, sprintf('%02d', month))
+  end
 end
