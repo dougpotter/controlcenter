@@ -94,13 +94,22 @@ table
     td
       = @job_parameters.enable_emr_debugging ? 'Yes' : 'No'
   
-  tr
-    th | Log files
-    td
-      % if @log_files
-        = render :partial => 'log_files'
-      % else
-        (None)
+  % if @list_logs
+    tr
+      th | Log files
+      td
+        % if @log_files
+          = render :partial => 'log_files'
+        % else
+          (None)
+  % else
+    tr
+      th | Log files
+      td
+        % if @job.emr_log_uri
+          = link_to 'View logs', :action => 'list_logs', :id => @job.id
+        % else
+          (None)
 
 = clear
 

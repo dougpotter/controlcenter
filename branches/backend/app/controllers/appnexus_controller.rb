@@ -27,6 +27,11 @@ class AppnexusController < ApplicationController
   def show
     @job = AppnexusSyncJob.find(params[:id])
     @job_parameters = AppnexusSyncParameters.new(@job.parameters)
+  end
+  
+  def list_logs
+    @job = AppnexusSyncJob.find(params[:id])
+    @job_parameters = AppnexusSyncParameters.new(@job.parameters)
     if emr_log_uri = @job.emr_log_uri
       s3_client = S3Client::RightAws.new
       bucket, path = S3PrefixSpecification.parse_uri_str(emr_log_uri)
@@ -34,10 +39,11 @@ class AppnexusController < ApplicationController
       @log_files.map! do |file|
         name = file[path.length+1...file.length]
         headers = s3_client.head(bucket, file)
-        #headers = {}
         [name, bucket, file, headers['content-length'].to_i]
       end
     end
+    @list_logs = true
+    render :action => 'show', :list_logs => true
   end
   
   def show_log
