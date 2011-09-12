@@ -12,8 +12,8 @@ module AppnexusHelper
         ext = ''
       end
       
-      if segment.length > 14
-        segment = segment[0...6] + '..' + segment[-7...-1]
+      if segment.length > 20
+        segment = segment[0..9] + '..' + segment[-10..-1]
       end
       
       segment + ext

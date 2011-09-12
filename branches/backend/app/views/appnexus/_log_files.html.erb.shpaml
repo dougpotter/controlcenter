@@ -1,4 +1,5 @@
 ul
-  % for name, bucket, path in @log_files
-    li
+  % for name, bucket, path, size in @log_files
+    li <% if size == 0 %> class=empty-file <% end %>
       = link_to h(shorten_emr_log_file_name(name)), appnexus_sync_log_path(:bucket => bucket, :path => path), :title => name
+      (<%= size %> bytes)

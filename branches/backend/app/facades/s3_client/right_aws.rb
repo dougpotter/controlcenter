@@ -134,6 +134,10 @@ class S3Client::RightAws < S3Client::Base
     @s3.get_link(bucket, path, expires)
   end
   
+  def head(bucket, path)
+    @s3.head(bucket, path)
+  end
+  
   private
   
   def create_item(entry)

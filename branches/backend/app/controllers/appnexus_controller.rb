@@ -33,7 +33,9 @@ class AppnexusController < ApplicationController
       @log_files = s3_client.list_bucket_files(bucket, path)
       @log_files.map! do |file|
         name = file[path.length+1...file.length]
-        [name, bucket, file]
+        headers = s3_client.head(bucket, file)
+        #headers = {}
+        [name, bucket, file, headers['content-length'].to_i]
       end
     end
   end
