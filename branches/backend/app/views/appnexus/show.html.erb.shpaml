@@ -114,4 +114,4 @@ table
 = clear
 
 p
-  = link_to 'Back to list', appnexus_sync_index_path
+  = link_to 'Back to list', appnexus_sync_list_path(@job.created_at.year, @job.created_at.month)
