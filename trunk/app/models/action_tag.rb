@@ -5,6 +5,10 @@ class ActionTag < ActiveRecord::Base
   validates_uniqueness_of :sid
   validates_numericality_of :sid, :greater_than => 9999, :less_than => 100000
 
+  def status
+    "Active"
+  end
+
   class << self
     def generate_sid
       CodeGenerator.generate_unique_code(

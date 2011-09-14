@@ -22,6 +22,8 @@ class Partner < ActiveRecord::Base
   accepts_nested_attributes_for :action_tags, :allow_destroy => true
   accepts_nested_attributes_for :conversion_configurations, :allow_destroy => true
 
+  attr_accessor :temp_conversion_configurations
+
   def pid ; partner_code ; end
   
   def partner_code_and_name
@@ -41,6 +43,7 @@ class Partner < ActiveRecord::Base
       :index => "advertiser",
       :new => "advertiser",
       :view => "advertiser?code=##partner_code##",
+      :delete => "advertiser?code=##partner_code##",
       :delete_by_apn_ids => "advertiser?id=##apn_id##" }
 
   def campaigns 
@@ -49,9 +52,66 @@ class Partner < ActiveRecord::Base
       :conditions => [ "partners.id = ?", self.id ] )
   end
 
+  def destroy
+    destroy_conversion_configs
+    self.delete_apn
+    super
+  end
+
+  def destroy_conversion_configs
+    for audience in Beacon.new.audiences.audiences
+      if audience["pid"] == self.partner_code
+        destroy_request_conditions(audience["id"])
+        destroy_apn_conversion_pixels(audience["pid"])
+        if aud = Audience.find_by_beacon_id(audience["id"])
+          aud.destroy
+        end
+      end
+    end
+  end
+
+  def destroy_apn_conversion_pixels(partner_code)
+    for conversion_pixel in ConversionPixel.all_apn(:advertiser_code => self.partner_code)
+      ConversionPixel.delete_apn(
+        "advertiser_code" => partner_code, 
+        "code" => conversion_pixel["code"])
+    end
+  end
+
+  def destroy_request_conditions(beacon_audience_id)
+    begin
+      for request_condition in 
+        Beacon.new.request_conditions(beacon_audience_id).request_conditions
+        Beacon.new.delete_request_condition(beacon_audience_id, request_condition["id"])
+      end
+    rescue
+      raise "Beacon error when deleting request conditions"
+      return 
+    end
+
+    return true
+  end
+
+  def destroy_audiences
+    begin
+      audiences = Beacon.new.audiences.audiences
+    rescue
+      raise "Beacon error."
+      return
+    end
+  end
+
   def request_conditions
     results = []
-    for audience in Beacon.new.audiences.audiences
+
+    begin
+      audiences = Beacon.new.audiences.audiences
+    rescue
+      raise "Beacon error."
+      return
+    end
+
+    for audience in audiences
       if audience['pid'] == self.partner_code
         req_conds = Beacon.new.request_conditions(audience['id']).request_conditions
         req_conds = req_conds.each { |rc| rc["audience_id"] = audience['id'] }
@@ -62,19 +122,22 @@ class Partner < ActiveRecord::Base
   end
 
   def conversion_configurations
-    results = []
-
-    for pixel in ConversionPixel.all_apn(:advertier_code => partner_code)
-      for req_cond in request_conditions
-        if pixel['code'] == 
-          Audience.find_by_beacon_id(req_cond.audience_id).audience_code
-          c = ConversionConfiguration.new(
-            :name => pixel['name'], 
-            :request_regex => req_cond.request_url_regex,
-            :referer_regex => req_cond.referer_url_regex,
-            :pixel_code => pixel["code"])
-          c.instance_variable_set(:@new_record, false)
-          results << c
+    if temp_conversion_configurations
+      results = temp_conversion_configurations
+    else
+      results = []
+      for pixel in ConversionPixel.all_apn(:advertier_code => partner_code)
+        for req_cond in request_conditions
+          if pixel['code'] == 
+            Audience.find_by_beacon_id(req_cond.audience_id).audience_code
+            c = ConversionConfiguration.new(
+              :name => pixel['name'], 
+              :request_regex => req_cond.request_url_regex,
+              :referer_regex => req_cond.referer_url_regex,
+              :pixel_code => pixel["code"])
+            c.instance_variable_set(:@new_record, false)
+            results << c
+          end
         end
       end
     end

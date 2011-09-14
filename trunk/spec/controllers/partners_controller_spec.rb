@@ -23,7 +23,7 @@ describe PartnersController, "create partner with valid attributes" do
       end
 
       before(:each) do
-        @partner.expects(:name).returns("partner name")
+        @partner.expects("id").returns(1)
       end
 
       it "should save @partner at xgcc and apn" do
@@ -32,7 +32,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       it "should be redirect" do
         do_create
-        response.should redirect_to(new_partner_url)
+        response.should redirect_to(partner_url(1))
       end
     end # or conversion pixel
 
@@ -45,12 +45,12 @@ describe PartnersController, "create partner with valid attributes" do
             "0" => {
               "name" => "conv pixel name",
               "request_regex" => "a regex for request",
-              "referrer_regex" => "a regex for referrer" } } }
+              "referer_regex" => "a regex for referer" } } }
       end
 
       before(:each) do
-        @partner.expects(:name).returns("partner name")
         controller.expects(:create_new_conversion_config).returns(true)
+        @partner.expects("id").returns(1)
       end
 
       it "should associate conversion pixel" do
@@ -59,7 +59,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       it "should be redirect" do
         do_create
-        response.should redirect_to(new_partner_url)
+        response.should redirect_to(partner_url(1))
       end
 
     end
@@ -73,7 +73,7 @@ describe PartnersController, "create partner with valid attributes" do
             "0" => { 
               "name" => "conv pixel name",
               "request_regex" => "",
-              "referrer_regex" => "" } } }
+              "referer_regex" => "" } } }
       end
 
       before(:each) do
@@ -116,7 +116,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_action_tag_association
-        @partner.expects(:name).returns("partner name")
+        @partner.expects("id").returns(1)
       end
 
       it "should associate the action tag with the partner" do
@@ -125,7 +125,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       it "should be redirect" do
         do_create
-        response.should redirect_to(new_partner_url)
+        response.should redirect_to(partner_url(1))
       end
     end
 
@@ -142,14 +142,14 @@ describe PartnersController, "create partner with valid attributes" do
         "conversion_configurations_attributes" => {
           "0" => {
             "name" => "conv pixel name",
-            "referrer_regex" => "a regex for referrer",
+            "referer_regex" => "a regex for referer",
             "request_regex" => "a regex for requests" } } }
       end
 
       before(:each) do
         mock_and_stub_action_tag_association
-        @partner.expects(:name).returns("partner name")
         controller.expects(:create_new_conversion_config).returns(true)
+        @partner.expects("id").returns(1)
       end
 
       it "should associate action tags and conversion pixels" do
@@ -158,7 +158,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       it "should be redirect" do
         do_create
-        response.should redirect_to(new_partner_url)
+        response.should redirect_to(partner_url(1))
       end
 
     end
@@ -176,8 +176,8 @@ describe PartnersController, "create partner with valid attributes" do
         "conversion_configurations_attributes" => {
           "0" => {
             "name" => "conv pixel name",
-            "referrer regex" => "",
-            "request regex" => "" } } }
+            "referer_regex" => "",
+            "request_regex" => "" } } }
       end
 
       before(:each) do
@@ -202,8 +202,18 @@ end
 describe PartnersController, "create partner only with invalid attributes" do
   context "and no action tags or conversion pixels" do
     before(:each) do
-      @partner = mock("Partner", :save => false)
-      Partner.expects(:new).returns(@partner)
+      @errors = mock("Errors", :on_base => [])
+      @partner = mock(
+        "Partner", 
+        :save => false, 
+        :destroy => true, 
+        :errors => @errors,
+        :attributes => Factory.build(:partner).attributes)
+      @template_partner = mock(
+        "Template Partner",
+        :action_tags= => "",
+        :temp_conversion_configurations= => "")
+      Partner.expects(:new).twice.returns(@partner, @template_partner)
     end
 
     def do_create

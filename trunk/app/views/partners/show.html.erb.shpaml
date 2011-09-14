@@ -1,0 +1,65 @@
+h1 | <%= "#{@partner.name} <span class=\"subhead\">(#{@partner.partner_code})</span>" %>
+h2 | Action Tags
+
+.action_tags_table
+  table
+    thead
+      tr
+        th
+          Action Tag
+        th
+          Status
+    tbody
+      % for action_tag in @partner.action_tags
+        tr
+          td
+            = "#{action_tag.name} - #{action_tag.sid}"
+          td
+            = image_tag("#{action_tag.status.downcase}.png", :height => 18)
+
+.document_links
+  span
+    Downloads:
+  span
+    = link_to("Implementation Instructions", partner_path(2))
+  span
+    = link_to("Action Tags (html)", partner_path(2))
+  span
+    = link_to("Action Tags (txt)", partner_path(2))
+
+
+h2 | Conversion Configurations
+
+.conversion_configurations_table
+  table
+    thead
+      tr
+        th
+          Name
+        th
+          Apn Conv ID
+        th
+          Request Regex
+        th
+          Referer Regex
+        th
+          Status
+    tbody
+      % for conv_config in @partner.conversion_configurations
+        tr
+          td
+            = conv_config.name
+          td
+            = conv_config.pixel_code
+          td
+            = conv_config.request_regex
+          td
+            = conv_config.referer_regex
+          td
+            = image_tag("active.png", :height => 18 )
+
+
+        
+
+div style="clear:both;"
+  >br

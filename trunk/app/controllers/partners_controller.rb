@@ -16,6 +16,14 @@ class PartnersController < ApplicationController
 
     # if partner doesn't save, bail
     if !@partner.save || !@partner.save_apn
+      @partner.destroy
+      @template_partner = Partner.new(@partner.attributes)
+      for error in @partner.errors.on_base
+        @template_partner.errors.add_to_base(error)
+      end
+      @template_partner.action_tags = @action_tags
+      @template_partner.temp_conversion_configurations = @conversion_configs
+      @partner = @template_partner
       @partners = Partner.all
       render :action => "new"
       return
@@ -46,8 +54,7 @@ class PartnersController < ApplicationController
     end
 
     redirect_to(
-      new_partner_path,
-      :notice => "#{@partner.name} successfully created"
+      partner_path(@partner.id)
     )
   end
 
@@ -98,7 +105,7 @@ class PartnersController < ApplicationController
     if config_hashes = 
       params[:partner].delete("conversion_configurations_attributes")
       return config_hashes.values.map { |conv_conf|
-        Hashie::Mash.new(conv_conf)
+        ConversionConfiguration.new(conv_conf)
       } 
     else
       return []
@@ -139,6 +146,7 @@ class PartnersController < ApplicationController
         return false
       end
 
+=begin
       sync_rule = SyncRule.new(
         :audience_id => audience.beacon_id,
         :sync_period => 7,
@@ -158,6 +166,7 @@ class PartnersController < ApplicationController
         flash[:notice] = "Error on sync rule save"
         return false
       end
+=end
 
     return true
   end

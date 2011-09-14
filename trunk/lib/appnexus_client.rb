@@ -131,6 +131,40 @@ module AppnexusClient
         apn_action_url(:delete_by_apn_ids, substitutions)
       end
 
+      def delete_by_apn_id(*substitutions)
+        token = AppnexusClient::API.new_agent.headers["Authorization"]
+        agent = Curl::Easy.http_delete(delete_url(substitutions[0])) do |a|
+          a.headers["Authorization"] = token
+        end
+
+        result = ActiveSupport::JSON.decode(
+          agent.body_str
+        )["response"][@apn_mappings[:apn_wrapper].pluralize]
+
+        puts result
+      end
+
+      def delete_by_code_url(*object_hash)
+        if object_hash.is_a?(Array)
+          object_hash = object_hash[0]
+        end
+        url = apn_mappings[:urls][:delete].clone
+        necessary_attributes = url.scan(/(?:\?|\&)(.+?)=/).flatten
+        substitutions = []
+        for attribute in necessary_attributes
+          substitutions << object_hash[attribute.to_s]
+        end
+
+        apn_action_url(:delete, substitutions)
+      end
+
+      def delete_apn(*substitutions)
+        token = AppnexusClient::API.new_agent.headers["Authorization"]
+        agent = Curl::Easy.http_delete(delete_by_code_url(substitutions[0])) do |a|
+          a.headers["Authorization"] = token
+        end
+      end
+
       def delete_all_apn(*filter)
 
         if RAILS_ENV == "production"
@@ -240,9 +274,10 @@ module AppnexusClient
       end
 
       def delete_apn
-        agent = AppnexusClient::API.new_agent
-        agent.url = apn_action_url(:delete)
-        agent.http_delete
+        token = AppnexusClient::API.new_agent
+        agent = Curl::Easy.http_delete(apn_action_url(:delete)) do |a|
+          a.headers["Authorization"] = token
+        end
 
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
           return true
