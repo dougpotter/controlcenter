@@ -1,11 +1,12 @@
 require 'spec_helper'
 
-
 describe Beacon do
   before(:all) do
     @b = Beacon.new
     @api_root = BEACON_CONFIG[:api_root_url]
     @agent = Curl::Easy.new
+
+    seed_beacon
   end
 
   def audiences_in_order
@@ -24,7 +25,7 @@ describe Beacon do
 
   def audience_id_with_sync_rules
     for audience in audiences_in_order
-      if audience["type"] == 'xguid-conditional' && sync_rules(audience.id)
+      if sync_rules(audience.id)
         return audience.id
       end
     end
@@ -133,6 +134,31 @@ describe Beacon do
         "https://secure.ib.adnxs.com/seg?remove=12345"
       )
       id.should == sync_rules(audience_id_with_sync_rules).sort(&by_id).last.id.to_s
+    end
+
+    it "#new_sync_rule with only add pixels should return id of new sync rule" do
+      id = @b.new_sync_rule(
+        audience_id_with_sync_rules, 
+        7, 
+        "http://ib.adnxs.com/seg?add=12345",
+        nil,
+        "https://secure.ib.adnxs.com/seg?add=12345",
+        nil
+      )
+      id.should == sync_rules(audience_id_with_sync_rules).sort(&by_id).last.id.to_s
+    end
+
+    it "#new_sync_rule on request conditional audience should return id of new"+
+    " sync rule" do
+      id = @b.new_sync_rule(
+        audience_id_with_request_condition, 
+        7, 
+        "http://ib.adnxs.com/seg?add=12345",
+        "http://ib.adnxs.com/seg?remove=12345",
+        "https://secure.ib.adnxs.com/seg?remove=12345",
+        "https://secure.ib.adnxs.com/seg?remove=12345"
+      )
+      id.should == sync_rules(audience_id_with_request_condition).sort(&by_id).last.id.to_s
     end
 
     it "#new_sync_rule with missing arguments should raise error" do
@@ -298,8 +324,7 @@ describe Beacon do
     end
 
     it "#load_operations(audience_id) should return an error string if the"+
-    " if the audience id provided does not belong to an xguid-conditional"+
-    " audience" do
+    " audience id provided does not belong to an xguid-conditional audience" do
       audience_id = audience_id_with_request_condition
       @b.load_operations(audience_id).should == 
         "Audience #{audience_id} is not xguid-conditional"

@@ -26,7 +26,7 @@ module Beacon
     end
 
     def reset
-      self.endpoint = DEFAULT_ENDPOINT
+      self.endpoint = BEACON_CONFIG[:api_root_url] || DEFAULT_ENDPOINT
     end
   end
 end
