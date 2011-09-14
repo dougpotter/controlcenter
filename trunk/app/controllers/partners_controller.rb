@@ -73,7 +73,7 @@ class PartnersController < ApplicationController
     handle_conversion_configurations
     if @partner.update_attributes(params[:partner])
       flash[:notice] = notice
-      redirect_to(:action => 'new')
+      render :action => "show"
     else
       flash[:notice] = "Update failed"
       render :action => 'edit', :id => @partner
@@ -241,11 +241,11 @@ class PartnersController < ApplicationController
     Beacon.new.delete_request_condition(
       audience.beacon_id,
       request_condition['id'])
-    #for sync_rule in Beacon.new.sync_rules(audience.beacon_id).sync_rules
-    #  if sync_rule.audience_id == audience.beacon_id
-    #    Beacon.new.delete_sync_rule(audience.beacon_id, sync_rule['id'])
-    #  end
-    #end
+    for sync_rule in Beacon.new.sync_rules(audience.beacon_id).sync_rules
+      #if sync_rule.audience_id == audience.beacon_id
+        Beacon.new.delete_sync_rule(audience.beacon_id, sync_rule['id'])
+      #end
+    end
     audience.destroy if audience
   end
 

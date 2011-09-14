@@ -274,7 +274,8 @@ module AppnexusClient
       end
 
       def delete_apn
-        token = AppnexusClient::API.new_agent
+        token = AppnexusClient::API.new_agent.headers["Authorization"]
+        puts apn_action_url(:delete)
         agent = Curl::Easy.http_delete(apn_action_url(:delete)) do |a|
           a.headers["Authorization"] = token
         end

@@ -122,7 +122,6 @@ class Partner < ActiveRecord::Base
   end
 
   def conversion_configurations
-=begin
     if temp_conversion_configurations
       results = temp_conversion_configurations
     else
@@ -142,8 +141,8 @@ class Partner < ActiveRecord::Base
         end
       end
     end
-=end
 
+=begin
     results = []
     results << ConversionConfiguration.new(
       :name => "Name of Conv",
@@ -158,6 +157,7 @@ class Partner < ActiveRecord::Base
       :referer_regex => "/another=regex/",
       :pixel_code => "ZXCV"
     )
+=end
 
     return results
   end
