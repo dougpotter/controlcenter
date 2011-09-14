@@ -146,7 +146,6 @@ class PartnersController < ApplicationController
         return false
       end
 
-=begin
       sync_rule = SyncRule.new(
         :audience_id => audience.beacon_id,
         :sync_period => 7,
@@ -166,7 +165,6 @@ class PartnersController < ApplicationController
         flash[:notice] = "Error on sync rule save"
         return false
       end
-=end
 
     return true
   end
