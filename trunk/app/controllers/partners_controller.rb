@@ -51,6 +51,10 @@ class PartnersController < ApplicationController
     )
   end
 
+  def show
+    @partner = Partner.find(params[:id])
+  end
+
   def edit
     @partner = Partner.find(params[:id])
   end
@@ -134,24 +138,26 @@ class PartnersController < ApplicationController
         flash[:notice] = "Error on request condition save"
         return false
       end
-=begin
+
       sync_rule = SyncRule.new(
         :audience_id => audience.beacon_id,
         :sync_period => 7,
         :nonsecure_add_pixel => 
-          SyncRule.apn_nonsecure_conversion_pixel(apn_conv_id),
+          SyncRule.apn_nonsecure_add_from_pixel_code(
+            partner.partner_code, 
+            audience.audience_code),
         :secure_add_pixel => 
-          SyncRule.apn_secure_conversion_pixel(apn_conv_id))
+          SyncRule.apn_secure_add_from_pixel_code(
+            partner.partner_code, 
+            audience.audience_code))
       if !sync_rule.save_beacon
         audience.destroy
         apn_conversion_pixel.destroy
         request_condition.destroy
         @partners = Partner.all
         flash[:notice] = "Error on sync rule save"
-        render :action => "new"
-        return
+        return false
       end
-=end
 
     return true
   end

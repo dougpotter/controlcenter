@@ -17,13 +17,27 @@ describe SyncRule do
     s.save_beacon.should == true
   end
 
-  it "appnexus_conversion(conversion_id) should return the conversion pixel url" do
+  it "apn_secure_conversion_pixel(conversion_id) should return the conversion "+
+  "pixel url" do
     SyncRule.apn_secure_conversion_pixel(1).should ==
       "<img src=\"https://secure.adnxs.com/px?id=1\" width=\"1\" height=\"1\" />"
   end
 
-  it "appnexus_conversion(conversion_id) should return the conversion pixel url" do
+  it "apn_nonsecure_conversion_pixel(conversion_id) should return the conversion "+
+  "pixel url" do
     SyncRule.apn_nonsecure_conversion_pixel(1).should ==
       "<img src=\"http://ib.adnxs.com/px?id=1\" width=\"1\" height=\"1\" />"
+  end
+
+  it "#apn_secure_add_from_pixel_code(partner_code, pixel_code) should return the"+
+  " secure add pixel for appnexus" do
+    SyncRule.apn_secure_add_from_pixel_code("77777", "AB1UP").should ==
+      "<img src=\"https://secure.adnxs.com/px?id=3796\" width=\"1\" height=\"1\" />"
+  end
+
+  it "#apn_nonsecure_add_from_pixel_code(partner_code, pixel_code) should return "+
+  "the nonsecure add pixel for appnexus" do
+    SyncRule.apn_nonsecure_add_from_pixel_code("77777", "AB1UP").should ==
+      "<img src=\"http://ib.adnxs.com/px?id=3796\" width=\"1\" height=\"1\" />"
   end
 end

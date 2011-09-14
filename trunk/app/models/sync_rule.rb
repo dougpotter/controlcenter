@@ -30,4 +30,20 @@ class SyncRule < ActiveRecord::Base
     return "<img src=\"http://ib.adnxs.com/px?"+
       "id=#{conversion_id}\" width=\"1\" height=\"1\" />"
   end
+
+  def self.apn_secure_add_from_pixel_code(partner_code, conversion_code)
+    return self.apn_secure_conversion_pixel(
+      ConversionPixel.all_apn(:partner_code => partner_code).select { |px|
+        px["code"] == conversion_code
+      }[0]["id"]
+    )
+  end
+
+  def self.apn_nonsecure_add_from_pixel_code(partner_code, conversion_code)
+    return self.apn_nonsecure_conversion_pixel(
+      ConversionPixel.all_apn(:partner_code => partner_code).select { |px|
+        px["code"] == conversion_code
+      }[0]["id"]
+    )
+  end
 end
