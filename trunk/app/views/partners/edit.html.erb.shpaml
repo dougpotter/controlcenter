@@ -1,6 +1,6 @@
 = javascript_include_tag("partner_setup")
 
-h1 | Edit Advertiser
+h2 | Edit Advertiser
 >br
 
 % form_for @partner do |f|
@@ -11,8 +11,7 @@ h1 | Edit Advertiser
   = render :partial => 'form'
 
   .action_tags_heading
-    h1.inline_heading 
-      Action Tags
+    h2 style="display:inline;" | Action Tags
 
 
     <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
@@ -22,7 +21,7 @@ h1 | Edit Advertiser
   </div>
 
   .conversion_configuration_heading
-    h1.inline_heading | Conversion Pixels
+    h2 style="display:inline;" | Conversion Pixels
     <input id="add_conversion_configuration" type="image" src="/images/plus_sign.png" width=30 />
  
   <div id="conversion_configurations_forms">
