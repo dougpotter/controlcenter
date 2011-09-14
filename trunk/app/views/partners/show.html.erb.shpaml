@@ -58,8 +58,14 @@ h2 | Conversion Configurations
           td
             = image_tag("active.png", :height => 18 )
 
+div style="clear:both;"
+  >br
 
-        
+.nav_buttons
+  = link_to("Edit #{@partner.name}", edit_partner_path(@partner.id), :class => "button")
+  = link_to("New Partner", new_partner_path, :class => "button")
+  = link_to("Home", campaign_management_index_path, :class => "button")
 
 div style="clear:both;"
   >br
+

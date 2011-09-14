@@ -5,6 +5,7 @@
 * Campaign New/Edit
 * Creatie New/Show/Edit
 * Partner New
+* Partner Show
 *
 **********************************************************************************/
 
@@ -169,7 +170,10 @@ form#new_creative, form.edit_creative {
   padding: 15px; }
 
 .action_tags_heading, .conversion_configuration_heading, .edit_existing_advertiser_heading {
-  padding: 15px 0px 15px 0px; }
+  padding: 15px 0px 10px 0px; }
+
+#conversion_configurations_forms {
+  padding-bottom: 15px; }
 
 /**********************************************************************************
 * Partner Show
