@@ -14,7 +14,7 @@
 
 #left_pane_campaign_dashboard {
   float: left;
-  width: 115px;
+  width: 170px;
   margin: 11px; }
 
 #action_links li {
@@ -171,3 +171,36 @@ form#new_creative, form.edit_creative {
 .action_tags_heading, .conversion_configuration_heading, .edit_existing_advertiser_heading {
   padding: 15px 0px 15px 0px; }
 
+/**********************************************************************************
+* Partner Show
+**********************************************************************************/
+
+.action_tags_table th:nth-child(1) { 
+  width: 150px; }
+.action_tags_table { 
+  padding: 0px 0px 10px 0px; }
+
+.conversion_configurations_table th:nth-child(1) { 
+  width: 175px; }
+
+.conversion_configurations_table th:nth-child(2) { 
+  width: 175px; }
+
+.conversion_configurations_table th:nth-child(3) { 
+  width: 225px; }
+
+.conversion_configurations_table th:nth-child(4) { 
+  width: 225px; }
+
+.document_links { 
+  padding: 10px 0px 50px 5px; }
+
+.document_links span { 
+  font-size: 12px; }
+
+.document_links span:nth-child(n + 2) { 
+  text-decoration: underline; padding: 0px 4px 0px 4px; }
+
+.document_links span:nth-child(n + 2) a { 
+  color: #77459b; 
+  font-size: 12px; }

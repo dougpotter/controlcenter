@@ -32,13 +32,20 @@ p {
   font-size: 12px; }
 
 h1 {
-  font-size: 30px; }
+  font-size: 50px; 
+  color: $heading_grey;
+  font-family: 'Istok Web', sans-serif; }
 
 table tbody {
   font-size: 13px; }
 
-h1.inline_heading {
-  display: inline; }
+h2 {
+  color: $heading_grey;
+  font-size: 30px; 
+  font-family: 'Istok Web', sans-serif; }
+
+.subhead { 
+  font-size: 30px; }
 
 /**********************************************************************************
 * Structure 
@@ -180,3 +187,27 @@ div.errorExplanation ul {
 #summary_table th {
   font-size: 15px;
   font-weight: bold; }
+
+td:nth-child(n + 2) { text-align: center; }
+th:nth-child(n + 2) { text-align: center; }
+tbody tr:nth-child(n + 1) { border-bottom: #afafaf 1px solid; }
+thead { 
+  background-color: #606060; 
+  border: solid 1px; 
+  border-radius: 6px; 
+  color: #f2f2f2; 
+  letter-spacing: 1px; 
+  font-size: 16px; 
+  font-family: 'Istok Web', sans-serif; }
+
+th:first-child { 
+  border-left: 1px solid; 
+  border-top-left-radius: 6px; 
+  border-bottom-left-radius: 6px; }
+
+th:last-child { 
+  border-right: 1px solid; 
+  border-top-right-radius: 6px; 
+  border-bottom-right-radius: 6px; }
+
+th { padding: 2px 4px 2px 4px; }
