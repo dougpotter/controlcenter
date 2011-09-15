@@ -73,7 +73,7 @@ class PartnersController < ApplicationController
     handle_conversion_configurations
     if @partner.update_attributes(params[:partner])
       flash[:notice] = notice
-      render :action => "show"
+      redirect_to(partner_path(@partner.id))
     else
       flash[:notice] = "Update failed"
       render :action => 'edit', :id => @partner
