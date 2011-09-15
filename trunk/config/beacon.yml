@@ -3,4 +3,6 @@ development: &defaults
 
 test: *defaults
 
+production: *defaults
+
 cucumber: *defaults
