@@ -75,7 +75,9 @@ ActionController::Routing::Routes.draw do |map|
     :controller => 'appnexus', :action => 'show'
 
   map.resources :audiences
-  map.resources :partners
+  map.resources :partners do |partners|
+    partners.resources :action_tags
+  end
   map.resources :ad_inventory_sources
   map.resources :creatives
   map.resources :line_items

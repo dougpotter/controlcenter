@@ -21,11 +21,11 @@ h2 | Action Tags
   span
     Downloads:
   span
-    = link_to("Implementation Instructions", partner_path(2))
+    = link_to("Implementation Instructions", partner_path(@partner.id), :onclick => "alert(\"HA!! Not implemented yet...\");")
   span
-    = link_to("Action Tags (html)", partner_path(2))
+    = link_to("Action Tags (html)", "#{partner_action_tags_path(@partner.id)}.html")
   span
-    = link_to("Action Tags (txt)", partner_path(2))
+    = link_to("Action Tags (txt)", "#{partner_action_tags_path(@partner.id)}.txt")
 
 
 h2 | Conversion Configurations

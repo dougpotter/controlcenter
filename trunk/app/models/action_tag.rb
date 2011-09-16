@@ -9,6 +9,24 @@ class ActionTag < ActiveRecord::Base
     "Active"
   end
 
+  def secure_html
+    "<img src=\"https://sxcdn.xgraph.net/#{partner.partner_code}/ai/xg.gif?"+
+    "pid=#{partner.partner_code}&"+
+    "sid=#{sid}&"+
+    "type=ai&"+
+    "pcid=#{name} "+
+    "width=\"1\" height=\"1\" />"
+  end
+
+  def nonsecure_html
+    "<img src=\"http://xcdn.xgraph.net/#{partner.partner_code}/ai/xg.gif?"+
+    "pid=#{partner.partner_code}&"+
+    "sid=#{sid}&"+
+    "type=ai&"+
+    "pcid=#{name} "+
+    "width=\"1\" height=\"1\" />"
+  end
+
   class << self
     def generate_sid
       CodeGenerator.generate_unique_code(

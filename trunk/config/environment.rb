@@ -90,3 +90,5 @@ require File.join(File.dirname(File.expand_path(__FILE__)), 'mongrel')
 
 # to suppress deprecation warnings about Object#id in spec tests
 Object.send :undef_method, :id
+
+Mime::Type.register "image/txt", :txt
