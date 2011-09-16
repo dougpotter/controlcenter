@@ -15,7 +15,6 @@
 
 #left_pane_campaign_dashboard {
   float: left;
-  width: 170px;
   margin: 11px; }
 
 #action_links li {
@@ -167,7 +166,7 @@ form#new_creative, form.edit_creative {
 .action_tag_minus_sign, .conversion_configuration_minus_sign {
   width: 15px;
   float: left;
-  padding: 15px; }
+  margin: 15px; }
 
 .action_tags_heading, .conversion_configuration_heading, .edit_existing_advertiser_heading {
   padding: 15px 0px 10px 0px; }

@@ -13,8 +13,7 @@ h1 | New Advertiser
   = render :partial => 'form'
 
   .action_tags_heading
-    h1.inline_heading 
-      Action Tags
+    h2 style="display:inline;" | Action Tags
 
     <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
 
@@ -23,7 +22,7 @@ h1 | New Advertiser
   </div>
 
   .conversion_configuration_heading
-    h1.inline_heading | Conversion Pixels
+    h2 style="display:inline;" | Conversion Pixels
     <input id="add_conversion_configuration" type="image" src="/images/plus_sign.png" width=30 />
  
   <div id="conversion_configurations_forms">
@@ -35,11 +34,10 @@ h1 | New Advertiser
   = submit_tag('Create Advertiser')
 
 
-h1.edit_existing_advertiser_heading | Edit Existing Advertiser
->br
+h1.edit_existing_advertiser_heading | Existing Advertisers
 
 div id=summary_table
-  = render :partial => 'layouts/edit_table', :locals => { :collection => @partners, :header_names => ["Name", "Partner Code"], :fields => ["name", "partner_code"], :class_name => "partner_summary", :width => "500", :edit_path => edit_partner_path(1) }
+  = render :partial => 'layouts/edit_table', :locals => { :collection => @partners, :header_names => ["Name", "Partner Code"], :fields => ["name", "partner_code"], :class_name => "partner_summary", :width => "500", :edit_path => partner_path(1) }
 
 div style="clear: both;"
  >br
