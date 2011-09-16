@@ -1,6 +1,6 @@
 = javascript_include_tag("partner_setup")
 
-h2 | Edit Advertiser
+h1 | Edit Advertiser
 >br
 
 % form_for @partner do |f|
