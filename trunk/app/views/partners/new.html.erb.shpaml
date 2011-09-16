@@ -31,7 +31,7 @@ h1 | New Advertiser
 
   <div style="clear:both;"></div>
 
-  = submit_tag('Create Advertiser')
+  = submit_tag('Create Advertiser', :class => "button")
 
 
 h1.edit_existing_advertiser_heading | Existing Advertisers
