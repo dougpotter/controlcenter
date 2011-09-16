@@ -186,21 +186,6 @@ class PartnersController < ApplicationController
     return  + builder
   end
 
-
-  def noticeOnSuccess(partner)
-    notice = "#{Partner.name} successfully updated"
-    notice += "<ul>"
-    if params[:partner][:action_tags_attributes]
-      for attrs in params[:partner][:action_tags_attributes].values
-        if attrs["_destroy"]
-          notice += "<li>#{ActionTag.find(attrs[:id]).name} tag removed</li>"
-        end
-      end
-    end
-    notice += "</ul>"
-    return notice
-  end
-
   def extract_conv_config_params 
     if conv_configs = params[:partner].
       delete("conversion_configurations_attributes")
