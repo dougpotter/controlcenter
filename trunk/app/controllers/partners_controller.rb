@@ -227,9 +227,7 @@ class PartnersController < ApplicationController
       audience.beacon_id,
       request_condition['id'])
     for sync_rule in Beacon.new.sync_rules(audience.beacon_id).sync_rules
-      #if sync_rule.audience_id == audience.beacon_id
-        Beacon.new.delete_sync_rule(audience.beacon_id, sync_rule['id'])
-      #end
+      Beacon.new.delete_sync_rule(audience.beacon_id, sync_rule['id'])
     end
     audience.destroy if audience
   end
