@@ -35,4 +35,10 @@ describe Partner do
       :partner, 
       :action_tags_attributes => { "0" => Factory.build(:action_tag, :partner_id => p.id).attributes })
   end
+
+  it "should raise error with out-of-range partner code" do
+    lambda {
+      Factory.create(:partner, :partner_code => "99999")
+    }.should raise_error(ActiveRecord::RecordInvalid)
+  end
 end

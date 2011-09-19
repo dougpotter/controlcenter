@@ -16,7 +16,7 @@ end
 
 Factory.define :partner do |p|
   p.name "Webroot"
-  p.sequence(:partner_code) { |n| 2019 + n }
+  p.sequence(:partner_code) { |n| 20190 + n }
 end
 
 Factory.define :creative_size do |c|

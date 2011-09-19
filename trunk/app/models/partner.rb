@@ -18,6 +18,7 @@ class Partner < ActiveRecord::Base
 
   validates_presence_of :partner_code, :name
   validates_uniqueness_of :partner_code
+  validates_numericality_of :partner_code, :greater_than => 9999, :less_than => 21474
 
   accepts_nested_attributes_for :action_tags, :allow_destroy => true
   accepts_nested_attributes_for :conversion_configurations, :allow_destroy => true
