@@ -172,9 +172,6 @@ class PartnersController < ApplicationController
   def noticeOnSuccess(partner)
     notice = Builder::XmlMarkup.new
     notice.ul do |b|
-      if params[:partner][:action_tags_attributes]
-        b.li("#{ActionTag.find(attrs[:id]).name} tag removed")
-      end
     if params[:partner][:action_tags_attributes]
       for attrs in params[:partner][:action_tags_attributes].values
         if attrs["_destroy"]
@@ -183,7 +180,7 @@ class PartnersController < ApplicationController
       end
     end
     end
-    return  + builder
+    return notice
   end
 
   def extract_conv_config_params 
