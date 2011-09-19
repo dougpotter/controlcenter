@@ -4,7 +4,7 @@ a.button { -moz-user-select: none; -webkit-tap-highlight-color: rgba(0,0,0,0); -
 button::-moz-focus-inner { border: 0; padding:0px; }
 a.button.primary, button.primary { font-weight: bold }
 button:focus,a.button:hover, 
-button:hover, input.button:hover { color: #FFFFFF; border-color: $medium_grey; text-decoration: none; text-shadow: -1px -1px 0 rgba(0,0,0,0.3); background-position: 0 -40px; background-color: $dark_grey; }
+button:hover, input.button:hover, input.button:focus { color: #FFFFFF; border-color: $medium_grey; text-decoration: none; text-shadow: -1px -1px 0 rgba(0,0,0,0.3); background-position: 0 -40px; background-color: $dark_grey; }
 a.button:active, button:active,
 a.button.active, button.active, input.button:active { background-position: 0 -81px; border-color: $dark_grey; background-color: $heading_grey; color: #FFFFFF; text-shadow: none; }
 a.button:active, button:active { top: 1px }
