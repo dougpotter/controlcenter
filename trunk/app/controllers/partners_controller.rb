@@ -5,6 +5,9 @@ class PartnersController < ApplicationController
   end
 
   def new
+    if !Beacon.new.alive?
+      flash[:notice] = "Warning: Beacon is dead." unless !flash[:notice].blank?
+    end
     @partners = Partner.all
     @partner = Partner.new
   end
@@ -13,6 +16,17 @@ class PartnersController < ApplicationController
     @action_tags = extract_action_tags
     @conversion_configs = extract_conversion_configs
     @partner = Partner.new(params[:partner])
+
+    if !Beacon.new.alive?
+      @template_partner = Partner.new(@partner.attributes)
+      @template_partner.action_tags = @action_tags
+      @template_partner.temp_conversion_configurations = @conversion_configs
+      @partner = @template_partner
+      @partners = Partner.all
+      flash[:notice] = "Beacon is offline! Can't save new partner."
+      render :action => "new"
+      return
+    end
 
     # if partner doesn't save, bail
     if !@partner.save || !@partner.save_apn
@@ -60,14 +74,28 @@ class PartnersController < ApplicationController
 
   def show
     @partner = Partner.find(params[:id])
+    if !Beacon.new.alive?
+      flash[:notice] = "Beacon is dead. Can't show details for #{@partner.name}"
+      redirect_to new_partner_path
+    end
   end
 
   def edit
     @partner = Partner.find(params[:id])
+    if !Beacon.new.alive?
+      flash[:notice] = "Beacon is dead. Can't edit #{@partner.name}"
+      redirect_to new_partner_path
+    end
   end
 
   def update
     @partner = Partner.find(params[:id])
+
+    if !Beacon.new.alive?
+      flash[:notice] = "Beacon is dead. Can't update #{@partner.name}"
+      redirect_to new_partner_path
+      return
+    end
 
     notice = noticeOnSuccess(@partner)
     handle_conversion_configurations
@@ -81,7 +109,16 @@ class PartnersController < ApplicationController
   end
 
   def destroy
-    @partner = Partner.destroy(params[:id])
+    @partner = Partner.find(params[:id])
+
+    if !Beacon.new.alive?
+      flash[:notice] = "Beacon is dead. Can't destroy #{@partner.name}"
+      redirect_to new_partner_path
+      return
+    end
+
+    @partner.destroy
+
     redirect_to(new_partner_path, :notice => "advertiser deleted")
   end
 
