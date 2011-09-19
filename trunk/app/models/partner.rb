@@ -141,24 +141,6 @@ class Partner < ActiveRecord::Base
         end
       end
     end
-
-=begin
-    results = []
-    results << ConversionConfiguration.new(
-      :name => "Name of Conv",
-      :request_regex => "/a regex=hi/",
-      :referer_regex => "/another=regex/",
-      :pixel_code => "ACODE"
-    )
-
-    results << ConversionConfiguration.new(
-      :name => "Bob the Builder",
-      :request_regex => "/a regex=hi/",
-      :referer_regex => "/another=regex/",
-      :pixel_code => "ZXCV"
-    )
-=end
-
     return results
   end
   
