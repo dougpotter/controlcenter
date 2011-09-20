@@ -6,6 +6,11 @@ module CustomValidations
   end
 
   module ClassMethods
+
+    # This validation comes from here:
+    # https://gist.github.com/102138
+    #
+    #
     # Validates whether the value of the specified attribute matches the format of an URL,
     # as defined by RFC 2396. See URI#parse for more information on URI decompositon and parsing.
     #
