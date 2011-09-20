@@ -12,6 +12,6 @@
     = action_tag.text_field("sid", :size => 5, :maxlength => 5)    
 
   .dimension_input      
-    = action_tag.label("url", "URL")      
+    = action_tag.label("url", "Deployment Location Notes (URL)")      
     >br
     = action_tag.text_field("url", :size => 100)

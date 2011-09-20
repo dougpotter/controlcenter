@@ -33,6 +33,7 @@ h1 | New Advertiser
 
   = submit_tag('Create Advertiser', :class => "button")
 
+<div class="horizontal_page_break"></div>
 
 h1.edit_existing_advertiser_heading | Existing Advertisers
 

@@ -78,6 +78,11 @@ h2 {
   margin-bottom: 0px;
   padding: 10px; }
 
+.horizontal_page_break {
+  margin: 35px auto 35px;
+  width: 880px;
+  border-top: solid $page_separators 1px; }
+
 /**********************************************************************************
 * Nav Bar
 **********************************************************************************/
