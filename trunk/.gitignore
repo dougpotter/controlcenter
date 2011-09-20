@@ -1,4 +1,6 @@
 app/views/**/*.html.erb
+app/views/**/*.txt.erb
+app/views/**/*.js.erb
 config/appnexus.yml
 config/appwall.yml
 config/appwall.yml.production
