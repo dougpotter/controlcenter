@@ -22,6 +22,11 @@ describe ActionTag do
     end
   end
 
+  it "should url-encode name" do
+    a = Factory.create(:action_tag, :name => "two words")
+    a.name.should == "two+words"
+  end
+
   it "should fail to save with sid of length 6" do
     lambda {
       Factory.create(:action_tag, :sid => 123456)

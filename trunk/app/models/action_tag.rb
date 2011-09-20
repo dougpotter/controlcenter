@@ -4,6 +4,18 @@ class ActionTag < ActiveRecord::Base
   validates_presence_of :name, :sid, :url, :partner_id
   validates_uniqueness_of :sid
   validates_numericality_of :sid, :greater_than => 9999, :less_than => 100000
+  validates_format_of_url :url
+
+  before_validation :url_encode_name
+
+
+  def url_encode_name
+    self.name = CGI.escape(self.name) unless self.name.blank?
+  end
+
+  def pretty_name
+    CGI.unescape(name)
+  end
 
   def status
     "Active"
