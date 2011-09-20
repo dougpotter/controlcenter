@@ -34,7 +34,8 @@ p {
 h1 {
   font-size: 40px; 
   color: $heading_grey;
-  font-family: 'Istok Web', sans-serif; }
+  font-family: 'Istok Web', sans-serif; 
+  text-shadow: white 0 1px 0; }
 
 table tbody {
   font-size: 13px; }
@@ -210,4 +211,4 @@ th:last-child {
   border-top-right-radius: 6px; 
   border-bottom-right-radius: 6px; }
 
-th { padding: 2px 4px 2px 4px; }
+th { text-shadow: #3d3d3d 0 1px 0; padding: 2px 4px 2px 4px; }

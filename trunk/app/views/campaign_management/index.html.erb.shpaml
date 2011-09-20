@@ -10,15 +10,16 @@ div id=left_pane_campaign_dashboard
   div id=action_links
     ul
       li
-        = link_to 'New Line Item', new_line_item_path
+        = link_to 'Line Items', new_line_item_path, :hover => "alert(\"HI\")"
       li  
-        = link_to 'New Campaign', new_campaign_path
+        = link_to 'Campaigns', new_campaign_path
       li
-        = link_to 'New Partner', new_partner_path
-      li
-        = link_to 'New AIS', new_ad_inventory_source_path
-      li
-        = link_to 'New Creative', new_creative_path
+        = link_to 'Creatives', new_creative_path
+      div.lesser_nav_links
+        li
+          = link_to 'Partners', new_partner_path
+        li
+          = link_to 'AISes', new_ad_inventory_source_path
 
 div id=right_pane_campaign_dashboard
   h1 | Active Campaigns
