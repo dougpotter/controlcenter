@@ -10,6 +10,7 @@ class ActionTagsController < ApplicationController
     respond_to do |format|
       format.txt  { send_data((render :layout => false), :filename => "#{@partner.name}_action_tags.txt", :disposition => "attachment") }
       format.html { send_data((render :layout => false), :filename => "#{@partner.name}_action_tags.html", :disposition => "attachment") }
+      format.js { send_data((render :layout => false), :filename => "#{@partner.name}_action_tags.js", :disposition => "attachment") }
     end
   end
 end

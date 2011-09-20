@@ -1,0 +1,6 @@
+<% for action_tag in @action_tags -%>
+  = "=== #{@partner.name} #{action_tag.name} ===\n\n"
+  = action_tag.js
+  = "\n"
+  = "\n"
+

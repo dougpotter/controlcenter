@@ -25,6 +25,8 @@ h2 | Action Tags
   span
     = link_to("Action Tags (html)", partner_action_tags_path(@partner.id, :format => :html))
   span
+    = link_to("Action Tags (js)", partner_action_tags_path(@partner.id, :format => :js))
+  span
     = link_to("Action Tags (txt)", partner_action_tags_path(@partner.id, :format => :txt))
 
 

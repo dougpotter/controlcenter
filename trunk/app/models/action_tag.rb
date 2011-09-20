@@ -26,7 +26,7 @@ class ActionTag < ActiveRecord::Base
     "pid=#{partner.partner_code}&"+
     "sid=#{sid}&"+
     "type=ai&"+
-    "pcid=#{name} "+
+      "pcid=#{name} "+
     "width=\"1\" height=\"1\" />"
   end
 
@@ -37,6 +37,24 @@ class ActionTag < ActiveRecord::Base
     "type=ai&"+
     "pcid=#{name} "+
     "width=\"1\" height=\"1\" />"
+  end
+
+  def js
+    "<script type=\"text/javascript\">\n\n"+
+    "var xgJsHost = ((\"https:\" == document.location.protocol) ?\n"+
+    "\"https://sxcdn.\" : \"http://xcdn.\");\n\n"+
+    "var refValue = \"\"; try {refValue = top.document.referrer;}\n"+
+    "catch (xgErr) {refValue = \"\";}\n\n"+
+    "document.write(unescape(\"%3Cimg\n"+
+    "src='\"+xgJsHost+\"xgraph.net/#{partner.partner_code}/ai/xg.gif?\n"+
+    "pid=#{partner.partner_code}&sid=#{sid}&pcid=#{pcid}&type=ai&ref=\")\n"+
+    "+escape(refValue)+\"&dref=\"+escape(document.referrer)+unescape\n"+
+    "(\"'%3E%3C/img%3E\"));\n\n"+
+    "</script>"
+  end
+
+  def pcid
+    name
   end
 
   class << self
