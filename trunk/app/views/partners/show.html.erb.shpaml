@@ -39,7 +39,13 @@ h2 | Conversion Configurations
         th
           Name
         th
-          Apn Conv ID
+          ApN Conv ID
+        th
+          Beacon Aud
+        th
+          Req Cond
+        th
+          Sync Rule
         th
           Request Regex
         th
@@ -53,6 +59,12 @@ h2 | Conversion Configurations
             = conv_config.name
           td
             = conv_config.pixel_code
+          td
+            = conv_config.beacon_audience_id
+          td
+            = conv_config.request_condition_id
+          td
+            = conv_config.sync_rule_id
           td
             = conv_config.request_regex
           td

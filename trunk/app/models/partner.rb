@@ -130,13 +130,18 @@ class Partner < ActiveRecord::Base
       results = []
       for pixel in ConversionPixel.all_apn(:advertier_code => partner_code)
         for req_cond in request_conditions
-          if pixel['code'] == 
-            Audience.find_by_beacon_id(req_cond.audience_id).audience_code
+          audience = Audience.find_by_beacon_id(req_cond.audience_id)
+          if pixel['code'] == audience.audience_code
             c = ConversionConfiguration.new(
               :name => pixel['name'], 
               :request_regex => req_cond.request_url_regex,
               :referer_regex => req_cond.referer_url_regex,
-              :pixel_code => pixel["code"])
+              :pixel_code => pixel["code"],
+              :beacon_audience_id => audience.beacon_id,
+              :sync_rule_id => 
+                Beacon.new.sync_rules(audience.beacon_id).sync_rules[0]["id"],
+              :request_condition_id => req_cond['id']
+            )
             c.instance_variable_set(:@new_record, false)
             results << c
           end
