@@ -71,7 +71,18 @@ module Workflow
         end
         
         unless options[:pretend]
-          FileUtils.rm(path)
+          begin
+            FileUtils.rm(path)
+          rescue Errno::EACCES
+            if options[:debug]
+              # write through our debug logger to avoid entries appearing
+              # out of order due to being placed in different output streams
+              debug_print("Permission denied trying to remove: #{path}")
+            else
+              warn("Permission denied trying to remove: #{path}")
+            end
+            # keep going
+          end
         end
       end
     end
