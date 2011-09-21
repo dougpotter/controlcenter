@@ -18,7 +18,7 @@ class Partner < ActiveRecord::Base
 
   validates_presence_of :partner_code, :name
   validates_uniqueness_of :partner_code
-  validates_numericality_of :partner_code, :greater_than => 9999, :less_than => 21474
+  validates_numericality_of :partner_code, :greater_than_or_equal_to => 10000, :less_than_or_equal_to => 21473
 
   accepts_nested_attributes_for :action_tags, :allow_destroy => true
   accepts_nested_attributes_for :conversion_configurations, :allow_destroy => true
@@ -154,7 +154,7 @@ class Partner < ActiveRecord::Base
         :length => 5,
         :alphabet => '1234567890',
         :transform => lambda { |code| code.to_i },
-        :reject_if => lambda { |code| code.to_s.length != 5 }
+        :reject_if => lambda { |code| (code.to_s.length != 5) || (code > 21473) || (code < 10000) }
       )
     end
   end
