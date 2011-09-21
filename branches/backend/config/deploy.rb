@@ -58,7 +58,7 @@ set :shared_children, %w{config log pids tmp system}
 
 # Modify these values to execute tasks on a different server.
 role :web do
-  ([primary_host] + extra_hosts).reject do |host|
+  [primary_host].reject do |host|
     production_workflow_hosts.include?(host)
   end
 end
@@ -295,17 +295,17 @@ namespace :deploy do
 
   namespace :web do
     desc 'Start thins'
-    task :start do
+    task :start, :roles => :web do
       run "thin start -C #{thin_config}"
     end
     
     desc 'Stop thins'
-    task :stop do
+    task :stop, :roles => :web do
       run "thin stop -C #{thin_config}"
     end
     
     desc 'Restart thins'
-    task :restart do
+    task :restart, :roles => :web do
       run "thin restart -C #{thin_config}"
     end
   end
