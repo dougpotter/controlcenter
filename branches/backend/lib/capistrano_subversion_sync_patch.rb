@@ -12,9 +12,25 @@ Capistrano::Deploy::SCM::Subversion.class_eval do
     # in the currently checked out version.
     scm_min_version = scm_min_version = variable(:scm_min_version)
     if scm_min_version && scm_min_version >= '1.5.0'
-      scm :switch , arguments, verbose, authentication, "-r#{revision}", "#{repository}@#{revision}", destination
+      scm :switch, arguments, verbose, authentication, "-r#{revision}", "#{repository}@#{revision}", destination
     else
-      scm :switch , arguments, verbose, authentication, "-r#{revision}", repository, destination
+      check = <<-CMD
+        remote_repository=$(
+          cd #{destination} &&
+          svn info |grep URL: |awk '{print $2}'
+        ) &&
+        if test "$remote_repository" != "#{repository}"; then
+          {
+            echo "Cannot switch branches while updating on subversion less than 1.5.0";
+            echo "If remote subversion is 1.5.0 or better, set :scm_min_version variable appropriately";
+            echo "Remote repository URL: $remote_repository";
+            echo "Repository URL being deployed: #{repository}";
+          } 1>&2;
+          exit 4;
+        fi
+      CMD
+      switch = scm :switch, arguments, verbose, authentication, "-r#{revision}", repository, destination
+      "#{check} && #{switch}"
     end
   end
 end
