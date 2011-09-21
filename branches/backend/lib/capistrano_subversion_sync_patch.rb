@@ -1,6 +1,7 @@
 require "capistrano/recipes/deploy/scm/subversion"
 
 # Overlay patch for https://capistrano.lighthouseapp.com/projects/8716-capistrano/tickets/46.
+# New ticket: https://github.com/capistrano/capistrano/issues/40
 # Use class_eval instead of class definition to ensure that we are overriding
 # existing sync method.
 Capistrano::Deploy::SCM::Subversion.class_eval do
