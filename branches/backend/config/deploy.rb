@@ -5,9 +5,6 @@
 set :application, ENV["XGCC_APPLICATION"] || "backend.xgraph.net"
 set(:host) { ENV["XGCC_HOST"] || application }
 
-# Primary domain name of your application. Used as a default for all server roles.
-set(:domain) { host }
-
 # Login user for ssh.
 set :user, "www"
 set :runner, user
@@ -39,9 +36,9 @@ set :shared_children, %w{config log pids tmp system}
 # :primary => true.
 
 # Modify these values to execute tasks on a different server.
-role(:web) { domain }
-role(:app, :migration_czar => true) { domain }
-role(:db, :primary => true) { domain }
+role(:web) { host }
+role(:app, :migration_czar => true) { host }
+role(:db, :primary => true) { host }
 
 # =============================================================================
 # SCM OPTIONS
