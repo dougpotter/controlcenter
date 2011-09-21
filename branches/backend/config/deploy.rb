@@ -1,9 +1,30 @@
 # =============================================================================
+# ENVIRONMENT SHORTCUTS
+# =============================================================================
+
+ENV['XGCC_HOST'] ||= ENV['host']
+ENV['XGCC_BRANCH'] ||= ENV['branch']
+
+# =============================================================================
 # CAP VARIABLES
 # =============================================================================
 # The name of your application. Used for directory and file names associated with the application.
 set :application, ENV["XGCC_APPLICATION"] || "backend.xgraph.net"
 set(:host) { ENV["XGCC_HOST"] || application }
+
+set :production_workflow_hosts, %w(ftp.xgraph.net wfp.arm.ee)
+
+set :primary_host do
+  host
+end
+
+set :extra_hosts do
+  if ENV['XGCC_HOST']
+    []
+  else
+    production_workflow_hosts
+  end
+end
 
 # Login user for ssh.
 set :user, "www"
@@ -36,9 +57,31 @@ set :shared_children, %w{config log pids tmp system}
 # :primary => true.
 
 # Modify these values to execute tasks on a different server.
-role(:web) { host }
-role(:app, :migration_czar => true) { host }
-role(:db, :primary => true) { host }
+role :web do
+  ([primary_host] + extra_hosts).reject do |host|
+    production_workflow_hosts.include?(host)
+  end
+end
+role :app, :migration_czar => true do
+  if production_workflow_hosts.include?(primary_host)
+    # workflow machines are not allowed to run migrations,
+    # if deploying to one of them deployment will be code only
+    []
+  else
+    primary_host
+  end
+end
+role :app do
+  [primary_host] + extra_hosts
+end
+role :db, :primary => true do
+  if production_workflow_hosts.include?(primary_host)
+    # workflow machines have no databases
+    []
+  else
+    primary_host
+  end
+end
 
 # =============================================================================
 # SCM OPTIONS
@@ -104,6 +147,7 @@ ssh_options[:port] = 22
 task :qa do
   set :application, 'backend.qa.xgraph.net'
   set :branch, ENV['BRANCH'] || 'backend'
+  set :extra_hosts, []
 end
 
 # Environment for testing deployment - a dedicated user account on QA
@@ -112,6 +156,7 @@ task :deploy_test do
   set :user, 'deploytest'
   set :deploy_to, "/home/#{user}/deployroot"
   set :use_sudo, false
+  set :extra_hosts, []
 end
 
 before 'deploy:update_code', 'deploy:svn_version_check'
@@ -202,12 +247,20 @@ namespace :deploy do
   task :default do
     transaction do
       update_code
-      web.disable
+      unless roles[:web].empty?
+        web.disable
+      end
       symlink
-      migrate
-      web.restart
+      if roles[:app].any? { |server| server.options[:migration_czar] }
+        migrate
+      end
+      unless roles[:web].empty?
+        web.restart
+      end
     end
-    web.enable
+    unless roles[:web].empty?
+      web.enable
+    end
 
     # Don't use sudo for cleanup.  This takes a bit longer than using sudo, but
     # it's not a good idea to give passwordless `sudo rm` permissions to anyone.
