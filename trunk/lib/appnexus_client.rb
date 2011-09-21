@@ -140,8 +140,6 @@ module AppnexusClient
         result = ActiveSupport::JSON.decode(
           agent.body_str
         )["response"][@apn_mappings[:apn_wrapper].pluralize]
-
-        puts result
       end
 
       def delete_by_code_url(*object_hash)
@@ -275,7 +273,6 @@ module AppnexusClient
 
       def delete_apn
         token = AppnexusClient::API.new_agent.headers["Authorization"]
-        puts apn_action_url(:delete)
         agent = Curl::Easy.http_delete(apn_action_url(:delete)) do |a|
           a.headers["Authorization"] = token
         end
@@ -340,9 +337,6 @@ module AppnexusClient
       self.new_agent
       @@agent.url = url
       @@agent.http_get
-      puts JSON.pretty_generate(
-        ActiveSupport::JSON.decode(@@agent.body_str)
-      )
       return nil
     end
 
