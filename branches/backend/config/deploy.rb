@@ -344,7 +344,7 @@ after "deploy:symlink", "deploy:update_crontab"
 
 namespace :deploy do
   desc "Update the crontab file"
-  task :update_crontab, :roles => :app, :only => {:migration_czar => true} do
+  task :update_crontab, :roles => :app do
     run "cd #{current_path} && whenever --update-crontab #{application}"
   end
 end
