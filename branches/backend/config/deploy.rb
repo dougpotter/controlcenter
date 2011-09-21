@@ -114,6 +114,8 @@ task :deploy_test do
   set :use_sudo, false
 end
 
+before 'deploy:update_code', 'deploy:svn_version_check'
+
 # =============================================================================
 # APPWALL CONFIGURATION
 # =============================================================================

@@ -43,4 +43,5 @@ require 'lib/configuration_deployment'
 # DEPLOYMENT CONFIGURATION
 # =============================================================================
 
+load 'lib/capistrano_subversion_sync_patch_tasks'
 load 'config/deploy'
