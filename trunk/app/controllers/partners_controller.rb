@@ -32,9 +32,7 @@ class PartnersController < ApplicationController
     if !@partner.save || !@partner.save_apn
       @partner.destroy
       @template_partner = Partner.new(@partner.attributes)
-      for error in @partner.errors.on_base
-        @template_partner.errors.add_to_base(error)
-      end
+      @template_partner.errors = @partner.errors
       @template_partner.action_tags = @action_tags
       @template_partner.temp_conversion_configurations = @conversion_configs
       @partner = @template_partner
