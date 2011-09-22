@@ -18,10 +18,8 @@ class PartnersController < ApplicationController
     @partner = Partner.new(params[:partner])
 
     if !Beacon.new.alive?
-      @template_partner = Partner.new(@partner.attributes)
-      @template_partner.action_tags = @action_tags
-      @template_partner.temp_conversion_configurations = @conversion_configs
-      @partner = @template_partner
+      @partner.action_tags.build(@action_tags.map { |a| a.attributes })
+      @partner.temp_conversion_configurations = (@conversion_configs)
       @partners = Partner.all
       flash[:notice] = "Beacon is offline! Can't save new partner."
       render :action => "new"
@@ -31,11 +29,8 @@ class PartnersController < ApplicationController
     # if partner doesn't save, bail
     if !@partner.save || !@partner.save_apn
       @partner.destroy
-      @template_partner = Partner.new(@partner.attributes)
-      @template_partner.errors = @partner.errors
-      @template_partner.action_tags = @action_tags
-      @template_partner.temp_conversion_configurations = @conversion_configs
-      @partner = @template_partner
+      @partner.action_tags.build(@action_tags.map { |a| a.attributes })
+      @partner.temp_conversion_configurations = (@conversion_configs)
       @partners = Partner.all
       render :action => "new"
       return
