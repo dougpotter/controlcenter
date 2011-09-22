@@ -79,7 +79,7 @@ module Workflow
               # out of order due to being placed in different output streams
               debug_print("Permission denied trying to remove: #{path}")
             else
-              warn("Permission denied trying to remove: #{path}")
+              STDERR.puts("Permission denied trying to remove: #{path}")
             end
             # keep going
           end
