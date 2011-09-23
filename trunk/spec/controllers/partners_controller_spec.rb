@@ -77,8 +77,8 @@ describe PartnersController, "create partner with valid attributes" do
       end
 
       before(:each) do
-        mock_and_stub_object_reset_for_new_render
         controller.expects(:create_new_redirect_config).returns(false)
+        @partner.expects("destroy_and_attach").returns(@partner)
       end
 
       it "should fail to save conversion pixel" do
@@ -182,8 +182,8 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_action_tag_association
-        mock_and_stub_object_reset_for_new_render
         controller.expects(:create_new_redirect_config).returns(false)
+        @partner.expects("destroy_and_attach").returns(@partner)
       end
 
       it "should fail to save conversion pixel" do

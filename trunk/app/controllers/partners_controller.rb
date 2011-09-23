@@ -44,11 +44,9 @@ class PartnersController < ApplicationController
       if @partner.action_tags << action_tag
         # do nothing
       else
-        @partner.destroy
-        @partner = Partner.new(@partner.attributes)
-        @partner.action_tags.build(@action_tags.map { |a| a.attributes })
-        @partner.temp_conversion_configurations = (@conversion_configs)
-        @partner.temp_retargeting_configurations = (@retargeting_configs)
+      @partner = @partner.destroy_and_attach(
+        @action_tags, @conversion_configs, @retargeting_configs
+      )
         @partners = Partner.all
         flash[:notice] = "Invalid action tag"
         render :action => "new"
@@ -58,9 +56,11 @@ class PartnersController < ApplicationController
 
     for config in @conversion_configs
       if !create_new_redirect_config(@partner, config, :type => "conversion")
-        @partner.destroy
-        @partner = Partner.new(@partner.attributes)
+        @partner = @partner.destroy_and_attach(
+          @action_tags, @conversion_configs, @retargeting_configs
+        )
         @partners = Partner.all
+        flash[:notice] = "Invalid conversion config"
         render :action => "new"
         return
       end
@@ -68,9 +68,11 @@ class PartnersController < ApplicationController
 
     for config in @retargeting_configs
       if !create_new_redirect_config(@partner, config, :type => "segment")
-        @partner.destroy
-        @partner = Partner.new(@partner.attributes)
+        @partner = @partner.destroy_and_attach(
+          @action_tags, @conversion_configs, @retargeting_configs
+        )
         @partners = Partner.all
+        flash[:notice] = "Invalid retargeting config"
         render :action => "new"
         return
       end
@@ -139,9 +141,7 @@ class PartnersController < ApplicationController
     @action_tags = []
     if action_tags_attrs
       for attr_hash in action_tags_attrs.values
-        if !attr_hash.has_value?('')
-          @action_tags << ActionTag.new(attr_hash)
-        end
+        @action_tags << ActionTag.new(attr_hash)
       end
     end
     return @action_tags
@@ -212,7 +212,7 @@ class PartnersController < ApplicationController
         :audience_id => audience.beacon_id)
       if !request_condition.save_beacon
         audience.destroy
-        apn_conversion_pixel.destroy
+        pixel.destroy
         flash[:notice] = "Error on request condition save"
         return false
       end
@@ -241,7 +241,7 @@ class PartnersController < ApplicationController
       end
       if !sync_rule.save_beacon
         audience.destroy
-        apn_conversion_pixel.destroy
+        pixel.destroy
         request_condition.destroy
         @partners = Partner.all
         flash[:notice] = "Error on sync rule save"

@@ -57,20 +57,42 @@ class Partner < ActiveRecord::Base
   end
 
   def destroy
-    destroy_conversion_configs
+    destroy_redirect_configs
     self.delete_apn
     super
   end
 
-  def destroy_conversion_configs
+  def destroy_and_attach(action_tags, conversion_configs, retargeting_configs)
+    self.destroy
+    rebuilt = Partner.new(self.attributes)
+    rebuilt.action_tags.build(action_tags.map { |a| 
+      a.attributes 
+    })
+    rebuilt.temp_conversion_configurations = conversion_configs
+    rebuilt.temp_retargeting_configurations = retargeting_configs
+    return rebuilt
+  end
+
+  def destroy_redirect_configs
     for audience in Beacon.new.audiences.audiences
       if audience["pid"] == self.partner_code
         destroy_request_conditions(audience["id"])
         destroy_apn_conversion_pixels(audience["pid"])
+        destroy_sync_rules(audience["id"])
+        # not destroy segment pixels at apn b/c they could be associated with
+        # partners other than this one. woudln't want someone to delete partner
+        # NewCo and find out down the line that the deletion nuked a segment 
+        # pixel used by both NewCo and OldCo
         if aud = Audience.find_by_beacon_id(audience["id"])
           aud.destroy
         end
       end
+    end
+  end
+
+  def destroy_sync_rules(beacon_audience_id)
+    for sync_rule in Beacon.new.sync_rules(beacon_audience_id).sync_rules
+      Beacon.new.delete_sync_rule(beacon_audience_id, sync_rule['id'])
     end
   end
 
