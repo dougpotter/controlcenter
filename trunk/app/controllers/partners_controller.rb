@@ -53,7 +53,7 @@ class PartnersController < ApplicationController
     end
 
     for config in @conversion_configs
-      if !create_new_conversion_config(@partner, config)
+      if !create_new_redirect_config(@partner, config, :type => "conversion")
         @partner.destroy
         @partner = Partner.new(@partner.attributes)
         @partners = Partner.all
@@ -93,7 +93,7 @@ class PartnersController < ApplicationController
     end
 
     notice = noticeOnSuccess(@partner)
-    handle_conversion_configurations
+    handle_redirect_configurations
     if @partner.update_attributes(params[:partner])
       flash[:notice] = notice
       redirect_to(partner_path(@partner.id))
@@ -144,7 +144,7 @@ class PartnersController < ApplicationController
     end
   end
 
-  def create_new_conversion_config(partner, config)
+  def create_new_redirect_config(partner, config, options = {})
       audience = Audience.new(
         :description => config.name, 
         :audience_code => Audience.generate_audience_code)
@@ -154,15 +154,18 @@ class PartnersController < ApplicationController
         return false
       end
 
-      apn_conversion_pixel = ConversionPixel.new(
-        :name => config.name,
-        :pixel_code => audience.audience_code,
-        :partner_code => audience.partner.partner_code)
-      if !apn_conversion_pixel.save_apn
-        audience.destroy
-        apn_conversion_pixel.destroy
-        flash[:notice] = "Error on conversion pixel save"
-        return false
+      case options[:type]
+      when "conversion"
+        apn_conversion_pixel = ConversionPixel.new(
+          :name => config.name,
+          :pixel_code => audience.audience_code,
+          :partner_code => audience.partner.partner_code)
+        if !apn_conversion_pixel.save_apn
+          audience.destroy
+          apn_conversion_pixel.destroy
+          flash[:notice] = "Error on conversion pixel save"
+          return false
+        end
       end
         
       apn_conv_id = apn_conversion_pixel.find_apn["id"]
@@ -228,7 +231,9 @@ class PartnersController < ApplicationController
     conv_configs = extract_conv_config_params
     for conv_config in conv_configs
       if new_config?(conv_config)
-        create_new_conversion_config(Partner.find(params[:id]), conv_config)
+        create_new_redirect_config(
+          Partner.find(params[:id]), conv_config, :type => "conversion"
+        )
       elsif destroy_config?(conv_config)
         destroy_config(conv_config)
       else 
