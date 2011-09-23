@@ -43,6 +43,8 @@ class PartnersController < ApplicationController
       else
         @partner.destroy
         @partner = Partner.new(@partner.attributes)
+        @partner.action_tags.build(@action_tags.map { |a| a.attributes })
+        @partner.temp_conversion_configurations = (@conversion_configs)
         @partners = Partner.all
         flash[:notice] = "Invalid action tag"
         render :action => "new"
