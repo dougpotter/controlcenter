@@ -25,7 +25,7 @@ class Partner < ActiveRecord::Base
   accepts_nested_attributes_for :conversion_configurations, :allow_destroy => true
   accepts_nested_attributes_for :retargeting_configurations, :allow_destroy => true
 
-  attr_accessor :temp_conversion_configurations
+  attr_accessor :temp_conversion_configurations, :temp_retargeting_configurations
 
   def pid ; partner_code ; end
   
@@ -154,7 +154,12 @@ class Partner < ActiveRecord::Base
   end
 
   def retargeting_configurations
-    []
+    if temp_conversion_configurations
+      results = temp_conversion_configurations
+    else
+      results = []
+    end
+    return results
   end
   
   class << self

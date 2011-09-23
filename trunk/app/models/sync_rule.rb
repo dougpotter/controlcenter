@@ -21,29 +21,45 @@ class SyncRule < ActiveRecord::Base
     return ((beacon_response =~ /\d+/) == 0)
   end
 
-  def self.apn_secure_conversion_pixel(conversion_id)
-    return "<img src=\"https://secure.adnxs.com/px?"+
-      "id=#{conversion_id}\" width=\"1\" height=\"1\" />"
+  def self.apn_secure_pixel(id, type)
+    return "<img src=\"https://secure.adnxs.com/#{type}?"+
+      "id=#{id}\" width=\"1\" height=\"1\" />"
   end
 
-  def self.apn_nonsecure_conversion_pixel(conversion_id)
-    return "<img src=\"http://ib.adnxs.com/px?"+
-      "id=#{conversion_id}\" width=\"1\" height=\"1\" />"
+  def self.apn_nonsecure_pixel(id, type)
+    return "<img src=\"http://ib.adnxs.com/#{type}?"+
+      "id=#{id}\" width=\"1\" height=\"1\" />"
   end
 
-  def self.apn_secure_add_from_pixel_code(partner_code, conversion_code)
-    return self.apn_secure_conversion_pixel(
+  def self.apn_secure_add_conversion(partner_code, conversion_code)
+    return self.apn_secure_pixel(
       ConversionPixel.all_apn(:partner_code => partner_code).select { |px|
         px["code"] == conversion_code
-      }[0]["id"]
+      }[0]["id"],
+      "px"
     )
   end
 
-  def self.apn_nonsecure_add_from_pixel_code(partner_code, conversion_code)
-    return self.apn_nonsecure_conversion_pixel(
+  def self.apn_nonsecure_add_conversion(partner_code, conversion_code)
+    return self.apn_nonsecure_pixel(
       ConversionPixel.all_apn(:partner_code => partner_code).select { |px|
         px["code"] == conversion_code
-      }[0]["id"]
+      }[0]["id"],
+      "px"
+    )
+  end
+
+  def self.apn_secure_add_segment(segment_code)
+    return self.apn_secure_pixel(
+      SegmentPixel.all_apn.select { |px| px["code"] == segment_code }[0]["id"],
+      "seg"
+    )
+  end
+
+  def self.apn_nonsecure_add_segment(segment_code)
+    return self.apn_nonsecure_pixel(
+      SegmentPixel.all_apn.select { |px| px["code"] == segment_code }[0]["id"],
+      "seg"
     )
   end
 end

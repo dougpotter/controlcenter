@@ -49,7 +49,7 @@ describe PartnersController, "create partner with valid attributes" do
       end
 
       before(:each) do
-        controller.expects(:create_new_conversion_config).returns(true)
+        controller.expects(:create_new_redirect_config).returns(true)
         @partner.expects("id").returns(1)
       end
 
@@ -78,7 +78,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_object_reset_for_new_render
-        controller.expects(:create_new_conversion_config).returns(false)
+        controller.expects(:create_new_redirect_config).returns(false)
       end
 
       it "should fail to save conversion pixel" do
@@ -148,7 +148,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_action_tag_association
-        controller.expects(:create_new_conversion_config).returns(true)
+        controller.expects(:create_new_redirect_config).returns(true)
         @partner.expects("id").returns(1)
       end
 
@@ -183,7 +183,7 @@ describe PartnersController, "create partner with valid attributes" do
       before(:each) do
         mock_and_stub_action_tag_association
         mock_and_stub_object_reset_for_new_render
-        controller.expects(:create_new_conversion_config).returns(false)
+        controller.expects(:create_new_redirect_config).returns(false)
       end
 
       it "should fail to save conversion pixel" do
@@ -202,18 +202,16 @@ end
 describe PartnersController, "create partner only with invalid attributes" do
   context "and no action tags or conversion pixels" do
     before(:each) do
-      @errors = mock("Errors", :on_base => [])
+      @arr = []
+      @arr.expects("build").returns([ Factory.build(:action_tag) ])
       @partner = mock(
         "Partner", 
         :save => false, 
         :destroy => true, 
-        :errors => @errors,
-        :attributes => Factory.build(:partner).attributes)
-      @template_partner = mock(
-        "Template Partner",
-        :action_tags= => "",
-        :temp_conversion_configurations= => "")
-      Partner.expects(:new).twice.returns(@partner, @template_partner)
+        :action_tags => @arr,
+        :temp_conversion_configurations= => "",
+        :temp_retargeting_configurations= => "")
+      Partner.expects(:new).returns(@partner)
     end
 
     def do_create
@@ -229,23 +227,24 @@ describe PartnersController, "create partner only with invalid attributes" do
       response.should render_template(:new)
     end
   end
+end
 
-  describe PartnersController, "destroy" do
-    def do_delete
-      delete :destroy, :id => 1
-    end
+describe PartnersController, "destroy" do
+  def do_delete
+    delete :destroy, :id => 1
+  end
 
-    before(:each) do
-      Partner.expects(:destroy).with('1')
-    end
+  before(:each) do
+    @partner = mock("Partner", :destroy => true)
+    Partner.expects("find").with('1').returns(@partner)
+  end
 
-    it "should call destroy on the partner whose id is passed in params[:id]" do
-      do_delete
-    end
+  it "should call destroy on the partner whose id is passed in params[:id]" do
+    do_delete
+  end
 
-    it "should redirect to new partner page" do
-      do_delete
-      response.should redirect_to(new_partner_url)
-    end
+  it "should redirect to new partner page" do
+    do_delete
+    response.should redirect_to(new_partner_url)
   end
 end

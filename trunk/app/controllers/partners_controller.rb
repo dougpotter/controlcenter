@@ -15,11 +15,13 @@ class PartnersController < ApplicationController
   def create
     @action_tags = extract_action_tags
     @conversion_configs = extract_conversion_configs
+    @retargeting_configs = extract_retargeting_configs
     @partner = Partner.new(params[:partner])
 
     if !Beacon.new.alive?
       @partner.action_tags.build(@action_tags.map { |a| a.attributes })
       @partner.temp_conversion_configurations = (@conversion_configs)
+      @partner.temp_retargeting_configurations = (@retargeting_configs)
       @partners = Partner.all
       flash[:notice] = "Beacon is offline! Can't save new partner."
       render :action => "new"
@@ -31,6 +33,7 @@ class PartnersController < ApplicationController
       @partner.destroy
       @partner.action_tags.build(@action_tags.map { |a| a.attributes })
       @partner.temp_conversion_configurations = (@conversion_configs)
+      @partner.temp_retargeting_configurations = (@retargeting_configs)
       @partners = Partner.all
       render :action => "new"
       return
@@ -45,6 +48,7 @@ class PartnersController < ApplicationController
         @partner = Partner.new(@partner.attributes)
         @partner.action_tags.build(@action_tags.map { |a| a.attributes })
         @partner.temp_conversion_configurations = (@conversion_configs)
+        @partner.temp_retargeting_configurations = (@retargeting_configs)
         @partners = Partner.all
         flash[:notice] = "Invalid action tag"
         render :action => "new"
@@ -54,6 +58,16 @@ class PartnersController < ApplicationController
 
     for config in @conversion_configs
       if !create_new_redirect_config(@partner, config, :type => "conversion")
+        @partner.destroy
+        @partner = Partner.new(@partner.attributes)
+        @partners = Partner.all
+        render :action => "new"
+        return
+      end
+    end
+
+    for config in @retargeting_configs
+      if !create_new_redirect_config(@partner, config, :type => "segment")
         @partner.destroy
         @partner = Partner.new(@partner.attributes)
         @partners = Partner.all
@@ -144,6 +158,17 @@ class PartnersController < ApplicationController
     end
   end
 
+  def extract_retargeting_configs
+    if config_hashes = 
+      params[:partner].delete("retargeting_configurations_attributes")
+      return config_hashes.values.map { |retargeting_conf|
+        RetargetingConfiguration.new(retargeting_conf)
+      } 
+    else
+      return []
+    end
+  end
+
   def create_new_redirect_config(partner, config, options = {})
       audience = Audience.new(
         :description => config.name, 
@@ -156,19 +181,30 @@ class PartnersController < ApplicationController
 
       case options[:type]
       when "conversion"
-        apn_conversion_pixel = ConversionPixel.new(
+        pixel = ConversionPixel.new(
           :name => config.name,
           :pixel_code => audience.audience_code,
           :partner_code => audience.partner.partner_code)
-        if !apn_conversion_pixel.save_apn
+        if !pixel.save_apn
           audience.destroy
-          apn_conversion_pixel.destroy
+          pixel.destroy
+          flash[:notice] = "Error on conversion pixel save"
+          return false
+        end
+      when "segment"
+        pixel = SegmentPixel.new(
+          :name => config.name,
+          :pixel_code => audience.audience_code,
+          :partner_code => audience.partner.partner_code)
+        if !pixel.save_apn
+          audience.destroy
+          pixel.destroy
           flash[:notice] = "Error on conversion pixel save"
           return false
         end
       end
-        
-      apn_conv_id = apn_conversion_pixel.find_apn["id"]
+       
+      apn_conv_id = pixel.find_apn["id"]
       
       request_condition = RequestCondition.new(
         :request_url_regex => config.request_regex,
@@ -181,17 +217,28 @@ class PartnersController < ApplicationController
         return false
       end
 
-      sync_rule = SyncRule.new(
-        :audience_id => audience.beacon_id,
-        :sync_period => 7,
-        :nonsecure_add_pixel => 
-          SyncRule.apn_nonsecure_add_from_pixel_code(
-            partner.partner_code, 
-            audience.audience_code),
-        :secure_add_pixel => 
-          SyncRule.apn_secure_add_from_pixel_code(
-            partner.partner_code, 
-            audience.audience_code))
+      case options[:type]
+      when "conversion"
+        sync_rule = SyncRule.new(
+          :audience_id => audience.beacon_id,
+          :sync_period => 7,
+          :nonsecure_add_pixel => 
+            SyncRule.apn_nonsecure_add_conversion(
+              partner.partner_code, 
+              audience.audience_code),
+          :secure_add_pixel => 
+            SyncRule.apn_secure_add_conversion(
+              partner.partner_code, 
+              audience.audience_code))
+      when "segment"
+        sync_rule = SyncRule.new(
+          :audience_id => audience.beacon_id,
+          :sync_period => 7,
+          :nonsecure_add_pixel => 
+            SyncRule.apn_nonsecure_add_segment(audience.audience_code),
+          :secure_add_pixel => 
+            SyncRule.apn_secure_add_segment(audience.audience_code))
+      end
       if !sync_rule.save_beacon
         audience.destroy
         apn_conversion_pixel.destroy
