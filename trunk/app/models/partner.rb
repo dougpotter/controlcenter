@@ -14,6 +14,7 @@ class Partner < ActiveRecord::Base
   has_many :line_items, :dependent => :destroy
   has_many :action_tags, :dependent => :destroy
   has_many :conversion_configurations
+  has_many :retargeting_configurations
   has_many :creatives, :dependent => :destroy
 
   validates_presence_of :partner_code, :name
@@ -22,6 +23,7 @@ class Partner < ActiveRecord::Base
 
   accepts_nested_attributes_for :action_tags, :allow_destroy => true
   accepts_nested_attributes_for :conversion_configurations, :allow_destroy => true
+  accepts_nested_attributes_for :retargeting_configurations, :allow_destroy => true
 
   attr_accessor :temp_conversion_configurations
 
@@ -149,6 +151,10 @@ class Partner < ActiveRecord::Base
       end
     end
     return results
+  end
+
+  def retargeting_configurations
+    []
   end
   
   class << self

@@ -177,18 +177,18 @@ form#new_creative, form.edit_creative {
 * Partner New
 **********************************************************************************/
 
-.action_tag_form, .conversion_configuration_form {
+.action_tag_form, .conversion_configuration_form, .retargeting_configuration_form {
   overflow: auto; }
 
-.action_tag_minus_sign, .conversion_configuration_minus_sign {
+.action_tag_minus_sign, .conversion_configuration_minus_sign, .retargeting_configuration_minus_sign {
   width: 15px;
   float: left;
   margin: 15px; }
 
-.action_tags_heading, .conversion_configuration_heading, .edit_existing_advertiser_heading {
+.action_tags_heading, .conversion_configuration_heading, .retargeting_configuration_heading, .edit_existing_advertiser_heading {
   padding: 15px 0px 10px 0px; }
 
-#conversion_configurations_forms {
+#retargeting_configurations_forms {
   padding-bottom: 15px; }
 
 /**********************************************************************************
