@@ -154,8 +154,8 @@ class Partner < ActiveRecord::Base
   end
 
   def retargeting_configurations
-    if temp_conversion_configurations
-      results = temp_conversion_configurations
+    if temp_retargeting_configurations
+      results = temp_retargeting_configurations
     else
       results = []
     end
