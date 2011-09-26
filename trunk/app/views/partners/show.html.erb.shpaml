@@ -29,10 +29,8 @@ h2 | Action Tags
   span
     = link_to("Action Tags (txt)", partner_action_tags_path(@partner.id, :format => :txt))
 
-
-h2 | Conversion Configurations
-
-.conversion_configurations_table
+.redirect_configurations_table
+  h2 | Conversion Configurations
   table
     thead
       tr
@@ -69,6 +67,50 @@ h2 | Conversion Configurations
             = conv_config.request_regex
           td
             = conv_config.referer_regex
+          td
+            = image_tag("active.png", :height => 18 )
+
+div style="clear:both;"
+  >br
+
+.redirect_configurations_table
+  h2 | Retargeting Configurations
+  table
+    thead
+      tr
+        th
+          Name
+        th
+          ApN Conv ID
+        th
+          Beacon Aud
+        th
+          Req Cond
+        th
+          Sync Rule
+        th
+          Request Regex
+        th
+          Referer Regex
+        th
+          Status
+    tbody
+      % for regargeting_config in @partner.retargeting_configurations
+        tr
+          td
+            = regargeting_config.name
+          td
+            = regargeting_config.pixel_code
+          td
+            = regargeting_config.beacon_audience_id
+          td
+            = regargeting_config.request_condition_id
+          td
+            = regargeting_config.sync_rule_id
+          td
+            = regargeting_config.request_regex
+          td
+            = regargeting_config.referer_regex
           td
             = image_tag("active.png", :height => 18 )
 

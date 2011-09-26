@@ -197,35 +197,39 @@ form#new_creative, form.edit_creative {
 
 .action_tags_table th:nth-child(1) { 
   width: 150px; }
+
 .action_tags_table { 
   padding: 0px 0px 10px 0px; }
 
-.conversion_configurations_table th:nth-child(1) { 
+.redirect_configurations_table {
+  padding: 10px 0px 10px 0px; }
+
+.redirect_configurations_table th:nth-child(1) { 
   width: 120px; }
 
-.conversion_configurations_table th:nth-child(2) { 
+.redirect_configurations_table th:nth-child(2) { 
   width: 80px; }
 
-.conversion_configurations_table th:nth-child(3) { 
+.redirect_configurations_table th:nth-child(3) { 
   width: 80px; }
 
-.conversion_configurations_table th:nth-child(4) { 
+.redirect_configurations_table th:nth-child(4) { 
   width: 80px; }
 
-.conversion_configurations_table th:nth-child(5) { 
+.redirect_configurations_table th:nth-child(5) { 
   width: 80px; }
 
-.conversion_configurations_table th:nth-child(6) { 
+.redirect_configurations_table th:nth-child(6) { 
   width: 180px; }
 
-.conversion_configurations_table th:nth-child(7) { 
+.redirect_configurations_table th:nth-child(7) { 
   width: 180px; }
 
-.conversion_configurations_table th:nth-child(8) { 
+.redirect_configurations_table th:nth-child(8) { 
   width: 120px; }
 
 .document_links { 
-  padding: 10px 0px 50px 5px; }
+  padding: 10px 0px 10px 5px; }
 
 .document_links span { 
   font-size: 12px; }
