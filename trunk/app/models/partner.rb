@@ -148,11 +148,28 @@ class Partner < ActiveRecord::Base
   end
 
   def conversion_configurations
+    retargeting_configurations('conversion')
+  end
+
+  def retargeting_configurations
+    retargeting_configurations('segment')
+  end
+
+  def retargeting_configurations(config_type)
+    pixels = []
+    if config_type == 'conversion'
+      pixels = ConversionPixel.all_apn(:advertier_code => partner_code)
+    elsif config_type == 'segment'
+      pixels = SegmentPixel.all_apn
+    else
+      raise "Unknown retargeting configuration type: #{config_type}"
+    end
+
     if temp_conversion_configurations
       results = temp_conversion_configurations
     else
       results = []
-      for pixel in ConversionPixel.all_apn(:advertier_code => partner_code)
+      for pixel in pixels
         for req_cond in request_conditions
           audience = Audience.find_by_beacon_id(req_cond.audience_id)
           if pixel['code'] == audience.audience_code
@@ -175,15 +192,6 @@ class Partner < ActiveRecord::Base
     return results
   end
 
-  def retargeting_configurations
-    if temp_retargeting_configurations
-      results = temp_retargeting_configurations
-    else
-      results = []
-    end
-    return results
-  end
-  
   class << self
     def generate_partner_code
       CodeGenerator.generate_unique_code(
