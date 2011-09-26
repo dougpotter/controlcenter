@@ -12,8 +12,6 @@ h1 | Edit Advertiser
 
   .action_tags_heading
     h2 style="display:inline;" | Action Tags
-
-
     <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
 
   <div id="action_tags_forms">
