@@ -108,15 +108,29 @@ class PartnersController < ApplicationController
       return
     end
 
-    notice = noticeOnSuccess(@partner)
+    notice = notice_on_success(@partner)
     handle_redirect_configurations
     if @partner.update_attributes(params[:partner])
       flash[:notice] = notice
-      redirect_to(partner_path(@partner.id))
+      redirect_to(partner_path(@partner))
     else
       flash[:notice] = "Update failed"
       render :action => 'edit', :id => @partner
     end
+  end
+
+  def notice_on_success(partner)
+    notice = Builder::XmlMarkup.new
+    notice.ul do |b|
+      if params[:partner][:action_tags_attributes]
+        for attrs in params[:partner][:action_tags_attributes].values
+          if attrs["_destroy"]
+            notice += "<li>#{ActionTag.find(attrs[:id]).name} tag removed</li>"
+          end
+        end
+      end
+    end
+    return notice.class
   end
 
   def destroy
@@ -249,20 +263,6 @@ class PartnersController < ApplicationController
       end
 
     return true
-  end
-
-  def noticeOnSuccess(partner)
-    notice = Builder::XmlMarkup.new
-    notice.ul do |b|
-    if params[:partner][:action_tags_attributes]
-      for attrs in params[:partner][:action_tags_attributes].values
-        if attrs["_destroy"]
-          notice += "<li>#{ActionTag.find(attrs[:id]).name} tag removed</li>"
-        end
-      end
-    end
-    end
-    return notice
   end
 
   def extract_conv_config_params 
