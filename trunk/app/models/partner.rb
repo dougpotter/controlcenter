@@ -157,7 +157,9 @@ class Partner < ActiveRecord::Base
 
   def redirect_configurations(config_type)
     pixels = []
-    if config_type == 'conversion'
+    if new_record?
+      []
+    elsif config_type == 'conversion'
       pixels = ConversionPixel.all_apn(:advertier_code => partner_code)
       c = ConversionConfiguration.new
     elsif config_type == 'segment'
