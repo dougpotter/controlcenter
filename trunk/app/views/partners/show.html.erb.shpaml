@@ -51,7 +51,7 @@ h2 | Action Tags
         th
           Status
     tbody
-      % for conv_config in @partner.retargeting_configurations('conversion')
+      % for conv_config in @partner.conversion_configurations
         tr
           td
             = conv_config.name
@@ -95,7 +95,7 @@ div style="clear:both;"
         th
           Status
     tbody
-      % for regargeting_config in @partner.retargeting_configurations('segment')
+      % for regargeting_config in @partner.retargeting_configurations
         tr
           td
             = regargeting_config.name

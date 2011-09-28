@@ -6,6 +6,7 @@ h1 | Edit Advertiser
 % form_for @partner do |f|
   = nested_model_form_builder(f, "action_tag", :populate => { "sid" => sid_url })
   = nested_model_form_builder(f, "conversion_configuration")
+  = nested_model_form_builder(f, "retargeting_configuration")
 
 % form_for @partner do |f|
   = render :partial => 'form'
@@ -24,6 +25,14 @@ h1 | Edit Advertiser
  
   <div id="conversion_configurations_forms">
     = render :partial => "conversion_configuration_section", :locals => { :f => f } 
+  </div>
+
+  .retargeting_configuration_heading
+    h2 style="display:inline;" | Retargeting Pixels
+    <input id="add_retargeting_configuration" type="image" src="/images/plus_sign.png" width=30 />
+ 
+  <div id="retargeting_configurations_forms">
+    = render :partial => "retargeting_configuration_section", :locals => { :f => f } 
   </div>
 
   = submit_tag 'Save Edits', :class => "button", :style => "width:auto;"

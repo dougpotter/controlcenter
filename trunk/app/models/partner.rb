@@ -148,19 +148,21 @@ class Partner < ActiveRecord::Base
   end
 
   def conversion_configurations
-    retargeting_configurations('conversion')
+    redirect_configurations('conversion')
   end
 
   def retargeting_configurations
-    retargeting_configurations('segment')
+    redirect_configurations('segment')
   end
 
-  def retargeting_configurations(config_type)
+  def redirect_configurations(config_type)
     pixels = []
     if config_type == 'conversion'
       pixels = ConversionPixel.all_apn(:advertier_code => partner_code)
+      c = ConversionConfiguration.new
     elsif config_type == 'segment'
       pixels = SegmentPixel.all_apn
+      c = RetargetingConfiguration.new
     else
       raise "Unknown retargeting configuration type: #{config_type}"
     end
@@ -173,16 +175,16 @@ class Partner < ActiveRecord::Base
         for req_cond in request_conditions
           audience = Audience.find_by_beacon_id(req_cond.audience_id)
           if pixel['code'] == audience.audience_code
-            c = ConversionConfiguration.new(
-              :name => pixel['name'], 
-              :request_regex => req_cond.request_url_regex,
-              :referer_regex => req_cond.referer_url_regex,
-              :pixel_code => pixel["code"],
-              :beacon_audience_id => audience.beacon_id,
-              :sync_rule_id => 
-                Beacon.new.sync_rules(audience.beacon_id).sync_rules[0]["id"],
-              :request_condition_id => req_cond['id']
-            )
+            c.is_a?(ConversionConfiguration) ? 
+              c.name = pixel['name'] : 
+              c.name = pixel['short_name']
+            c.request_regex = req_cond.request_url_regex
+            c.referer_regex = req_cond.referer_url_regex
+            c.pixel_code = pixel["code"]
+            c.beacon_audience_id = audience.beacon_id
+            c.sync_rule_id = 
+                Beacon.new.sync_rules(audience.beacon_id).sync_rules[0]["id"]
+            c.request_condition_id = req_cond['id']
             c.instance_variable_set(:@new_record, false)
             results << c
           end

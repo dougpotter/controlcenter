@@ -274,7 +274,16 @@ class PartnersController < ApplicationController
     end
   end
 
-  def handle_conversion_configurations
+  def extract_retargeting_config_params
+    if retargeting_configs = params[:partner].
+      delete("retargeting_configurations_attributes")
+      return retargeting_configs.values.map { |retargeting_config| Hashie::Mash.new(retargeting_config) }
+    else
+      return []
+    end
+  end
+
+  def handle_redirect_configurations
     conv_configs = extract_conv_config_params
     for conv_config in conv_configs
       if new_config?(conv_config)
@@ -282,26 +291,45 @@ class PartnersController < ApplicationController
           Partner.find(params[:id]), conv_config, :type => "conversion"
         )
       elsif destroy_config?(conv_config)
-        destroy_config(conv_config)
+        destroy_config(conv_config, 'conversion')
       else 
-        update_config(conv_config)
+        update_config(conv_config, 'conversion')
+      end
+    end
+    retargeting_configs = extract_retargeting_config_params
+    for retargeting_config in retargeting_configs
+      if new_config?(retargeting_config)
+        create_new_redirect_config(
+          Partner.find(params[:id]), retargeting_config, :type => "segment"
+        )
+      elsif destroy_config?(retargeting_config)
+        destroy_config(retargeting_config, 'segment')
+      else 
+        update_config(retargeting_config, 'segment')
       end
     end
   end
 
-  def new_config?(conv_config)
-    Audience.find_by_audience_code(conv_config["pixel_code"]).nil?
+  def new_config?(config)
+    Audience.find_by_audience_code(config["pixel_code"]).nil?
   end
 
-  def destroy_config?(conv_config)
-    conv_config["_destroy"] == "true"
+  def destroy_config?(config)
+    config["_destroy"] == "true"
   end
 
-  def destroy_config(conv_config)
-    audience = Audience.find_by_audience_code(conv_config["pixel_code"])
-    ConversionPixel.new( 
-      :partner_code => audience.partner.partner_code,
-      :pixel_code => audience.audience_code).delete_apn
+  def destroy_config(config, config_type)
+    audience = Audience.find_by_audience_code(config["pixel_code"])
+    if config_type == 'conversion'
+      ConversionPixel.new( 
+        :partner_code => audience.partner.partner_code,
+        :pixel_code => audience.audience_code).delete_apn
+    elsif config_type == 'segment'
+      SegmentPixel.new( 
+        :partner_code => audience.partner.partner_code,
+        :pixel_code => audience.audience_code,
+        :member_id => APN_CONFIG["member_id"]).delete_apn
+    end
     request_condition = 
       Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
     Beacon.new.delete_request_condition(
@@ -313,23 +341,31 @@ class PartnersController < ApplicationController
     audience.destroy if audience
   end
 
-  def update_config(conv_config)
-        audience = Audience.find_by_audience_code(conv_config["pixel_code"])
-        audience.update_attributes(:description => conv_config["name"])
-        Beacon.new.update_audience(audience.beacon_id, conv_config["name"], 0)
-        ConversionPixel.new( 
-          :name => conv_config["name"],
-          :partner_code => audience.partner.partner_code,
-          :pixel_code => audience.audience_code).update_attributes_apn
-        request_condition = 
-          Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
-        Beacon.new.update_request_condition(
-          audience.beacon_id,
-          request_condition['id'],
-          :request_url_regex => conv_config["request_regex"],
-          :referer_url_regex => conv_config["referer_regex"])
-        # can't update SyncRule
-        # potentially change sync period, eventually
+  def update_config(config, config_type)
+    audience = Audience.find_by_audience_code(config["pixel_code"])
+    audience.update_attributes(:description => config["name"])
+    Beacon.new.update_audience(audience.beacon_id, config["name"], 0)
+    if config_type == 'conversion'
+      ConversionPixel.new( 
+        :name => config["name"],
+        :partner_code => audience.partner.partner_code,
+        :pixel_code => audience.audience_code).update_attributes_apn
+    elsif config_type == 'segment'
+      SegmentPixel.new( 
+        :name => config["name"],
+        :partner_code => audience.partner.partner_code,
+        :pixel_code => audience.audience_code,
+        :member_id => APN_CONFIG["member_id"]).update_attributes_apn
+    end
+    request_condition = 
+      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+    Beacon.new.update_request_condition(
+      audience.beacon_id,
+      request_condition['id'],
+      :request_url_regex => config["request_regex"],
+      :referer_url_regex => config["referer_regex"])
+    # can't update SyncRule
+    # potentially change sync period, eventually
   end
 end
 

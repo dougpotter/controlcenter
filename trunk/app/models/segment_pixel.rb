@@ -8,7 +8,7 @@ class SegmentPixel < ActiveRecord::Base
 
   acts_as_apn_object :apn_attr_map => {
     :code => "pixel_code",
-    :name => "name",
+    :short_name => "name",
     :advertiser_code => "partner_code" },
     :non_method_attr_map => {
       :member_id => APN_CONFIG["member_id"],
