@@ -161,10 +161,10 @@ class Partner < ActiveRecord::Base
       []
     elsif config_type == 'conversion'
       pixels = ConversionPixel.all_apn(:advertier_code => partner_code)
-      c = ConversionConfiguration.new
+      config_class = ConversionConfiguration
     elsif config_type == 'segment'
       pixels = SegmentPixel.all_apn
-      c = RetargetingConfiguration.new
+      config_class = RetargetingConfiguration
     else
       raise "Unknown retargeting configuration type: #{config_type}"
     end
@@ -177,6 +177,7 @@ class Partner < ActiveRecord::Base
         for req_cond in request_conditions
           audience = Audience.find_by_beacon_id(req_cond.audience_id)
           if pixel['code'] == audience.audience_code
+            c = config_class.new
             c.is_a?(ConversionConfiguration) ? 
               c.name = pixel['name'] : 
               c.name = pixel['short_name']
