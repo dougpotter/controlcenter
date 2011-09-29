@@ -93,6 +93,8 @@ class PartnersController < ApplicationController
 
   def edit
     @partner = Partner.find(params[:id])
+    @partner.temp_conversion_configurations = @partner.conversion_configurations
+    @partner.temp_retargeting_configurations = @partner.retargeting_configurations
     if !Beacon.new.alive?
       flash[:notice] = "Beacon is dead. Can't edit #{@partner.name}"
       redirect_to new_partner_path

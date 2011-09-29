@@ -148,10 +148,12 @@ class Partner < ActiveRecord::Base
   end
 
   def conversion_configurations
+    return temp_conversion_configurations if temp_conversion_configurations
     redirect_configurations('conversion')
   end
 
   def retargeting_configurations
+    return temp_retargeting_configurations if temp_retargeting_configurations
     redirect_configurations('segment')
   end
 
@@ -169,28 +171,24 @@ class Partner < ActiveRecord::Base
       raise "Unknown retargeting configuration type: #{config_type}"
     end
 
-    if temp_conversion_configurations
-      results = temp_conversion_configurations
-    else
-      results = []
-      for pixel in pixels
-        for req_cond in request_conditions
-          audience = Audience.find_by_beacon_id(req_cond.audience_id)
-          if pixel['code'] == audience.audience_code
-            c = config_class.new
-            c.is_a?(ConversionConfiguration) ? 
-              c.name = pixel['name'] : 
-              c.name = pixel['short_name']
-            c.request_regex = req_cond.request_url_regex
-            c.referer_regex = req_cond.referer_url_regex
-            c.pixel_code = pixel["code"]
-            c.beacon_audience_id = audience.beacon_id
-            c.sync_rule_id = 
-                Beacon.new.sync_rules(audience.beacon_id).sync_rules[0]["id"]
-            c.request_condition_id = req_cond['id']
-            c.instance_variable_set(:@new_record, false)
-            results << c
-          end
+    results = []
+    for pixel in pixels
+      for req_cond in request_conditions
+        audience = Audience.find_by_beacon_id(req_cond.audience_id)
+        if pixel['code'] == audience.audience_code
+          c = config_class.new
+          c.is_a?(ConversionConfiguration) ? 
+            c.name = pixel['name'] : 
+            c.name = pixel['short_name']
+          c.request_regex = req_cond.request_url_regex
+          c.referer_regex = req_cond.referer_url_regex
+          c.pixel_code = pixel["code"]
+          c.beacon_audience_id = audience.beacon_id
+          c.sync_rule_id = 
+              Beacon.new.sync_rules(audience.beacon_id).sync_rules[0]["id"]
+          c.request_condition_id = req_cond['id']
+          c.instance_variable_set(:@new_record, false)
+          results << c
         end
       end
     end
