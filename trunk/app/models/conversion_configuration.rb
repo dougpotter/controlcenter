@@ -1,4 +1,4 @@
-class ConversionConfiguration < ActiveRecord::Base
+class ConversionConfiguration < RedirectConfiguration
   has_no_table
 
   attr_accessor :name
@@ -8,5 +8,4 @@ class ConversionConfiguration < ActiveRecord::Base
   attr_accessor :request_condition_id
   attr_accessor :sync_rule_id
   attr_accessor :beacon_audience_id
-
 end

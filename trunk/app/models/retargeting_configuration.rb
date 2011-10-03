@@ -1,4 +1,4 @@
-class RetargetingConfiguration < ActiveRecord::Base
+class RetargetingConfiguration < RedirectConfiguration
   has_no_table
 
   attr_accessor :name
