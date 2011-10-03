@@ -55,7 +55,7 @@ class PartnersController < ApplicationController
     end
 
     for config in @conversion_configs
-      if !create_new_redirect_config(@partner, config, :type => "conversion")
+      if !ConversionConfiguration.createe(@partner, config)
         @partner = @partner.destroy_and_attach(
           @action_tags, @conversion_configs, @retargeting_configs
         )
