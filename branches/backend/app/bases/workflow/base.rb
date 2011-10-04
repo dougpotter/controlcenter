@@ -45,6 +45,7 @@ module Workflow
     include ConditionalPersistence
     include ErrorHandling
     include ConfigurationRetrieval
+    include S3PathBuilding
     
     attr_reader :params
     
