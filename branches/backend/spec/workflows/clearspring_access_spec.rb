@@ -28,6 +28,7 @@ end
 
 class TestClearspringWorkflow
   include ClearspringAccess
+  include Workflow::S3PathBuilding
   include TestClearspringParams
   
   attr_reader :channel

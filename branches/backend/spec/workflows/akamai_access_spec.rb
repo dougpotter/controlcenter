@@ -25,6 +25,7 @@ end
 
 class TestAkamaiWorkflow
   include AkamaiAccess
+  include Workflow::S3PathBuilding
   include TestAkamaiParams
   
   attr_reader :channel
