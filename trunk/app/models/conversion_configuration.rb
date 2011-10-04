@@ -9,7 +9,7 @@ class ConversionConfiguration < RedirectConfiguration
   attr_accessor :sync_rule_id
   attr_accessor :beacon_audience_id
 
-  def self.createe(partner, config)
+  def self.create(partner, config)
     # create the audience at XGCC and beacon
     audience = Audience.new(
       :description => config.name,
