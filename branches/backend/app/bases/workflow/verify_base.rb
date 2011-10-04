@@ -38,14 +38,22 @@ module Workflow
       @s3_client.list_bucket_files(s3_bucket, build_s3_dirname_for_params)
     end
     
+    def list_bucket_items_for_data_source_urls(data_source_urls)
+      list_for_data_source_urls(:list_bucket_items, data_source_urls)
+    end
+    
     def list_bucket_files_for_data_source_urls(data_source_urls)
+      list_for_data_source_urls(:list_bucket_files, data_source_urls)
+    end
+    
+    def list_for_data_source_urls(list_method, data_source_urls)
       dates = data_source_urls.map do |url|
         determine_name_date_from_data_provider_file(url)
       end.uniq
       list = []
       dates.each do |date|
         path = build_s3_dirname_for_date(date)
-        list += @s3_client.list_bucket_files(s3_bucket, path)
+        list += @s3_client.send(list_method, s3_bucket, path)
       end
       list
     end
@@ -66,6 +74,11 @@ module Workflow
     
     def check_correspondence(data_source_urls, our_paths)
       have, missing, partial = [], [], []
+      
+      if params[:check_sizes]
+        all_items = list_bucket_items_for_data_source_urls(data_source_urls)
+      end
+      
       data_source_urls.each do |url|
         bucket_path = data_provider_url_to_bucket_path(url)
         
@@ -83,12 +96,16 @@ module Workflow
           if ok = !extracted_paths.empty?
             if params[:check_sizes]
               source_size = get_source_size(url)
-              items = list_bucket_items
               extracted_items = extracted_paths.map do |path|
-                items.detect { |item| item.path == path }
+                all_items.detect { |item| item.path == path }
               end
               extracted_size = extracted_items.inject(0) do |sum, item|
-                sum + item.size
+                if item.nil?
+                  # nothing detected in the corresponding detect block above
+                  sum
+                else
+                  sum + item.size
+                end
               end
               if params[:check_sizes_exactly]
                 ok = extracted_size == source_size
