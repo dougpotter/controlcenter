@@ -9,6 +9,27 @@ class ConversionConfiguration < RedirectConfiguration
   attr_accessor :sync_rule_id
   attr_accessor :beacon_audience_id
 
+  def self.destroy(config)
+    audience = Audience.find_by_audience_code(config["pixel_code"])
+
+    ConversionPixel.new( 
+      :partner_code => audience.partner.partner_code,
+      :pixel_code => audience.audience_code).delete_apn
+
+    request_condition =         
+      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+
+    Beacon.new.delete_request_condition(
+      audience.beacon_id,        
+      request_condition['id'])
+
+    for sync_rule in Beacon.new.sync_rules(audience.beacon_id).sync_rules
+      Beacon.new.delete_sync_rule(audience.beacon_id, sync_rule['id'])
+    end       
+
+    audience.destroy if audience
+  end
+
   def self.create(partner, config)
     # create the audience at XGCC and beacon
     audience = Audience.new(

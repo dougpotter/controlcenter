@@ -209,7 +209,7 @@ class PartnersController < ApplicationController
       if new_config?(conv_config)
         ConversionConfiguration.create(Partner.find(params[:id]), conv_config)
       elsif destroy_config?(conv_config)
-        destroy_config(conv_config, 'conversion')
+        ConversionConfiguration.destroy(conv_config)
       else 
         update_config(conv_config, 'conversion')
       end
