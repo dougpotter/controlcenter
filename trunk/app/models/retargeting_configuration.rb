@@ -32,7 +32,6 @@ class RetargetingConfiguration < RedirectConfiguration
   end
 
   def self.create(partner, config)
-    # create aucience at XGCC
     audience = Audience.new(
       :description => config.name,
       :audience_code => Audience.generate_audience_code)

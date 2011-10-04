@@ -31,7 +31,6 @@ class ConversionConfiguration < RedirectConfiguration
   end
 
   def self.create(partner, config)
-    # create the audience at XGCC and beacon
     audience = Audience.new(
       :description => config.name,
       :audience_code => Audience.generate_audience_code)
