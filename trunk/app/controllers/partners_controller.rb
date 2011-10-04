@@ -207,7 +207,7 @@ class PartnersController < ApplicationController
     conv_configs = extract_conv_config_params
     for conv_config in conv_configs
       if new_config?(conv_config)
-        ConverstionConfiguration.create(Partner.find(params[:id]), conv_config)
+        ConversionConfiguration.create(Partner.find(params[:id]), conv_config)
       elsif destroy_config?(conv_config)
         destroy_config(conv_config, 'conversion')
       else 
