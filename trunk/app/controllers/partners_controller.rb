@@ -219,7 +219,7 @@ class PartnersController < ApplicationController
       if new_config?(retargeting_config)
         RetargetingConfiguration.create(Partner.find(params[:id]), conv_config)
       elsif destroy_config?(retargeting_config)
-        destroy_config(retargeting_config, 'segment')
+        RetargetingConfiguration.destroy(retargeting_config)
       else 
         update_config(retargeting_config, 'segment')
       end
