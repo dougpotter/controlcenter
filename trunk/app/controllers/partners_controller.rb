@@ -67,7 +67,7 @@ class PartnersController < ApplicationController
     end
 
     for config in @retargeting_configs
-      if !create_new_redirect_config(@partner, config, :type => "segment")
+      if !RetargetingConfiguration.create(@partner, config)
         @partner = @partner.destroy_and_attach(
           @action_tags, @conversion_configs, @retargeting_configs
         )

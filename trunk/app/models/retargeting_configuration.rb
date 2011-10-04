@@ -8,4 +8,57 @@ class RetargetingConfiguration < RedirectConfiguration
   attr_accessor :request_condition_id
   attr_accessor :sync_rule_id
   attr_accessor :beacon_audience_id
+
+  def self.create(partner, config)
+    # create aucience at XGCC
+    audience = Audience.new(
+      :description => config.name,
+      :audience_code => Audience.generate_audience_code)
+    if !audience.save || !audience.save_beacon(partner.partner_code)
+      audience.destroy
+      errors.add_to_base("Error on Audience save")
+      return false    
+    end 
+
+    pixel = SegmentPixel.new(
+      :name => config.name,
+      :pixel_code => audience.audience_code,
+      :partner_code => audience.partner.partner_code)
+    if !pixel.save_apn
+      audience.destroy
+      pixel.destroy
+      errors.add_to_base("Error on conversion pixel save")
+      return false
+    end
+
+    request_condition = RequestCondition.new(      
+      :request_url_regex => config.request_regex,
+      :referer_url_regex => config.referer_regex,
+      :audience_id => audience.beacon_id)
+    if !request_condition.save_beacon
+      audience.destroy
+      pixel.destroy
+      errors.add_to_base("Error on request condition save")
+      return false
+    end 
+
+    sync_rule = SyncRule.new(
+      :audience_id => audience.beacon_id,
+      :sync_period => 7,
+      :nonsecure_add_pixel =>
+        SyncRule.apn_nonsecure_add_segment(audience.audience_code),
+      :secure_add_pixel =>
+        SyncRule.apn_secure_add_segment(audience.audience_code))
+
+    if !sync_rule.save_beacon
+      audience.destroy
+      pixel.destroy
+      request_condition.destroy
+      @partners = Partner.all
+      errors.add_to_base "Error on sync rule save"      
+      return false
+    end 
+
+    return true
+  end
 end
