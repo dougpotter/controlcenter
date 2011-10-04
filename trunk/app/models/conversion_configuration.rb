@@ -9,6 +9,25 @@ class ConversionConfiguration < RedirectConfiguration
   attr_accessor :sync_rule_id
   attr_accessor :beacon_audience_id
 
+  def self.update(config)
+    audience = Audience.find_by_audience_code(config["pixel_code"])
+    audience.update_attributes(:description => config["name"])
+    Beacon.new.update_audience(audience.beacon_id, config["name"], 0)
+    ConversionPixel.new( 
+      :name => config["name"],
+      :partner_code => audience.partner.partner_code,
+      :pixel_code => audience.audience_code).update_attributes_apn
+    request_condition = 
+      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+    Beacon.new.update_request_condition(
+      audience.beacon_id,
+      request_condition['id'],
+      :request_url_regex => config["request_regex"],
+      :referer_url_regex => config["referer_regex"])
+
+    return true
+  end
+
   def self.destroy(config)
     audience = Audience.find_by_audience_code(config["pixel_code"])
 
