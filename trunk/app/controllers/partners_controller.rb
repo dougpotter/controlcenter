@@ -185,88 +185,6 @@ class PartnersController < ApplicationController
     end
   end
 
-  def create_new_redirect_config(partner, config, options = {})
-      audience = Audience.new(
-        :description => config.name, 
-        :audience_code => Audience.generate_audience_code)
-      if !audience.save || !audience.save_beacon(partner.partner_code)
-        audience.destroy
-        flash[:notice] = "Error on audience save"
-        return false
-      end
-
-      case options[:type]
-      when "conversion"
-        pixel = ConversionPixel.new(
-          :name => config.name,
-          :pixel_code => audience.audience_code,
-          :partner_code => audience.partner.partner_code)
-        if !pixel.save_apn
-          audience.destroy
-          pixel.destroy
-          flash[:notice] = "Error on conversion pixel save"
-          return false
-        end
-      when "segment"
-        pixel = SegmentPixel.new(
-          :name => config.name,
-          :pixel_code => audience.audience_code,
-          :partner_code => audience.partner.partner_code)
-        if !pixel.save_apn
-          audience.destroy
-          pixel.destroy
-          flash[:notice] = "Error on conversion pixel save"
-          return false
-        end
-      end
-       
-      apn_conv_id = pixel.find_apn["id"]
-      
-      request_condition = RequestCondition.new(
-        :request_url_regex => config.request_regex,
-        :referer_url_regex => config.referer_regex,
-        :audience_id => audience.beacon_id)
-      if !request_condition.save_beacon
-        audience.destroy
-        pixel.destroy
-        flash[:notice] = "Error on request condition save"
-        return false
-      end
-
-      case options[:type]
-      when "conversion"
-        sync_rule = SyncRule.new(
-          :audience_id => audience.beacon_id,
-          :sync_period => 7,
-          :nonsecure_add_pixel => 
-            SyncRule.apn_nonsecure_add_conversion(
-              partner.partner_code, 
-              audience.audience_code),
-          :secure_add_pixel => 
-            SyncRule.apn_secure_add_conversion(
-              partner.partner_code, 
-              audience.audience_code))
-      when "segment"
-        sync_rule = SyncRule.new(
-          :audience_id => audience.beacon_id,
-          :sync_period => 7,
-          :nonsecure_add_pixel => 
-            SyncRule.apn_nonsecure_add_segment(audience.audience_code),
-          :secure_add_pixel => 
-            SyncRule.apn_secure_add_segment(audience.audience_code))
-      end
-      if !sync_rule.save_beacon
-        audience.destroy
-        pixel.destroy
-        request_condition.destroy
-        @partners = Partner.all
-        flash[:notice] = "Error on sync rule save"
-        return false
-      end
-
-    return true
-  end
-
   def extract_conv_config_params 
     if conv_configs = params[:partner].
       delete("conversion_configurations_attributes")
@@ -289,9 +207,7 @@ class PartnersController < ApplicationController
     conv_configs = extract_conv_config_params
     for conv_config in conv_configs
       if new_config?(conv_config)
-        create_new_redirect_config(
-          Partner.find(params[:id]), conv_config, :type => "conversion"
-        )
+        ConverstionConfiguration.create(Partner.find(params[:id]), conv_config)
       elsif destroy_config?(conv_config)
         destroy_config(conv_config, 'conversion')
       else 
@@ -301,9 +217,7 @@ class PartnersController < ApplicationController
     retargeting_configs = extract_retargeting_config_params
     for retargeting_config in retargeting_configs
       if new_config?(retargeting_config)
-        create_new_redirect_config(
-          Partner.find(params[:id]), retargeting_config, :type => "segment"
-        )
+        RetargetingConfiguration.create(Partner.find(params[:id]), conv_config)
       elsif destroy_config?(retargeting_config)
         destroy_config(retargeting_config, 'segment')
       else 
