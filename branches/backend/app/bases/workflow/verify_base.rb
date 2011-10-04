@@ -38,6 +38,18 @@ module Workflow
       @s3_client.list_bucket_files(s3_bucket, build_s3_dirname_for_params)
     end
     
+    def list_bucket_files_for_data_source_urls(data_source_urls)
+      dates = data_source_urls.map do |url|
+        determine_name_date_from_data_provider_file(url)
+      end.uniq
+      list = []
+      dates.each do |date|
+        path = build_s3_dirname_for_date(date)
+        list += @s3_client.list_bucket_files(s3_bucket, path)
+      end
+      list
+    end
+    
     # -----
     
     def find_their_files

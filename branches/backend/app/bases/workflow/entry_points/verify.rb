@@ -3,7 +3,7 @@ module Workflow
     module Verify
       def check_listing
         data_source_urls = list_data_source_files
-        our_paths = list_bucket_files
+        our_paths = list_bucket_files_for_data_source_urls(data_source_urls)
         have, missing, partial = check_correspondence(data_source_urls, our_paths)
         report_correspondence(have, missing, partial)
         missing.empty? && partial.empty?
@@ -15,7 +15,7 @@ module Workflow
         report_existence(have, missing)
         ok = missing.empty?
         
-        our_paths = list_bucket_files
+        our_paths = list_bucket_files_for_data_source_urls(data_source_urls)
         have, missing, partial = check_correspondence(data_source_urls, our_paths)
         report_correspondence(have, missing, partial)
         ok && missing.empty? && partial.empty?

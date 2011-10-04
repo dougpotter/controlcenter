@@ -156,19 +156,6 @@ module ClearspringAccess
       [date, hour]
     end
     
-    def build_s3_dirname_for_params
-      prefix = build_s3_prefix_for_channel
-      date = params[:date]
-      "#{prefix}/#{date}"
-    end
-    
-    def build_s3_dirname_for_path(path)
-      prefix = build_s3_prefix_for_channel
-      # XXX we could use basename here
-      date = determine_name_date_from_data_provider_file(path)
-      "#{prefix}/#{date}"
-    end
-    
     def build_s3_prefix_for_channel(channel=self.channel)
       "#{params[:clearspring_pid]}/v2/raw-#{channel.name}"
     end
