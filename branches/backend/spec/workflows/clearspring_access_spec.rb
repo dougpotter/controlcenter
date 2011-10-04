@@ -33,7 +33,10 @@ class TestClearspringWorkflow
   attr_reader :channel
   
   def initialize
-    @channel = Factory.create(:detached_data_provider_channel, :name => legitimate_channel_name)
+    @channel = Factory.create(:detached_data_provider_channel,
+      :name => legitimate_channel_name,
+      :update_frequency => DataProviderChannel::UPDATES_HOURLY
+    )
   end
   
   # since we are testing private methods we need to be able to call them
@@ -63,6 +66,17 @@ describe ClearspringAccess do
     it "should be able to build correct s3 dirname for params" do
       s3_dirname = @wrapper.build_s3_dirname_for_params
       s3_dirname.should == correct_s3_dirname_for_params
+    end
+  end
+  
+  describe 'Label date/hour determination' do
+    it 'should correctly handle hours in the middle of a day' do
+      url = 'https://dex.clearspring.com/data/xgraph/v2/share-int/share-int.20110923-1500.0000.log.gz'
+      date, hour = @wrapper.determine_label_date_hour_from_data_provider_file(url)
+      date.should == '20110923'
+      # file covers files starting at named hour, thus
+      # label hour is named hour + 1
+      hour.should == 16
     end
   end
 end
