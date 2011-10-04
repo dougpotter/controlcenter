@@ -200,7 +200,15 @@ module AkamaiAccess
         debug_print "List #{dir}"
       end
       
-      Dir.entries(dir).reject { |entry| entry == '.' || entry == '..' }.sort
+      begin
+        entries = Dir.entries(dir)
+      rescue Errno::ENOENT
+        # Channel references a directory that does not exist
+        STDERR.puts("Directory does not exist: #{dir}")
+        return []
+      end
+      
+      entries.reject { |entry| entry == '.' || entry == '..' }.sort
     end
     
     # -----
