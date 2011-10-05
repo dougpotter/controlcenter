@@ -25,6 +25,8 @@ class RetargetingConfiguration < RedirectConfiguration
       request_condition['id'],
       :request_url_regex => config["request_regex"],
       :referer_url_regex => config["referer_regex"])
+
+    return true
   end
 
   def self.destroy(config)
