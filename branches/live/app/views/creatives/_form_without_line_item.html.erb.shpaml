@@ -1,39 +1,42 @@
-= error_messages_for :creative
+div class="creative_form_without_line_item" id="creative_form_without_line_item<%= "[#{creative_number}]" %>" data-number="<%= "#{creative_number}" %>" data-existing-record="<%= "#{!creative_fields.object.new_record?}" %>"
+      <%= link_to_function "-", { :title => "remove_creative", :class => "remove_creative_link" } do |page|
+          page.call :removeCreativeForm, creative_number
+          end %>
 
-% creative_number ||= 0
+      .dimension_input
+        = creative_fields.label "creative_code", "Creative Code"
+        >br 
+        = creative_fields.text_field :creative_code
 
-div id=creative_form_without_line_item<%="[#{creative_number}]"%> class=creative_form_without_line_item
-  <%= link_to_function "-", :class => "remove_creative_link" do |page|
-    page.call :removeCreativeForm, creative_number
-    end %>
+      .dimension_input
+        = creative_fields.label "name", "Creative Name"
+        >br 
+        = creative_fields.text_field :name
 
-  div class=dimension_input
-    label for='creative_code' | Creative Code:
-    >br
-    = text_field("creatives[#{creative_number}]", 'creative_code')
+      .dimension_input
+        = creative_fields.label "media_type", "Media Type"
+        >br 
+        = creative_fields.text_field :media_type
 
-  div class=dimension_input
-    label for='name' | Name:
-    >br
-    = text_field("creatives[#{creative_number}]", 'name')
+      .dimension_input
+        = creative_fields.label "creative_size_id", "Creative Size"
+        >br 
+        = creative_fields.collection_select "creative_size_id", @creative_sizes, :id, :height_width_string
 
-  div class=dimension_input
-    label for='media_type' | Media Type:
-    >br
-    = text_field("creatives[#{creative_number}]", 'media_type')
+      .dimension_input
 
-  div class=dimension_input
-    label for='creative_size_id' | Creative Size:
-    >br
-    = collection_select("creatives[#{creative_number}]", 'creative_size_id', @creative_sizes, :id, :height_width_string, :selected => @creative.creative_size_id)
+        % if creative_fields.object.has_clean_image?
+          #creative_image 
+            % if request.url.match(edit_campaign_url)
+              = image_tag_for_campaign_edit(creative_fields.object)
+        % else
+          = creative_fields.label "image", "Image:"
+          >br 
+          = creative_fields.file_field "image"
 
-    >br
-
-  div class=dimension_input
-    label for='creative_image' | Image:
-    >br
-    = file_field "creatives[#{creative_number}]", "image"
-
-  div style='clear:both;height:0px;'
-    >br
-
+      .dimension_input
+        = creative_fields.label "landing_page_url"
+        >br 
+        = creative_fields.text_field "landing_page_url", :size => 101 
+      % if @partner 
+        = creative_fields.hidden_field "partner_id", :value => @partner.id

@@ -47,8 +47,8 @@ class FactsController < ApplicationController
 
   def create_many
     fact_classes_from_params.each do |fact_class|
-      fact = fact_class.new(params)
-      unless fact.save!
+      @fact = fact_class.new(params)
+      unless @fact.save
         render :text => nil, :status => 422
         return
       end

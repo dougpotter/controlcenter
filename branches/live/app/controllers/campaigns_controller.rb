@@ -1,57 +1,148 @@
 class CampaignsController < ApplicationController
   def new
     @campaign = Campaign.new
+    @campaign.campaign_code = Campaign.generate_campaign_code
     @line_items = LineItem.all
-    @campaign_types = [ "Ad-Hoc", "Retargeting" ]
-    #@aises = AdInventorySource.all
+    @audience = Audience.new(:audience_code => Audience.generate_audience_code)
+    @audience_source = AdHocSource.new
     @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
+    @campaign_types = AudienceSource.all(:select => "DISTINCT(type)").sort
     @creative_sizes = CreativeSize.all
     @creative = Creative.new
+    params[:line_item_id] ? @selected_line_item = params[:line_item_id].to_i : nil
   end
 
   def create
-    # build new campaign
     @campaign = Campaign.new(params[:campaign])
+    for creative in @campaign.creatives
+      creative.partner_id = @campaign.line_item.partner.id
+    end
     if !@campaign.save
-      render :text => "campaign failed to save"
+      @line_items = LineItem.all
+      @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
+      @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
+      @creative_sizes = CreativeSize.all
+      @creative = Creative.new
+      render :new
       return
     end
 
-    # associate creatives with campaign
-    params[:creatives].each do |number,attributes|
-      @creative = Creative.new(attributes)
-      @creative.campaigns << @campaign
-      if !@creative.save
-        render :text => "failed to save creative"
-        return
+    # handle audience sync
+    if ais_codes = params[:aises_for_sync]
+      for ais_code in ais_codes
+        ais = AdInventorySource.find_by_ais_code(ais_code)
+        @campaign.configure_ais(ais, params[:sync_rules][ais_code][:segment_id])
+      end 
+    end
+
+    redirect_to(
+      campaign_path(@campaign), 
+      :notice => "campaign successfully created")
+  end
+
+  def edit
+    @new_campaign = Campaign.new
+    @campaign = Campaign.find(params[:id])
+    @partner = @campaign.partner
+    @line_items = LineItem.all
+    @selected_line_item = @campaign.line_item.id
+    @creative = Creative.new
+    @creatives = @campaign.creatives
+    @creative_sizes = CreativeSize.all
+    @aises = [ AdInventorySource.find_by_ais_code("ApN") ]
+    @campaign_types = AudienceSource.all(:select => "DISTINCT(type)")
+    @audience_sources = @campaign.audience.sources_in_order
+    @audience_source = @campaign.audience.latest_source
+  end
+
+  def update
+    @campaign = Campaign.find(params[:id])
+    disassociate_necessary_creatives if params[:campaign][:creatives_attributes]
+    @campaign.update_attributes(params[:campaign])
+
+    # process segment ids
+    params[:sync_rules].each do |ais_code, rule|
+      ais = AdInventorySource.find_by_ais_code(ais_code)
+      if params[:aises_for_sync] && params[:aises_for_sync].member?(ais_code)
+        @campaign.configure_ais(ais, rule[:segment_id])
+      else
+        @campaign.unconfigure_ais(ais)
       end
     end
 
-    @sync_params = {}
-    # deal with audience source
-    if params[:audience][:audience_type] == "Ad-Hoc"
-      @sync_params["s3_xguid_list_prefix"] = params[:audience_source][:s3_location]
-      @sync_params["partner_code"] = @campaign.partner.partner_code
-      @sync_params["audience_code"] = params[:audience_source][:audience_code]
-      @sync_params["appnexus_segment_id"] = params[:sync_rule][:ApN][:apn_segment_id]
-    elsif params[:audience][:audience_type] == "Retargeting"
-      render :text => "retargeting audience not yet supported"
-      return
+    redirect_to(
+      campaign_path(@campaign),
+      :notice => "campaign updated")
+  end
+
+  def disassociate_necessary_creatives
+    params[:campaign][:creatives_attributes].each do |num,attrs|
+      if !attrs[:_disassociate].blank? && creative_id = attrs[:id]
+        association = CampaignCreative.all(
+          :joins => [ :campaign, :creative], 
+          :conditions => [ "campaigns.id = ? AND creatives.id = ?", params[:id], creative_id ] )
+        association.first.delete
+        params[:campaign][:creatives_attributes].delete(num)
+      end
+    end
+  end
+
+  def destroy
+    @campaign = Campaign.destroy(params[:id])
+    redirect_to(campaign_management_index_path, :notice => "campaign deleted")
+  end
+
+  def show
+    @campaign = Campaign.find(params[:id])
+    @creatives = @campaign.creatives
+  end
+
+  def options_filtered_by_partner
+    if !params[:partner_id].blank?
+      @campaigns = Campaign.find(
+        :all, 
+        :joins => { :line_item => :partner }, 
+        :conditions => { "partners.id" => params[:partner_id] }
+      )
     else
-      render :text => "audience source not supported"
-      return
+      @campaigns = Campaign.all
     end
 
+    render :partial => "options_for_select", :locals => { :campaigns => @campaigns }
+  end
 
-    # sync audience with ApN
-    @aises_for_inclusion = params[:aises_for_sync]
-    if @aises_for_inclusion.delete("ApN")
-      if !create_and_run_appnexus_sync_job('appnexus-list-generate', @sync_params)
-        render :text => "invalid appnexus sync job"
-        return
-      end
-    end
+  def filtered_edit_table
+    if all = params[:ALL]
+      @filtered_campaigns = Campaign.all
+    elsif partner_name = params[:partner_name]
+      @filtered_campaigns = Campaign.find(
+        :all, 
+        :joins => { :line_item => :partner },  
+        :conditions => [ "partners.name = ? ", [partner_name] ])
+    elsif campaign_name = params[:name]
+      @filtered_campaigns = [ Campaign.find_by_name(campaign_name) ]
+    end 
 
-    redirect_to new_campaign_path
+    @campaigns = Campaign.all
+
+    render :partial => "/layouts/edit_table", :locals => {
+      :collection => @filtered_campaigns,
+      :collection_for_filter_menu => @campaigns,
+      :header_names => [ 
+        "Partner", 
+        "Campaign Name", 
+        "Code", 
+        "Start Date", 
+        "End Date" ],
+      :fields => [
+        "partner_name", 
+        "name", 
+        "campaign_code", 
+        "pretty_start_time", 
+        "pretty_end_time" ],
+      :filter_menus => [ 0, 1 ], 
+      :width => "650", 
+      :class_name => "campaigns_summery",
+      :edit_path => campaign_path(1) }
   end
 end

@@ -14,9 +14,10 @@ module DimensionBehaviors
 
   module ClassMethods
     # Class methods go here
-    
+
     def business_index_dictionary ; @@business_index_dictionary ; end
     def business_index_aliases ; @@business_index_aliases ; end
+
 
     # Valid options:
     #   :as => 
@@ -37,7 +38,7 @@ module DimensionBehaviors
           @@business_index_dictionary[options[:as]] = pkey
           @@business_index_aliases[options[:as]] = index_column
         end
-              
+
       elsif options[:aka]
         case options[:aka]
         when nil then nil
@@ -52,33 +53,33 @@ module DimensionBehaviors
             @@business_index_aliases[as_el] = index_column
           end
         end
-        
+
       else
         @@business_index_dictionary[index_column] = pkey
         @@business_index_aliases[index_column] = index_column
       end
     end
-    
+
     # TODO: Implement this method as necessary
     def business_indices(*args)
     end
     alias :business_indexes :business_indices
-    
-    
+
+
     def find_by_business_index(param, arg)
       translated_rows = 
         const_get(
           @@business_index_dictionary[param].to_s.gsub(/_id$/, "").classify
-        ).send("find_all_by_#{@@business_index_aliases[param].to_s}", arg)
+      ).send("find_all_by_#{@@business_index_aliases[param].to_s}", arg)
       if translated_rows.size > 1
         raise "Multiple rows for single business index value"
       end
       translated_rows = translated_rows[0]
     end
-    
+
     def keyize_index_attributes(attributes = nil, options = {})
-      return {} if attributes.nil?
-      
+      retur {} if attributes.nil?
+
       key_attrs = {}
       attributes.each do |param, arg|
         # Business indices
@@ -87,40 +88,53 @@ module DimensionBehaviors
           if (row = find_by_business_index(param, arg))
             translated_arg = row.id
           else
+            # This is where unknown dimension values are just assigned to nil
             translated_arg = nil
           end
-          
+
           if key_attrs[@@business_index_dictionary[param]].nil? ||
-              key_attrs[@@business_index_dictionary[param]] == translated_arg
+            key_attrs[@@business_index_dictionary[param]] == translated_arg
             key_attrs[@@business_index_dictionary[param]] = translated_arg
           else
             raise InvalidDimensionSpecification
           end
-          
-        # Scalar indices; no translation
+
+          # Scalar and serialized indices; no translation
         elsif options[:include] && 
-            (options[:include].include?(param.to_sym) || 
-            options[:include].include?(param.to_s))
+          (options[:include].include?(param.to_sym) || 
+           options[:include].include?(param.to_s))
           key_attrs[param] = (DateTime.parse(arg) rescue arg)
+        elsif param == :attributes_on_initialize ||
+          param == "attributes_on_initialize"
+          key_attrs[param] = arg
         end
       end
       return key_attrs
     end
-    
+
     def keyize_indices(business_indices)
       return [] if business_indices.nil? || business_indices.empty?
-      
+
       return (business_indices.collect { |idx|
         Dimension.scalar_dimensions.include?(idx.to_sym) ?
           idx.to_sym :
           @@business_index_dictionary[idx]
       }.compact.uniq)
     end
-        
+
     def scalar_dimensions
       [ :start_time, :end_time, :duration_in_minutes ]
     end
-    
+
+    # returns the column that is the business code if one exists
+    def business_code
+      self.columns.map { |c| c.name }.delete_if { |n| !n.match(/.*_code/) }.to_s
+    end
+
+    def is_dimension?
+      true
+    end
+
   end
 
   module InstanceMethods
@@ -129,6 +143,18 @@ module DimensionBehaviors
     end
 
     # Instance methods go here
+
+    def business_code_value
+      send(self.class.business_code)
+    end
+
+    def business_code
+      self.class.business_code
+    end
+
+    def is_dimension?
+      self.class.is_dimension?
+    end
   end
 
 end

@@ -248,12 +248,10 @@ class AppnexusSyncWorkflow
         latest_index = index
       end
     end
-    if latest_endpoint.nil?
-      raise InvalidLookupPrefix, "None of the subdirs looked like lookup table subdirs"
-    end
-    basenames[latest_index]
+
+    candidates[latest_index]
   end
-  
+
   def determine_lookup_url(params)
     bucket, path = params[:lookup_prefix].split(':', 2)
     lookup_start_date = params[:lookup_start_date]

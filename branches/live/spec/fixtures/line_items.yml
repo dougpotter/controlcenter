@@ -1,0 +1,5 @@
+line_item_one:
+  id: 1
+  line_item_code: ABCD
+  name: first line item
+  partner_id: 1

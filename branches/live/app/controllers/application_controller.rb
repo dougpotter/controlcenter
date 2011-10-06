@@ -51,7 +51,9 @@ class ApplicationController < ActionController::Base
 
   end
 
-  def create_and_run_appnexus_sync_job(name, parameters)
+  private
+
+  def create_and_run_apn_sync_job(name, parameters)
     @job = AppnexusSyncJob.new
     @job.name = name
     @job_parameters = AppnexusSyncParameters.new(parameters)
@@ -64,8 +66,6 @@ class ApplicationController < ActionController::Base
       return false
     end
   end
-
-  private
 
   # Authenticate via HTTP Basic Authentication
   # See http://rails.nuvvo.com/lesson/6378

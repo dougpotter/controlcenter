@@ -1,9 +1,43 @@
-= error_messages_for :partner
+= javascript_include_tag("partner_setup")
 
 h1 | Edit Advertiser
 >br
 
 % form_for @partner do |f|
+  = nested_model_form_builder(f, "action_tag", :populate => { "sid" => sid_url })
+  = nested_model_form_builder(f, "conversion_configuration")
+  = nested_model_form_builder(f, "retargeting_configuration")
+
+% form_for @partner do |f|
   = render :partial => 'form'
-  = submit_tag 'Save Edits'
+
+  .action_tags_heading
+    h2 style="display:inline;" | Action Tags
+    <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
+
+  <div id="action_tags_forms">
+    = render :partial => "action_tag_section", :locals => { :f => f } 
+  </div>
+
+  .conversion_configuration_heading
+    h2 style="display:inline;" | Conversion Pixels
+    <input id="add_conversion_configuration" type="image" src="/images/plus_sign.png" width=30 />
+ 
+  <div id="conversion_configurations_forms">
+    = render :partial => "conversion_configuration_section", :locals => { :f => f } 
+  </div>
+
+  .retargeting_configuration_heading
+    h2 style="display:inline;" | Retargeting Pixels
+    <input id="add_retargeting_configuration" type="image" src="/images/plus_sign.png" width=30 />
+ 
+  <div id="retargeting_configurations_forms">
+    = render :partial => "retargeting_configuration_section", :locals => { :f => f } 
+  </div>
+
+  = submit_tag 'Save Edits', :class => "button", :style => "width:auto;"
+  = link_to("Cancel", partner_path(@partner.id), :class => "button delete_button")
+
+div style="clear:both;"
+  >br
 

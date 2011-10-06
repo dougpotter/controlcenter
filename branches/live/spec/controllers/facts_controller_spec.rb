@@ -7,6 +7,55 @@ describe FactsController do
     controller.should be_an_instance_of(FactsController)
   end
 
+  describe "POST 'create'" do
+
+    before(:each) do
+      DimensionCache.reset
+      DimensionCache.seed_relationships
+    end
+
+    fixtures :creatives, :campaigns, :line_items, :ad_inventory_sources, :audiences, :campaign_creatives, :campaign_inventory_configs
+    it "should successfully create given known values and relationships" do
+      post 'create',
+        :click_count => "1000",
+        :start_time => Time.now.to_s, 
+        :end_time => Time.now.to_s,
+        :duration_in_minutes => 100,
+        :creative_code => "AA11",
+        :campaign_code => "ABC1",
+        :line_item_code => "ABCD",
+        :ais_code => "AdX",
+        :audience_code => "AB17"
+      response.should be_success
+    end
+    it "should fail validation given known values but an unknown relationship" do
+      post 'create',
+        :click_count => "1000",
+        :start_time => Time.now.to_s, 
+        :end_time => Time.now.to_s,
+        :duration_in_minutes => 100,
+        :creative_code => "AABB",
+        :campaign_code => "ABC1",
+        :line_item_code => "ABCD",
+        :ais_code => "AdX",
+        :audience_code => "AB1V"
+      response.should be_client_error
+    end
+    it "should fail validation given an unknown value" do
+      post 'create',
+        :click_count => "1000",
+        :start_time => Time.now.to_s, 
+        :end_time => Time.now.to_s,
+        :duration_in_minutes => 100,
+        :creative_code => "AA11",
+        :campaign_code => "XXXX",
+        :line_item_code => "ABCD",
+        :ais_code => "AdX",
+        :audience_code => "AB17"
+      response.should be_client_error
+    end
+  end
+
   describe "GET 'index'" do
     # Basic functionality check - requesting a report with some
     # sensible parameters should not produce errors.

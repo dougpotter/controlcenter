@@ -1,0 +1,4 @@
+.creative_thumb_and_description
+  p 
+    = creative.creative_code_and_name
+  = image_tag_for_campaign_show(creative)

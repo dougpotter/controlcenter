@@ -52,9 +52,8 @@ div class=dimension_input
 div style='clear:both;'
   >br
 
-<div id="dimension_selection_panel">
-
-= render :partial => 'dimension_selection_panel'
+div id="dimension_selection_panel"
+  = render :partial => 'dimension_selection_panel'
 
 div style='clear:both;'
   >br

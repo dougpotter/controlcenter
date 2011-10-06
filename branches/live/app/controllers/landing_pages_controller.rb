@@ -96,7 +96,7 @@ class LandingPagesController < ApplicationController
   def update_form
     @campaigns = []
     for partner_code in params[:partner_code]
-      @campaigns << Partner.find(:first, :conditions => {:partner_code => partner_code}).campaigns
+      @campaigns << Campaign.find_by_sql("SELECT * FROM campaigns JOIN line_items ON campaigns.line_item_id = line_items.id JOIN partners ON partners.id = line_items.partner_id WHERE partners.partner_code = #{partner_code}")
     end
     @campaigns.flatten!
     @creatives = []

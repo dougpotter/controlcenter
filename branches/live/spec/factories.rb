@@ -16,7 +16,7 @@ end
 
 Factory.define :partner do |p|
   p.name "Webroot"
-  p.sequence(:partner_code) { |n| 2019 + n }
+  p.sequence(:partner_code) { |n| 20190 + n }
 end
 
 Factory.define :creative_size do |c|
@@ -30,6 +30,7 @@ Factory.define :creative do |c|
   c.media_type "media type"
   c.creative_size_id {Factory(:creative_size).id}
   c.sequence(:creative_code) { |n| "294v#{n}" }
+  c.partner_id { Factory(:partner).id }
 end
 
 Factory.define :ad_inventory_source do |f|
@@ -62,6 +63,19 @@ Factory.define :impression_count do |i|
   i.ad_inventory_source_id {Factory(:ad_inventory_source).id}
   i.audience_id {Factory(:audience).id}
   i.impression_count 10000
+  attr_hsh = {
+    "audience_id" => 526, 
+    "geography_id" => nil, 
+    "end_time" => "Wed, 19 Jan 2011 22:00:00 UTC +00:00", 
+    "media_purchase_method_id" => nil, 
+    "creative_id" => 525, 
+    "ad_inventory_source_id" => 525, 
+    "campaign_id" => 1049, 
+    "click_count" => 1900, 
+    "duration_in_minutes" => 60, 
+    "start_time" => "Wed, 19 Jan 2011 21:00:00 UTC +00:00" 
+  }.to_json
+  i.attributes_on_initialize attr_hsh
 end
 
 Factory.define :click_count do |c|
@@ -75,6 +89,19 @@ Factory.define :click_count do |c|
   c.ad_inventory_source_id {Factory(:ad_inventory_source).id}
   c.audience_id {Factory(:audience).id}
   c.click_count 1900
+  attr_hsh = {
+    "audience_id" => 526, 
+    "geography_id" => nil, 
+    "end_time" => "Wed, 19 Jan 2011 22:00:00 UTC +00:00", 
+    "media_purchase_method_id" => nil, 
+    "creative_id" => 525, 
+    "ad_inventory_source_id" => 525, 
+    "campaign_id" => 1049, 
+    "click_count" => 1900, 
+    "duration_in_minutes" => 60, 
+    "start_time" => "Wed, 19 Jan 2011 21:00:00 UTC +00:00" 
+  }.to_json
+  c.attributes_on_initialize attr_hsh
 end
 
 Factory.define :conversion_count do |c|
@@ -242,4 +269,43 @@ Factory.define :msa do |m|
   m.name "New Amsterdam"
   # Can't specify both region.msas and msa.regions
   #m.regions { [ Factory(:region) ] }
+end
+
+Factory.define :misfit_fact do |m|
+  m.anomaly "campaign_code:AB12"
+  m.fact_class "click_count"
+  m.fact_attributes { { :campaign_code => "AB12", :another_attribute => "value"} }
+end
+
+Factory.define :campaign_inventory_config do |c|
+  c.ad_inventory_source_id { Factory(:ad_inventory_source) }
+  c.campaign { Factory(:campaign) }
+end
+
+Factory.define :creative_inventory_config do |c|
+  c.creative_id { Factory(:creative) }
+  c.campaign_inventory_config_id { Factory(:campaign_inventory_config) }
+end
+
+Factory.define :ad_hoc_source do |a|
+  a.sequence(:s3_bucket) { |i| "bucket:/a/path/#{i}/s3" }
+  a.load_status "pending"
+  a.sequence(:beacon_load_id) { |i| "AB#{i}LKEWMW9" }
+end
+
+Factory.define :retargeting_source do |r|
+  r.sequence(:referrer_regex) { |i| "a\.i*#{i}regex" }
+  r.request_regex nil
+end
+
+Factory.define :audience_manifest do |a|
+  a.audience_id { Factory(:audience).id }
+  a.audience_source_id { Factory(:ad_hoc_source).id }
+end
+
+Factory.define :action_tag do |a|
+  a.name "Name"
+  a.sequence(:sid) { |i| 10000 + i }
+  a.url "http://google.com"
+  a.partner_id { Factory(:partner).id }
 end

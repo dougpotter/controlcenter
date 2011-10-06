@@ -6,6 +6,7 @@ require 'spec/autorun'
 require 'spec/rails'
 require 'factory_girl'
 
+
 # This is done by factory girl automatically if it is required during
 # rails boot (i.e., :lib => false is NOT given in config.gem).
 # See lib/factory_girl/rails2.rb in factory girl source.
@@ -61,3 +62,4 @@ Spec::Runner.configure do |config|
 end
 
 require 'spec_helpers'
+require 'beacon_helper'

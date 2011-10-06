@@ -12,13 +12,23 @@ module ActiveRecordExtensions
       connection.quote_table_name(name)
     end
   end
-  
+
+  module Errors
+    def errors=(other_errors)
+      self.errors.clear
+      other_errors.each do |attr,msg|
+        self.errors.add(attr, msg)
+      end
+    end
+  end
+
   module ClassMethods
     include Quoting
   end
   
   module InstanceMethods
     include Quoting
+    include Errors
     private :quote_identifier
   end
 end

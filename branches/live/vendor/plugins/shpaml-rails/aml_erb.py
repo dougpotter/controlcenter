@@ -696,8 +696,8 @@ class ErbShortcuts(ShortcutsBase):
     LINE_STATEMENT = fixup(r'^(\s*)%(\s*)(.*)$', re.M, r'\1<%\2\3\2%>')
     LINE_EXPRESSION = fixup(r'^(\s*)=(\s*)(.*)$', re.M, r'\1<%=\2\3\2%>')
     SELF_CLOSING_TAG = fixup(r'^(\s*)>(?=\w)', re.M, r'\1> ')
-    END_ELSE = fixup(r'^(\s*)<%\s*end\s*%>\n(\1<%\s*else\s*%>)', re.M, r'\2')
-    END_ELSE_WITHOUT_WHITESPACE = fixup(r'<%\s*end\s*%>\n(<%\s*else\s*%>)', None, r'\1')
+    END_ELSE = fixup(r'^(\s*)<%\s*end\s*%>\n(\1<%\s*els(?:e|if.*?)\s*%>)', re.M, r'\2')
+    END_ELSE_WITHOUT_WHITESPACE = fixup(r'<%\s*end\s*%>\n(<%\s*els(?:e|if.*?)\s*%>)', None, r'\1')
 
     PRE_TRANSLATORS = [
         LINE_STATEMENT,

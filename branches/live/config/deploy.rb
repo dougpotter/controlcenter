@@ -117,6 +117,11 @@ task :deploy_test do
 end
 
 # =============================================================================
+# ENSURE GEMS ARE UP TO DATE
+# =============================================================================
+require "bundler/capistrano"
+
+# =============================================================================
 # APPWALL CONFIGURATION
 # =============================================================================
 
@@ -143,6 +148,12 @@ define_configuration_tasks(:workflows, %w(
 # =============================================================================
 
 define_configuration_tasks(:schedule, %w(schedule.rb))
+
+# =============================================================================
+# APPNEXUS CONFIGURATION
+# =============================================================================
+
+define_configuration_tasks(:appnexus, %w(appnexus.yml))
 
 # =============================================================================
 # DATABASE TASKS
@@ -243,17 +254,17 @@ namespace :deploy do
   namespace :web do
     desc 'Start thins'
     task :start do
-      run "thin start -C #{thin_config}"
+      run "cd #{current_release}; RAILS_ENV=#{rails_env} bundle exec thin start -C #{thin_config}"
     end
     
     desc 'Stop thins'
     task :stop do
-      run "thin stop -C #{thin_config}"
+      run "cd #{current_release}; RAILS_ENV=#{rails_env} bundle exec thin stop -C #{thin_config}"
     end
     
     desc 'Restart thins'
     task :restart do
-      run "thin restart -C #{thin_config}"
+      run "cd #{current_release}; RAILS_ENV=#{rails_env} bundle exec thin restart -C #{thin_config}"
     end
   end
   

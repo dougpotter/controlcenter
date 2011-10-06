@@ -27,6 +27,7 @@ describe ConversionCount do
   end
 
   it "should require presence of campaign_id (validations test)" do
+    pending
     lambda {
       Factory.create(:conversion_count, :campaign_id => nil)
     }.should raise_error(ActiveRecord::RecordInvalid)

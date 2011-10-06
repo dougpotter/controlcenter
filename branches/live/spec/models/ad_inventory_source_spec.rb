@@ -19,7 +19,6 @@ describe AdInventorySource do
   end
 
   it "should create a new instance given valid attributes" do
-    AdInventorySource.create!(@valid_attributes)
     Factory.create(:ad_inventory_source)
   end
 
@@ -49,5 +48,15 @@ describe AdInventorySource do
       a = Factory.build(:ad_inventory_source, :ais_code => "same")
       a.save(false)
     }.should raise_error(ActiveRecord::StatementInvalid)
+  end
+
+  it "should delete associations with campaigns when destroyed" do
+    @ais = Factory.create(:ad_inventory_source)
+    @ais.campaigns << Factory.create(:campaign)
+    @ais.save
+
+    expect {
+      @ais.destroy
+    }.to change { CampaignInventoryConfig.all.count }.by(-1)
   end
 end

@@ -1,0 +1,15 @@
+= error_messages_for :partner, :header_message => "Advertiser did not save"
+
+div class=dimension_input
+  label for="partner_partner_code" | Advertiser Code:
+  >br
+  = text_field('partner', 'partner_code', :value => @partner.partner_code || Partner.generate_partner_code)
+
+div class=dimension_input
+  label for="partner_name" | Advertiser Name:
+  >br
+  = text_field('partner', 'name')
+
+div style='clear:both;'
+  >br
+

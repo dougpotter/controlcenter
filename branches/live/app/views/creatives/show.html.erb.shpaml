@@ -1,0 +1,32 @@
+.creative_image 
+  = image_tag(@creative.image.url)
+.creative_details 
+  h1
+    Creative Details:
+  p
+    Creative Name:
+    = @creative.name
+  p
+    Creative Code:
+    = @creative.creative_code
+  p
+    Media Type:
+    = @creative.media_type
+  p
+    Size:
+    = @creative.creative_size.height_width_string
+  p
+    Campaigns:
+    >br
+    <% for campaign in @creative.campaigns %>
+    <%= campaign.campaign_code_and_description + "</br>" %>
+    <% end %>
+
+.pixels_for_creative
+  h1 | Pixels
+  = render :partial => "pixels", :locals => { :view => "show" }
+
+= link_to("Edit This Creative", edit_creative_path(@creative))
+
+div style="clear:both;"
+  >br

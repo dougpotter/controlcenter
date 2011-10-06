@@ -29,7 +29,11 @@ ActionController::Routing::Routes.draw do |map|
   #     # Directs /admin/products/* to Admin::ProductsController (app/controllers/admin/products_controller.rb)
   #     admin.resources :products
   #   end
-  
+
+  map.sid '/action_tags/sid', :controller => "action_tags", :action => "sid"
+  map.creative_code '/creatives/creative_code', :controller => "creatives", :action => "creative_code"
+  map.connect '/campaigns/filtered_edit_table', :controller => 'campaigns', :action => 'filtered_edit_table'
+
   map.metrics_report '/home/metrics/report', :controller => 'landing_pages', :action => 'report'
   map.metrics_home "/home/metrics", :controller => "landing_pages", :action => "metrics" 
   map.update_form "/home/metrics/update_form", :controller => "landing_pages", :action => "update_form"
@@ -41,6 +45,8 @@ ActionController::Routing::Routes.draw do |map|
   map.connect "/creatives/form_without_line_item", :controller => "creatives", :action => "form_without_line_item"
 
   map.connect "/audiences/audience_source_form", :controller => "audiences", :action => "audience_source_form"
+
+  map.connect "/campaigns/options_filtered_by_partner", :controller => "campaigns", :action => "options_filtered_by_partner"
 
   
   # Facts are known on the outside as "metrics"
@@ -69,7 +75,9 @@ ActionController::Routing::Routes.draw do |map|
     :controller => 'appnexus', :action => 'show'
 
   map.resources :audiences
-  map.resources :partners
+  map.resources :partners do |partners|
+    partners.resources :action_tags
+  end
   map.resources :ad_inventory_sources
   map.resources :creatives
   map.resources :line_items

@@ -1,0 +1,10 @@
+<% for action_tag in @action_tags -%>
+  = "=== #{@partner.name} #{action_tag.name} ===\n\n"
+  = "Secure:"
+  = action_tag.secure_html
+  = "\n"
+  = "Standard:"
+  = action_tag.nonsecure_html
+  = "\n"
+  = "\n"
+

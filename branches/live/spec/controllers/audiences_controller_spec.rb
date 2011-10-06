@@ -1,65 +1,114 @@
 require 'spec_helper'
 
-describe AudiencesController, "create with a valid audience" do
+describe AudiencesController, "create" do
+  context  "any type of audience" do
+    context "with a valid attributes" do
 
-  before(:each) do 
-    @audience = mock(:save => true)
-    Audience.expects(:new).with("audience_code" => "ACODE").returns(@audience)
-    #Audience.stub!(:new).and_return(@audience = mock_model(Audience, :save! => true, :valid? => true))
+      before(:each) do 
+        @audience = stub_everything("Audience")
+        Audience.expects(:new).with(
+          "audience_code" => "ACODE",
+          "description" => "desc",
+          "campaign_id" => 1
+        ).returns(@audience)
+      end
+
+      def do_create
+        post :create, 
+          :audience => {
+          :audience_code => "ACODE",
+          :campaign_id => 1,
+          :description => "desc" },
+          :audience_source => { 
+          :type => "AdHocSource"
+        }
+      end
+
+      it "should create the Audience" do
+        do_create
+      end
+
+      it "should save the audience" do
+        @audience.expects(:save)
+        do_create
+      end
+
+      it "should redirect to new audience page" do
+        @audience.expects(:save).returns(true)
+        do_create
+        response.should redirect_to(new_audience_url)
+      end
+    end
   end
 
-  def do_create
-    post :create, :audience => {:audience_code => "ACODE"}
+  context "an Ad-Hoc audience" do
+    context "with valid attributes" do
+      before(:each) do 
+        @audience = stub_everything("Audience", :id => 1)
+        Audience.expects(:new).with(
+          "audience_code" => "ACODE",
+          "description" => "desc",
+          "campaign_id" => 1
+        ).returns(@audience)
+        @ad_hoc_source = stub_everything("Ad-Hoc Source", :id => 1)
+        AdHocSource.expects(:new).with({ "s3_bucket" => "bucket:/a/path" }).
+          returns(@ad_hoc_source)
+      end
+
+      def do_create
+        post :create, 
+          :audience => {
+          :audience_code => "ACODE",
+          :campaign_id => 1,
+          :description => "desc" },
+          :audience_source => { 
+          :type => "AdHocSource",
+          :s3_bucket => "bucket:/a/path"
+        }
+      end
+
+      it "should create an ad-hoc audience source" do
+        do_create
+      end
+
+      it "should create audience manifrest" do
+        @audience.expects(:save).returns(true)
+        @audience.expects(:<<).with(@ad_hoc_source)
+        do_create
+      end
+    end
   end
 
-  it "should create the Audience" do
-    do_create
-  end
+  context "a Regargeting audience" do
+    context "with valid attributes" do
+      before(:each) do
+        @audience = stub_everything("Audience", :id => 1)
+        Audience.expects(:new).with(
+          "audience_code" => "ACODE",
+          "description" => "desc",
+          "campaign_id" => 1
+        ).returns(@audience)
+        @ad_hoc_source = stub_everything("Retargeting Source", :id => 1)
+        RetargetingSource.expects(:new).with({ 
+          "referrer_regex" => "a*regex"
+        }).returns(@ad_hoc_source)
+      end
 
-  it "should save the Audience" do
-    do_create
-  end
+      def do_create
+        post :create, 
+          :audience => {
+          :audience_code => "ACODE",
+          :campaign_id => 1,
+          :description => "desc" },
+          :audience_source => { 
+          :type => "RetargetingSource",
+          :referrer_regex => "a*regex"
+        }
+      end
 
-  it "should be redirected" do
-    do_create
-    response.should be_redirect
-  end
-
-  it "should assigne audience" do
-    do_create
-    assigns(:audience).should == @audience
-  end
-
-  it "should redirect to new audience path" do
-    do_create
-    response.should redirect_to(new_audience_path)
-  end
-end
-
-describe AudiencesController, "create with an invalid audience" do
-
-  before(:each) do
-    @audience = mock()
-    Audience.expects(:new).with("audience_code" => "").returns(@audience)
-    Audience.expects(:find).returns(@audiences = [mock(), mock()])
-    @audience.expects(:save).returns(false)
-  end
-
-  def do_create
-    post :create, :audience => {:audience_code => ""}
-  end
-
-  it "should create an audience" do
-    do_create
-  end
-
-  it "should be be redirect" do
-    do_create
-    response.should render_template('new')
-  end
-
-  it "should assign audience" do
-    do_create
-    assigns(:audience).should == @audience
+      it "should create retargeting audience source" do
+        do_create
+      end
+    end
   end
 end

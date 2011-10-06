@@ -13,12 +13,21 @@ class AudiencesController < ApplicationController
   end
 
   def create
+    params[:audience][:campaign_id] = Campaign.find(params[:audience][:campaign_id]).id
     @audience = Audience.new(params[:audience])
+
+    begin
+      @audience_source = ActiveRecord.const_get(
+        params[:audience_source].delete(:type)
+      ).new(params[:audience_source])
+    rescue
+      raise "Audience type not supplied or type supplied was not recognized"
+    end
+
     if @audience.save
-      redirect_to :action => :new
+      @audience << @audience_source
+      redirect_to(new_audience_path)
     else
-      @audiences = Audience.find(:all)
-      render :action => :new
     end
   end
 
@@ -32,16 +41,6 @@ class AudiencesController < ApplicationController
       redirect_to :action => 'new'
     else
       render :action => 'edit', :id => @audience
-    end
-  end
-
-  def audience_source_form
-    if params[:source] == 'Retargeting'
-      render :partial => 'form_for_retargeting_source'
-    elsif params[:source] == 'Ad-Hoc'
-      render :partial => 'form_for_ad_hoc_source'
-    else
-      render "invalid or absent audience type"
     end
   end
 
@@ -59,6 +58,13 @@ class AudiencesController < ApplicationController
     end
     @audiences.flatten!
     puts @audiences.size
-    render :partial => 'layouts/edit_table', :locals => { :collection => @audiences, :header_names => ["Audience Code", "Description"], :fields => ["audience_code", "description"], :class_name => "audience_summary", :width => "500", :edit_path => edit_audience_path(1) }
+    render :partial => 'layouts/edit_table', 
+      :locals => { 
+        :collection => @audiences, 
+        :header_names => ["Audience Code", "Description"], 
+        :fields => ["audience_code", "description"], 
+        :class_name => "audience_summary", 
+        :width => "500", 
+        :edit_path => edit_audience_path(1) }
   end
 end

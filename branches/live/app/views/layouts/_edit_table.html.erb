@@ -6,8 +6,19 @@
     table_str += "<table id=\"" + class_name + "\" class=\"" + class_name + "\" width=\"" + width.to_s + "\">\n" 
     table_str += "\t<thead>\n"    
     table_str += "\t\t<tr height=\"25\">\n"
-    header_names.each do |name|
-      table_str += "\t\t\t<th>"
+    header_names.each_with_index do |name, idx|
+      table_str += "\t\t\t<th id=\"#{name.downcase.gsub(" ", "_")}_header\""
+      table_str += 
+        " data-model_name=\"#{fields[idx]}\""
+
+      begin
+        if filter_menus.member?(idx)
+          table_str += " class=\"filtered\""
+        end 
+      rescue
+      end 
+
+      table_str += ">"
       table_str += name
       table_str += "</th>\n"
     end   
@@ -17,9 +28,13 @@
     collection.each do |col|
       table_str += "\t\t<tr>\n"
       fields.each do |name|
-        table_str += "\t\t\t<td>\n"
+        table_str += "\t\t\t<td"
         if !col.send(name).nil?
+          table_str += 
+            " data-model_value=\"#{col.send(name)}\" >"
           table_str += link_to(col.send(name), edit_path.gsub('1', col.id.to_s))
+        else
+          table_str += ">"
         end
         table_str += "\t\t\t</td>\n"      
       end   

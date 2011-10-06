@@ -56,10 +56,6 @@ class CampaignManagementController < ApplicationController
   def show
     render :layout => false
   end
-
-  def update_form
-    @var = "bye"
-  end
   
   def new
     @campaign = Campaign.new

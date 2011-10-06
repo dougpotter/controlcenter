@@ -6,8 +6,6 @@ config.cache_classes = false
 
 # Full error reports are disabled and caching is turned on
 config.action_controller.consider_all_requests_local = false
-config.action_controller.perform_caching             = true
-config.action_view.cache_template_loading            = true
 
 # See everything in the log (default is :info)
 # config.log_level = :debug
@@ -37,3 +35,10 @@ end
 config.after_initialize do
   PaperclipConfiguration.storage = :s3
 end
+
+# Object cache
+require 'active_support/cache/dalli_store23'
+config.cache_store = :dalli_store
+
+require 'action_controller/session/dalli_store'
+ActionController::Base.session_store = :dalli_store

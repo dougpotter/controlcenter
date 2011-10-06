@@ -1,38 +1,52 @@
 <script src="/javascripts/campaign_setup.js" type="text/javascript"></script>
 <script src="/javascripts/creative_list.js" type="text/javascript"></script>
 
+.notice #notice
+  = notice
+
+= error_messages_for :campaign
+
 h1 | Basics
 
+
 % form_for @campaign, :html => { :multipart => true } do |f|
-  = render :partial => 'form'
+  = render :partial => 'form', :locals => { :f => f }
   
   h1 | Audience Source
-  
-  div id=audience_source_section
-    = render :partial => '/audiences/form_for_ad_hoc_source'
+ 
 
-  div class="style:clear;"
+  div id=audience_source_section
+    % if @campaign.audience_sources.blank?
+      % partial_string = "audiences/form_for_" + @campaign_types.first.class.to_s.underscore
+    % if !@campaign.audience_sources.blank?
+      % partial_string = "audiences/form_for_" + @campaign.audience_sources[0].type.underscore
+  
+    = render :partial => partial_string, :locals => { :f => f }
+
+  div id=audience_source_updater
+    = audience_source_section_builder(@campaign_types, f)
+
+  div style="clear:both;"
     >br
 
   h1 | Creatives
 
-  <div id=new_creatives></div>
-  <%= link_to_function "+", :class => "add_creative_link" do |page|
-    page.call :newCreativeForm
-    end %>
+  = creative_form_builder(@campaign, @creative)
 
-  div class="style:clear;"
+  <div id=new_creatives></div>  <%= link_to_function "+", { :title => "add_creative", :class => "add_creative_link", :id => "add_creative_link" } do |page|
+      page.call :insertCreativeForm
+      end %>
+
+  div style="clear:both;"
     >br
 
   h1 | Ad Inventory Sources
 
   div class=sync_rules_on_campaign_setup
     % for @ais in @aises
-     = render :partial => 'sync_rule', :locals => { :ais => @ais }
-
-  div style="clear:both;"
-    >br
+     = render :partial => 'sync_rule', :locals => { :ais => @ais, :campaign => @campaign }
 
   = submit_tag "submit"
 
-
+  div style="clear:both;"
+    >br

@@ -1,0 +1,12 @@
+audience_one:
+  id: 1
+  description: the first audience
+  audience_code: AB17
+  campaign_id: 1
+
+audience_two:
+  id: 2
+  description: the second audience
+  audience_code: AB1V
+  campaign_id: 2
+

@@ -23,7 +23,7 @@ div class=dimension_input
 div class=dimension_input
   label for="line_item_partner_id" | Existing Advertiser:
   >br
-  = select('line_item', 'partner_id', none_option + options_from_collection_for_select(@partners, 'id', 'name'))
+  = select('line_item', 'partner_id', none_option + options_from_collection_for_select(@partners, 'id', 'name', id_if_exists(@line_item.partner)))
 
 div style='clear:both;'
   >br

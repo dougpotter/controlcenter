@@ -1,4 +1,34 @@
+var root_url_regex = /((.*?)\/){3}/;
+var audience_source_form_url = location.href.match(root_url_regex)[0] + 
+"audiences/audience_source_form?source=";
+
 window.addEvent('domready', function() {
+
+    // handle visibility of refresh field and s3 bucket select
+    function toggleVisibility(checkbox, target) {
+      if (checkbox.checked) {
+        $(target).setStyle('visibility', 'visible');
+      }
+      else {
+        $(target).setStyle('visibility', 'hidden');
+      }
+    }
+
+    function toggleOpacity(checkbox, target) {
+      if (checkbox.checked) {
+        $(target).setStyle('opacity', 0.6);
+      }
+      else {
+        $(target).setStyle('opacity', 1);
+      }
+    }
+
+    if ($('refresh_checkbox') != null) {
+      $('refresh_checkbox').addEvent('click', function () {
+        toggleVisibility($('refresh_checkbox'), $('s3_source_field_div'));
+        toggleOpacity($('refresh_checkbox'), $('s3_source_select_div'));
+      })
+    }
 
     // attaches a funciton to the checkbox which changes visibility of the 
     // entry fields associated with that checkbox when the checkbox is clicked 
@@ -35,15 +65,11 @@ window.addEvent('domready', function() {
 
     // attach event listener audience type select which updates audience source
     // fields when appropriate
-    var audience_type_selector = $('audience_audience_type');
-    audience_type_selector.addEvent('change', function() {
-          var audience_type= audience_type_selector.getSelected().getProperty('value');
-          var req = new Request.HTML({
-              url: "http://127.0.0.1:3000/audiences/audience_source_form?source=" 
-              + audience_type,
-              method: 'get',
-              update: $("audience_source_section")
-            });
-          req.send();
-    });
+    var audience_type_selector = $('audience_source_type');
+
+    if (audience_type_selector != null) {
+      audience_type_selector.addEvent('change', function() { 
+        updateSourceSection(audience_type_selector.value);
+      });
+    }
 })

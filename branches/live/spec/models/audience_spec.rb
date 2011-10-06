@@ -50,4 +50,179 @@ describe Audience do
       a.save(false)
     }.should raise_error(ActiveRecord::StatementInvalid)
   end
+
+  context "\#sources_in_order" do
+    it "should return audience sources in order of increasing iteration number" do
+      audience = Factory.create(:audience)
+      audience_source1 = Factory.create(:ad_hoc_source)
+      audience_source2 = Factory.create(:ad_hoc_source)
+      audience.audience_sources << audience_source1
+      audience.audience_sources << audience_source2
+      audience.sources_in_order.should == [ audience_source1, audience_source2 ]
+    end
+  end
+
+  context "\#iteration_number" do
+    it "should return 0 if audience is on the first iteration" do
+      audience = Factory.create(:audience)
+      audience_source = Factory.create(:ad_hoc_source)
+      audience.audience_sources << audience_source
+      audience.iteration_number.should == 0
+    end
+
+    it "should return 1 if audience is on the second iteration" do
+      audience = Factory.create(:audience)
+      audience_source1 = Factory.create(:ad_hoc_source)
+      audience_source2 = Factory.create(:ad_hoc_source)
+      audience.audience_sources << audience_source1
+      audience.audience_sources << audience_source2
+      audience.iteration_number.should == 1
+    end
+
+    it "should return 0 after second iteration is deleted" do
+      audience = Factory.create(:audience)
+      audience_source1 = Factory.create(:ad_hoc_source)
+      audience_source2 = Factory.create(:ad_hoc_source)
+      audience.audience_sources << audience_source1
+      audience.audience_sources << audience_source2
+      audience.audience_sources[-1].destroy
+      audience.iteration_number.should == 0
+    end
+
+    it "should return nil if there are no sources associated with this audience" do
+      # NOTE: this should never happen going forward, but due to legacy data issues
+      # there is a chance it will be a use case
+      audience = Factory.create(:audience)
+      audience.iteration_number.should be_nil
+    end
+  end
+
+  context "\#update_source" do
+    context "with Ad-Hoc source" do
+      it "should add new audience manifest when passed it's first source" do
+        audience = Factory.create(:audience)
+        audience_source = Factory.create(:ad_hoc_source)
+        expect {
+          audience.update_source(audience_source)
+        }.to change{ AudienceManifest.count }.by(1)
+      end
+
+      it "should add new audience manifest when passed it's second source" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(:ad_hoc_source)
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(:ad_hoc_source)
+        expect {
+          audience.update_source(audience_source2)
+        }.to change{ AudienceManifest.count }.by(1)
+      end
+
+      it "should add a new audience manifest when passed a duplicate source" do
+        audience = Factory.create(:audience)
+        audience_source_1 = Factory.create(:ad_hoc_source)
+        audience_source_2 = Factory.create(:ad_hoc_source)
+        audience.update_source(audience_source_1)
+        audience.update_source(audience_source_2)
+        expect {
+          audience.update_source(audience_source_1)
+        }.to change{ AudienceManifest.count }.by(1)
+        audience.iteration_number.should == 2
+      end
+
+      it "should raise exception if new audience source does not share type of existing audience source" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(:ad_hoc_source)
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(:retargeting_source)
+        lambda {
+          audience.update_source(audience_source2)
+        }.should raise_error
+      end
+
+      it "should do nothing if source passed has the same s3 bucket" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(
+          :ad_hoc_source, 
+          :s3_bucket => "same_bucket:/a/path"
+        )
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(
+          :ad_hoc_source, 
+          :s3_bucket => "same_bucket:/a/path"
+        )
+        expect {
+          audience.update_source(audience_source2)
+        }.to change{ AudienceManifest.count }.by(0)
+        audience.iteration_number.should == 0
+      end
+    end
+
+    context "with Regargeting source" do
+      it "should add new audience manifest when passed it's first source" do
+        audience = Factory.create(:audience)
+        audience_source = Factory.create(:retargeting_source)
+        expect {
+          audience.update_source(audience_source)
+        }.to change{ AudienceManifest.count }.by(1)
+      end
+
+      it "should add new audience manifest when passed it's second source" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(:retargeting_source)
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(:retargeting_source)
+        expect {
+          audience.update_source(audience_source2)
+        }.to change{ AudienceManifest.count }.by(1)
+      end
+
+      it "should raise exception if new audience source does not share type of existing audience source" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(:retargeting_source)
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(:ad_hoc_source)
+        lambda {
+          audience.update_source(audience_source2)
+        }.should raise_error
+      end
+
+      it "should do nothing if new audience source has the same referrer/request regex combo" do
+        audience = Factory.create(:audience)
+        audience_source1 = Factory.create(
+          :retargeting_source, 
+          :referrer_regex => "same"
+        )
+        audience.update_source(audience_source1)
+        audience_source2 = Factory.create(
+          :retargeting_source, 
+          :referrer_regex => "same"
+        )
+        expect {
+          audience.update_source(audience_source2)
+        }.to change{ AudienceManifest.count }.by(0)
+        audience.iteration_number.should == 0
+      end
+    end
+  end
+
+  context "\#latest_source" do
+    it "should return the source of the latest iteration" do
+        audience = Factory.create(:audience)
+        audience_source = Factory.build(:retargeting_source)
+        audience.update_source(audience_source)
+        audience.latest_source.should == audience_source
+    end
+  end
+
+  context "\#partner" do
+    it "should return the parter of an audience with no campaigns but a conversion"+
+      " audience at beacon" do
+     
+      partner = Factory.create(:partner) 
+      audience = Factory.create(:audience, :campaign_id => nil) 
+      audience.save_beacon(partner.partner_code)
+
+      audience.partner.should == partner
+    end
+  end
 end

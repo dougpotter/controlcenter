@@ -1,14 +1,53 @@
+= javascript_include_tag("partner_setup")
+
 h1 | New Advertiser
->br
+
+.notice
+  = notice_that_fades(notice)
+
+% form_for @partner do |f|
+  = nested_model_form_builder(f, "action_tag", :populate => { "sid" => sid_url })
+  = nested_model_form_builder(f, "conversion_configuration")
+  = nested_model_form_builder(f, "retargeting_configuration")
 
 % form_for @partner do |f|
   = render :partial => 'form'
-  = submit_tag('Create Advertiser')
 
->br
->br
-h1 | Edit Existing Advertiser
->br
+  .action_tags_heading
+    h2 style="display:inline;" | Action Tags
+
+    <input id="add_action_tag" type="image" src="/images/plus_sign.png" width=30 />
+
+  <div id="action_tags_forms">
+    = render :partial => "action_tag_section", :locals => { :f => f }
+  </div>
+
+  .conversion_configuration_heading
+    h2 style="display:inline;" | Conversion Pixels
+    <input id="add_conversion_configuration" type="image" src="/images/plus_sign.png" width=30 />
+ 
+  <div id="conversion_configurations_forms">
+    = render :partial => "conversion_configuration_section", :locals => { :f => f }
+  </div>
+
+  .retargeting_configuration_heading
+    h2 style="display:inline;" | Retargeting Pixels
+    <input id="add_retargeting_configuration" type="image" src="/images/plus_sign.png" width=30 />
+ 
+  <div id="retargeting_configurations_forms">
+    = render :partial => "retargeting_configuration_section", :locals => { :f => f }
+  </div>
+
+  <div style="clear:both;"></div>
+
+  = submit_tag('Create Advertiser', :class => "button")
+
+<div class="horizontal_page_break"></div>
+
+h1.edit_existing_advertiser_heading | Existing Advertisers
 
 div id=summary_table
-  = render :partial => 'layouts/edit_table', :locals => { :collection => @partners, :header_names => ["Name", "Partner Code"], :fields => ["name", "partner_code"], :class_name => "partner_summary", :width => "500", :edit_path => edit_partner_path(1) }
+  = render :partial => 'layouts/edit_table', :locals => { :collection => @partners, :header_names => ["Name", "Partner Code"], :fields => ["name", "partner_code"], :class_name => "partner_summary", :width => "500", :edit_path => partner_path(1) }
+
+div style="clear: both;"
+ >br

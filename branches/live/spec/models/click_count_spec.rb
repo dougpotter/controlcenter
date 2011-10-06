@@ -20,10 +20,6 @@ require 'spec_helper'
 
 describe ClickCount do
 
-  it "should create a new instance given valid attributes" do
-    Factory.create(:click_count)
-  end
-
   it "should require valid foreign key for time windows" do
     lambda {
       Factory.create(:click_count, :time_window_id => 0)
@@ -62,7 +58,7 @@ describe ClickCount do
 
   it "should require numerical click count" do
     lambda {
-    Factory.create(:click_count, :click_count => "not a number")
+      Factory.create(:click_count, :click_count => "not a number")
     }.should raise_error
   end
 
@@ -92,5 +88,80 @@ describe ClickCount do
       c = Factory.build(:click_count, :click_count => nil)
       c.save(false)
     }.should raise_error(ActiveRecord::StatementInvalid)
+  end
+
+  describe "with cache-based validation" do
+
+    include ActiveRecordErrorParsingHelper
+
+    before(:each) do
+        DimensionCache.reset
+        DimensionCache.seed_relationships
+    end
+
+    fixtures :creatives, 
+      :campaigns, 
+      :line_items, 
+      :ad_inventory_sources, 
+      :audiences, 
+      :campaign_creatives, 
+      :campaign_inventory_configs
+
+    it "should create new instance with valid attributes" do
+      lambda {
+        c = ClickCount.new({ 
+          :campaign_id => 1, 
+          :creative_id => 1, 
+          :ad_inventory_source_id => 1, 
+          :audience_id => 1, 
+          :start_time => Time.now, 
+          :end_time => (Time.now + 100), 
+          :duration_in_minutes => 100, 
+          :click_count => 1019
+        })
+        c.save!
+      }.should_not raise_error
+    end
+
+    it "should not create new instance with invalid attribute relationships" do
+      lambda {
+        c = ClickCount.new({ 
+          :campaign_id => 2, 
+          :creative_id => 2, 
+          :ad_inventory_source_id => 1, 
+          :audience_id => 1, 
+          :start_time => Time.now, 
+          :end_time => (Time.now + 100), 
+          :duration_in_minutes => 100, 
+          :click_count => 1019
+        })
+        c.save!
+      }.should raise_error(ActiveRecord::RecordInvalid) { |error| 
+        error.record.errors.select { |e| 
+          e[1] == "this is an unknown relationship: campaign_id:2:creative_id:2" 
+        }.empty?.should == false 
+      }
+    end
+
+    it "should not create a new instance with an unrecognized attribute_code" do
+      lambda {
+        c = ClickCount.new({ 
+          :campaign_code => "ABC1", 
+          :creative_code => "AA19", 
+          :ais_code => "AdX", 
+          :audience_code => "AB17", 
+          :start_time => Time.now, 
+          :end_time => (Time.now + 100), 
+          :duration_in_minutes => 100, 
+          :click_count => 1019
+        })
+        c.save!
+      }.should raise_error(ActiveRecord::RecordInvalid) { |error| 
+        contains_unrecognized_code_error?(
+          error,
+          error.record.attributes_on_initialize_as_hsh[:creative_code]
+        ).should == true
+      }
+    end
   end
 end
