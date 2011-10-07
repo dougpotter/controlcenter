@@ -34,7 +34,7 @@ class ActionTag < ActiveRecord::Base
     "pid=#{partner.partner_code}&"+
     "sid=#{sid}&"+
     "type=ai&"+
-    "pcid=#{name} "+
+    "pcid=#{name}\" "+
     "width=\"1\" height=\"1\" />"
   end
 
