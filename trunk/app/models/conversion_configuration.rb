@@ -18,7 +18,7 @@ class ConversionConfiguration < RedirectConfiguration
       :partner_code => audience.partner.partner_code,
       :pixel_code => audience.audience_code).update_attributes_apn
     request_condition = 
-      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+      Beacon.new.request_conditions(audience.beacon_id).first
     Beacon.new.update_request_condition(
       audience.beacon_id,
       request_condition['id'],
@@ -36,13 +36,13 @@ class ConversionConfiguration < RedirectConfiguration
       :pixel_code => audience.audience_code).delete_apn
 
     request_condition =         
-      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+      Beacon.new.request_conditions(audience.beacon_id).first
 
     Beacon.new.delete_request_condition(
       audience.beacon_id,        
       request_condition['id'])
 
-    for sync_rule in Beacon.new.sync_rules(audience.beacon_id).sync_rules
+    for sync_rule in Beacon.new.sync_rules(audience.beacon_id)
       Beacon.new.delete_sync_rule(audience.beacon_id, sync_rule['id'])
     end       
 

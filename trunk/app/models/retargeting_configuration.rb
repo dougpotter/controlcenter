@@ -19,7 +19,7 @@ class RetargetingConfiguration < RedirectConfiguration
       :pixel_code => audience.audience_code,
       :member_id => APN_CONFIG["member_id"]).update_attributes_apn
     request_condition = 
-      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+      Beacon.new.request_conditions(audience.beacon_id).first
     Beacon.new.update_request_condition(
       audience.beacon_id,
       request_condition['id'],
@@ -38,13 +38,13 @@ class RetargetingConfiguration < RedirectConfiguration
       :member_id => APN_CONFIG["member_id"]).delete_apn
 
     request_condition = 
-      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+      Beacon.new.request_conditions(audience.beacon_id).first
 
     Beacon.new.delete_request_condition(
       audience.beacon_id,
       request_condition['id'])
 
-    for sync_rule in Beacon.new.sync_rules(audience.beacon_id).sync_rules
+    for sync_rule in Beacon.new.sync_rules(audience.beacon_id)
       Beacon.new.delete_sync_rule(audience.beacon_id, sync_rule['id'])
     end 
 

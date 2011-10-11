@@ -43,7 +43,14 @@ module Beacon
       elsif response_code == "200" && response.body_str == ""
         return ""
       elsif response_code == "200" && response.body_str != ""
-        return Hashie::Mash.new(ActiveSupport::JSON.decode(response.body_str))
+        begin
+          return ActiveSupport::JSON.decode(response.body_str).values.flatten.map { |obj|
+            Hashie::Mash.new(obj)
+          }
+        rescue
+          return Hashie::Mash.new(ActiveSupport::JSON.decode(response.body_str))
+        end
+
       elsif response_code == "422"
         return response.body_str
       else
