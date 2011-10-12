@@ -2,6 +2,9 @@ class AppnexusSyncWorkflow
   class InvalidLookupPrefix < StandardError
   end
   
+  class ThrottledRateExceeded < RightAws::AwsError
+  end
+  
   include Workflow::Logger
   include Workflow::DebugPrint
   include Workflow::ConfigurationRetrieval
@@ -85,7 +88,9 @@ class AppnexusSyncWorkflow
         emr_params[:output_url],
       ],
     }
-    job_flow_id = emr_client.run_job_flow(options)
+    job_flow_id = retry_emr_throttling do
+      emr_client.run_job_flow(options)
+    end
     
     # derive output location from s3 url
     appnexus_list_location = s3_url_to_location(emr_params[:output_url])
@@ -101,7 +106,9 @@ class AppnexusSyncWorkflow
   
   # Checks whether the map-reduce job to create appnexus list has finished.
   def check_create_list(job_flow_id)
-    info = emr_client.describe_job_flows(job_flow_id).first
+    info = retry_emr_throttling do
+      emr_client.describe_job_flows(job_flow_id).first
+    end
     job_state = info[:state].downcase
     result = {:state => job_state}
     result[:success] = case job_state
@@ -114,6 +121,9 @@ class AppnexusSyncWorkflow
       nil
     end
     result
+  rescue ThrottledRateExceeded
+    # appnexus sync job will handle this correctly
+    {:success => nil}
   end
   
   # Uploads the generated appnexus list to appnexus.
@@ -173,6 +183,27 @@ class AppnexusSyncWorkflow
       @emr_client = RightAws::EmrInterface.new
     end
     @emr_client
+  end
+  
+  def retry_emr_throttling
+    attempt = 1
+    begin
+      yield
+    rescue RightAws::AwsError => e
+      if e.message.index('Throttling: Rate exceeded') >= 0
+        if attempt >= 5
+          new_exc = ThrottledRateExceeded.new("#{e.message} (after #{attempt} attempts)")
+          new_exc.set_backtrace(e.backtrace)
+          raise new_exc
+        else
+          attempt += 1
+          sleep 30
+          retry
+        end
+      else
+        raise
+      end
+    end
   end
   
   # Builds parameters for EMR job generating appnexus list given a merge of
