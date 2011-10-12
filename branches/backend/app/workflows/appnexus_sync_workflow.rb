@@ -2,7 +2,9 @@ class AppnexusSyncWorkflow
   class InvalidLookupPrefix < StandardError
   end
   
-  class ThrottledRateExceeded
+  # We would like to derive from RightAws::AwsError, but
+  # that would require requiring right_aws at class definition time.
+  class ThrottledRateExceeded < StandardError
   end
   
   include Workflow::Logger
