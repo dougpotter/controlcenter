@@ -2,7 +2,7 @@ class AppnexusSyncWorkflow
   class InvalidLookupPrefix < StandardError
   end
   
-  class ThrottledRateExceeded < RightAws::AwsError
+  class ThrottledRateExceeded
   end
   
   include Workflow::Logger
@@ -179,13 +179,20 @@ class AppnexusSyncWorkflow
   
   def emr_client
     if @emr_client.nil?
-      require 'right_aws'
+      unless Object.const_defined?(:RightAws)
+        require 'right_aws'
+      end
+      
       @emr_client = RightAws::EmrInterface.new
     end
     @emr_client
   end
   
   def retry_emr_throttling
+    unless Object.const_defined?(:RightAws)
+      require 'right_aws'
+    end
+    
     attempt = 1
     begin
       yield
