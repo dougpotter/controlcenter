@@ -1,0 +1,14 @@
+% if ar_object.errors.size == 0
+  div.status_indicator
+    Active
+% else
+  div.status_indicator.error 
+    Error
+  div.status_notices 
+    Notices
+    ul
+      % for error in ar_object.errors
+        li
+          = error[1]
+    
+  

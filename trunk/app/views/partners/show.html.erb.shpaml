@@ -1,3 +1,5 @@
+= javascript_include_tag 'partner_show'
+
 h1 | <%= "#{@partner.name} <span class=\"subhead\">(#{@partner.partner_code})</span>" %>
 h2 | Action Tags
 
@@ -15,7 +17,7 @@ h2 | Action Tags
           td
             = "#{action_tag.name} - #{action_tag.sid}"
           td
-            = image_tag("#{action_tag.status.downcase}.png", :height => 18)
+            = render :partial => "status", :locals => { :ar_object => action_tag }
 
 .document_links
   span
@@ -68,7 +70,7 @@ h2 | Action Tags
           td
             = conv_config.referer_regex
           td
-            = image_tag("active.png", :height => 18 )
+            = render :partial => "status", :locals => { :ar_object => conv_config }
 
 div style="clear:both;"
   >br
@@ -95,24 +97,24 @@ div style="clear:both;"
         th
           Status
     tbody
-      % for regargeting_config in @partner.retargeting_configurations
+      % for retargeting_config in @partner.retargeting_configurations
         tr
           td
-            = regargeting_config.name
+            = retargeting_config.name
           td
-            = regargeting_config.pixel_code
+            = retargeting_config.pixel_code
           td
-            = regargeting_config.beacon_audience_id
+            = retargeting_config.beacon_audience_id
           td
-            = regargeting_config.request_condition_id
+            = retargeting_config.request_condition_id
           td
-            = regargeting_config.sync_rule_id
+            = retargeting_config.sync_rule_id
           td
-            = regargeting_config.request_regex
+            = retargeting_config.request_regex
           td
-            = regargeting_config.referer_regex
+            = retargeting_config.referer_regex
           td
-            = image_tag("active.png", :height => 18 )
+            = render :partial => "status", :locals => { :ar_object => retargeting_config }
 
 div style="clear:both;"
   >br

@@ -184,8 +184,12 @@ class Partner < ActiveRecord::Base
           config.referer_regex = req_cond.referer_url_regex
           config.pixel_code = pixel["code"]
           config.beacon_audience_id = audience.beacon_id
-          config.sync_rule_id = 
+          if !Beacon.new.sync_rules(audience.beacon_id).blank?
+            config.sync_rule_id = 
               Beacon.new.sync_rules(audience.beacon_id)[0]["id"]
+          else
+            config.errors.add(:sync_rule_id, "missing sync rule at beacon")
+          end
           config.request_condition_id = req_cond['id']
           config.instance_variable_set(:@new_record, false)
           results << config
