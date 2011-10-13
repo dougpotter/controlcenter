@@ -33,6 +33,10 @@ class Audience < ActiveRecord::Base
   acts_as_dimension
   business_index :audience_code, :aka => "aid"
 
+  def exists_beacon?
+    return Beacon.new.audience(self.beacon_id).is_a?(Hashie::Mash)
+  end
+
   def save_beacon(partner_code)
     self.beacon_id = Beacon.new.new_audience(
       :name => description, 

@@ -183,8 +183,19 @@ namespace :db do
     "at Appnexus and one in XGCC, share the same partner code but have different "+
     "names, the name in Appnexus will triumph, overwiting the name in XGCC."
   task :seed_appnexus_partners, :roles => :app, :only => { :migration_czar => true } do
-    run "cd #{current_release}: " +
+    run "cd #{current_release}; " +
       "rake RAILS_ENV=#{rails_env} db:seed_appnexus_partners"
+  end
+
+  desc "Add audiences from beacon to XGCC database. WARNING: Audiences with "+
+    "zombie beacon ids (beacon ids which refer to non-existant beacon audeicnes "+
+    "will have their beacon ids set to null. This way, after the seeding, all "+
+    "beacon ids in XGCC will refer to existing beacon audiences"
+  task :seed_beacon_audiences, :roles => :app, :only => { :migration_czar => true } do
+    run "cd #{current_release}; " +
+      "rake RAILS_ENV=#{rails_env} db:remove_zombie_beacon_ids"
+    run "cd #{current_release}; " +
+      "rake RAILS_ENV=#{rails_env} db:seed_beacon_audiences"
   end
 end
 

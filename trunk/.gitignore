@@ -31,3 +31,4 @@ tmp/sockets/*
 tmp/test/*
 *.swp
 db/fixtures/partners_from_apn.rb
+db/fixtures/audiences_from_beacon.rb
