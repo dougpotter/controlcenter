@@ -7,7 +7,7 @@ describe ActionTag do
     a.save
   end
 
-  [:name, :sid, :url, :partner_id].each do |attr|
+  [:name, :sid, :partner_id].each do |attr|
     it "should fail to save if #{attr} is blank (validations test)" do
       lambda {
         Factory.create(:action_tag, attr => nil)

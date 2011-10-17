@@ -9,12 +9,12 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110824190446) do
+ActiveRecord::Schema.define(:version => 20111007183841) do
 
   create_table "action_tags", :force => true do |t|
     t.string  "name",       :null => false
     t.integer "sid",        :null => false
-    t.string  "url",        :null => false
+    t.string  "url"
     t.integer "partner_id", :null => false
   end
 

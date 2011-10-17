@@ -74,7 +74,7 @@ class Partner < ActiveRecord::Base
   end
 
   def destroy_redirect_configs
-    for audience in Beacon.new.audiences.audiences
+    for audience in Beacon.new.audiences
       if audience["pid"] == self.partner_code
         destroy_request_conditions(audience["id"])
         destroy_apn_conversion_pixels(audience["pid"])
@@ -91,7 +91,7 @@ class Partner < ActiveRecord::Base
   end
 
   def destroy_sync_rules(beacon_audience_id)
-    for sync_rule in Beacon.new.sync_rules(beacon_audience_id).sync_rules
+    for sync_rule in Beacon.new.sync_rules(beacon_audience_id)
       Beacon.new.delete_sync_rule(beacon_audience_id, sync_rule['id'])
     end
   end
@@ -107,7 +107,7 @@ class Partner < ActiveRecord::Base
   def destroy_request_conditions(beacon_audience_id)
     begin
       for request_condition in 
-        Beacon.new.request_conditions(beacon_audience_id).request_conditions
+        Beacon.new.request_conditions(beacon_audience_id)
         Beacon.new.delete_request_condition(beacon_audience_id, request_condition["id"])
       end
     rescue
@@ -120,7 +120,7 @@ class Partner < ActiveRecord::Base
 
   def destroy_audiences
     begin
-      audiences = Beacon.new.audiences.audiences
+      audiences = Beacon.new.audiences
     rescue
       raise "Beacon error."
       return
@@ -131,7 +131,7 @@ class Partner < ActiveRecord::Base
     results = []
 
     begin
-      audiences = Beacon.new.audiences.audiences
+      audiences = Beacon.new.audiences
     rescue
       raise "Beacon error."
       return
@@ -139,7 +139,7 @@ class Partner < ActiveRecord::Base
 
     for audience in audiences
       if audience['pid'] == self.partner_code
-        req_conds = Beacon.new.request_conditions(audience['id']).request_conditions
+        req_conds = Beacon.new.request_conditions(audience['id'])
         req_conds = req_conds.each { |rc| rc["audience_id"] = audience['id'] }
         results << req_conds
       end
@@ -176,19 +176,23 @@ class Partner < ActiveRecord::Base
       for req_cond in request_conditions
         audience = Audience.find_by_beacon_id(req_cond.audience_id)
         if pixel['code'] == audience.audience_code
-          c = config_class.new
-          c.is_a?(ConversionConfiguration) ? 
-            c.name = pixel['name'] : 
-            c.name = pixel['short_name']
-          c.request_regex = req_cond.request_url_regex
-          c.referer_regex = req_cond.referer_url_regex
-          c.pixel_code = pixel["code"]
-          c.beacon_audience_id = audience.beacon_id
-          c.sync_rule_id = 
-              Beacon.new.sync_rules(audience.beacon_id).sync_rules[0]["id"]
-          c.request_condition_id = req_cond['id']
-          c.instance_variable_set(:@new_record, false)
-          results << c
+          config = config_class.new
+          config.is_a?(ConversionConfiguration) ? 
+            config.name = pixel['name'] : 
+            config.name = pixel['short_name']
+          config.request_regex = req_cond.request_url_regex
+          config.referer_regex = req_cond.referer_url_regex
+          config.pixel_code = pixel["code"]
+          config.beacon_audience_id = audience.beacon_id
+          if !Beacon.new.sync_rules(audience.beacon_id).blank?
+            config.sync_rule_id = 
+              Beacon.new.sync_rules(audience.beacon_id)[0]["id"]
+          else
+            config.errors.add(:sync_rule_id, "missing sync rule at beacon")
+          end
+          config.request_condition_id = req_cond['id']
+          config.instance_variable_set(:@new_record, false)
+          results << config
         end
       end
     end

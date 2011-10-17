@@ -3,7 +3,7 @@ module Beacon
     module Utilities
       def alive?
         response = get("audiences")
-        response.is_a?(Hashie::Mash) ? true : false
+        response.is_a?(Array) ? true : false
       end
     end
   end

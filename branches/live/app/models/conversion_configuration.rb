@@ -9,6 +9,49 @@ class ConversionConfiguration < RedirectConfiguration
   attr_accessor :sync_rule_id
   attr_accessor :beacon_audience_id
 
+  # Examines XGCC databse for an audience corresponding to the beacon audience
+  # passed in. If it finds one, it 'remembers' the audience code. If it doesn't
+  # find one, it creates one and 'remembers' the audience code. Then, it examines
+  # Appnexus for an associated conversion audience. If it finds one, it updates the
+  # conversion audience's code to match the audeince code it 'remembered'. If it 
+  # does not find one, it raises and exception declaring that we have a remote sync
+  # that points to nowhere
+  def self.ensure_audience_and_apn_pixel(beacon_audience, partner_apn_id, pixel_apn_id)
+    if audience = Audience.find_by_beacon_id(beacon_audience["id"])          
+      pixel_code = audience.audience_code
+    else
+      audience = Audience.create(
+        :description => beacon_audience.name,
+        :beacon_id => beacon_audience["id"],
+        :audience_code => Audience.generate_audience_code)
+      pixel_code = audience.audience_code
+    end 
+
+    cp =  ConversionPixel.new(
+      :partner_id => partner_apn_id,
+      :apn_id => pixel_apn_id).find_apn_by_id
+
+    if cp.blank?
+      audience.destroy
+      raise "remote sync rule (bid: #{beacon_audience["id"]}) pointing to "+
+        "non-existant conversion audience (segment's apn id: #{pixel_apn_id}"
+    end
+
+    updated_cp = ConversionPixel.new(
+      :partner_id =>  partner_apn_id,
+      :apn_id => cp["id"],
+      :name => cp["name"],
+      :pixel_code => pixel_code)
+    if !updated_cp.update_attributes_apn_by_id
+      raise "Failed conversion pixel update for pixel:\n"+
+        ":partner_id => #{updated_cp.partner_id},\n"+
+        ":apn_id => #{updated_cp.apn_id},\n"+
+        ":name => #{updated_cp.name},\n"+
+        ":pixel_code => #{updated_cp.pixel_code} }\n\n"+
+        "form beacon audience #{beacon_audience["id"]}"
+    end
+  end
+
   def self.update(config)
     audience = Audience.find_by_audience_code(config["pixel_code"])
     audience.update_attributes(:description => config["name"])
@@ -18,7 +61,7 @@ class ConversionConfiguration < RedirectConfiguration
       :partner_code => audience.partner.partner_code,
       :pixel_code => audience.audience_code).update_attributes_apn
     request_condition = 
-      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+      Beacon.new.request_conditions(audience.beacon_id).first
     Beacon.new.update_request_condition(
       audience.beacon_id,
       request_condition['id'],
@@ -36,13 +79,13 @@ class ConversionConfiguration < RedirectConfiguration
       :pixel_code => audience.audience_code).delete_apn
 
     request_condition =         
-      Beacon.new.request_conditions(audience.beacon_id).request_conditions.first
+      Beacon.new.request_conditions(audience.beacon_id).first
 
     Beacon.new.delete_request_condition(
       audience.beacon_id,        
       request_condition['id'])
 
-    for sync_rule in Beacon.new.sync_rules(audience.beacon_id).sync_rules
+    for sync_rule in Beacon.new.sync_rules(audience.beacon_id)
       Beacon.new.delete_sync_rule(audience.beacon_id, sync_rule['id'])
     end       
 

@@ -11,7 +11,7 @@ describe AppnexusClient do
 
   before(:all) do
     @a = Curl::Easy.new
-    @a.url = "http://hb.sand-08.adnxs.net/auth"
+    @a.url = "#{APN_CONFIG["api_root_url"]}auth" 
     @a.enable_cookies = true
     @a.post_body = APN_CONFIG["authentication_hash"].to_json
     @a.http_post
@@ -69,40 +69,40 @@ describe AppnexusClient do
     end
 
     it "should correctly compile array when passed an array of one substitution" do
-      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
+      proper_url = "#{APN_CONFIG["api_root_url"]}creative?advertiser_code=8675309"
       Creative.apn_action_url(:new, ["8675309"]).should ==
-        "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
+        "#{APN_CONFIG["api_root_url"]}creative?advertiser_code=8675309"
     end
 
     it "should correctly compile array when passed a string of one substitution" do
-      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
+      proper_url = "#{APN_CONFIG["api_root_url"]}creative?advertiser_code=8675309"
       Creative.apn_action_url(:index_by_advertiser, "8675309").should ==
-        "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
+        "#{APN_CONFIG["api_root_url"]}creative?advertiser_code=8675309"
     end
 
 
     it "should correctly compile array when passed an array of multiple" + 
       " substitutions" do
-      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309"
+      proper_url = "#{APN_CONFIG["api_root_url"]}creative?advertiser_code=8675309"
       Creative.apn_action_url(:delete, ["8675309", "12345"]).should ==
-        "http://hb.sand-08.adnxs.net/creative?advertiser_code=8675309&code=12345"
+        "#{APN_CONFIG["api_root_url"]}creative?advertiser_code=8675309&code=12345"
     end
   end
 
   describe "#apn_action_url" do
     it "should correctly substitute one value " do
-      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code=77777"
+      proper_url = "#{APN_CONFIG["api_root_url"]}creative?advertiser_code=77777"
       @creative.apn_action_url(:new).should == proper_url
     end
 
     it "should correctly substitute multiple values" do
       proper_url = 
-        "http://hb.sand-08.adnxs.net/creative?advertiser_code=77777&code=ZZ11"
+        "#{APN_CONFIG["api_root_url"]}creative?advertiser_code=77777&code=ZZ11"
       @creative.apn_action_url(:delete).should == proper_url
     end
 
     it "should substitute the blank string for undefined attributes" do
-      proper_url = "http://hb.sand-08.adnxs.net/creative?advertiser_code="
+      proper_url = "#{APN_CONFIG["api_root_url"]}creative?advertiser_code="
       @creative.partner = nil
       @creative.apn_action_url(:new).should == proper_url
     end

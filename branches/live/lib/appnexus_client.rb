@@ -271,6 +271,42 @@ module AppnexusClient
         end
       end
 
+      def update_attributes_apn_by_id
+        agent = AppnexusClient::API.new_agent
+        if self.exists_apn?
+          agent.url = apn_action_url("update_by_id")
+          agent.http_put(apn_json)
+        else
+          agent.url = apn_action_url("new")
+          agent.post_body = apn_json
+          agent.http_post
+        end
+
+        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
+          return true
+        else
+          error_msg =
+            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
+          self.errors.add_to_base(
+            error_msg
+          )
+          return false
+        end
+      end
+
+      def delete_by_apn_id
+        token = AppnexusClient::API.new_agent.headers["Authorization"]
+        agent = Curl::Easy.http_delete(apn_action_url(:delete_by_apn_ids)) do |a|
+          a.headers["Authorization"] = token
+        end
+
+        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
+          return true
+        else
+          return false
+        end
+      end
+
       def delete_apn
         token = AppnexusClient::API.new_agent.headers["Authorization"]
         agent = Curl::Easy.http_delete(apn_action_url(:delete)) do |a|
@@ -291,7 +327,24 @@ module AppnexusClient
 
         if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
           return true
+        elsif defined_action?(:view_by_id)
+          agent.url = apn_action_url(:view_by_id)
+          agent.http_get
+          if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
+            return true
+          else
+            return false
+          end
         else
+          return false
+        end
+      end
+
+      def defined_action?(action)
+        begin
+          apn_action_url(action)
+          return true
+        rescue
           return false
         end
       end
@@ -299,6 +352,16 @@ module AppnexusClient
       def find_apn
         agent = AppnexusClient::API.new_agent
         agent.url = apn_action_url(:view)
+        agent.http_get
+
+        return ActiveSupport::JSON.decode(
+          agent.body_str
+        )["response"][self.class.apn_mappings[:apn_wrapper]]
+      end
+
+      def find_apn_by_id
+        agent = AppnexusClient::API.new_agent
+        agent.url = apn_action_url(:view_by_id)
         agent.http_get
 
         return ActiveSupport::JSON.decode(
