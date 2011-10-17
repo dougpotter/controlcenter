@@ -179,9 +179,7 @@ namespace :db do
       "rake RAILS_ENV=#{rails_env} db:seed_fu > /dev/null"
   end
 
-  desc "Add Appnexus partners to XGCC databse. WARNING: If two partners, one "+
-    "at Appnexus and one in XGCC, share the same partner code but have different "+
-    "names, the name in Appnexus will triumph, overwiting the name in XGCC."
+  desc "Add Appnexus partners to XGCC databse." 
   task :seed_appnexus_partners, :roles => :app, :only => { :migration_czar => true } do
     run "cd #{current_release}; " +
       "rake RAILS_ENV=#{rails_env} db:seed_appnexus_partners"
