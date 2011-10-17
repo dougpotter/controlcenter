@@ -9,6 +9,49 @@ class RetargetingConfiguration < RedirectConfiguration
   attr_accessor :sync_rule_id
   attr_accessor :beacon_audience_id
 
+  # Examines XGCC databse for an audience corresponding to the beacon audience
+  # passed in. If it finds one, it 'remembers' the audience code. If it doesn't
+  # find one, it creates one and 'remembers' the audience code. Then, it examines
+  # Appnexus for an associated segment. If it finds one, it updates the segment's
+  # code to match the audeince code it 'remembered'. If it does not find one, it
+  # raises and exception declaring that we have a remote sync that points to nowhere
+  def self.ensure_audience_and_apn_pixel(beacon_audience, partner_apn_id, pixel_apn_id)
+    if audience = Audience.find_by_beacon_id(beacon_audience["id"])
+      pixel_code = audience.audience_code
+    else
+      audience = Audience.create(
+        :description => beacon_audience.name,
+        :beacon_id => beacon_audience["id"],
+        :audience_code => Audience.generate_audience_code)
+      pixel_code = audience.audience_code
+    end
+
+    sp = SegmentPixel.new(
+      :partner_id =>  partner_apn_id,
+      :apn_id => pixel_apn_id).find_apn_by_id
+    
+    if sp.blank?
+      audience.destroy
+      raise "remote sync rule (bid: #{beacon_audience["id"]}) pointing to "+
+        "non-existant segment (segment's apn id: #{pixel_apn_id}"    
+    end
+
+    updated_sp = SegmentPixel.new(
+      :apn_id => sp["id"],
+      :name => sp["name"],
+      :pixel_code => pixel_code,
+      :member_id => APN_CONFIG["member_id"])
+
+    if !updated_sp.update_attributes_apn_by_id
+      raise "Failed segment pixel update for pixel:\n"+
+        ":partner_id => #{updated_sp.partner_id},\n"+
+        ":apn_id => #{updated_sp.apn_id},\n"+
+        ":name => #{updated_sp.name},\n"+
+        ":pixel_code => #{updated_sp.pixel_code} }\n\n"+
+        "form beacon audience #{beacon_audience["id"]}"
+    end
+  end
+
   def self.update(config)
     audience = Audience.find_by_audience_code(config["pixel_code"])
     audience.update_attributes(:description => config["name"])
@@ -61,10 +104,11 @@ class RetargetingConfiguration < RedirectConfiguration
       return false    
     end 
 
+    partner_id = Partner.new(:partner_code => partner.partner_code).find_apn["id"]
     pixel = SegmentPixel.new(
       :name => config.name,
       :pixel_code => audience.audience_code,
-      :partner_code => audience.partner.partner_code)
+      :partner_id => partner_id)
     if !pixel.save_apn
       audience.destroy
       pixel.destroy

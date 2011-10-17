@@ -195,6 +195,12 @@ namespace :db do
     run "cd #{current_release}; " +
       "rake RAILS_ENV=#{rails_env} db:seed_beacon_audiences"
   end
+
+  desc "Ensure audiences and pixels exist for all redirects"
+  task :ensure_redirects do
+    run "cd #{current_release}; " +
+      "rake RAILS_ENV=#{rails_env} db:ensure_redirect_configurations"
+  end
 end
 
 # =============================================================================
