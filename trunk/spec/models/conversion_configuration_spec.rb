@@ -60,8 +60,8 @@ describe ConversionConfiguration do
       end
       audience_count = Audience.count
       lambda {
-          ConversionConfiguration.ensure_audience_and_apn_pixel(
-            @configured_beacon_audience, @partner_apn_id, 0)
+        ConversionConfiguration.ensure_audience_and_apn_pixel(
+          @configured_beacon_audience, @partner_apn_id, 0)
       }.should raise_error(RuntimeError)
       Audience.count.should == audience_count
     end
