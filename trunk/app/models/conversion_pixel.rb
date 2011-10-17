@@ -4,6 +4,7 @@ class ConversionPixel < ActiveRecord::Base
   column :pixel_code, :string
   column :name, :string
   column :partner_code, :string
+  column :apn_id, :string
 
   acts_as_apn_object :apn_attr_map => {
     :code => "pixel_code",
@@ -15,6 +16,7 @@ class ConversionPixel < ActiveRecord::Base
     :urls => {
       :new => "pixel?advertiser_code=##partner_code##",
       :view => "pixel?advertiser_code=##partner_code##&code=##pixel_code##",
+      :view_by_id => "pixel?advertiser_code=##partner_code##&id=##apn_id##",
       :update => "pixel?advertiser_code=##partner_code##&code=##pixel_code##",
       :delete => "pixel?advertiser_code=##partner_code##&code=##pixel_code##",
       :delete_by_apn_ids => "pixel?advertiser_code=##partner_code##&id=##id##",

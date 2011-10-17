@@ -306,6 +306,16 @@ module AppnexusClient
         )["response"][self.class.apn_mappings[:apn_wrapper]]
       end
 
+      def find_apn_by_id
+        agent = AppnexusClient::API.new_agent
+        agent.url = apn_action_url(:view_by_id)
+        agent.http_get
+
+        return ActiveSupport::JSON.decode(
+          agent.body_str
+        )["response"][self.class.apn_mappings[:apn_wrapper].pluralize]
+      end
+
       def apn_action_url(action)
         if self.class.apn_mappings[:urls][action]
           url = APN_CONFIG["api_root_url"] + self.class.apn_mappings[:urls][action]
