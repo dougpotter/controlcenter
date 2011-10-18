@@ -156,6 +156,12 @@ define_configuration_tasks(:schedule, %w(schedule.rb))
 define_configuration_tasks(:appnexus, %w(appnexus.yml))
 
 # =============================================================================
+# BEACON CONFIGURATION
+# =============================================================================
+
+define_configuration_tasks(:beacon, %w(beacon.yml))
+
+# =============================================================================
 # DATABASE TASKS
 # =============================================================================
 after "deploy:update_code", "db:symlink"
