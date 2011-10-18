@@ -38,7 +38,7 @@ class RetargetingConfiguration < RedirectConfiguration
 
     updated_sp = SegmentPixel.new(
       :apn_id => sp["id"],
-      :name => sp["name"],
+      :name => sp["short_name"],
       :pixel_code => pixel_code,
       :member_id => APN_CONFIG["member_id"])
 
