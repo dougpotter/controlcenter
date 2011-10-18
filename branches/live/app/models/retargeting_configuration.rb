@@ -16,7 +16,13 @@ class RetargetingConfiguration < RedirectConfiguration
   # code to match the audeince code it 'remembered'. If it does not find one, it
   # raises and exception declaring that we have a remote sync that points to nowhere
   def self.ensure_audience_and_apn_pixel(beacon_audience, partner_apn_id, pixel_apn_id)
-    if audience = Audience.find_by_beacon_id(beacon_audience["id"])
+    if (audience = Audience.find_by_beacon_id(beacon_audience["id"])) &&
+      SegmentPixel.new(:pixel_code => audience.audience_code).find_apn &&
+      SegmentPixel.new(:pixel_code => audience.audience_code).find_apn["id"].to_s == pixel_apn_id.to_s
+      return true
+    elsif (audience = Audience.find_by_beacon_id(beacon_audience["id"])) &&
+      SegmentPixel.new(:pixel_code => audience.audience_code).find_apn.nil? &&
+      !SegmentPixel.all_apn.select { |s| s["id"].to_s == pixel_apn_id.to_s }.blank?
       pixel_code = audience.audience_code
     else
       audience = Audience.create(

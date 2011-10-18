@@ -69,14 +69,6 @@ describe RetargetingConfiguration do
       Audience.count.should == audience_count
     end
 
-    it "should not create a new audience if one already exists with same beacon "+
-      "id and pixel is present" do
-      audience_count = Audience.count
-      RetargetingConfiguration.ensure_audience_and_apn_pixel(
-        @configured_beacon_audience, @partner_apn_id, @configured_pixel_id)
-      Audience.count.should == audience_count
-    end
-
     it "should create a new audience if one does not already exists with same "+
       "beacon id and pixel is present" do
       if audience = Audience.find(@configured_xgcc_audience.id)
