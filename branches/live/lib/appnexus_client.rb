@@ -389,6 +389,20 @@ module AppnexusClient
 
     # Module level methods
 
+    def self.conversion_id?(partner_code, pixel_apn_id)
+      for pixel in ConversionPixel.all_apn(:partner_code => partner_code)
+        return true if pixel["id"].to_s == pixel_apn_id.to_s
+      end
+      return false
+    end
+
+    def self.segment_id?(pixel_apn_id)
+      for pixel in SegmentPixel.all_apn
+        return true if pixel["id"].to_s == pixel_apn_id.to_s
+      end
+      return false
+    end
+
     def self.issue_get(object, *filters)
       url = "#{APN_CONFIG[:api_root_url]}#{object}"
       if !filters.empty?

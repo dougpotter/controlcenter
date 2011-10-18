@@ -64,7 +64,7 @@ describe Beacon do
   ## Audience 
   context "audience admin" do
     it "#audiences should return a hash of all audiences" do
-      beacon_response = @b.audiences.audiences.sort { |x,y| x.id <=> y.id }
+      beacon_response = @b.audiences.sort { |x,y| x.id <=> y.id }
       beacon_response == audiences_in_order
     end
 
@@ -81,7 +81,7 @@ describe Beacon do
       @b.new_audience({
         :name => "a new audience", :audience_type => "global"
       })
-      @b.audiences.audiences.sort { |x,y| x.id <=> y.id }.last.id.should ==
+      @b.audiences.sort { |x,y| x.id <=> y.id }.last.id.should ==
         last_id + 1
     end
 
@@ -121,7 +121,7 @@ describe Beacon do
     " audience" do
       audience_id = audience_id_with_sync_rules
       rules_in_order = sync_rules(audience_id).sort(&by_id)
-      @b.sync_rules(audience_id).sync_rules.sort(&by_id).should == rules_in_order
+      @b.sync_rules(audience_id).sort(&by_id).should == rules_in_order
     end
 
     it "#new_sync_rule with all legal arguments should return id of new sync rule" do
@@ -200,7 +200,7 @@ describe Beacon do
       last_sync_rule_id = sync_rules_in_order.last.id
       sync_rule_count = sync_rules_in_order.size
       @b.delete_sync_rule(audience_id, last_sync_rule_id).should == ""
-      @b.sync_rules(audience_id).sync_rules.size.should == sync_rule_count - 1
+      @b.sync_rules(audience_id).size.should == sync_rule_count - 1
     end
   end
 
@@ -211,7 +211,7 @@ describe Beacon do
       @b.new_audience({ 
         :name => "new", 
         :audience_type => "request-conditional" })
-      @audience_id = @b.audiences.audiences.sort(&by_id).last.id
+      @audience_id = @b.audiences.sort(&by_id).last.id
     end
 
     it "#request_conditions(audience_id) should return Hashie::Mash object" +
@@ -220,7 +220,8 @@ describe Beacon do
       @agent.url = 
         @api_root + "audiences/#{@audience_id}/request_conditions"
       @agent.http_get
-      proper_response = Hashie::Mash.new(JSON.parse(@agent.body_str))
+      proper_response = 
+        Hashie::Mash.new(JSON.parse(@agent.body_str)).request_conditions
       @b.request_conditions(@audience_id).should == proper_response
     end
 
@@ -319,7 +320,7 @@ describe Beacon do
       audience_id = audience_id_with_load_operations
       los_in_order = load_operations(audience_id).sort(&by_id)
       proper_response = los_in_order
-      @b.load_operations(audience_id).load_operations.sort(&by_id).should == 
+      @b.load_operations(audience_id).sort(&by_id).should == 
         proper_response
     end
 
