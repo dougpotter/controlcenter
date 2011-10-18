@@ -26,7 +26,7 @@ namespace :db do
               apn_sync_log.info("Configured conversion with Appnexus ID "+
                 "#{conversion_apn_id}")
           end
-        elsif segment_apn_ids = sync_rule.nonsecure_add_pixel_url[/seg\?id=((\d+\,*)+)/, 1]
+        elsif segment_apn_ids = sync_rule.nonsecure_add_pixel_url[/seg\?add=((\d+\,*)+)/, 1]
           for segment_apn_id in segment_apn_ids.split(",")
             if !AppnexusClient::API.segment_id?(segment_apn_id)
               apn_sync_log.error("Don't recognize the apn segment id "+

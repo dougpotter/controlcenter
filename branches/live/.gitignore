@@ -18,6 +18,7 @@ config/workflows/*.yml.production
 config/cap_mailer_settings.rb
 config/dropbox.yml
 config/dropbox.yml.production
+config/beacon.yml
 db/development_structure.sql
 doc/debug.rtf
 log/*.log
@@ -32,3 +33,4 @@ tmp/test/*
 *.swp
 db/fixtures/partners_from_apn.rb
 db/fixtures/audiences_from_beacon.rb
+
