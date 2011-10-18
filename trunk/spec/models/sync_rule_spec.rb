@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe SyncRule do
   before(:all) do
+    @valid_beacon_audience_id = Beacon.new.audiences.first["id"]
     # ensure segment with code AAAA exists and store it's ID
     @seg_id = ""
     if @seg_id = SegmentPixel.all_apn.select { |px| px["code"] == "AAAA" }[0]["id"]
@@ -37,7 +38,7 @@ describe SyncRule do
       :nonsecure_add_pixel => "ibtesting.dude",
       :nonsecure_remove_pixel => "ibtesting.dude",
       :sync_period => 7,
-      :audience_id => 1 
+      :audience_id => @valid_beacon_audience_id
     }
   end
 
@@ -49,25 +50,25 @@ describe SyncRule do
   it "apn_secure_pixel(conversion_id, type) should return the conversion "+
   "pixel url" do
     SyncRule.apn_secure_pixel(1, "px").should ==
-      "<img src=\"https://secure.adnxs.com/px?id=1\" width=\"1\" height=\"1\" />"
+      "<img src=\"https://secure.adnxs.com/px?id=1&t=2\" width=\"1\" height=\"1\" />"
   end
 
   it "apn_nonsecure_pixel(conversion_id, type) should return the conversion "+
   "pixel url" do
     SyncRule.apn_nonsecure_pixel(1, "px").should ==
-      "<img src=\"http://ib.adnxs.com/px?id=1\" width=\"1\" height=\"1\" />"
+      "<img src=\"http://ib.adnxs.com/px?id=1&t=2\" width=\"1\" height=\"1\" />"
   end
 
   it "#apn_secure_add_conversion(partner_code, pixel_code) should return the"+
   " secure add pixel for appnexus" do
     SyncRule.apn_secure_add_conversion("77777", "AAAA").should ==
-      "<img src=\"https://secure.adnxs.com/px?id=#{@px_id}\" width=\"1\" height=\"1\" />"
+      "<img src=\"https://secure.adnxs.com/px?id=#{@px_id}&t=2\" width=\"1\" height=\"1\" />"
   end
 
   it "#apn_nonsecure_add_conversion(partner_code, pixel_code) should return "+
   "the nonsecure add pixel for appnexus" do
     SyncRule.apn_nonsecure_add_conversion("77777", "AAAA").should ==
-      "<img src=\"http://ib.adnxs.com/px?id=#{@px_id}\" width=\"1\" height=\"1\" />"
+      "<img src=\"http://ib.adnxs.com/px?id=#{@px_id}&t=2\" width=\"1\" height=\"1\" />"
   end
 
   it "#apn_secure_add_segment(partner_code, pixel_code) should return the"+
