@@ -42,8 +42,8 @@ namespace :db do
           end
         else
           apn_sync_log.warn("Don't recognize sync rule #{sync_rule["id"]}:\n"+
-            "\tnonsecure add pixel: #{sync_rule["nonsecure_add_pixel"]}\n"+
-            "\tsecure add pixel: #{sync_rule["secure_add_pixel"]}\n"
+            "\tnonsecure add pixel: #{sync_rule["nonsecure_add_pixel_url"]}\n"+
+            "\tsecure add pixel: #{sync_rule["secure_add_pixel_url"]}\n"
           )
         end
       end
