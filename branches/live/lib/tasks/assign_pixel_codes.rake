@@ -9,8 +9,12 @@ namespace :db do
       'w'
     )
     apn_sync_log = AppnexusSyncLog.new(apn_sync_log_file)
+
     for beacon_audience in Beacon.new.audiences
+      apn_sync_log.info("Working on beacon audience #{beacon_audience["id"]}")
       for sync_rule in Beacon.new.sync_rules(beacon_audience["id"])
+        apn_sync_log.info("Working on sync rule #{sync_rule["id"]} for beacon "+
+          "audience #{beacon_audience["id"]}")
         partner_apn_id = Partner.new(
           :partner_code => beacon_audience.pid
         ).find_apn["id"]
