@@ -12,6 +12,11 @@ namespace :db do
 
     for beacon_audience in Beacon.new.audiences
       apn_sync_log.info("Working on beacon audience #{beacon_audience["id"]}")
+      if beacon_audience.pid.blank?
+        apn_sync_log.info("Beacon audience #{beacon_audience["id"]} has no PID, "+
+        "skipping")
+        next
+      end
       for sync_rule in Beacon.new.sync_rules(beacon_audience["id"])
         apn_sync_log.info("Working on sync rule #{sync_rule["id"]} for beacon "+
           "audience #{beacon_audience["id"]}")
