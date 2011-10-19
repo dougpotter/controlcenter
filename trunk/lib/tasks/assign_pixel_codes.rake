@@ -12,7 +12,7 @@ namespace :db do
 
     for beacon_audience in Beacon.new.audiences
       apn_sync_log.info("Working on beacon audience #{beacon_audience["id"]}")
-      if beacon_audience.pid.blank?
+      if beacon_audience.pid == 0 || beacon_audience.pid.nil?
         apn_sync_log.info("Beacon audience #{beacon_audience["id"]} has no PID, "+
         "skipping")
         next
