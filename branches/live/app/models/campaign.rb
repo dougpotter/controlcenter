@@ -45,7 +45,7 @@ class Campaign < ActiveRecord::Base
       for related_record in [ self.send(related_class) ].flatten
         cache_string = DimensionCache.cache_string_from_records(
           self, related_record)
-          CACHE.write(cache_string, true)
+          Rails.cache.write(cache_string, true)
       end
     end
   end

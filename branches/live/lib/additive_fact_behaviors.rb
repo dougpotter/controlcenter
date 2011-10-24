@@ -180,7 +180,7 @@ module AdditiveFactBehaviors
             dim_blue_string = dim_blue_name + ":" + dim_blue_value
             cache_string = [ dim_red_string, dim_blue_string ].sort.join(":")
 
-            self.errors.add_to_base("this is an unknown relationship: " + cache_string) unless CACHE.read(cache_string)
+            self.errors.add_to_base("this is an unknown relationship: " + cache_string) unless Rails.cache.read(cache_string)
           end   
         end   
       end   
