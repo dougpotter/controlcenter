@@ -34,7 +34,7 @@ module DimensionCache
             for relation in [ instance.send(relationship[1]) ].flatten
               cache_string = self.cache_string_from_records(instance,relation)
               puts cache_string if options[:verbose]
-              CACHE.write(cache_string, true)
+              Rails.cache.write(cache_string, true)
             end   
           end   
         end   
@@ -53,6 +53,6 @@ module DimensionCache
   end
 
   def self.reset
-    CACHE.clear
+    Rails.cache.clear
   end
 end

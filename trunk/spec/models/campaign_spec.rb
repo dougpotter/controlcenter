@@ -239,7 +239,7 @@ describe Campaign do
         :line_item_id => 1
       })
       c.save!
-      CACHE.read("campaign_id:#{c.id}:line_item_id:1").should == true
+      Rails.cache.read("campaign_id:#{c.id}:line_item_id:1").should == true
     end
   end
 end
