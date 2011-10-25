@@ -39,7 +39,7 @@ module Beacon
           /(HTTP\/1\.1) (\d\d\d) (.+)/
         ).to_a
       if response_code == "201"
-        return response.header_str.split(/\r\n/)[4].match(/.*\/(\d+)/)[1]
+        return response.header_str.match(/Location.*\/(\d+)/)[1]
       elsif response_code == "200" && response.body_str == ""
         return ""
       elsif response_code == "200" && response.body_str != ""
