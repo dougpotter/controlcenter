@@ -16,9 +16,8 @@ audiences:
 
 load_operations:
   -
-    audience_id: 1
     status: 1
-    s3_list_prefix: xg-live/prefix
+    s3_xguid_list_prefix: xg-live/prefix
 
 request_conditions:
   -

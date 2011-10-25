@@ -11,14 +11,14 @@ def seed_beacon
     "name=#{CGI.escape(audience["name"])}&"+
     "pid=#{audience["pid"]}"
     agent.http_post
-    audience_ids << agent.header_str.split(/\r\n/)[4].match(/.*\/(\d+)/)[1]
+    audience_ids << agent.header_str.match(/Location.*\/(\d+)/)[1]
   end
 
   for load_operation in fixtures["load_operations"]
     agent.url = "#{br}audiences/#{audience_ids[0]}/load_operations?"+
     "audience_id=#{audience_ids[0]}&"+
     "status=#{load_operation["status"]}&"+
-    "s3_xguid_list_prefix=#{load_operation["x3_xguid_list_prefix"]}"
+    "s3_xguid_list_prefix=#{load_operation["s3_xguid_list_prefix"]}"
     agent.http_post
   end
 

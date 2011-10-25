@@ -23,6 +23,14 @@ describe Beacon do
     audiences_in_order.last.id
   end
 
+  def xguid_conditional_audience
+    for audience in @b.audiences
+      if audience["type"] == "xguid-conditional"
+        return audience
+      end
+    end
+  end
+
   def audience_id_with_sync_rules
     for audience in audiences_in_order
       if sync_rules(audience.id)
@@ -69,11 +77,12 @@ describe Beacon do
     end
 
     it "#audience(#) should return the audience with id of #" do
+      audience_id = audience_id_with_sync_rules
       correct_audience = 
         Hashie::Mash.new(JSON.parse(Curl::Easy.http_get(
-          @api_root + "audiences/19"
+          @api_root + "audiences/#{audience_id}"
       ).body_str))
-      @b.audience(19).should == correct_audience
+      @b.audience(audience_id).should == correct_audience
     end
 
     it "#new_audience with hash of legal params should create a new audience" do
@@ -228,7 +237,7 @@ describe Beacon do
     it "#request_conditions(audience_id) should return message saying" +
     " 'Audience # is not request-conditional' if the audience requested is not"+
     " of type request-conditional" do
-      audience_id = audience_id_with_sync_rules
+      audience_id = xguid_conditional_audience["id"]
       @b.request_conditions(audience_id).should == 
         "Audience #{audience_id} is not request-conditional"
     end
