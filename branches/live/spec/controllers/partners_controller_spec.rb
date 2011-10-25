@@ -49,7 +49,7 @@ describe PartnersController, "create partner with valid attributes" do
       end
 
       before(:each) do
-        controller.expects(:create_new_redirect_config).returns(true)
+        ConversionConfiguration.expects(:create).returns(true)
         @partner.expects("id").returns(1)
       end
 
@@ -77,7 +77,7 @@ describe PartnersController, "create partner with valid attributes" do
       end
 
       before(:each) do
-        controller.expects(:create_new_redirect_config).returns(false)
+        ConversionConfiguration.expects(:create).returns(false)
         @partner.expects("destroy_and_attach").returns(@partner)
       end
 
@@ -148,7 +148,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_action_tag_association
-        controller.expects(:create_new_redirect_config).returns(true)
+        ConversionConfiguration.expects(:create).returns(true)
         @partner.expects("id").returns(1)
       end
 
@@ -182,7 +182,7 @@ describe PartnersController, "create partner with valid attributes" do
 
       before(:each) do
         mock_and_stub_action_tag_association
-        controller.expects(:create_new_redirect_config).returns(false)
+        ConversionConfiguration.expects(:create).returns(false)
         @partner.expects("destroy_and_attach").returns(@partner)
       end
 

@@ -98,7 +98,6 @@ class ConversionConfiguration < RedirectConfiguration
       :audience_code => Audience.generate_audience_code)
     if !audience.save || !audience.save_beacon(partner.partner_code)
       audience.destroy
-      errors.add_to_base("Error on Audience save")
       return false
     end
 
@@ -109,7 +108,6 @@ class ConversionConfiguration < RedirectConfiguration
     if !pixel.save_apn
       audience.destroy
       pixel.destroy
-      errors.add_to_base("Error on conversion pixel save")
       return false
     end
 
@@ -120,7 +118,6 @@ class ConversionConfiguration < RedirectConfiguration
     if !(request_condition = request_condition.save_beacon)
       audience.destroy
       pixel.destroy
-      errors.add_to_base("Error on request condition save")
       return false
     end
 
@@ -141,7 +138,6 @@ class ConversionConfiguration < RedirectConfiguration
       pixel.destroy
       request_condition.destroy
       @partners = Partner.all
-      errors.add_to_base "Error on sync rule save"
       return false
     end
 
