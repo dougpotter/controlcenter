@@ -126,7 +126,7 @@ class RetargetingConfiguration < RedirectConfiguration
       :request_url_regex => config.request_regex,
       :referer_url_regex => config.referer_regex,
       :audience_id => audience.beacon_id)
-    if !request_condition.save_beacon
+    if !(request_condition = request_condition.save_beacon)
       audience.destroy
       pixel.destroy
       errors.add_to_base("Error on request condition save")
