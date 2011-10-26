@@ -12,10 +12,10 @@ class SyncRule < ActiveRecord::Base
     beacon_response = Beacon.new.new_sync_rule(
       audience_id,
       sync_period,
-      nonsecure_add_pixel,
-      nonsecure_remove_pixel,
-      secure_add_pixel,
-      secure_remove_pixel
+      nonsecure_add_pixel ? nonsecure_add_pixel : "-",
+      nonsecure_remove_pixel ? nonsecure_remove_pixel : "-",
+      secure_add_pixel ? secure_add_pixel : "-",
+      secure_remove_pixel ? secure_remove_pixel : "-"
     )
 
     return ((beacon_response =~ /\d+/) == 0)

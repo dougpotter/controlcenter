@@ -27,12 +27,6 @@ module Beacon
       #     https://secure.ib.adnxs.com/sec?remove=12345
       #   )
       def new_sync_rule(audience_id, sync_period, nonsecure_add_url, nonsecure_remove_url, secure_add_url, secure_remove_url)
-        [ 
-          nonsecure_add_url, 
-          nonsecure_remove_url,
-          secure_add_url,
-          secure_remove_url
-        ].map! { |px| px.blank? ? "-" : px }
         post("audiences/#{audience_id}/sync_rules?#{
           {
             "audience_id" => audience_id,
