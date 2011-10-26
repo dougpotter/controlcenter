@@ -217,7 +217,7 @@ class PartnersController < ApplicationController
     retargeting_configs = extract_retargeting_config_params
     for retargeting_config in retargeting_configs
       if new_config?(retargeting_config)
-        RetargetingConfiguration.create(Partner.find(params[:id]), conv_config)
+        RetargetingConfiguration.create(Partner.find(params[:id]), retargeting_config)
       elsif destroy_config?(retargeting_config)
         RetargetingConfiguration.destroy(retargeting_config)
       else 
