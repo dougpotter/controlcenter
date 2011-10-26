@@ -1,0 +1,57 @@
+ActiveRecord Tableless
+----------------------
+
+<DEPRECATED_NOTICE>
+
+This library is no longer maintained and not recommended for general use. 
+With Rails 3.0 on the way, and the new ActiveModel::Validations mixin,
+the library becomes worthless.
+
+Until Rails 3.0 is released you might want to consider looking at the excellent
+Validator [1] gem from Jay Fields that provides the same functionality (in
+terms of validations) but doesn't require ActiveRecord at all.
+
+I've updated the gemspec so that this gem will not work with ActiveRecord 3.0
+or later.
+
+1 - http://validatable.rubyforge.org/
+
+This was my first gem ever, so it will be surely missed.
+
+</DEPRECATED_NOTICE>
+
+A single implementation of the ActiveRecord Tableless Model pattern for any
+Rails project or other Ruby project that uses ActiveRecord.
+
+Define a model like this:
+
+class ContactMessage < ActiveRecord::Base
+  has_no_table
+  column :name, :string
+  column :email, :string
+  validates_presence_of :name, :email
+end
+
+You can now use the model in a view like this:
+
+<%= form_for :message, @message do |f| %>
+  Your name: <%= f.text_field :name %>
+  Your email: <%= f.text_field :email %>
+<% end %>
+
+And in the controller:
+
+def message
+  @message = ContactMessage.new
+  if request.post?
+    @message.attributes = params[:message]
+    if @message.valid?
+      # Process the message...
+    end
+  end
+end
+
+Credits
+-------
+Michal Zima <xhire@tuxportal.cz>
+Kenneth Kalmer <kenneth.kalmer@gmail.com> (original author)

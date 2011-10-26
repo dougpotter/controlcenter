@@ -1,0 +1,13 @@
+= error_messages_for :creative
+
+% creative_number ||= 0
+
+% f.fields_for :creatives, @creatives do |creative_fields|
+  = render :partial => "creatives/form_without_line_item", :locals => { :creative_fields => creative_fields, :creative_number => creative_number }
+  % creative_number += 1
+
+<div id=new_creatives></div>
+  <%= link_to_function "+", { :title => "add_creative", :class => "add_creative_link", :id => "add_creative_link" } do |page|
+    page.call :insertCreativeForm
+    end %>
+

@@ -1,0 +1,25 @@
+= error_messages_for :audience
+<script src="/javascripts/filter_by_partner.js" type="text/javascript"></script>
+h1 | Create New Audience
+>br
+
+% form_for @audience do |f|
+  = render :partial => 'form'
+  = submit_tag('Create Audience')
+
+>br
+>br
+>br
+
+h2 | Edit Existing Audience
+>br
+
+<label for="name">Narrow By Advertiser</label> 
+  >br
+  = select('partner', 'id', all_option + options_from_collection_for_select(@partners, :id, :partner_code_and_name))
+  >br
+  >br
+
+
+div id=summary_table
+  = render :partial => 'layouts/edit_table', :locals => { :collection => @audiences, :header_names => ["Audience Code", "Description"], :fields => ["audience_code", "description"], :class_name => "audience_summary", :width => "500", :edit_path => edit_audience_path(1) }

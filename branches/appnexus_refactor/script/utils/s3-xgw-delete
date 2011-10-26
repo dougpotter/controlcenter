@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if test -z "$1"; then
+	echo Restriction required 1>&2
+	exit 2
+fi
+
+for c in view-us view-int search-hashed-us search-hashed-int share-us share-int; do
+	s3cmd deleteall xgw:15530/v2/raw-$c/20"$1"
+done

@@ -1,0 +1,3 @@
+.creative_thumbs
+  % for creative in @creatives 
+    = render :partial => '/creatives/thumb_and_description', :locals => { :creative => creative }

@@ -1,0 +1,12 @@
+% f.fields_for :audience, @audience do |audience|
+  .dimension_input
+    = audience.label :audience_code, "Audience Code"
+    = audience.text_field :audience_code
+
+  % audience.fields_for :retargeting_source_attributes, @audience_source do |audience_source|
+    .dimension_input
+      = audience_source.label :request_regex, "Request Regex"
+      = audience_source.text_field :request_regex
+    .dimension_input
+      = audience_source.label :referrer_regex, "Referrer Regex"
+      = audience_source.text_field :referrer_regex

@@ -1,0 +1,42 @@
+div class="creative_form_without_line_item" id="creative_form_without_line_item<%= "[#{creative_number}]" %>" data-number="<%= "#{creative_number}" %>" data-existing-record="<%= "#{!creative_fields.object.new_record?}" %>"
+      <%= link_to_function "-", { :title => "remove_creative", :class => "remove_creative_link" } do |page|
+          page.call :removeCreativeForm, creative_number
+          end %>
+
+      .dimension_input
+        = creative_fields.label "creative_code", "Creative Code"
+        >br 
+        = creative_fields.text_field :creative_code
+
+      .dimension_input
+        = creative_fields.label "name", "Creative Name"
+        >br 
+        = creative_fields.text_field :name
+
+      .dimension_input
+        = creative_fields.label "media_type", "Media Type"
+        >br 
+        = creative_fields.text_field :media_type
+
+      .dimension_input
+        = creative_fields.label "creative_size_id", "Creative Size"
+        >br 
+        = creative_fields.collection_select "creative_size_id", @creative_sizes, :id, :height_width_string
+
+      .dimension_input
+
+        % if creative_fields.object.has_clean_image?
+          #creative_image 
+            % if request.url.match(edit_campaign_url)
+              = image_tag_for_campaign_edit(creative_fields.object)
+        % else
+          = creative_fields.label "image", "Image:"
+          >br 
+          = creative_fields.file_field "image"
+
+      .dimension_input
+        = creative_fields.label "landing_page_url"
+        >br 
+        = creative_fields.text_field "landing_page_url", :size => 101 
+      % if @partner 
+        = creative_fields.hidden_field "partner_id", :value => @partner.id

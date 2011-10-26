@@ -1,0 +1,26 @@
+div class=pixel_list
+  >br
+
+  % for campaign in @creative.campaigns
+    h1 | <%= "Campaign: #{campaign.name}" %>
+
+    % for campaign_inventory_config in campaign.campaign_inventory_configs
+      % ais = campaign_inventory_config.ad_inventory_source
+      h2 | <%= "AIS: #{ais.name}" %>
+
+      % if view == "edit"
+        p
+          Configured?
+          = check_box('campaign_inventory_config', campaign_inventory_config.id.to_s, { :checked => @creative.configured?(campaign_inventory_config) })
+      % if view == "show"
+        % if @creative.configured?(campaign_inventory_config)
+          p class=green
+            Configured
+        % else
+          p class=red
+            Not Configured
+
+      % for event_type in [ :impression, :engagement, :click ]
+        h3 | <%= event_type.to_s.capitalize + " pixel:" %> 
+        .pixel
+          = @creative.ae_pixels(campaign, { :event_types => event_type, :aises => ais.ais_code})

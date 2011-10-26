@@ -1,0 +1,129 @@
+= javascript_include_tag 'partner_show'
+
+h1 | <%= "#{@partner.name} <span class=\"subhead\">(#{@partner.partner_code})</span>" %>
+h2 | Action Tags
+
+.action_tags_table
+  table
+    thead
+      tr
+        th
+          Action Tag
+        th
+          Status
+    tbody
+      % for action_tag in @partner.action_tags
+        tr
+          td
+            = "#{action_tag.name} - #{action_tag.sid}"
+          td
+            = render :partial => "status", :locals => { :ar_object => action_tag }
+
+.document_links
+  span
+    Downloads:
+  span
+    = link_to("Implementation Instructions", partner_path(@partner.id), :onclick => "alert(\"HA!! Not implemented yet...\");")
+  span
+    = link_to("Action Tags (html)", partner_action_tags_path(@partner.id, :format => :html))
+  span
+    = link_to("Action Tags (js)", partner_action_tags_path(@partner.id, :format => :js))
+  span
+    = link_to("Action Tags (txt)", partner_action_tags_path(@partner.id, :format => :txt))
+
+.redirect_configurations_table
+  h2 | Conversion Configurations
+  table
+    thead
+      tr
+        th
+          Name
+        th
+          ApN Conv ID
+        th
+          Beacon Aud
+        th
+          Req Cond
+        th
+          Sync Rule
+        th
+          Request Regex
+        th
+          Referer Regex
+        th
+          Status
+    tbody
+      % for conv_config in @partner.conversion_configurations
+        tr
+          td
+            = conv_config.name
+          td
+            = conv_config.pixel_code
+          td
+            = conv_config.beacon_audience_id
+          td
+            = conv_config.request_condition_id
+          td
+            = conv_config.sync_rule_id
+          td
+            = conv_config.request_regex
+          td
+            = conv_config.referer_regex
+          td
+            = render :partial => "status", :locals => { :ar_object => conv_config }
+
+div style="clear:both;"
+  >br
+
+.redirect_configurations_table
+  h2 | Retargeting Configurations
+  table
+    thead
+      tr
+        th
+          Name
+        th
+          ApN Conv ID
+        th
+          Beacon Aud
+        th
+          Req Cond
+        th
+          Sync Rule
+        th
+          Request Regex
+        th
+          Referer Regex
+        th
+          Status
+    tbody
+      % for retargeting_config in @partner.retargeting_configurations
+        tr
+          td
+            = retargeting_config.name
+          td
+            = retargeting_config.pixel_code
+          td
+            = retargeting_config.beacon_audience_id
+          td
+            = retargeting_config.request_condition_id
+          td
+            = retargeting_config.sync_rule_id
+          td
+            = retargeting_config.request_regex
+          td
+            = retargeting_config.referer_regex
+          td
+            = render :partial => "status", :locals => { :ar_object => retargeting_config }
+
+div style="clear:both;"
+  >br
+
+.nav_buttons
+  = link_to("Edit #{@partner.name}", edit_partner_path(@partner.id), :class => "button")
+  = link_to("New Partner", new_partner_path, :class => "button")
+  = link_to("Campaign Home", campaign_management_index_path, :class => "button")
+
+div style="clear:both;"
+  >br
+

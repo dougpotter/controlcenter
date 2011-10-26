@@ -1,0 +1,28 @@
+{
+  "advertiser": 
+    {
+      "id":"",
+      "name":"Test Advertiser Three",
+      "code":"77777",
+      "state":"active",
+      "default_category":
+        {
+          "id":""
+        },
+      "time_format":"12-hour",
+      "timezone":"EST5EDT",
+      "set_child_timezone":"true",
+      "default_currency":"USD",
+      "billing_address1":"",
+      "billing_address2":"",
+      "billing_city":"",
+      "billing_state":"",
+      "billing_state_text":"",
+      "billing_zip":"",
+      "billing_country":"",
+      "labels":[],
+      "uses_campaign_groups":true,
+      "default_brand":null,
+      "use_insertion_orders":false
+    }
+}

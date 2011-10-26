@@ -1,0 +1,47 @@
+div class=dimension_input
+  label for="campaign_partner_id" | Partner:
+  >br
+  
+  = select_tag('partner_id', all_select_option + options_from_collection_for_select(@partners, :id, :name, @partner_id))
+
+  div style='clear:both;'
+    >br
+
+div class=dimension_input
+  label for="campaign_partner_id" | Ad Inventory Source:
+  >br
+  
+  = select_tag('ad_inventory_source_id', all_select_option + options_from_collection_for_select(@ad_inventory_sources, :id, :name, @ad_inventory_source_id))
+
+  div style='clear:both;'
+    >br
+
+div style='clear:both;'
+  >span
+
+div class=dimension_input
+  label for="campaign_partner_id" | Start Date
+  >br
+  
+  Between
+  = select_datetime(@start_time_not_before, :order => [:year, :month, :day], :discard_minute => true, :discard_second => true, :prefix => 'start_time_not_before')
+  and
+  = select_datetime(@start_time_not_after, :order => [:year, :month, :day], :discard_minute => true, :discard_second => true, :prefix => 'start_time_not_after')
+
+  div style='clear:both;'
+    >br
+
+div class=dimension_input
+  label for="campaign_partner_id" | End Date
+  >br
+  
+  Between
+  = select_datetime(@end_time_not_before, :order => [:year, :month, :day], :discard_minute => true, :discard_second => true, :prefix => 'end_time_not_before')
+  and
+  = select_datetime(@end_time_not_after, :order => [:year, :month, :day], :discard_minute => true, :discard_second => true, :prefix => 'end_time_not_after')
+
+  div style='clear:both;'
+    >br
+
+div style='clear:both;'
+  >span

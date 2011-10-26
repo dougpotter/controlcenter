@@ -1,0 +1,31 @@
+= error_messages_for :creative
+<script src="/javascripts/creatives.js" type="text/javascript"></script>
+
+
+.dimension_input.bilevel_input
+  = f.label :partner, "Partner:" 
+  = f.collection_select('partner_id', @partners, 'id', 'name')
+
+.dimension_input.bilevel_input 
+  = f.label :landing_page_url, "Landing Page URL:" 
+  = f.text_field('landing_page_url', :size => 101)
+
+.dimension_input.campaigns_multi_select
+  = f.label :campaign_ids, "Campaign(s):" 
+  = f.collection_select('campaign_ids', @campaigns, 'id', 'name', { :selected => @creative.campaigns.map { |c| c.id } }, :multiple => true)
+
+.dimension_input.creative_image_panel 
+    % if @creative.has_clean_image?
+      #creative_image 
+        = image_tag_for_edit(@creative)
+        >br
+        = "<label for=\"creative_image\">#{@creative.image_file_name}</label>"
+        = button_to_function "Change Image" do |page| page.call :injectFileField end 
+    % else
+      label for='creative_image' | No image chosen, upload on now:
+      >br
+      = f.file_field(:image)
+
+div style="clear:both;"
+  >br
+

@@ -1,0 +1,22 @@
+/* CSS Styles for XGraph */
+
+/* Color Golasary */
+$light_blue: #32BBED;
+$dark_blue: #1E3B6E;
+$light_grey: #F2F2F2;
+$medium_grey: #E6E6E6;
+$dark_grey: #9D9FA2;
+$off_black: #333333;
+$heading_grey: #3f3f3f;
+$page_separators: #b5b5b5;
+$bright_green: #29DB3E;
+$green: #65B000;
+$red: #D34C4C;
+$error_red: #D66060;
+
+@import "global"; // styles applied to website wide elements and classes
+@import "extraction";
+@import "generic_form";
+@import "generic_ui";
+@import "pages"; // styles pertinent to particular pages of XGCC
+@import "css3buttons"; // from https://github.com/michenriksen/css3buttons.git

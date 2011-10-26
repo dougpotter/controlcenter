@@ -1,0 +1,23 @@
+development:
+  data_source_root: /path/to/akamai/ftp/home
+  s3_bucket: xgw
+  
+  late_lookback_from_hour: 72
+  late_lookback_to_hour: 12
+  very_late_lookback_from_day: 14
+  very_late_lookback_to_day: 2
+  
+  # Options:
+  #
+  # debug: true
+  # debug_output_path: /path/to/log-file-or-template.log
+  # force_system_timer: true
+  # http_client: curb
+  # keep_downloaded: true
+  # keep_temporary: true
+  # lock: true
+  # net_io_timeout: 60
+  # once: true
+  # quiet: true
+  # record: true
+  # trust_recorded: true

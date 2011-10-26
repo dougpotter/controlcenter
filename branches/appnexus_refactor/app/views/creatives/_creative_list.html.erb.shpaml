@@ -1,0 +1,2 @@
+% for creative in @creatives
+  = render :partial => "creatives/form_without_line_item", :locals => { :creative => creative }

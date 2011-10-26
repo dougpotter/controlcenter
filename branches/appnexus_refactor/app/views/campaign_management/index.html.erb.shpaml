@@ -1,0 +1,33 @@
+= javascript_include_tag "filtered_table"
+= javascript_include_tag "campaign_dashboard"
+
+<div id=notice class=notice></div>
+  
+div id=left_pane_campaign_dashboard
+
+  h1 | Actions
+
+  div id=action_links
+    ul
+      li
+        = link_to 'Line Items', new_line_item_path, :hover => "alert(\"HI\")"
+      li  
+        = link_to 'Campaigns', new_campaign_path
+      li
+        = link_to 'Creatives', new_creative_path
+      div.lesser_nav_links
+        li
+          = link_to 'Partners', new_partner_path
+        li
+          = link_to 'AISes', new_ad_inventory_source_path
+
+div id=right_pane_campaign_dashboard
+  h1 | Active Campaigns
+ 
+  div id=filtered_table
+    = render :partial => "layouts/edit_table", :locals => { :collection => @campaigns, :header_names => ["Partner", "Campaign Name", "Code", "Start Date", "End Date"], :fields => ["partner_name", "name", "campaign_code", "pretty_start_time", "pretty_end_time"], :filter_menus => [0,1], :width => "650", :class_name => "campaigns_summary", :edit_path => campaign_path(1) }
+
+
+div style='clear:both;'
+  >br
+

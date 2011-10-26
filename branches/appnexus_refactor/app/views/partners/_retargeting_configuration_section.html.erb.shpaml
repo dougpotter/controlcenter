@@ -1,0 +1,5 @@
+% form_index ||= 0
+
+% f.fields_for :retargeting_configurations do |retargeting_configuration|  
+  = render :partial => "retargeting_configuration_fields", :locals => { :form_index => form_index, :retargeting_configuration => retargeting_configuration }
+  % form_index += 1

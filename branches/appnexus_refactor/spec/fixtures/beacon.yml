@@ -1,0 +1,36 @@
+audiences:
+  -
+    name: first test audience
+    type: "xguid-conditional"
+    pid: 12345
+
+  -
+    name: second test audience
+    type: "request-conditional"
+    pid: 12345
+
+  -
+    name: third test audience
+    type: "global"
+    pid: 12345
+
+load_operations:
+  -
+    audience_id: 1
+    status: 1
+    s3_list_prefix: xg-live/prefix
+
+request_conditions:
+  -
+    audience_id: 1
+    request_url_regex: /aregex/
+    referer_url_regex: /aregex/
+
+sync_rules:
+  -
+    audience_id: 1
+    sync_period: 7
+    nonsecure_add_pixel: "http://hi.com"
+    nonsecure_remove_pixel: "http://bye.com"
+    secure_add_pixel: "https://hi.com"
+    secure_remove_pixel: "https://bye.com"

@@ -1,0 +1,8 @@
+development: &defaults
+  api_root_url: "http://aa.qa.xgraph.net/"
+
+test: *defaults
+
+production: *defaults
+
+cucumber: *defaults

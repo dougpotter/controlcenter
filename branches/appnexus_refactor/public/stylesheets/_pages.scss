@@ -1,0 +1,276 @@
+/**********************************************************************************
+* Table of Contents
+*
+* Campaign Dashboard
+* Campaign New/Edit
+* Creatie New/Show/Edit
+* Partner New
+* Partner Show
+*
+**********************************************************************************/
+
+/**********************************************************************************
+* Campaign Dashboard
+**********************************************************************************/
+
+#left_pane_campaign_dashboard {
+  float: left;
+  border-right: solid $page_separators 2px;
+  padding-right: 25px;
+  margin: 11px; }
+
+#action_links a {
+  font-size: 20px;
+  font-family: 'Istok Web', sans-serif; }
+
+#action_links li {
+  margin: 5px 0px 5px 3px; }
+
+#action_links a:hover {
+  color: $dark_grey; }
+
+#right_pane_campaign_dashboard {
+  float: left;
+  margin: 11px 0px 0px 20px; }
+
+#edit_table_campaign_dashboard {
+  margin-top: 8px; }
+
+#action_links a {
+  color: $heading_grey; 
+  text-shadow: white 0 1px 0; }
+
+.lesser_nav_links { 
+  padding-top: 25px; }
+
+#filtered_table {
+  margin: 7px 0 0 0; }
+
+/**********************************************************************************
+* Campaign New/Edit
+**********************************************************************************/
+
+.sync_rule_checkbox_and_label label {
+  float: left;
+  font-size: 15px;
+  margin-top: 4px;
+  width: 30px; }
+
+.sync_rule_entry_boxes label {
+  min-width: 30px; }
+
+.sync_rule_ais {
+  float:left;
+  margin: 7px 0px 0px 20px; }
+
+.sync_rule_checkbox_and_label {
+  width: 80px; }
+
+.sync_rules_on_campaign_setup {
+  visibility: visible; }
+
+#audience_source_section {
+  height: 36px; }
+
+.remove_creative_link {
+  float: left;
+  padding: 12px 8px 0px 1px;
+  font-size: 21px;
+  height: 40px; }
+
+.add_creative_link {
+  font-size: 18px; }
+
+#s3_source_select_div {
+  margin-left: 30px; }
+
+#refresh_div {
+  margin-left: 30px
+}
+
+#refresh_checkbox {
+  margin: 5px 0px 0px 15px; }
+
+#s3_source_field_div {
+  margin-left: 10px;
+  visibility: hidden; }
+
+/**********************************************************************************
+* Campaign New/Edit
+**********************************************************************************/
+
+.creative_thumb_and_description {
+  padding: 4px;
+  float: left; 
+  margin: 5px;
+  height: 170px;
+  background: #E0E0E0;
+  border-radius: 4px;
+  p {
+    font-weight: bold;
+    padding: 0px 4px 4px 4px; } }
+
+/**********************************************************************************
+* Creative New/Show/Edit
+**********************************************************************************/
+
+.pixel_list {
+  margin: 0px 20px 20px 20px; }
+
+.pixel_list h1 {
+  font-size: 15px; }
+
+.pixel_list h2 {
+  padding: 9px 0px 4px 0px;
+  font-size: 14px; }
+
+.pixel_list h3 {
+  font-size: 14px;
+  text-indent: 7px; }
+
+.pixel_list .pixel {
+  font-size: 12px;
+  padding: 1px 0px 3px 0px;
+  text-indent: 7px; }
+
+.creative_image_panel {
+  float: left; }
+
+#creative_image {
+  position: relative;
+  padding: 15px; }
+
+.creative_details {
+  padding-bottom: 10px; }
+
+.pixels_for_creative {
+  width: 800px; }
+
+.green {
+  color: white;
+  background-color: $green; }
+
+.red {
+  color: black;
+  background-color: $red; }
+
+form#new_creative, form.edit_creative {
+  padding: 15px;
+  .campaigns_multi_select {
+    float: left;
+    select {
+      width: 200px;
+      height: 150px; } } 
+  input[type=submit] {
+    margin-top: 10px;
+    float: left;
+    clear: both; } }
+
+.creative_form_without_line_item {
+  float: left; 
+  height: 115px;
+  margin: 15px 0px 0px 0px;
+  .dimension_input {
+    height: 45px; } }
+
+/**********************************************************************************
+* Partner New
+**********************************************************************************/
+
+.action_tag_form, .conversion_configuration_form, .retargeting_configuration_form {
+  overflow: auto; }
+
+.action_tag_minus_sign, .conversion_configuration_minus_sign, .retargeting_configuration_minus_sign {
+  width: 15px;
+  float: left;
+  margin: 15px; }
+
+.action_tags_heading, .conversion_configuration_heading, .retargeting_configuration_heading, .edit_existing_advertiser_heading {
+  padding: 15px 0px 10px 0px; }
+
+#retargeting_configurations_forms {
+  padding-bottom: 15px; }
+
+/**********************************************************************************
+* Partner Show
+**********************************************************************************/
+
+.action_tags_table th:nth-child(1) { 
+  width: 150px; }
+
+.action_tags_table { 
+  padding: 0px 0px 10px 0px; }
+
+.redirect_configurations_table {
+  padding: 10px 0px 10px 0px; }
+
+.redirect_configurations_table th:nth-child(1) { 
+  width: 120px; }
+
+.redirect_configurations_table th:nth-child(2) { 
+  width: 80px; }
+
+.redirect_configurations_table th:nth-child(3) { 
+  width: 80px; }
+
+.redirect_configurations_table th:nth-child(4) { 
+  width: 80px; }
+
+.redirect_configurations_table th:nth-child(5) { 
+  width: 80px; }
+
+.redirect_configurations_table th:nth-child(6) { 
+  width: 180px; }
+
+.redirect_configurations_table th:nth-child(7) { 
+  width: 180px; }
+
+.redirect_configurations_table th:nth-child(8) { 
+  width: 120px; }
+
+.document_links { 
+  padding: 10px 0px 10px 5px; }
+
+.document_links span { 
+  font-size: 12px; }
+
+.document_links span:nth-child(n + 2) { 
+  text-decoration: underline; padding: 0px 4px 0px 4px; }
+
+.document_links span:nth-child(n + 2) a { 
+  color: #77459b; 
+  font-size: 12px; }
+
+div.status_indicator {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  background: $green;
+  display: inline;
+  padding: 1px 2px 1px 2px;
+  color: white;
+  font-weight: normal;
+}
+
+div.status_indicator.error {
+  background: $error_red;
+}
+
+div.status_notices {
+  position: absolute;
+  background: $error_red;
+  margin: 25px 0px 0px -80px;
+  padding: 3px 5px 3px 5px;
+  color: white;
+  text-transform: uppercase;
+  text-align: left;
+  border: solid 2px $heading_grey;
+  visibility: hidden;
+}
+
+div.status_notices ul {
+  margin-top: 8px;
+  text-transform: lowercase;
+  font-size: 13px;
+}
+

@@ -1,0 +1,16 @@
+div id=campaign_management_graph_container
+  div id=campaign_management_graph
+    >span
+
+div id=graph_selector_panel
+  h2 | Custom Report
+  >br
+  
+  form id=report_form action="<%= metrics_report_path %>"
+    = render :partial => 'form'
+
+div style='clear:both;'
+  >span
+
+% javascript_tag do
+  = render :partial => 'metrics.js'

@@ -1,0 +1,16 @@
+= error_messages_for :ais
+
+div class='dimension_input'
+  label for="ais_ais_code" | AIS Code:
+  >br
+
+  = text_field('ais', 'ais_code')
+
+div class='dimension_input'
+  label for="ais_name" | Name:
+  >br
+
+  = text_field('ais', 'name')
+
+div style='clear:both;'
+  >br
