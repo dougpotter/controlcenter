@@ -22,13 +22,11 @@ class SyncRule < ActiveRecord::Base
   end
 
   def self.apn_secure_pixel(id, type)
-    return "<img src=\"https://secure.adnxs.com/#{type}?"+
-      "id=#{id}#{type == "px" ? "&t=2" : ""}\" width=\"1\" height=\"1\" />"
+    return "https://secure.adnxs.com/#{type}?id=#{id}#{type == "px" ? "&t=2" : ""}"
   end
 
   def self.apn_nonsecure_pixel(id, type)
-    return "<img src=\"http://ib.adnxs.com/#{type}?"+
-      "id=#{id}#{type == "px" ? "&t=2" : ""}\" width=\"1\" height=\"1\" />"
+    return "http://ib.adnxs.com/#{type}?id=#{id}#{type == "px" ? "&t=2" : ""}"
   end
 
   def self.apn_secure_add_conversion(partner_code, conversion_code)
