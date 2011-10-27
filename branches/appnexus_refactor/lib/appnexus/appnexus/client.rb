@@ -3,21 +3,15 @@ module Appnexus
     include Connection
     include Request
 
+    require "appnexus/client/advertiser"
+    require "appnexus/client/segment"
+
+    include Advertiser
+    include Segment
+
     def initialize
       @endpoint = "http://sand.api.appnexus.com/"
       authenticate_connection
-    end
-
-    def advertisers
-      get("#{@endpoint}advertiser")
-    end
-
-    def advertiser(id)
-      advertiser_by_id(id)
-    end
-
-    def update_advertiser(id, attributes)
-      update_advertiser_by_id(id, attributes)
     end
 
     def method_missing(m, *args, &block)
@@ -30,6 +24,8 @@ module Appnexus
       elsif match = m.to_s.match(/\Anew_([a-z]+)\z/)
         method, object, identifier = match.to_a
         post("#{@endpoint}#{object}", { object => args[0] })
+      else 
+        raise "MethodMissingError: #{m} is not a method"
       end
     end
   end
