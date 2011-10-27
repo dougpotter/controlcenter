@@ -27,5 +27,19 @@ module Appnexus
         return response["error"]
       end
     end
+
+    def post(url, post_data)
+      response = ActiveSupport::JSON.decode(
+        connection.post(url, post_data).body_str
+      )["response"]
+      if response["status"] == "OK"
+        return response
+      elsif response["error_id"] == "NOAUTH"
+        auth(@agent)
+        post(url, post_data)
+      else
+        return response["error"]
+      end
+    end
   end
 end

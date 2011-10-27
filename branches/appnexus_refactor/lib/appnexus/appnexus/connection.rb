@@ -29,6 +29,13 @@ module Appnexus
         @agent.http_put(put_data.to_json)
         return @agent
       end
+
+      def post(url, post_data)
+        @agent.url = url
+        @agent.post_body = post_data.to_json
+        @agent.http_post
+        return @agent
+      end
     end
 
     def authenticate_connection
