@@ -16,10 +16,17 @@ module Appnexus
       advertiser_by_id(id)
     end
 
+    def update_advertiser(id, attributes)
+      update_advertiser_by_id(id, attributes)
+    end
+
     def method_missing(m, *args, &block)
-      if match = m.to_s.match(/^([a-z^_]+)_by_(id|code)$/)
+      if match = m.to_s.match(/\A([a-z]+)_by_(id|code)\z/)
         method, object, identifier = match.to_a
         get("#{@endpoint}#{object}?#{identifier}=#{args[0]}")
+      elsif match = m.to_s.match(/\Aupdate_([a-z]+)_by_(id|code)\z/)
+        method, object, identifier = match.to_a
+        put("#{@endpoint}#{object}?#{identifier}=#{args[0]}", { object => args[1] })
       end
     end
   end
