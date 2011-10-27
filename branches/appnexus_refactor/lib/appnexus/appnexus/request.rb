@@ -1,44 +1,35 @@
 module Appnexus
   module Request
     def get(url)
-      response = ActiveSupport::JSON.decode(
-        connection.get(url).body_str
-      )["response"]
-      if response["status"] == "OK"
-        return response
-      elsif response["error_id"] == "NOAUTH"
-        auth(@agent)
-        get(url)
-      else
-        return response["error"]
-      end
+      request("get", url)
     end
 
     def put(url, put_data)
-      response = ActiveSupport::JSON.decode(
-        connection.put(url, put_data).body_str
-      )["response"]
-      if response["status"] == "OK"
-        return response
-      elsif response["error_id"] == "NOAUTH"
-        auth(@agent)
-        put(url, put_data)
-      else
-        return response["error"]
-      end
+      request("put", url, :put_data => put_data)
     end
 
     def post(url, post_data)
-      response = ActiveSupport::JSON.decode(
-        connection.post(url, post_data).body_str
-      )["response"]
-      if response["status"] == "OK"
-        return response
-      elsif response["error_id"] == "NOAUTH"
+      request("post", url, :post_data => post_data)
+    end
+
+    def request(verb, url, options = {})
+      case verb
+      when "get"
+        response = connection.get(url)
+      when "put"
+        response = connection.put(url, options[:put_data])
+      when "post"
+        response = connection.post(url, options[:post_data])
+      end
+
+      parsed_response = ActiveSupport::JSON.decode(response.body_str)["response"]
+      if parsed_response["status"] == "OK"
+        return parsed_response
+      elsif parsed_response["error_id"] == "NOAUTH"
         auth(@agent)
-        post(url, post_data)
+        send(verb, url)
       else
-        return response["error"]
+        return parsed_response["error"]
       end
     end
   end
