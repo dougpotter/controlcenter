@@ -35,10 +35,3 @@ end
 config.after_initialize do
   PaperclipConfiguration.storage = :s3
 end
-
-# Object cache
-require 'active_support/cache/dalli_store23'
-config.cache_store = :dalli_store
-
-require 'action_controller/session/dalli_store'
-ActionController::Base.session_store = :dalli_store
