@@ -114,6 +114,10 @@ module AppnexusClient
           custom = apn_mappings[:method_map][:index] ? 
             apn_mappings[:method_map][:index][0] :
             "#{apn_mappings["apn_wrapper"].pluralize}"
+        when "view"
+          custom = apn_mappings[:method_map][:veiw] ? 
+            apn_mappings[:method_map][:view][0] :
+            "#{apn_mappings["apn_wrapper"]}_by_code"
         else
           raise "Can't find Appnexus method for http_verb: \"#{http_verb}\""
         end
@@ -161,7 +165,7 @@ module AppnexusClient
       end
 
       def apn_method(http_verb)
-        self.class.apn_method
+        self.class.apn_method(http_verb)
       end
 
       def supplemental_args(http_verb)
@@ -208,11 +212,7 @@ module AppnexusClient
       end
 
       def exists_apn?
-        agent = AppnexusClient::API.new_agent
-        agent.url = apn_action_url(:view)
-        agent.http_get
-
-        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
+        if APPNEXUS.send(apn_method("view"), supplemental_args("view")).is_a?(Hash)
           return true
         else
           return false

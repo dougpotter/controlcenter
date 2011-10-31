@@ -42,6 +42,8 @@ class Partner < ActiveRecord::Base
     :non_method_attr_map => {
       :state => "active" },
     :apn_wrapper => "advertiser",
+    :method_map => {
+      :view => [ "advertiser_by_code", "partner_code" ] },
     :urls => {
       :index => "advertiser",
       :new => "advertiser",

@@ -14,6 +14,8 @@ class SegmentPixel < ActiveRecord::Base
       :member_id => APN_CONFIG["member_id"],
       :status => "inactive" },
     :apn_wrapper => "segment",
+    :method_map => {
+      :view => [ "segment_by_code", "pixel_code" ] },
     :urls => {
       :new => "segment?advertiser_code=##partner_code##",
       :view => "segment?code=##pixel_code##",
