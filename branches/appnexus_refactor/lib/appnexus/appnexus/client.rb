@@ -4,12 +4,14 @@ module Appnexus
     include Request
 
     require "appnexus/client/advertiser"
-    require "appnexus/client/segment"
+    require "appnexus/client/creative"
     require "appnexus/client/pixel"
+    require "appnexus/client/segment"
 
     include Advertiser
-    include Segment
+    include Creative
     include Pixel
+    include Segment
 
     def initialize
       authenticate_connection
