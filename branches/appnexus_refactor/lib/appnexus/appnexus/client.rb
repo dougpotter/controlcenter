@@ -18,13 +18,13 @@ module Appnexus
     def method_missing(m, *args, &block)
       if match = m.to_s.match(/\A([a-z]+)_by_(id|code)\z/)
         method, object, identifier = match.to_a
-        get("#{@endpoint}#{object}?#{identifier}=#{args[0]}")
+        get("#{endpoint}#{object}?#{identifier}=#{args[0]}")
       elsif match = m.to_s.match(/\Aupdate_([a-z]+)_by_(id|code)\z/)
         method, object, identifier = match.to_a
-        put("#{@endpoint}#{object}?#{identifier}=#{args[0]}", { object => args[1] })
+        put("#{endpoint}#{object}?#{identifier}=#{args[0]}", { object => args[1] })
       elsif match = m.to_s.match(/\Anew_([a-z]+)\z/)
         method, object, identifier = match.to_a
-        post("#{@endpoint}#{object}", { object => args[0] })
+        post("#{endpoint}#{object}", { object => args[0] })
       else 
         raise "MethodMissingError: #{m} is not a method"
       end
