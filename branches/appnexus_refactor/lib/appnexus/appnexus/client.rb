@@ -5,9 +5,11 @@ module Appnexus
 
     require "appnexus/client/advertiser"
     require "appnexus/client/segment"
+    require "appnexus/client/pixel"
 
     include Advertiser
     include Segment
+    include Pixel
 
     def initialize
       @endpoint = "http://sand.api.appnexus.com/"
