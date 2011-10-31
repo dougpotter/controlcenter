@@ -138,7 +138,7 @@ describe AppnexusClient do
         @a.http_get
         conversion_pixels = JSON.parse(@a.body_str)["response"]["pixels"]
         
-        ConversionPixel.all_apn("advertiser_code" => 77777).should == conversion_pixels
+        ConversionPixel.all_apn(77777).should == conversion_pixels
       end
     end
   end

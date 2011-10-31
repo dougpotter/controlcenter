@@ -104,21 +104,24 @@ module AppnexusClient
         return url
       end
 
-      def all_apn(*substitutions)
-        agent = AppnexusClient::API.new_agent
-        if substitutions.blank?
-          agent.url = apn_action_url(:index)
+      def apn_method(http_verb)
+        case http_verb
+        when "new"
+          custom = apn_mappings[:method_map][:new] ? 
+            apn_mappings[:method_map][:new][0] :
+            "new_#{apn_mappings["apn_wrapper"]}"
+        when "index"
+          custom = apn_mappings[:method_map][:index] ? 
+            apn_mappings[:method_map][:index][0] :
+            "#{apn_mappings["apn_wrapper"].pluralize}"
         else
-          agent.url = apn_action_url(:index, substitutions[0].values)
+          raise "Can't find Appnexus method for http_verb: \"#{http_verb}\""
         end
-        agent.http_get
+      end
 
 
-        result = ActiveSupport::JSON.decode(
-          agent.body_str
-        )["response"][@apn_mappings[:apn_wrapper].pluralize]
-
-        result ? result : []
+      def all_apn(*args)
+        APPNEXUS.send(apn_method("index"), *args)
       end
 
       def delete_url(object_hash)
@@ -228,12 +231,7 @@ module AppnexusClient
       end
 
       def apn_method(http_verb)
-        case http_verb
-        when "new"
-          custom = self.class.apn_mappings[:method_map][:new] ? 
-            self.class.apn_mappings[:method_map][:new][0] :
-            "new_#{self.class.apn_mappings["apn_wrapper"]}"
-        end
+        self.class.apn_method
       end
 
       def supplemental_args(http_verb)
