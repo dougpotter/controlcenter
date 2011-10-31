@@ -70,6 +70,7 @@ module AppnexusClient
             :non_method_attr_map => hsh[:non_method_attr_map],
             :apn_wrapper => hsh[:apn_wrapper],
             :url_macros => hsh[:url_macros],
+            :method_map => hsh[:method_map] || {},
             :urls => hsh[:urls]
           })
           extend ClassMethods
@@ -193,6 +194,7 @@ module AppnexusClient
 
 
     module InstanceMethods
+      # Older version. Same method as below except returns JSON instead of hash
       def apn_json
         json_hash = {}
 
@@ -209,38 +211,44 @@ module AppnexusClient
         )
       end
 
-      def save_apn
-        agent = AppnexusClient::API.new_agent
-        agent.url = apn_action_url("new")
-        agent.post_body = apn_json
-        agent.http_post
-        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
-          return true
-        else
-          self.errors.add_to_base(
-            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"] + 
-            " at Appnexus"
-          )
-          return false
+      # Perferred method going forward. Same method as above, just returns a hash 
+      # instead of JSON
+      def apn_attribute_hash
+        json_hash = {}
+
+        self.class.apn_mappings[:apn_attr_map].each do |apn_attribute,method|
+          json_hash[apn_attribute] = self.send(method)
+        end
+
+        if self.class.apn_mappings[:non_method_attr_map]
+          json_hash.merge!(self.class.apn_mappings[:non_method_attr_map])
+        end
+
+        return json_hash
+      end
+
+      def apn_method(http_verb)
+        case http_verb
+        when "new"
+          custom = self.class.apn_mappings[:method_map][:new] ? 
+            self.class.apn_mappings[:method_map][:new][0] :
+            "new_#{self.class.apn_mappings["apn_wrapper"]}"
         end
       end
 
-      def save_apn!
-        agent = AppnexusClient::API.new_agent
-        agent.url = apn_action_url("new")
-        agent.post_body = apn_json
-        agent.http_post
-        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
-          return true
-        else
-          error_msg = 
-            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"] +
-            " at Appnexus"
-          self.errors.add_to_base(
-            error_msg
-          )
-          raise AppnexusRecordInvalid, error_msg
+      def supplemental_args(http_verb)
+        args = []
+        if components = self.class.apn_mappings[:method_map][http_verb.to_sym]
+          for arg in components[1..-1]
+            args << self.send(arg)
+          end
         end
+        return args
+      end
+
+      def save_apn
+        args = [ supplemental_args("new"), apn_attribute_hash ].flatten
+        APPNEXUS.send(apn_method("new"), *args)
       end
 
       # because our XGCC's db is the cannonical reference for creatives, instead of
