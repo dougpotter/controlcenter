@@ -123,76 +123,6 @@ module AppnexusClient
       def all_apn(*args)
         APPNEXUS.send(apn_method("index"), *args)
       end
-
-      def delete_url(object_hash)
-        url = apn_mappings[:urls][:delete_by_apn_ids].clone
-        necessary_attributes = url.scan(/(?:\?|\&)(.+?)=/).flatten
-        substitutions = []
-        for attribute in necessary_attributes
-          substitutions << object_hash[attribute.to_s]
-        end
-
-        apn_action_url(:delete_by_apn_ids, substitutions)
-      end
-
-      def delete_by_apn_id(*substitutions)
-        token = AppnexusClient::API.new_agent.headers["Authorization"]
-        agent = Curl::Easy.http_delete(delete_url(substitutions[0])) do |a|
-          a.headers["Authorization"] = token
-        end
-
-        result = ActiveSupport::JSON.decode(
-          agent.body_str
-        )["response"][@apn_mappings[:apn_wrapper].pluralize]
-      end
-
-      def delete_by_code_url(*object_hash)
-        if object_hash.is_a?(Array)
-          object_hash = object_hash[0]
-        end
-        url = apn_mappings[:urls][:delete].clone
-        necessary_attributes = url.scan(/(?:\?|\&)(.+?)=/).flatten
-        substitutions = []
-        for attribute in necessary_attributes
-          substitutions << object_hash[attribute.to_s]
-        end
-
-        apn_action_url(:delete, substitutions)
-      end
-
-      def delete_apn(*substitutions)
-        token = AppnexusClient::API.new_agent.headers["Authorization"]
-        agent = Curl::Easy.http_delete(delete_by_code_url(substitutions[0])) do |a|
-          a.headers["Authorization"] = token
-        end
-      end
-
-      def delete_all_apn(*filter)
-
-        if RAILS_ENV == "production"
-          raise "ATTEMPTING TO DELETE PRODUCTION DATA AT APPNEXUS." +
-            " THIS MUST BE DONE THROUGH THE APPNEXUS UI" 
-        end
-
-        if filter
-          objects = all_apn(filter[0]).map { |o| o.merge(filter[0]) }
-        else
-          objects = all_apn
-        end
-
-        agent = AppnexusClient::API.new_agent
-
-        for object in objects
-          agent.url = delete_url(object)
-          agent.http_delete
-        end
-
-        if filter
-          return all_apn(filter[0]).size == 0
-        else
-          return all_apn.size == 0
-        end
-      end
     end
 
 
@@ -273,19 +203,6 @@ module AppnexusClient
           self.errors.add_to_base(
             error_msg
           )
-          return false
-        end
-      end
-
-      def delete_apn
-        token = AppnexusClient::API.new_agent.headers["Authorization"]
-        agent = Curl::Easy.http_delete(apn_action_url(:delete)) do |a|
-          a.headers["Authorization"] = token
-        end
-
-        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
-          return true
-        else
           return false
         end
       end
