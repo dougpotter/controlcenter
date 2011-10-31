@@ -2,7 +2,7 @@ module Appnexus
   class Client
     module Advertiser
       def advertisers
-        get("#{endpoint}advertiser")
+        get("advertiser")
       end 
 
       def advertiser(id)

@@ -18,20 +18,20 @@ module Appnexus
         @agent.headers["Authorization"] = api_token
       end
 
-      def get(url)
-        @agent.url = url
+      def get(path)
+        @agent.url = "#{Appnexus.endpoint}#{path}"
         @agent.http_get
         return @agent
       end
 
-      def put(url, put_data)
-        @agent.url = url
+      def put(path, put_data)
+        @agent.url = "#{Appnexus.endpoint}#{path}"
         @agent.http_put(put_data.to_json)
         return @agent
       end
 
-      def post(url, post_data)
-        @agent.url = url
+      def post(path, post_data)
+        @agent.url = "#{Appnexus.endpoint}#{path}"
         @agent.post_body = post_data.to_json
         @agent.http_post
         return @agent
