@@ -1,8 +1,8 @@
 module Appnexus
   class Client
     module Pixel
-      def pixels(advertiser_id)
-        pixels_by_id(advertiser_id)
+      def pixels(advertiser_code)
+        pixels_by_code(advertiser_code)
       end
 
       def pixels_by_id(advertiser_id)
