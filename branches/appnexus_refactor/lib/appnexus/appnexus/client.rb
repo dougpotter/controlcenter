@@ -12,7 +12,6 @@ module Appnexus
     include Pixel
 
     def initialize
-      @endpoint = "http://sand.api.appnexus.com/"
       authenticate_connection
     end
 

@@ -7,9 +7,9 @@ module Appnexus
 
       def initialize
         begin
-          @agent = Curl::Easy.new("http://sand.api.appnexus.com/auth")
+          @agent = Curl::Easy.new(Appnexus.auth_url)
         rescue 
-          @agent = Curl::Easy.new("http://sand.api.appnexus.com/auth")
+          @agent = Curl::Easy.new(Appnexus.auth_url)
         end
         @agent.enable_cookies = true
         @agent.post_body = APN_CONFIG["authentication_hash"].to_json
