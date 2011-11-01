@@ -53,68 +53,13 @@ describe AppnexusClient do
     })
   end
 
-  describe "apn_action_url (class method)" do
-    it "shoud raise an error when number of macros and substitutions don't match" do
-      lambda {
-        Creative.apn_action_url(:new, ["too", "many", "cookies"])
-      }.should raise_error
-    end
-
-    it "should raise an error when there is no URL defined for action passed" do
-      lambda {
-        Creative.apn_action_url(:something)
-      }.should raise_error(
-        RuntimeError, 
-        "Appnexus action URL undefined for something")
-    end
-
-    it "should correctly compile array when passed an array of one substitution" do
-      proper_url = "http://sand.api.appnexus.com/creative?advertiser_code=8675309"
-      Creative.apn_action_url(:new, ["8675309"]).should ==
-        "http://sand.api.appnexus.com/creative?advertiser_code=8675309"
-    end
-
-    it "should correctly compile array when passed a string of one substitution" do
-      proper_url = "http://sand.api.appnexus.com/creative?advertiser_code=8675309"
-      Creative.apn_action_url(:index_by_advertiser, "8675309").should ==
-        "http://sand.api.appnexus.com/creative?advertiser_code=8675309"
-    end
-
-
-    it "should correctly compile array when passed an array of multiple" + 
-      " substitutions" do
-      proper_url = "http://sand.api.appnexus.com/creative?advertiser_code=8675309"
-      Creative.apn_action_url(:delete, ["8675309", "12345"]).should ==
-        "http://sand.api.appnexus.com/creative?advertiser_code=8675309&code=12345"
-    end
-  end
-
-  describe "#apn_action_url" do
-    it "should correctly substitute one value " do
-      proper_url = "http://sand.api.appnexus.com/creative?advertiser_code=77777"
-      @creative.apn_action_url(:new).should == proper_url
-    end
-
-    it "should correctly substitute multiple values" do
-      proper_url = 
-        "http://sand.api.appnexus.com/creative?advertiser_code=77777&code=ZZ11"
-      @creative.apn_action_url(:delete).should == proper_url
-    end
-
-    it "should substitute the blank string for undefined attributes" do
-      proper_url = "http://sand.api.appnexus.com/creative?advertiser_code="
-      @creative.partner = nil
-      @creative.apn_action_url(:new).should == proper_url
-    end
-  end
   describe "all_apn" do
     context "when called on Creative" do
       it "should return an array of all creatives in the Appnexus sandbox" do
-        agent = AppnexusClient::API.new_agent
-        agent.url = Creative.apn_action_url(:index)
-        agent.http_get
+        @a.url = APN_CONFIG["api_root_url"] + "creative"
+        @a.http_get
         creatives = 
-          ActiveSupport::JSON.decode(agent.body_str)["response"]["creatives"]
+          ActiveSupport::JSON.decode(@a.body_str)["response"]["creatives"]
 
         Creative.all_apn.should == creatives
         end
@@ -122,11 +67,10 @@ describe AppnexusClient do
 
     context "when called on Partner" do
       it "should return an array of all the partners in the Appnexus sandbox" do
-        agent = AppnexusClient::API.new_agent
-        agent.url = Partner.apn_action_url(:index)
-        agent.http_get
+        @a.url = APN_CONFIG["api_root_url"] + "advertiser"
+        @a.http_get
         partners = 
-          ActiveSupport::JSON.decode(agent.body_str)["response"]["advertisers"]
+          ActiveSupport::JSON.decode(@a.body_str)["response"]["advertisers"]
 
         Partner.all_apn.should == partners
       end

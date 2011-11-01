@@ -40,15 +40,9 @@
 #  object e.g.:
 #  "creative"
 #
-# :urls
-#  a hash  mapping AppNexus URL extensions to their associated CRUD actions for that
-#  object, with macros indicating where a substitution should take place e.g.:
-#
-#  :new => creative?advertiser_code=##partner_code##
-#
-#  would indicate the new action for a creative uses the root URL defined in the
-#  configuration file (see below) plus this extension with the result of 
-#  Creative#partner_code substituted for the string '##partner_code##'
+# :method_map
+#  a hash  mapping http verbs (which correspond to CRUD methods on Appnexus objects)
+#  to Appnexus::Client methods and arguments 
 #
 # Finally, in addition to the object level configuraiton parameters specified in
 # their respective model class files, AppnexusClient::API looks for a 
@@ -60,8 +54,6 @@
 module AppnexusClient
   module API
 
-    @@agent = nil
-
     def self.included(base)
       base.instance_eval do
         def acts_as_apn_object(hsh = {})
@@ -70,8 +62,7 @@ module AppnexusClient
             :non_method_attr_map => hsh[:non_method_attr_map],
             :apn_wrapper => hsh[:apn_wrapper],
             :url_macros => hsh[:url_macros],
-            :method_map => hsh[:method_map] || {},
-            :urls => hsh[:urls]
+            :method_map => hsh[:method_map] || {}
           })
           extend ClassMethods
           include InstanceMethods
@@ -81,28 +72,6 @@ module AppnexusClient
 
     module ClassMethods
       attr_accessor :apn_mappings
-
-      def apn_action_url(action, *substitutions)
-        if path = apn_mappings[:urls][action]
-          substitutions = [substitutions].flatten
-          substitutions.map! { |subs| subs.to_s }
-          matcher = /\#\#(.+?)\#\#/
-          url = APN_CONFIG["api_root_url"] + apn_mappings[:urls][action]
-          macros = url.scan(matcher).size
-          if macros != substitutions.size
-            raise "number of macros and number of substitutions in AppNexus URL" + 
-              " don't agree"
-          else
-            while url.match(matcher)
-              url.sub!(matcher, substitutions.shift)
-            end
-          end
-        else
-          raise "Appnexus action URL undefined for #{action}"
-        end
-
-        return url
-      end
 
       def apn_method(http_verb)
         case http_verb
@@ -135,25 +104,6 @@ module AppnexusClient
 
 
     module InstanceMethods
-      # Older version. Same method as below except returns JSON instead of hash
-      def apn_json
-        json_hash = {}
-
-        self.class.apn_mappings[:apn_attr_map].each do |apn_attribute,method|
-          json_hash[apn_attribute] = self.send(method)
-        end
-
-        if self.class.apn_mappings[:non_method_attr_map]
-          json_hash.merge!(self.class.apn_mappings[:non_method_attr_map])
-        end
-
-        return ActiveSupport::JSON.encode(
-          self.class.apn_mappings[:apn_wrapper] => json_hash
-        )
-      end
-
-      # Perferred method going forward. Same method as above, just returns a hash 
-      # instead of JSON
       def apn_attribute_hash
         json_hash = {}
 
@@ -214,66 +164,10 @@ module AppnexusClient
       def find_apn
         APPNEXUS.send(apn_method("view"), *supplemental_args("view"))
       end
-
-      def apn_action_url(action)
-        if self.class.apn_mappings[:urls][action]
-          url = APN_CONFIG["api_root_url"] + self.class.apn_mappings[:urls][action]
-        else
-          raise "Appnexus action URL undefined for #{action}"
-        end
-        return compile_url(url)
-      end
-
-      def compile_url(url)
-        matcher = /\#\#(.+?)\#\#/
-          while url.match(matcher) && method = url.match(matcher)[1]
-            url.sub!(matcher, self.send(method).to_s)
-          end
-        return url
-      end
-    end
-
-    # Module level methods
-
-    def self.issue_get(object, *filters)
-      url = "#{APN_CONFIG[:api_root_url]}#{object}"
-      if !filters.empty?
-        url += "?"
-        filters.each do |attribute, value|
-          url += "#{attribute}=#{value}"
-        end
-      end
-      self.new_agent
-      @@agent.url = url
-      @@agent.http_get
-      return nil
-    end
-
-    def self.method_missing(method_sym, *filters, &block)
-      if method_sym.to_s =~ /^get_(.*)$/
-        self.issue_get($1.gsub("_", "-"), filters)
-      else
-        raise NoMethodError, "undefined method #{method_sym} for #{self}"
-      end
     end
 
     def self.env
       return RAILS_ENV
-    end
-
-    def self.new_agent
-      require 'curl'
-      begin
-      @@agent = Curl::Easy.new(APN_CONFIG["api_root_url"] + "auth")
-      rescue Curl::Err::ConnectionFailedError
-        @@agent = Curl::Easy.new(APN_CONFIG["api_root_url"] + "auth")
-      end
-      @@agent.enable_cookies = true
-      @@agent.post_body = APN_CONFIG["authentication_hash"].to_json
-      @@agent.http_post
-      api_token = ActiveSupport::JSON.decode(@@agent.body_str)["response"]["token"]
-      @@agent.headers["Authorization"] = api_token
-      return @@agent
     end
   end
 end
