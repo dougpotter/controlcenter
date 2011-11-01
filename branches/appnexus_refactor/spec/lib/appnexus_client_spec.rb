@@ -53,6 +53,16 @@ describe AppnexusClient do
     })
   end
 
+  describe "apn_client_method" do
+    it "should return the default method if no custom method exists" do
+      Partner.apn_client_method("new").should == "new_advertiser"
+    end
+
+    it "should return the the custom method if one is defined" do
+      ConversionPixel.apn_client_method("put").should == "update_pixel_by_code"
+    end
+  end
+
   describe "all_apn" do
     context "when called on Creative" do
       it "should return an array of all creatives in the Appnexus sandbox" do

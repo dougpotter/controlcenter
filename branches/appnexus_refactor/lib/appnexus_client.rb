@@ -73,32 +73,29 @@ module AppnexusClient
     module ClassMethods
       attr_accessor :apn_mappings
 
-      def apn_method(http_verb)
+      def apn_client_standard_method(http_verb)
         case http_verb
         when "new"
-          custom = apn_mappings[:method_map][:new] ? 
-            apn_mappings[:method_map][:new][0] :
-            "new_#{apn_mappings["apn_wrapper"]}"
+          "new_#{apn_mappings["apn_wrapper"]}"
         when "index"
-          custom = apn_mappings[:method_map][:index] ? 
-            apn_mappings[:method_map][:index][0] :
-            "#{apn_mappings["apn_wrapper"].pluralize}"
+          "#{apn_mappings["apn_wrapper"].pluralize}"
         when "view"
-          custom = apn_mappings[:method_map][:veiw] ? 
-            apn_mappings[:method_map][:view][0] :
-            "#{apn_mappings["apn_wrapper"]}_by_code"
+          "#{apn_mappings["apn_wrapper"]}_by_code"
         when "put"
-          custom = apn_mappings[:method_map][:put] ? 
-            apn_mappings[:method_map][:put][0] :
-            "update_#{apn_mappings["apn_wrapper"]}_by_code"
+          "update_#{apn_mappings["apn_wrapper"]}_by_code"
         else
-          raise "Can't find Appnexus method for http_verb: \"#{http_verb}\""
+          raise "No default method for http_verb: \"#{http_verb}\""
         end
       end
 
+      def apn_client_method(http_verb)
+        apn_mappings[:method_map][http_verb] ?
+          apn_mappings[:method_map][http_verb][0] :
+          apn_client_standard_method(http_verb)
+      end
 
       def all_apn(*args)
-        APPNEXUS.send(apn_method("index"), *args)
+        APPNEXUS.send(apn_client_method("index"), *args)
       end
     end
 
@@ -118,8 +115,8 @@ module AppnexusClient
         return json_hash
       end
 
-      def apn_method(http_verb)
-        self.class.apn_method(http_verb)
+      def apn_client_method(http_verb)
+        self.class.apn_client_method(http_verb)
       end
 
       def supplemental_args(http_verb)
@@ -133,16 +130,16 @@ module AppnexusClient
       end
 
       def exists_apn?
-        APPNEXUS.send(apn_method("view"), *supplemental_args("view")).is_a?(Hash)
+        APPNEXUS.send(apn_client_method("view"), *supplemental_args("view")).is_a?(Hash)
       end
 
       def save_apn
         args = [ supplemental_args("new"), apn_attribute_hash ].flatten
-        return APPNEXUS.send(apn_method("new"), *args).is_a?(Integer)
+        return APPNEXUS.send(apn_client_method("new"), *args).is_a?(Integer)
       end
 
       def find_apn
-        APPNEXUS.send(apn_method("view"), *supplemental_args("view"))
+        APPNEXUS.send(apn_client_method("view"), *supplemental_args("view"))
       end
 
       # because our XGCC's db is the cannonical reference for creatives, instead of
@@ -153,11 +150,11 @@ module AppnexusClient
       def update_attributes_apn
         if self.exists_apn?
           args = [ supplemental_args("put"), apn_attribute_hash ].flatten
-          return APPNEXUS.send(apn_method("put"), *args).is_a?(String)
+          return APPNEXUS.send(apn_client_method("put"), *args).is_a?(String)
         else
           args = [ supplemental_args("new"), apn_attribute_hash ].flatten
-          APPNEXUS.send(apn_method("new"), *args)
-          return APPNEXUS.send(apn_method("put"), *args).is_a?(Integer)
+          APPNEXUS.send(apn_client_method("new"), *args)
+          return APPNEXUS.send(apn_client_method("put"), *args).is_a?(Integer)
         end
       end
     end
