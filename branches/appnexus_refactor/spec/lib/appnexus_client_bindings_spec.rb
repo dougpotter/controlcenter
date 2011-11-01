@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AppnexusClient do
+describe AppnexusClientBindings do
   fixtures :creatives,
     :creative_inventory_configs,
     :campaign_creatives,

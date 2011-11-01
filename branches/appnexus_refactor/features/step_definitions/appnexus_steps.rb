@@ -1,5 +1,5 @@
 When /^I request a new appnexus agent$/ do
-  @agent = AppnexusClient::API.new_agent
+  @agent = AppnexusClientBindings.new_agent
 end
 
 Then /^the appnexus agent should be authenticated$/ do
