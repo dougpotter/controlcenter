@@ -149,7 +149,7 @@ module AppnexusClient
         else
           args = [ supplemental_args("new"), apn_attribute_hash ].flatten
           APPNEXUS.send(apn_method("new"), *args)
-          return APPNEXUS.send(apn_method("put"), *args).is_a?(String)
+          return APPNEXUS.send(apn_method("put"), *args).is_a?(Integer)
         end
       end
 
