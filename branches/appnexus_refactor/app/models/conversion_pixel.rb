@@ -12,9 +12,9 @@ class ConversionPixel < ActiveRecord::Base
     :non_method_attr_map => {
       :status => "inactive" },
     :apn_wrapper => "pixel",
-    :http_method_map => {
+    :method_map => {
       :new => [ "new_pixel_by_code", "partner_code" ],
-      :view => [ "pixel_by_code", "pixel_code", "partner_code" ] },
+      :view => [ "pixel_by_code", "partner_code", "pixel_code" ] },
     :urls => {
       :new => "pixel?advertiser_code=##partner_code##",
       :view => "pixel?advertiser_code=##partner_code##&code=##pixel_code##",
