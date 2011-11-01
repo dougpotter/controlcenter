@@ -1,25 +1,16 @@
-# The AppnexusClient module could contin all functionality relating to XGraph's
-# backend process interaction with AppNexus. Currently some of this functionality
-# exists in AppnexusSyncWorkflow. We can discuss at another time whenther to merge
-# the two. AppnexusSyncWorkflow does fit nicely into the FETL stack (and
-# associated conceptual category), so merging may not be ideal afterall.
+# The AppnexusClientBindings module is intended to employ our Appnexus API wrapper
+# to expose AppNexus's RESTful API to XGCC's backend in an ActiveRecord-y way. This
+# module binds methods like RamndomnActiveRecordObject#save_apn to the appropriate 
+# Appnexus API wrapper method. We will use this module with each active record 
+# object we store in whole or in part at Appnexus.
 #
-# The AppnexusClient::API module is intended to expose AppNexus's RESTful API
-# to XGCC's backend in order to facilitate easy backend synchronization of XGCC
-# objects with their proxies at AppNexus. This will eliminate redundancy going 
-# forward - having to enter execution information in both XGCC (to keep track of 
-# reporting) and AppNexus's UI (to execute the actual campaign). To ease backend
-# synchronization it defines a set of methods on that object that make the CRUD 
-# operations on that object at AppNexus as easy as any of the CRUD operations on 
-# the object persisted in our own database. CRUD methods currently defined are:
+# The methods defined are: 
 #
 # #save_apn
-# #save_apn!
-# #delete_apn
 # #update_attributes_apn
 #
-# AppnexusClient::API is invoked by placing the following 'declaration' at the top 
-# of an ActiveRecord model class:
+# AppnexusClientBindings is configured by placing the following 'declaration' at the
+# top of an ActiveRecord model class:
 #
 # acts_as_apn_object
 #
