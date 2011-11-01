@@ -14,6 +14,7 @@ class ConversionPixel < ActiveRecord::Base
     :apn_wrapper => "pixel",
     :method_map => {
       :new => [ "new_pixel_by_code", "partner_code" ],
+      :put => [ "update_pixel_by_code", "partner_code", "pixel_code" ],
       :view => [ "pixel_by_code", "partner_code", "pixel_code" ] },
     :urls => {
       :new => "pixel?advertiser_code=##partner_code##",

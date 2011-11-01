@@ -41,14 +41,14 @@ module Appnexus
         put(
           "pixel?advertiser_id=#{advertiser_id}&id=#{pixel_id}",
           "pixel" => attributes
-        )["pixel"]
+        )["id"]
       end
 
       def update_pixel_by_code(advertiser_code, pixel_code, attributes)
         put(
           "pixel?advertiser_code=#{advertiser_code}&code=#{pixel_code}",
           "pixel" => attributes
-        )["pixel"]
+        )["id"]
       end
     end
   end

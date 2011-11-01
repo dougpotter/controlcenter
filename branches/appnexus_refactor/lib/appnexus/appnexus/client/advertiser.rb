@@ -10,7 +10,7 @@ module Appnexus
       end 
 
       def update_advertiser(id, attributes)
-        update_advertiser_by_id(id, attributes)["advertiser"]
+        update_advertiser_by_id(id, attributes)
       end
     end
   end

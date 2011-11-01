@@ -43,7 +43,8 @@ class Partner < ActiveRecord::Base
       :state => "active" },
     :apn_wrapper => "advertiser",
     :method_map => {
-      :view => [ "advertiser_by_code", "partner_code" ] },
+      :view => [ "advertiser_by_code", "partner_code" ],
+      :put => [ "update_advertiser_by_code", "partner_code" ] },
     :urls => {
       :index => "advertiser",
       :new => "advertiser",

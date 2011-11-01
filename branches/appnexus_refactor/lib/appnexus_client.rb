@@ -118,6 +118,10 @@ module AppnexusClient
           custom = apn_mappings[:method_map][:veiw] ? 
             apn_mappings[:method_map][:view][0] :
             "#{apn_mappings["apn_wrapper"]}_by_code"
+        when "put"
+          custom = apn_mappings[:method_map][:put] ? 
+            apn_mappings[:method_map][:put][0] :
+            "update_#{apn_mappings["apn_wrapper"]}_by_code"
         else
           raise "Can't find Appnexus method for http_verb: \"#{http_verb}\""
         end
@@ -189,25 +193,13 @@ module AppnexusClient
       # takes no params and simply syncronizes the current state of 'this' with 
       # AppNexus
       def update_attributes_apn
-        agent = AppnexusClient::API.new_agent
         if self.exists_apn?
-          agent.url = apn_action_url("update")
-          agent.http_put(apn_json)
+          args = [ supplemental_args("put"), apn_attribute_hash ].flatten
+          return APPNEXUS.send(apn_method("put"), *args).is_a?(String)
         else
-          agent.url = apn_action_url("new")
-          agent.post_body = apn_json
-          agent.http_post
-        end
-
-        if ActiveSupport::JSON.decode(agent.body_str)["response"]["status"] == "OK"
-          return true
-        else
-          error_msg =
-            ActiveSupport::JSON.decode(agent.body_str)["response"]["error"]
-          self.errors.add_to_base(
-            error_msg
-          )
-          return false
+          args = [ supplemental_args("new"), apn_attribute_hash ].flatten
+          APPNEXUS.send(apn_method("new"), *args)
+          return APPNEXUS.send(apn_method("put"), *args).is_a?(String)
         end
       end
 

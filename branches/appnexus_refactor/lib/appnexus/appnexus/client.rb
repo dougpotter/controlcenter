@@ -23,7 +23,7 @@ module Appnexus
         get("#{object}?#{identifier}=#{args[0]}")[object]
       elsif match = m.to_s.match(/\Aupdate_([a-z]+)_by_(id|code)\z/)
         method, object, identifier = match.to_a
-        put("#{object}?#{identifier}=#{args[0]}", { object => args[1] })[object]
+        put("#{object}?#{identifier}=#{args[0]}", { object => args[1] })["id"]
       elsif match = m.to_s.match(/\Anew_([a-z]+)\z/)
         method, object, identifier = match.to_a
         post("#{object}", { object => args[0] })[object]
