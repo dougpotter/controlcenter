@@ -14,6 +14,6 @@ describe ConversionPixel do
     @a.url = APN_CONFIG['api_root_url'] + "pixel?advertiser_code=77777"
     @a.http_get
     pixels = JSON.parse(@a.body_str)["response"]["pixels"]
-    ConversionPixel.all_apn("advertiser_code" => "77777").should == pixels
+    ConversionPixel.all_apn("77777").should == pixels
   end
 end
