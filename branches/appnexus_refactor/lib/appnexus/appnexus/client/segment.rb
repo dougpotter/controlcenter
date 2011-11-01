@@ -9,7 +9,7 @@ module Appnexus
         post(
           "segment?advertiser_id=#{advertiser_id}", 
           { "segment" => attributes.merge(:member_id => 821) }
-        )["segment"]
+        )["id"]
       end
     end
   end

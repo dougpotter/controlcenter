@@ -26,7 +26,7 @@ module Appnexus
         put("#{object}?#{identifier}=#{args[0]}", { object => args[1] })["id"]
       elsif match = m.to_s.match(/\Anew_([a-z]+)\z/)
         method, object, identifier = match.to_a
-        post("#{object}", { object => args[0] })[object]
+        post("#{object}", { object => args[0] })["id"]
       else 
         raise "MethodMissingError: #{m} is not a method"
       end

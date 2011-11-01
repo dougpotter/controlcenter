@@ -134,7 +134,7 @@ module AppnexusClient
 
       def save_apn
         args = [ supplemental_args("new"), apn_attribute_hash ].flatten
-        APPNEXUS.send(apn_method("new"), *args)
+        return APPNEXUS.send(apn_method("new"), *args).is_a?(Integer)
       end
 
       # because our XGCC's db is the cannonical reference for creatives, instead of

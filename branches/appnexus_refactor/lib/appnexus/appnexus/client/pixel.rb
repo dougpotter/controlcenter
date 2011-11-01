@@ -27,14 +27,14 @@ module Appnexus
         post(
           "pixel?advertiser_id=#{advertiser_id}", 
           "pixel" => attributes
-        )["pixel"]
+        )["id"]
       end
 
       def new_pixel_by_code(advertiser_code, attributes)
         post(
           "pixel?advertiser_code=#{advertiser_code}", 
           "pixel" => attributes
-        )["pixel"]
+        )["id"]
       end
 
       def update_pixel_by_id(advertiser_id, pixel_id, attributes)
