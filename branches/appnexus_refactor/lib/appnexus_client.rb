@@ -132,9 +132,17 @@ module AppnexusClient
         return args
       end
 
+      def exists_apn?
+        APPNEXUS.send(apn_method("view"), *supplemental_args("view")).is_a?(Hash)
+      end
+
       def save_apn
         args = [ supplemental_args("new"), apn_attribute_hash ].flatten
         return APPNEXUS.send(apn_method("new"), *args).is_a?(Integer)
+      end
+
+      def find_apn
+        APPNEXUS.send(apn_method("view"), *supplemental_args("view"))
       end
 
       # because our XGCC's db is the cannonical reference for creatives, instead of
@@ -151,18 +159,6 @@ module AppnexusClient
           APPNEXUS.send(apn_method("new"), *args)
           return APPNEXUS.send(apn_method("put"), *args).is_a?(Integer)
         end
-      end
-
-      def exists_apn?
-        if APPNEXUS.send(apn_method("view"), *supplemental_args("view")).is_a?(Hash)
-          return true
-        else
-          return false
-        end
-      end
-
-      def find_apn
-        APPNEXUS.send(apn_method("view"), *supplemental_args("view"))
       end
     end
 
