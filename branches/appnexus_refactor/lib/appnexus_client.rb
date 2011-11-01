@@ -101,34 +101,6 @@ module AppnexusClient
 
 
     module InstanceMethods
-      def apn_attribute_hash
-        json_hash = {}
-
-        self.class.apn_mappings[:apn_attr_map].each do |apn_attribute,method|
-          json_hash[apn_attribute] = self.send(method)
-        end
-
-        if self.class.apn_mappings[:non_method_attr_map]
-          json_hash.merge!(self.class.apn_mappings[:non_method_attr_map])
-        end
-
-        return json_hash
-      end
-
-      def apn_client_method(http_verb)
-        self.class.apn_client_method(http_verb)
-      end
-
-      def supplemental_args(http_verb)
-        args = []
-        if components = self.class.apn_mappings[:method_map][http_verb.to_sym]
-          for arg in components[1..-1]
-            args << self.send(arg)
-          end
-        end
-        return args
-      end
-
       def exists_apn?
         APPNEXUS.send(apn_client_method("view"), *supplemental_args("view")).is_a?(Hash)
       end
@@ -157,6 +129,37 @@ module AppnexusClient
           return APPNEXUS.send(apn_client_method("put"), *args).is_a?(Integer)
         end
       end
+
+      private 
+
+      def apn_attribute_hash
+        json_hash = {}
+
+        self.class.apn_mappings[:apn_attr_map].each do |apn_attribute,method|
+          json_hash[apn_attribute] = self.send(method)
+        end
+
+        if self.class.apn_mappings[:non_method_attr_map]
+          json_hash.merge!(self.class.apn_mappings[:non_method_attr_map])
+        end
+
+        return json_hash
+      end
+
+      def apn_client_method(http_verb)
+        self.class.apn_client_method(http_verb)
+      end
+
+      def supplemental_args(http_verb)
+        args = []
+        if components = self.class.apn_mappings[:method_map][http_verb.to_sym]
+          for arg in components[1..-1]
+            args << self.send(arg)
+          end
+        end
+        return args
+      end
+
     end
 
     def self.env
