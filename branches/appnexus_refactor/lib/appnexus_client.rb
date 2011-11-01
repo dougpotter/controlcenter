@@ -212,13 +212,7 @@ module AppnexusClient
       end
 
       def find_apn
-        agent = AppnexusClient::API.new_agent
-        agent.url = apn_action_url(:view)
-        agent.http_get
-
-        return ActiveSupport::JSON.decode(
-          agent.body_str
-        )["response"][self.class.apn_mappings[:apn_wrapper]]
+        APPNEXUS.send(apn_method("view"), *supplemental_args("view"))
       end
 
       def apn_action_url(action)
