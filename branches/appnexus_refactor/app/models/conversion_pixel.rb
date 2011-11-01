@@ -15,13 +15,6 @@ class ConversionPixel < ActiveRecord::Base
     :method_map => {
       :new => [ "new_pixel_by_code", "partner_code" ],
       :put => [ "update_pixel_by_code", "partner_code", "pixel_code" ],
-      :view => [ "pixel_by_code", "partner_code", "pixel_code" ] },
-    :urls => {
-      :new => "pixel?advertiser_code=##partner_code##",
-      :view => "pixel?advertiser_code=##partner_code##&code=##pixel_code##",
-      :update => "pixel?advertiser_code=##partner_code##&code=##pixel_code##",
-      :delete => "pixel?advertiser_code=##partner_code##&code=##pixel_code##",
-      :delete_by_apn_ids => "pixel?advertiser_code=##partner_code##&id=##id##",
-      :index => "pixel?advertiser_code=##partner_code##" }
+      :view => [ "pixel_by_code", "partner_code", "pixel_code" ] }
 
 end

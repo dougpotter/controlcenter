@@ -16,12 +16,5 @@ class SegmentPixel < ActiveRecord::Base
     :apn_wrapper => "segment",
     :method_map => {
       :view => [ "segment_by_code", "pixel_code" ],
-      :put => [ "update_segment_by_code", "pixel_code" ] },
-    :urls => {
-      :new => "segment?advertiser_code=##partner_code##",
-      :view => "segment?code=##pixel_code##",
-      :update => "segment?code=##pixel_code##",
-      :delete => "segment?code=##pixel_code##",
-      :delete_by_apn_ids => "segment?id=##id##",
-      :index => "segment" }
+      :put => [ "update_segment_by_code", "pixel_code" ] }
 end

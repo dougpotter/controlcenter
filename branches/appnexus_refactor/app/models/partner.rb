@@ -44,13 +44,7 @@ class Partner < ActiveRecord::Base
     :apn_wrapper => "advertiser",
     :method_map => {
       :view => [ "advertiser_by_code", "partner_code" ],
-      :put => [ "update_advertiser_by_code", "partner_code" ] },
-    :urls => {
-      :index => "advertiser",
-      :new => "advertiser",
-      :view => "advertiser?code=##partner_code##",
-      :delete => "advertiser?code=##partner_code##",
-      :delete_by_apn_ids => "advertiser?id=##apn_id##" }
+      :put => [ "update_advertiser_by_code", "partner_code" ] }
 
   
   def campaigns 
