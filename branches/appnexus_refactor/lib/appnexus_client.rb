@@ -212,7 +212,7 @@ module AppnexusClient
       end
 
       def exists_apn?
-        if APPNEXUS.send(apn_method("view"), supplemental_args("view")).is_a?(Hash)
+        if APPNEXUS.send(apn_method("view"), *supplemental_args("view")).is_a?(Hash)
           return true
         else
           return false
